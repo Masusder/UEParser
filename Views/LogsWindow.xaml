@@ -1,0 +1,36 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:i="https://github.com/projektanker/icons.avalonia"
+             mc:Ignorable="d"
+             x:Class="UEParser.Views.LogsWindow"
+             xmlns:views="clr-namespace:UEParser.Views"
+             xmlns:vm="clr-namespace:UEParser.ViewModels"
+             x:DataType="vm:LogsWindowModel">
+  <UserControl.Styles>
+    <Style Selector="TextBox.logger">
+      <Setter Property="BorderBrush" Value="#1AFFFFFF"/>
+      <Setter Property="Background" Value="#282828"/>
+    </Style>
+  </UserControl.Styles>
+  <Grid RowDefinitions="*, Auto">
+    <ScrollViewer>
+      <TextBox
+          x:Name="LogText"
+          Text="{Binding LogText, Mode=OneWay}"
+          HorizontalAlignment="Stretch"
+          VerticalAlignment="Stretch"
+          FontWeight="Medium"
+          FontSize="14"
+          Foreground="White"
+          Classes="logger"
+          IsReadOnly="true"
+          LineHeight="22"
+          BorderThickness="0"
+          TextChanged="LogText_TextChanged"
+        />
+    </ScrollViewer>
+    <GridSplitter Height="5" Grid.Row="1" IsEnabled="False" />
+  </Grid>
+</UserControl>

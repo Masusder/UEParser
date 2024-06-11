@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:i="https://github.com/projektanker/icons.avalonia"
+             mc:Ignorable="d"
+             x:Class="UEParser.Views.ParsingControlers"
+             xmlns:views="clr-namespace:UEParser.Views"
+             xmlns:viewModels="clr-namespace:UEParser.ViewModels">
+  <StackPanel
+            Orientation="Horizontal"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center">
+    <Button Name="CosmeticsControler"
+            Click="ParseButton1_Click"
+            Margin="5"
+            Cursor="Hand"
+            FontWeight="Bold">
+      <StackPanel Orientation="Vertical">
+        <Image Source="avares://UEParser/Resources/iconHelp_DBDlogo.png" Width="64" Height="64" />
+        <TextBlock>
+          Everything
+        </TextBlock>
+      </StackPanel>
+    </Button>
+    <Button Name="ParseButton2"
+            Click="ParseButton2_Click"
+            Cursor="Hand"
+            Margin="5">
+      <StackPanel Orientation="Vertical">
+        <Image Source="avares://UEParser/Resources/iconHelp_archivesRewards.png" Width="64" Height="64" />
+        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
+          Rifts
+        </TextBlock>
+      </StackPanel>
+    </Button>
+    <Button Name="ParseButton3"
+            Click="ParseButton3_Click"
+            Cursor="Hand"
+            Margin="5">
+      <StackPanel Orientation="Vertical">
+        <i:Icon Value="fa-solid fa-ghost" FontSize="48" Width="64" Height="64" />
+        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Characters</TextBlock>
+      </StackPanel>
+    </Button>
+  </StackPanel>
+</UserControl>

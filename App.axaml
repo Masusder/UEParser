@@ -1,0 +1,15 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:sty="using:FluentAvalonia.Styling"
+             x:Class="UEParser.App"
+             RequestedThemeVariant="Dark">
+  <Application.Styles>
+    <sty:FluentAvaloniaTheme PreferSystemTheme="True" PreferUserAccentColor="True" />
+  </Application.Styles>
+
+  <Application.Resources>
+    <Color x:Key="SystemAccentColor">Blue</Color>
+    <Color x:Key="SystemAccentColorLight1">LightBlue</Color>
+    <Color x:Key="SystemAccentColorDark1">DarkBlue</Color>
+  </Application.Resources>
+</Application>

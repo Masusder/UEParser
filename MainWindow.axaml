@@ -1,0 +1,163 @@
+<!--<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="https://github.com/projektanker/icons.avalonia"
+        xmlns:ui="using:FluentAvalonia.UI.Controls"
+        xmlns:local="clr-namespace:UEParser.Views"
+        xmlns:vm="clr-namespace:UEParser.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="UEParser.MainWindow"
+        Icon="/Resources/UEParser.ico"
+        Title="UEParser"
+        x:DataType="vm:MainWindowModel">
+  <SplitView x:Name="MySplitView"
+      DisplayMode="CompactOverlay"
+      CompactPaneLength="48"
+      OpenPaneLength="200">
+    <SplitView.Pane>
+      <StackPanel Background="#2f3030">
+        <ToggleButton
+            Background="Transparent"
+            Foreground="White"
+            BorderBrush="Transparent"
+            FontSize="16"
+            Margin="5"
+            Cursor="Hand"
+            IsChecked="{Binding IsPaneOpen, ElementName=MySplitView}">
+          <i:Icon Value="fa-solid fa-bars" VerticalAlignment="Center" HorizontalAlignment="Center" Width="16" Height="16" />
+        </ToggleButton>
+        <ui:NavigationViewItem
+           Content="Home"
+           Cursor="Hand"
+          Tag="Home">
+          <StackPanel Orientation="Horizontal">
+            <i:Icon Value="fa-solid fa-house" Width="32" Height="32" FontSize="24" Margin="-17,0,10,0"/>
+            <TextBlock Text="Home" VerticalAlignment="Center"/>
+          </StackPanel>
+        </ui:NavigationViewItem>
+        <ui:NavigationViewItem Cursor="Hand" Content="Controllers" Tag="Controllers">
+          <StackPanel Orientation="Horizontal">
+            <i:Icon Value="fa-solid fa-database" Width="32" Height="32" FontSize="24" Margin="-17,0,10,0"/>
+            <TextBlock Text="Controllers" VerticalAlignment="Center"/>
+          </StackPanel>
+        </ui:NavigationViewItem>
+        <ui:NavigationViewItem Cursor="Hand" Content="Website Update" Tag="WebsiteUpdate">
+          <StackPanel Orientation="Horizontal">
+            <i:Icon Value="fa-solid fa-upload" Width="32" Height="32" FontSize="24" Margin="-17,0,10,0"/>
+            <TextBlock Text="Website Update" VerticalAlignment="Center"/>
+          </StackPanel>
+        </ui:NavigationViewItem>
+        <ui:NavigationViewItem Cursor="Hand" Content="API" Tag="API">
+          <StackPanel Orientation="Horizontal">
+            <i:Icon Value="fa-solid fa-cloud-arrow-down" Width="32" Height="32" FontSize="24" Margin="-17,0,10,0"/>
+            <TextBlock Text="API" VerticalAlignment="Center"/>
+          </StackPanel>
+        </ui:NavigationViewItem>
+        <ui:NavigationViewItem Cursor="Hand" Content="Netease" Tag="Netease">
+          <StackPanel Orientation="Horizontal">
+            <i:Icon Value="fa-solid fa-trash-can" Width="32" Height="32" FontSize="24" Margin="-17,0,10,0"/>
+            <TextBlock Text="Netease" VerticalAlignment="Center"/>
+          </StackPanel>
+        </ui:NavigationViewItem>
+      </StackPanel>
+    </SplitView.Pane>
+    <SplitView.Content>
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="5"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        -->
+<!--<ContentControl Content="{Binding SelectedPage}" />-->
+<!--
+        <local:ParsingControlers Grid.Row="0" x:Name="ParsingControlers"/>
+        <GridSplitter Grid.Row="1" Height="5" Background="Dodgerblue" BorderBrush="Red" ResizeDirection="Rows"/>
+        <local:LogsWindow Grid.Row="2" x:Name="LogsWindow"/>
+      </Grid>
+    </SplitView.Content>
+  </SplitView>
+</Window>-->
+
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="https://github.com/projektanker/icons.avalonia"
+        xmlns:ui="using:FluentAvalonia.UI.Controls"
+        xmlns:local="clr-namespace:UEParser.Views"
+        xmlns:vm="clr-namespace:UEParser.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="UEParser.MainWindow"
+        Icon="/Resources/UEParser.ico"
+        Title="UEParser"
+        x:DataType="vm:MainWindowModel">
+
+
+  <ui:NavigationView
+    Grid.Column="0"
+    x:Name="MyNavigationView"
+    PaneDisplayMode="Left"
+    OpenPaneLength="180"
+    IsPaneOpen="False"
+  SelectedItem="{Binding SelectedCategory}">
+    <ui:NavigationView.MenuItems>
+      <ui:NavigationViewItem Content="Home" Cursor="Hand" Tag="Home">
+        <StackPanel Orientation="Horizontal">
+          <i:Icon Value="fa-solid fa-house" Width="32" Height="32" FontSize="24" Margin="-10.5, 0, 10, 0" />
+          <TextBlock Text="Home" VerticalAlignment="Center" />
+        </StackPanel>
+      </ui:NavigationViewItem>
+      <ui:NavigationViewItem Content="Controllers" Cursor="Hand" Tag="Controllers">
+        <StackPanel Orientation="Horizontal">
+          <i:Icon Grid.Column="0" Value="fa-solid fa-database" Width="32" Height="32" FontSize="24" Margin="-10.5,0,10,0"/>
+          <TextBlock Grid.Column="1" Text="Controllers" VerticalAlignment="Center"/>
+        </StackPanel>
+      </ui:NavigationViewItem>
+      <ui:NavigationViewItem Content="Website Update" Cursor="Hand" Tag="WebsiteUpdate">
+        <StackPanel Orientation="Horizontal">
+          <i:Icon Value="fa-solid fa-upload" Width="32" Height="32" FontSize="24" Margin="-10.5,0,10,0"/>
+          <TextBlock Text="Website Update" VerticalAlignment="Center"/>
+        </StackPanel>
+      </ui:NavigationViewItem>
+      <ui:NavigationViewItem Content="API" Cursor="Hand" Tag="API">
+        <StackPanel Orientation="Horizontal">
+          <i:Icon Value="fa-solid fa-cloud-arrow-down" Width="32" Height="32" FontSize="24" Margin="-10.5,0,10,0"/>
+          <TextBlock Text="API" VerticalAlignment="Center"/>
+        </StackPanel>
+      </ui:NavigationViewItem>
+      <ui:NavigationViewItem Content="Netease" Cursor="Hand" Tag="Netease">
+        <StackPanel Orientation="Horizontal">
+          <i:Icon Grid.Column="0" Value="fa-solid fa-mobile" Width="32" Height="32" FontSize="24" Margin="-10.5,0,10,0"/>
+          <TextBlock Grid.Column="1" Text="Netease" VerticalAlignment="Center"/>
+        </StackPanel>
+      </ui:NavigationViewItem>
+    </ui:NavigationView.MenuItems>
+    <Grid Grid.Column="1">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*"/>
+        <RowDefinition Height="5"/>
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+      <ContentControl Grid.Row="0" Content="{Binding CurrentPage}" />
+      <GridSplitter Grid.Row="1" Height="5" Background="Dodgerblue" BorderBrush="Red" ResizeDirection="Rows"/>
+      <local:LogsWindow Grid.Row="2" x:Name="LogsWindow"/>
+    </Grid>
+  </ui:NavigationView>
+
+
+  <!--<Grid Grid.Column="1">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="*"/>
+          <RowDefinition Height="5"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <ContentControl Grid.Row="0" Content="{Binding CurrentPage}" />
+        <GridSplitter Grid.Row="1" Height="5" Background="Dodgerblue" BorderBrush="Red" ResizeDirection="Rows"/>
+        <local:LogsWindow Grid.Row="2" x:Name="LogsWindow"/>
+      </Grid>-->
+
+
+
+</Window>
