@@ -4,12 +4,16 @@
              x:Class="UEParser.App"
              RequestedThemeVariant="Dark">
   <Application.Styles>
-    <sty:FluentAvaloniaTheme PreferSystemTheme="True" PreferUserAccentColor="True" />
+    <sty:FluentAvaloniaTheme />
   </Application.Styles>
 
   <Application.Resources>
-    <Color x:Key="SystemAccentColor">Blue</Color>
-    <Color x:Key="SystemAccentColorLight1">LightBlue</Color>
-    <Color x:Key="SystemAccentColorDark1">DarkBlue</Color>
+    <Color x:Key="SystemAccentColor">#1E90FF</Color>
+    <Color x:Key="SystemAccentColorLight1">#63B8FF</Color>
+    <Color x:Key="SystemAccentColorLight2">#87CEFA</Color>
+    <Color x:Key="SystemAccentColorLight3">#B0E2FF</Color>
+    <Color x:Key="SystemAccentColorDark1">#1C86EE</Color>
+    <Color x:Key="SystemAccentColorDark2">#1874CD</Color>
+    <Color x:Key="SystemAccentColorDark3">#104E8B</Color>
   </Application.Resources>
 </Application>

@@ -11,7 +11,7 @@ namespace UEParser.ViewModels
     public class MainWindowModel : INotifyPropertyChanged
     {
         private object _selectedPage = new Home();
-        private object _selectedCategory;
+        private object _selectedCategory = "Home";
         private Control _currentPage = new Home();
 
         public object SelectedPage
@@ -24,7 +24,7 @@ namespace UEParser.ViewModels
             }
         }
 
-        public object? SelectedCategory
+        public object SelectedCategory
         {
             get => _selectedCategory;
             set
@@ -58,7 +58,7 @@ namespace UEParser.ViewModels
                 CurrentPage = nvi?.Tag?.ToString() switch
                 {
                     "Home" => new Home(),
-                    "Controllers" => new ParsingControlers(),
+                    "Controllers" => new ParsingControllers(),
                     //"WebsiteUpdate" => new WebsiteUpdatePage(),
                     //"API" => new APIPage(),
                     //"Netease" => new NeteasePage(),
