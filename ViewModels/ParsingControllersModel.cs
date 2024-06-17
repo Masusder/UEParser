@@ -10,9 +10,9 @@ namespace UEParser.ViewModels
         private static readonly Lazy<ParsingControllersModel> lazy = new(() => new());
         public static ParsingControllersModel Instance => lazy.Value;
 
-        public ICommand ParseEverythingCommand { get; }
-        public ICommand ParseRiftsCommand { get; }
-        public ICommand ParseCharactersCommand { get; }
+        public ICommand? ParseEverythingCommand { get; }
+        public ICommand? ParseRiftsCommand { get; }
+        public ICommand? ParseCharactersCommand { get; }
 
         private ParsingControllersModel()
         {

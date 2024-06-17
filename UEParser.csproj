@@ -32,6 +32,8 @@
     <AvaloniaXaml Include="Views\ParsingControllers.xaml" />
     <AvaloniaXaml Include="Views\LogsWindow.xaml" />
     <AvaloniaXaml Include="Views\Home.xaml" />
+    <AvaloniaXaml Include="Views\Settings.xaml" />
+    <AvaloniaXaml Include="Views\SplashScreen.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,6 +44,14 @@
     <None Update="Views\Home.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
+    <None Update="Views\Settings.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="Views\SplashScreen.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
 </Project>

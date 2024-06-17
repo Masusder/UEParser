@@ -1,17 +1,19 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using UEParser.ViewModels;
 
 namespace UEParser.Views;
 
-public partial class ParsingControllers : UserControl
+public partial class SplashScreen : UserControl
 {
-
-    public ParsingControllers()
+    public SplashScreen()
     {
         InitializeComponent();
-        DataContext = ParsingControllersModel.Instance;
     }
 
     private void InitializeComponent()

@@ -1,0 +1,37 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:i="https://github.com/projektanker/icons.avalonia"
+             mc:Ignorable="d"
+             x:Class="UEParser.Views.SplashScreen"
+             d:DesignHeight="300" d:DesignWidth="400">
+  <UserControl.Background>
+    <RadialGradientBrush
+      GradientOrigin="0.5,0.5" Center="0.5,0.5" Radius="2">
+      <GradientStop Color="#2AA9EB" Offset="0" />
+      <GradientStop Color="Dodgerblue" Offset="0.25" />
+      <GradientStop Color="Blue" Offset="0.75" />
+    </RadialGradientBrush>
+  </UserControl.Background>
+  <Grid>
+    <Border HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Width="256"
+                Height="256"
+                BorderBrush="Transparent"
+                BorderThickness="0">
+      <Border.Effect>
+        <DropShadowEffect BlurRadius="30"
+                          Color="Black"
+                          Opacity="0.5"
+                           />
+      </Border.Effect>
+      <Image Source="avares://UEParser/Resources/DBDInfoLogo.png"
+             HorizontalAlignment="Center"
+             VerticalAlignment="Center"
+             Width="128"
+             Height="128"/>
+    </Border>
+  </Grid>
+</UserControl>

@@ -16,4 +16,5 @@
     <Color x:Key="SystemAccentColorDark2">#1874CD</Color>
     <Color x:Key="SystemAccentColorDark3">#104E8B</Color>
   </Application.Resources>
+
 </Application>

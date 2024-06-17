@@ -1,9 +1,11 @@
 ﻿using Avalonia.Media;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
+using System.Windows.Input;
 
 namespace UEParser.ViewModels
 {
@@ -18,13 +20,28 @@ namespace UEParser.ViewModels
     };
     };
 
-
     public partial class LogsWindowModel : INotifyPropertyChanged
     {
         private static LogsWindowModel? _instance;
         public static LogsWindowModel Instance => _instance ??= new LogsWindowModel();
 
-        public ObservableCollection<LogEntry> LogEntries { get; } = [];
+        public ICommand? ClearLogsCommand { get; }
+        public bool IsInfoBarOpen { get; private set; }
+
+        private LogsWindowModel() 
+        {
+            ClearLogsCommand = ReactiveCommand.Create(ClearLogs);
+        }
+
+        public ObservableCollection<LogEntry> LogEntries { get; set; } = [];
+
+        private void ClearLogs()
+        {
+            LogEntries.Clear();
+            OnPropertyChanged(nameof(LogEntries));
+            IsInfoBarOpen = true;
+            OnPropertyChanged(nameof(IsInfoBarOpen));
+        }
 
         public void AddLog(string log)
         {
