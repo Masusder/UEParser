@@ -9,5 +9,4 @@ namespace UEParser.ViewModels;
 public class SettingsModel
 {
 
-
 }

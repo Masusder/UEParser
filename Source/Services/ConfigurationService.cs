@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Text.Json;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using UEParser.Models;
 
 namespace UEParser.Services
@@ -9,7 +10,6 @@ namespace UEParser.Services
     public class ConfigurationService
     {
         private const string ConfigFilePath = "config.json";
-        private static readonly JsonSerializerOptions JsonSerializerOptions = new();
 
         public static Configuration? Config { get; private set; }
 
@@ -25,7 +25,10 @@ namespace UEParser.Services
             if (File.Exists(ConfigFilePath))
             {
                 var json = File.ReadAllText(ConfigFilePath);
-                Config = JsonSerializer.Deserialize<Configuration>(json) ?? initializationConfig;
+                Config = JsonConvert.DeserializeObject<Configuration>(json, new JsonSerializerSettings
+                {
+                    Converters = { new StringEnumConverter() } // Use StringEnumConverter for enum handling
+                }) ?? initializationConfig;
             }
             else
             {
@@ -35,7 +38,10 @@ namespace UEParser.Services
 
         public static async Task SaveConfiguration()
         {
-            var json = JsonSerializer.Serialize(Config, JsonSerializerOptions);
+            var json = JsonConvert.SerializeObject(Config, Formatting.Indented, new JsonSerializerSettings
+            {
+                Converters = { new StringEnumConverter() } // Use StringEnumConverter for enum handling
+            });
             await File.WriteAllTextAsync(ConfigFilePath, json);
         }
     }

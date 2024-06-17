@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace UEParser.Models;
 
@@ -58,8 +60,10 @@ public class CoreConfig
 public class VersionData
 {
     public string LatestVersion { get; set; }
+    [JsonConverter(typeof(StringEnumConverter))]
     public Branch Branch { get; set; }
     public string CompareVersion { get; set; }
+    [JsonConverter(typeof(StringEnumConverter))]
     public Branch CompareBranch { get; set; }
 
     public VersionData()
@@ -104,7 +108,9 @@ public class NeteaseConfig
     public string ExtractedVersion { get; set; }
     public string NeteaseVersion { get; set; }
     public string BackupNeteaseVersion { get; set; }
+    [JsonConverter(typeof(StringEnumConverter))]
     public Branch Branch { get; set; }
+    [JsonConverter(typeof(StringEnumConverter))]
     public Platform Platform { get; set; }
     public string PathToGameDirectory { get; set; }
     public NeteaseApiConfig ApiConfig { get; set; }
