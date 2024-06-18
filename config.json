@@ -63,7 +63,7 @@
         "dynamicContent": "/dynamicContent/DynamicContent.json",
         "archiveRewardData": "/archiveRewardData/content.json",
         "collections": "/collections.json",
-        "specialEventsLoadingText": "/specialEventsLoadingText_en.json"
+        "specialEventsLoadingText": "/loadingText/specialEventsLoadingText_en.json"
       },
       "ApiEndpoints": {
         "contentVersion": "/utils/contentVersion/version"

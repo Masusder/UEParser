@@ -16,7 +16,7 @@ namespace UEParser.Views
             DataContext = LogsWindowModel.Instance;
 
             var viewModel = (LogsWindowModel)DataContext;
-            viewModel.AddLog("[INFO]: This is an informational message.");
+            viewModel.AddLog("[INFO]: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi tempor orci quis mi viverra cursus. Etiam vel feugiat sapien. Donec interdum erat dolor, vel varius tortor ornare at. Aenean sed mi augue. Pellentesque risus erat, maximus id risus in, aliquet venenatis arcu. Vestibulum cursus mauris sit amet tortor consequat dapibus. Suspendisse nec purus tellus. Praesent sed tincidunt massa. Fusce id sem eget turpis pulvinar pulvinar.");
             viewModel.AddLog("[WARN]: This is a warning message.");
             viewModel.AddLog("[ERROR]: This is an error message.");
 

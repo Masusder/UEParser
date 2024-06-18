@@ -35,6 +35,7 @@
     <AvaloniaXaml Include="Views\Home.xaml" />
     <AvaloniaXaml Include="Views\Settings.xaml" />
     <AvaloniaXaml Include="Views\SplashScreen.xaml" />
+    <AvaloniaXaml Include="Views\API.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,6 +43,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Views\API.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
     <None Update="Views\Home.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>

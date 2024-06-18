@@ -5,44 +5,43 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using UEParser.Models;
 
-namespace UEParser.Services
+namespace UEParser.Services;
+
+public class ConfigurationService
 {
-    public class ConfigurationService
+    private const string ConfigFilePath = "config.json";
+
+    public static Configuration? Config { get; private set; }
+
+    static ConfigurationService()
     {
-        private const string ConfigFilePath = "config.json";
+        LoadConfiguration();
+    }
 
-        public static Configuration? Config { get; private set; }
+    private static void LoadConfiguration()
+    {
+        Configuration initializationConfig = new();
 
-        static ConfigurationService()
+        if (File.Exists(ConfigFilePath))
         {
-            LoadConfiguration();
-        }
-
-        private static void LoadConfiguration()
-        {
-            Configuration initializationConfig = new();
-
-            if (File.Exists(ConfigFilePath))
-            {
-                var json = File.ReadAllText(ConfigFilePath);
-                Config = JsonConvert.DeserializeObject<Configuration>(json, new JsonSerializerSettings
-                {
-                    Converters = { new StringEnumConverter() } // Use StringEnumConverter for enum handling
-                }) ?? initializationConfig;
-            }
-            else
-            {
-                Config = initializationConfig;
-            }
-        }
-
-        public static async Task SaveConfiguration()
-        {
-            var json = JsonConvert.SerializeObject(Config, Formatting.Indented, new JsonSerializerSettings
+            var json = File.ReadAllText(ConfigFilePath);
+            Config = JsonConvert.DeserializeObject<Configuration>(json, new JsonSerializerSettings
             {
                 Converters = { new StringEnumConverter() } // Use StringEnumConverter for enum handling
-            });
-            await File.WriteAllTextAsync(ConfigFilePath, json);
+            }) ?? initializationConfig;
         }
+        else
+        {
+            Config = initializationConfig;
+        }
+    }
+
+    public static async Task SaveConfiguration()
+    {
+        var json = JsonConvert.SerializeObject(Config, Formatting.Indented, new JsonSerializerSettings
+        {
+            Converters = { new StringEnumConverter() } // Use StringEnumConverter for enum handling
+        });
+        await File.WriteAllTextAsync(ConfigFilePath, json);
     }
 }
