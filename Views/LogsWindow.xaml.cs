@@ -16,7 +16,7 @@ namespace UEParser.Views
             DataContext = LogsWindowViewModel.Instance;
 
             var viewModel = (LogsWindowViewModel)DataContext;
-            viewModel.AddLog("UEParser initialized.", Logger.LogTags.Info);
+            viewModel.AddLog("UEParser started.", Logger.LogTags.Info);
 
             viewModel.PropertyChanged += (sender, e) =>
             {

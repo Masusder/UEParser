@@ -140,11 +140,14 @@ public class KrakenAPI
                 await FetchDynamicCdnContent(CDNOutputDirName.Tomes);
                 await FetchDynamicCdnContent(CDNOutputDirName.Rifts);
 
-                LogsWindowViewModel.Instance.AddLog($"Successfully retrieved Kraken API.", Logger.LogTags.Success);
+                LogsWindowViewModel.Instance.AddLog("Creating game characters helper table from retrieved API.", Logger.LogTags.Info);
+                Helpers.CreateCharacterTable();
+
+                LogsWindowViewModel.Instance.AddLog("Successfully retrieved Kraken API.", Logger.LogTags.Success);
             } 
             else
             {
-                LogsWindowViewModel.Instance.AddLog($"No new version has been detected.", Logger.LogTags.Info);
+                LogsWindowViewModel.Instance.AddLog("No new version has been detected.", Logger.LogTags.Info);
             }
         }
         else

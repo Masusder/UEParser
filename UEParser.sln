@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UEParser", "UEParser.csproj
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Elementy rozwiązania", "Elementy rozwiązania", "{D69D1AB1-3A44-4C81-9D9A-0A82E8FAD0A1}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CUE4Parse", "CUE4Parse\CUE4Parse\CUE4Parse.csproj", "{885190AF-C11A-4F75-AF07-3BD7121F3BE2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CUE4Parse-Conversion", "CUE4Parse\CUE4Parse-Conversion\CUE4Parse-Conversion.csproj", "{F81064E7-F25F-4FE9-BAF7-A7EEBA7968A1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,6 +21,14 @@ Global
 		{B3CD9BE9-89D0-4D65-A8B2-E979EF0A85FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3CD9BE9-89D0-4D65-A8B2-E979EF0A85FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3CD9BE9-89D0-4D65-A8B2-E979EF0A85FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{885190AF-C11A-4F75-AF07-3BD7121F3BE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{885190AF-C11A-4F75-AF07-3BD7121F3BE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{885190AF-C11A-4F75-AF07-3BD7121F3BE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{885190AF-C11A-4F75-AF07-3BD7121F3BE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F81064E7-F25F-4FE9-BAF7-A7EEBA7968A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F81064E7-F25F-4FE9-BAF7-A7EEBA7968A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F81064E7-F25F-4FE9-BAF7-A7EEBA7968A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F81064E7-F25F-4FE9-BAF7-A7EEBA7968A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

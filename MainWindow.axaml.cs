@@ -21,6 +21,26 @@ public partial class MainWindow : AppWindow
         InitializeComponent();
         SplashScreen = new MainAppSplashScreen();
         DataContext = new MainWindowViewModel();
+        Loaded += MainWindow_Loaded;
+    }
+
+    private InitializationConfirmPopup? _confirmationPopup;
+
+    private async void MainWindow_Loaded(object? sender, EventArgs e)
+    {
+        _confirmationPopup = new InitializationConfirmPopup();
+        var result = await _confirmationPopup.ShowDialog<bool>(this);
+        _confirmationPopup = null;
+
+        if (result)
+        {
+            await InitializeMain();
+        }
+    }
+
+    private static async Task InitializeMain()
+    {
+        await Initialize.UpdateApp();
     }
 
     internal class MainAppSplashScreen() : IApplicationSplashScreen

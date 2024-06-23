@@ -1,0 +1,16 @@
+<Window xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:UEParser.ViewModels"
+        x:Class="UEParser.Views.InitializationConfirmPopup"
+                Width="600"
+        Height="100"
+        WindowStartupLocation="CenterOwner"
+        x:DataType="vm:InitializationConfirmPopupViewModel">
+    <StackPanel Margin="20">
+        <TextBlock Text="Do you want to initialize application to latest Dead by Daylight build?" FontSize="16" HorizontalAlignment="Center" Margin="0 0 0 10"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+          <Button Content="Yes" Cursor="Hand" Background="#7CB721" Command="{Binding YesCommand}" />
+            <Button Content="No" Cursor="Hand" Background="#CC0000" Command="{Binding NoCommand}" Margin="10 0 0 0" />
+        </StackPanel>
+    </StackPanel>
+</Window>
