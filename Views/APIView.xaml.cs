@@ -6,12 +6,12 @@ using UEParser.ViewModels;
 
 namespace UEParser.Views;
 
-public partial class API : UserControl
+public partial class APIView : UserControl
 {
-    public API()
+    public APIView()
     {
         InitializeComponent();
-        DataContext = new APIModel();
+        DataContext = new APIViewModel();
     }
 
     private void InitializeComponent()

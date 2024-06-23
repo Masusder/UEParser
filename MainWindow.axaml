@@ -10,7 +10,7 @@
         x:Class="UEParser.MainWindow"
         Icon="/Resources/UEParser.ico"
         Title="UEParser"
-        x:DataType="vm:MainWindowModel">
+        x:DataType="vm:MainWindowViewModel">
   <ui:NavigationView
     Grid.Column="0"
     x:Name="MyNavigationView"
@@ -22,7 +22,7 @@
     <ui:NavigationView.FooterMenuItems>
       <ui:NavigationViewItem Content="Settings" Cursor="Hand" Tag="Settings">
         <StackPanel Orientation="Horizontal">
-          <i:Icon Value="fa-solid fa-gear" Width="32" Height="32" FontSize="24" Margin="-12, 0, 10, 0" />
+          <i:Icon Value="fa-solid fa-gear" Width="32" Height="32" FontSize="16" Margin="-12, 0, 10, 0" />
           <TextBlock Text="Settings" VerticalAlignment="Center" />
         </StackPanel>
       </ui:NavigationViewItem>
@@ -30,31 +30,31 @@
     <ui:NavigationView.MenuItems>
       <ui:NavigationViewItem Content="Home" Cursor="Hand" Tag="Home">
         <StackPanel Orientation="Horizontal">
-          <i:Icon Value="fa-solid fa-house" Width="32" Height="32" FontSize="24" Margin="-12, 0, 10, 0" />
+          <i:Icon Value="fa-solid fa-house" Width="32" Height="32" FontSize="16" Margin="-12, 0, 10, 0" />
           <TextBlock Text="Home" VerticalAlignment="Center" />
         </StackPanel>
       </ui:NavigationViewItem>
       <ui:NavigationViewItem Content="Controllers" Cursor="Hand" Tag="Controllers">
         <StackPanel Orientation="Horizontal">
-          <i:Icon Grid.Column="0" Value="fa-solid fa-database" Width="32" Height="32" FontSize="24" Margin="-12,0,10,0"/>
+          <i:Icon Grid.Column="0" Value="fa-solid fa-database" Width="32" Height="32" FontSize="16" Margin="-12,0,10,0"/>
           <TextBlock Grid.Column="1" Text="Controllers" VerticalAlignment="Center"/>
         </StackPanel>
       </ui:NavigationViewItem>
       <ui:NavigationViewItem Content="Website Update" Cursor="Hand" Tag="WebsiteUpdate">
         <StackPanel Orientation="Horizontal">
-          <i:Icon Value="fa-solid fa-upload" Width="32" Height="32" FontSize="24" Margin="-12,0,10,0"/>
+          <i:Icon Value="fa-solid fa-upload" Width="32" Height="32" FontSize="16" Margin="-12,0,10,0"/>
           <TextBlock Text="Website Update" VerticalAlignment="Center"/>
         </StackPanel>
       </ui:NavigationViewItem>
       <ui:NavigationViewItem Content="API" Cursor="Hand" Tag="API">
         <StackPanel Orientation="Horizontal">
-          <i:Icon Value="fa-solid fa-cloud-arrow-down" Width="32" Height="32" FontSize="24" Margin="-12,0,10,0"/>
+          <i:Icon Value="fa-solid fa-cloud-arrow-down" Width="32" Height="32" FontSize="16" Margin="-12,0,10,0"/>
           <TextBlock Text="API" VerticalAlignment="Center"/>
         </StackPanel>
       </ui:NavigationViewItem>
       <ui:NavigationViewItem Content="Netease" Cursor="Hand" Tag="Netease">
         <StackPanel Orientation="Horizontal">
-          <i:Icon Grid.Column="0" Value="fa-solid fa-mobile" Width="32" Height="32" FontSize="24" Margin="-12,0,10,0"/>
+          <i:Icon Grid.Column="0" Value="fa-solid fa-mobile" Width="32" Height="32" FontSize="16" Margin="-12,0,10,0"/>
           <TextBlock Grid.Column="1" Text="Netease" VerticalAlignment="Center"/>
         </StackPanel>
       </ui:NavigationViewItem>

@@ -20,7 +20,7 @@ public partial class MainWindow : AppWindow
     {
         InitializeComponent();
         SplashScreen = new MainAppSplashScreen();
-        DataContext = new MainWindowModel();
+        DataContext = new MainWindowViewModel();
     }
 
     internal class MainAppSplashScreen() : IApplicationSplashScreen

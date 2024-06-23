@@ -11,7 +11,7 @@ public partial class ParsingControllers : UserControl
     public ParsingControllers()
     {
         InitializeComponent();
-        DataContext = ParsingControllersModel.Instance;
+        DataContext = ParsingControllersViewModel.Instance;
     }
 
     private void InitializeComponent()

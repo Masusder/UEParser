@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Avalonia.Controls;
 using FluentAvalonia.UI.Controls;
-using Projektanker.Icons.Avalonia;
 using UEParser.Views;
 
 namespace UEParser.ViewModels;
 
-public class MainWindowModel : INotifyPropertyChanged
+public class MainWindowViewModel : INotifyPropertyChanged
 {
     private object _selectedCategory = "Home";
     private Control _currentPage = new Home();
@@ -35,7 +32,7 @@ public class MainWindowModel : INotifyPropertyChanged
         }
     }
 
-    public MainWindowModel()
+    public MainWindowViewModel()
     {
         // Initialize with Home page
         CurrentPage = new Home();
@@ -43,21 +40,33 @@ public class MainWindowModel : INotifyPropertyChanged
 
     private void SetCurrentPage()
     {
-
         if (SelectedCategory is NavigationViewItem nvi)
         {
-            CurrentPage = nvi?.Tag?.ToString() switch
+            switch (nvi?.Tag?.ToString())
             {
-                "Home" => new Home(),
-                "Controllers" => new ParsingControllers(),
-                "Settings" => new Settings(),
-                //"WebsiteUpdate" => new WebsiteUpdatePage(),
-                "API" => new API(),
-                //"Netease" => new NeteasePage(),
-                _ => new Home() // Default case
-            };
+                case "Home":
+                    CurrentPage = new Home();
+                    break;
+                case "Controllers":
+                    CurrentPage = new ParsingControllers();
+                    break;
+                case "Settings":
+                    OpenSettingsWindow();
+                    break;
+                case "API":
+                    CurrentPage = new APIView();
+                    break;
+                default:
+                    CurrentPage = new Home();
+                    break;
+            }
         }
+    }
 
+    private static void OpenSettingsWindow()
+    {
+        var settingsWindow = new Settings();
+        settingsWindow.Show();
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

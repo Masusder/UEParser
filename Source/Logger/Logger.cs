@@ -12,6 +12,7 @@ public class Logger
 
     public enum LogTags
     {
+        Success,
         Info,
         Warning,
         Error,

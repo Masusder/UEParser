@@ -1,13 +1,15 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using UEParser.ViewModels;
 
 namespace UEParser.Views;
 
-public partial class Settings : UserControl
+public partial class Settings : Window
 {
     public Settings()
     {
         InitializeComponent();
+        DataContext = new SettingsViewModel();
     }
 
     private void InitializeComponent()

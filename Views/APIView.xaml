@@ -1,0 +1,11 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="UEParser.Views.APIView"
+             xmlns:vm="clr-namespace:UEParser.ViewModels"
+             x:DataType="vm:APIViewModel">
+  <StackPanel Margin="20" VerticalAlignment="Center" HorizontalAlignment="Center">
+    <TextBlock HorizontalAlignment="Center" Text="{Binding Version}" Margin="0, 0, 0, 0" VerticalAlignment="Center" />
+    <TextBlock HorizontalAlignment="Center" FontSize="12" Foreground="AntiqueWhite" Text="You can change selected version in settings." Margin="0, 5, 0, 15" VerticalAlignment="Center" />
+    <Button Content="Fetch Data" Command="{Binding FetchDataCommand}" Cursor="Hand" FontWeight="500" HorizontalAlignment="Center" VerticalAlignment="Center" />
+  </StackPanel>
+</UserControl>

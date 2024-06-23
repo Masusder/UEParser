@@ -39,13 +39,13 @@
       "Anniversary2024"
     ],
     "VersionData": {
-      "LatestVersion": "8.0.1",
+      "LatestVersionHeader": "8.0.1",
       "Branch": "live",
-      "CompareVersion": "8.0.0",
+      "CompareVersionHeader": "8.0.0",
       "CompareBranch": "live"
     },
     "ApiConfig": {
-      "LatestVersion": "8.0.1_1821083live",
+      "LatestVersion": "8.0.1_1f821083live",
       "ApiBaseUrl": "https://latest.{0}.bhvrdbd.com/api/v1",
       "SteamApiBaseUrl": "https://steam.{0}.bhvrdbd.com/api/v1",
       "CdnBaseUrl": "https://cdn.{0}.bhvrdbd.com",

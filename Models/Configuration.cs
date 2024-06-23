@@ -59,17 +59,17 @@ public class CoreConfig
 // Version data
 public class VersionData
 {
-    public string LatestVersion { get; set; }
+    public string LatestVersionHeader { get; set; }
     [JsonConverter(typeof(StringEnumConverter))]
     public Branch Branch { get; set; }
-    public string CompareVersion { get; set; }
+    public string CompareVersionHeader { get; set; }
     [JsonConverter(typeof(StringEnumConverter))]
     public Branch CompareBranch { get; set; }
 
     public VersionData()
     {
-        LatestVersion = "";
-        CompareVersion = "";
+        LatestVersionHeader = "";
+        CompareVersionHeader = "";
         Branch = Branch.live;
         CompareBranch = Branch.live;
     }

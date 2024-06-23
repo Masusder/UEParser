@@ -11,6 +11,7 @@
     <PublishTrimmed>False</PublishTrimmed>
     <PublishAot>False</PublishAot>
     <PublishSingleFile>true</PublishSingleFile>
+    <NoWarn>NU1701</NoWarn> <!-- Suppress Ionic.Zlib package warning -->
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,6 +22,7 @@
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.10" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.10" />
     <PackageReference Include="FluentAvaloniaUI" Version="2.0.5" />
+    <PackageReference Include="Ionic.Zlib" Version="1.9.1.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Projektanker.Icons.Avalonia.FontAwesome" Version="9.3.0" />
   </ItemGroup>
@@ -35,7 +37,8 @@
     <AvaloniaXaml Include="Views\Home.xaml" />
     <AvaloniaXaml Include="Views\Settings.xaml" />
     <AvaloniaXaml Include="Views\SplashScreen.xaml" />
-    <AvaloniaXaml Include="Views\API.xaml" />
+    <AvaloniaXaml Include="Views\APIView.xaml" />
+    <AvaloniaXaml Include="Views\RestartApplicationPopup.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,10 +46,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Views\API.xaml">
+    <None Update="Views\APIView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
     <None Update="Views\Home.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="Views\RestartApplicationPopup.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
     <None Update="Views\Settings.xaml">
@@ -58,5 +64,9 @@
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\APIView.xaml" />
+  </ItemGroup>
 
 </Project>

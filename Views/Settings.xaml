@@ -1,15 +1,39 @@
-<UserControl xmlns="https://github.com/avaloniaui"
+<Window xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:i="https://github.com/projektanker/icons.avalonia"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
+             Width="600"
+             Height="600"
+             WindowStartupLocation="CenterScreen"
+             Icon="/Resources/UEParser.ico"
              x:Class="UEParser.Views.Settings"
-             d:DesignHeight="300" d:DesignWidth="400">
-    <Grid>
-        <TextBlock Text="Settings" 
-                   HorizontalAlignment="Center" 
-                   VerticalAlignment="Center" 
-                   FontSize="24"/>
-    </Grid>
-</UserControl>
+        Title="UEParser - Settings"
+             d:DesignHeight="600" d:DesignWidth="450"
+        xmlns:vm="clr-namespace:UEParser.ViewModels"
+        x:DataType="vm:SettingsViewModel">
+  <DockPanel LastChildFill="True">
+    <!-- Content -->
+    <StackPanel DockPanel.Dock="Top" Orientation="Vertical" HorizontalAlignment="Center">
+      <TextBlock Text="Settings"
+         HorizontalAlignment="Center"
+         VerticalAlignment="Center"
+                 FontWeight="700"
+         FontSize="24"/>
+      <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10">
+        <TextBlock Text="Game Directory Path" Margin="0,0,10,0" VerticalAlignment="Center" />
+        <TextBox x:Name="DirectoryTextBox" Text="{Binding PathToGameDirectory}" Width="300" IsReadOnly="True" Margin="0, 0, 10, 0" />
+        <Button Cursor="Hand" Command="{Binding OpenDirectoryDialogCommand}">
+          <i:Icon Value="fa-solid fa-ellipsis" FontSize="10"/>
+        </Button>
+      </StackPanel>
+    </StackPanel>
+    <Button Cursor="Hand" Command="{Binding SaveSettingsCommand}" DockPanel.Dock="Bottom" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,10">
+      <StackPanel Orientation="Horizontal">
+        <i:Icon Value="fa-solid fa-save" />
+        <TextBlock Margin="5,0,0,0">Save Settings</TextBlock>
+      </StackPanel>
+    </Button>
+  </DockPanel>
+</Window>

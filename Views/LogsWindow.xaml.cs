@@ -13,16 +13,14 @@ namespace UEParser.Views
         public LogsWindow()
         {
             InitializeComponent();
-            DataContext = LogsWindowModel.Instance;
+            DataContext = LogsWindowViewModel.Instance;
 
-            var viewModel = (LogsWindowModel)DataContext;
-            viewModel.AddLog("[INFO]: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi tempor orci quis mi viverra cursus. Etiam vel feugiat sapien. Donec interdum erat dolor, vel varius tortor ornare at. Aenean sed mi augue. Pellentesque risus erat, maximus id risus in, aliquet venenatis arcu. Vestibulum cursus mauris sit amet tortor consequat dapibus. Suspendisse nec purus tellus. Praesent sed tincidunt massa. Fusce id sem eget turpis pulvinar pulvinar.");
-            viewModel.AddLog("[WARN]: This is a warning message.");
-            viewModel.AddLog("[ERROR]: This is an error message.");
+            var viewModel = (LogsWindowViewModel)DataContext;
+            viewModel.AddLog("UEParser initialized.", Logger.LogTags.Info);
 
             viewModel.PropertyChanged += (sender, e) =>
             {
-                if (e.PropertyName == nameof(LogsWindowModel.LogEntries))
+                if (e.PropertyName == nameof(LogsWindowViewModel.LogEntries))
                 {
                     UpdateLogText();
                 }
@@ -38,7 +36,7 @@ namespace UEParser.Views
 
         private void UpdateLogText()
         {
-            var viewModel = (LogsWindowModel?)DataContext;
+            var viewModel = (LogsWindowViewModel?)DataContext;
             var logTextBlock = this.FindControl<SelectableTextBlock>("LogTextBlock");
 
             if (viewModel == null) return;

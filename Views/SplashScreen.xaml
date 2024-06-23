@@ -30,8 +30,7 @@
       <Image Source="avares://UEParser/Resources/DBDInfoLogo.png"
              HorizontalAlignment="Center"
              VerticalAlignment="Center"
-             Width="128"
-             Height="128"/>
+             Width="256"/>
     </Border>
   </Grid>
 </UserControl>

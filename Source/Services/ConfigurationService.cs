@@ -11,29 +11,27 @@ public class ConfigurationService
 {
     private const string ConfigFilePath = "config.json";
 
-    public static Configuration? Config { get; private set; }
+    public static Configuration Config { get; private set; }
 
     static ConfigurationService()
     {
-        LoadConfiguration();
+        Config = LoadConfiguration();
     }
 
-    private static void LoadConfiguration()
+    private static Configuration LoadConfiguration()
     {
         Configuration initializationConfig = new();
 
         if (File.Exists(ConfigFilePath))
         {
             var json = File.ReadAllText(ConfigFilePath);
-            Config = JsonConvert.DeserializeObject<Configuration>(json, new JsonSerializerSettings
+            initializationConfig = JsonConvert.DeserializeObject<Configuration>(json, new JsonSerializerSettings
             {
                 Converters = { new StringEnumConverter() } // Use StringEnumConverter for enum handling
             }) ?? initializationConfig;
         }
-        else
-        {
-            Config = initializationConfig;
-        }
+
+        return initializationConfig;
     }
 
     public static async Task SaveConfiguration()

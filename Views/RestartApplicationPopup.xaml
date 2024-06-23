@@ -1,0 +1,19 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="UEParser.Views.RestartApplicationPopup"
+        xmlns:vm="clr-namespace:UEParser.ViewModels"
+        Title="UEParser - Restart Required"
+        Width="400"
+        Height="150"
+        WindowStartupLocation="CenterOwner"
+        Icon="/Resources/UEParser.ico"
+        x:DataType="vm:RestartApplicationPopupViewModel">
+  <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20">
+    <TextBlock Text="To save settings application will have to be restarted." TextAlignment="Center"/>
+    <TextBlock Text="Do you want to proceed?" TextAlignment="Center" Margin="0,0,0,10" />
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+      <Button Content="Yes" Cursor="Hand" Click="YesButton_Click" Width="80" Margin="5"/>
+      <Button Content="No" Cursor="Hand" Click="NoButton_Click" Width="80" Margin="5"/>
+    </StackPanel>
+  </StackPanel>
+</Window>

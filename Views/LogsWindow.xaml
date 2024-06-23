@@ -8,7 +8,7 @@
              x:Class="UEParser.Views.LogsWindow"
              xmlns:views="clr-namespace:UEParser.Views"
              xmlns:vm="clr-namespace:UEParser.ViewModels"
-             x:DataType="vm:LogsWindowModel">
+             x:DataType="vm:LogsWindowViewModel">
   <UserControl.Resources>
     <ui:InfoBar x:Key="InfoBarControl" Title="Logs Cleared" IsOpen="{Binding IsInfoBarOpen}" Severity="Informational" Message="Logs have been cleared successfully." />
   </UserControl.Resources>
@@ -27,9 +27,12 @@
           Padding="5, 5, 0, 0"
         />
     </ScrollViewer>
-    <GridSplitter Height="5" Grid.Row="1" IsEnabled="False" />
+    <Grid Grid.Row="1">
+      <GridSplitter Background="{Binding StateColor}" Opacity="0.75" IsEnabled="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+      <TextBlock Text="{Binding StateText}" FontWeight="600" HorizontalAlignment="Left" Padding="5" VerticalAlignment="Center" Foreground="{Binding StateTextColor}"/>
+    </Grid>
     <Button Grid.Row="0" HorizontalAlignment="Right" Background="Transparent" Cursor="Hand" Command="{Binding ClearLogsCommand}" VerticalAlignment="Bottom" Margin="10,10,15,10">
-      <i:Icon Value="fa-solid fa-trash-can" Width="16" Height="16" FontSize="16" />
+      <i:Icon Value="fa-solid fa-trash" Width="16" Height="16" FontSize="16" />
     </Button>
     <!-- InfoBar to display when logs are cleared -->
     <ContentControl Content="{StaticResource InfoBarControl}" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,30,0,0" />
