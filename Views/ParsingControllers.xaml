@@ -8,40 +8,80 @@
              xmlns:views="clr-namespace:UEParser.Views"
              xmlns:vm="clr-namespace:UEParser.ViewModels"
              x:DataType="vm:ParsingControllersViewModel">
-  <StackPanel
-            Orientation="Horizontal"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center">
-    <Button Name="MainController"
-            Command="{Binding ParseEverythingCommand}"
-            Margin="5"
-            Cursor="Hand">
-      <StackPanel Orientation="Vertical">
-        <Image Source="avares://UEParser/Resources/iconHelp_DBDlogo.png" Width="64" Height="64" />
-        <TextBlock>
-          Everything
-        </TextBlock>
-      </StackPanel>
-    </Button>
-    <Button Name="RiftsController"
-            Command="{Binding ParseRiftsCommand}"
-            Cursor="Hand"
-            Margin="5">
-      <StackPanel Orientation="Vertical">
-        <Image Source="avares://UEParser/Resources/iconHelp_archivesRewards.png" Width="64" Height="64" />
-        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
-          Rifts
-        </TextBlock>
-      </StackPanel>
-    </Button>
-    <Button Name="CharactersController"
-            Command="{Binding ParseCharactersCommand}"
-            Cursor="Hand"
-            Margin="5">
-      <StackPanel Orientation="Vertical">
-        <Image Source="avares://UEParser/Resources/help_levelIcon_survivor.png" Width="64" Height="64" />
-        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Characters</TextBlock>
-      </StackPanel>
-    </Button>
+  <StackPanel Orientation="Vertical"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+    <StackPanel
+              Orientation="Horizontal"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center">
+      <Button Name="MainController"
+              Command="{Binding ParseEverythingCommand}"
+              Margin="5"
+              Cursor="Hand">
+        <StackPanel Orientation="Vertical">
+          <Image Source="avares://UEParser/Resources/iconHelp_DBDlogo.png" Width="64" Height="64" />
+          <TextBlock>
+            Everything
+          </TextBlock>
+        </StackPanel>
+      </Button>
+      <Button Name="RiftsController"
+              Command="{Binding ParseRiftsCommand}"
+              Cursor="Hand"
+              Margin="5">
+        <StackPanel Orientation="Vertical">
+          <Image Source="avares://UEParser/Resources/iconHelp_archivesRewards.png" Width="64" Height="64" />
+          <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
+            Rifts
+          </TextBlock>
+        </StackPanel>
+      </Button>
+      <Button Name="CharactersController"
+              Command="{Binding ParseCharactersCommand}"
+              Cursor="Hand"
+              Margin="5">
+        <StackPanel Orientation="Vertical">
+          <Image Source="avares://UEParser/Resources/help_levelIcon_survivor.png" Width="64" Height="64" />
+          <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Characters</TextBlock>
+        </StackPanel>
+      </Button>
+    </StackPanel>
+    <StackPanel
+          Orientation="Horizontal"
+          HorizontalAlignment="Center"
+          VerticalAlignment="Center">
+      <Button Name="MainController2"
+              Command="{Binding ParseEverythingCommand}"
+              Margin="5"
+              Cursor="Hand">
+        <StackPanel Orientation="Vertical">
+          <Image Source="avares://UEParser/Resources/iconHelp_DBDlogo.png" Width="64" Height="64" />
+          <TextBlock>
+            Everything
+          </TextBlock>
+        </StackPanel>
+      </Button>
+      <Button Name="RiftsController2"
+              Command="{Binding ParseRiftsCommand}"
+              Cursor="Hand"
+              Margin="5">
+        <StackPanel Orientation="Vertical">
+          <Image Source="avares://UEParser/Resources/iconHelp_archivesRewards.png" Width="64" Height="64" />
+          <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
+            Rifts
+          </TextBlock>
+        </StackPanel>
+      </Button>
+      <Button Name="CharactersController2"
+              Command="{Binding ParseCharactersCommand}"
+              Cursor="Hand"
+              Margin="5">
+        <StackPanel Orientation="Vertical">
+          <Image Source="avares://UEParser/Resources/help_levelIcon_survivor.png" Width="64" Height="64" />
+          <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Characters</TextBlock>
+        </StackPanel>
+      </Button>
+    </StackPanel>
   </StackPanel>
 </UserControl>

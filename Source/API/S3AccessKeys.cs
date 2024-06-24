@@ -62,7 +62,7 @@ partial class S3AccessKeys
             {
                 if (!configS3AccessKeys.ContainsKey(item.Key))
                 {
-                    Console.WriteLine($"Detected new S3AccessKey: {item.Key}");
+                    LogsWindowViewModel.Instance.AddLog($"Detected new S3AccessKey: {item.Key}", Logger.LogTags.Info);
                     config.Core.ApiConfig.S3AccessKeys[item.Key] = item.Value;
                     newKeysDetected = true;
                 }

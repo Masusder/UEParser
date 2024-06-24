@@ -3,13 +3,35 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:i="https://github.com/projektanker/icons.avalonia"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              x:Class="UEParser.Views.Home"
-             d:DesignHeight="300" d:DesignWidth="400">
-    <Grid>
-        <TextBlock Text="Welcome to the Home View" 
-                   HorizontalAlignment="Center" 
-                   VerticalAlignment="Center" 
-                   FontSize="24"/>
-    </Grid>
+             d:DesignHeight="200" d:DesignWidth="700">
+  <StackPanel VerticalAlignment="Center">
+    <Border HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Width="128"
+            Height="128"
+            BorderBrush="Transparent"
+            BorderThickness="0">
+      <Border.Effect>
+        <DropShadowEffect BlurRadius="30"
+                  Color="Black"
+                  Opacity="0.75"/>
+      </Border.Effect>
+      <Image Source="avares://UEParser/Resources/DBDInfoLogo.png"
+       HorizontalAlignment="Center"
+       VerticalAlignment="Center"
+       Width="128"/>
+    </Border>
+    <TextBlock Text="Welcome to UEParser"
+               FontWeight="700"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+               FontSize="28"/>
+    <TextBlock
+               Foreground="Beige"
+         HorizontalAlignment="Center"
+         VerticalAlignment="Center"
+         FontSize="16">Created by <Run FontWeight="500">Masusder</Run> as a part of DBDInfo project</TextBlock>
+  </StackPanel>
 </UserControl>

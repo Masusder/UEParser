@@ -28,7 +28,7 @@
         />
     </ScrollViewer>
     <Grid Grid.Row="1">
-      <GridSplitter Background="{Binding StateColor}" Opacity="0.75" IsEnabled="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+      <GridSplitter Background="{Binding StateColor}" IsEnabled="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
       <TextBlock Text="{Binding StateText}" FontWeight="600" HorizontalAlignment="Left" Padding="5" VerticalAlignment="Center" Foreground="{Binding StateTextColor}"/>
     </Grid>
     <Button Grid.Row="0" HorizontalAlignment="Right" Background="Transparent" Cursor="Hand" Command="{Binding ClearLogsCommand}" VerticalAlignment="Bottom" Margin="10,10,15,10">

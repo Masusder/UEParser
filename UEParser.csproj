@@ -54,12 +54,12 @@
   <ItemGroup>
     <AvaloniaXaml Include="Views\ParsingControllers.xaml" />
     <AvaloniaXaml Include="Views\LogsWindow.xaml" />
-    <AvaloniaXaml Include="Views\Home.xaml" />
     <AvaloniaXaml Include="Views\Settings.xaml" />
     <AvaloniaXaml Include="Views\SplashScreen.xaml" />
     <AvaloniaXaml Include="Views\APIView.xaml" />
     <AvaloniaXaml Include="Views\RestartApplicationPopup.xaml" />
     <AvaloniaXaml Include="Views\InitializationConfirmPopup.xaml" />
+    <AvaloniaXaml Include="Views\Home.xaml" />
   </ItemGroup>
 
   <ItemGroup>

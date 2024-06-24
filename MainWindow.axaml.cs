@@ -28,19 +28,33 @@ public partial class MainWindow : AppWindow
 
     private async void MainWindow_Loaded(object? sender, EventArgs e)
     {
-        _confirmationPopup = new InitializationConfirmPopup();
-        var result = await _confirmationPopup.ShowDialog<bool>(this);
-        _confirmationPopup = null;
-
-        if (result)
+        var (hasVersionChanged, buildVersion) = Initialize.CheckBuildVersion();
+        if (hasVersionChanged)
         {
-            await InitializeMain();
+            _confirmationPopup = new InitializationConfirmPopup();
+            var result = await _confirmationPopup.ShowDialog<bool>(this);
+            _confirmationPopup = null;
+
+
+            if (result)
+            {
+                await InitializeMain(hasVersionChanged, buildVersion);
+            }
+            else
+            {
+                LogsWindowViewModel.Instance.AddLog("App isn't initialized with detected build version. Errors may occur.", Logger.LogTags.Warning);
+                LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
+            }
+        }
+        else
+        {
+            LogsWindowViewModel.Instance.AddLog("No new Dead by Daylight build has been detected.", Logger.LogTags.Info);
         }
     }
 
-    private static async Task InitializeMain()
+    private static async Task InitializeMain(bool hasVersionChanged, string buildVersion)
     {
-        await Initialize.UpdateApp();
+        await Initialize.UpdateApp(hasVersionChanged, buildVersion);
     }
 
     internal class MainAppSplashScreen() : IApplicationSplashScreen

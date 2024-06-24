@@ -201,7 +201,8 @@ public class AssetsManager
 
         if (fileDataChanged)
         {
-            LogsWindowViewModel.Instance.AddLog($"Asset size changed: {packagePath}", Logger.LogTags.Info);
+            Logger.SaveLog($"Asset size changed: {packagePath}", Logger.LogTags.Info);
+            //LogsWindowViewModel.Instance.AddLog($"Asset size changed: {packagePath}", Logger.LogTags.Info);
             FilesRegister.UpdateFileInfo(packagePath, size, extension);
         }
 

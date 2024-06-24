@@ -7,7 +7,7 @@ namespace UEParser.Views;
 
 public partial class InitializationConfirmPopup : Window
 {
-    private InitializationConfirmPopupViewModel _viewModel;
+    private readonly InitializationConfirmPopupViewModel _viewModel;
 
     public InitializationConfirmPopup()
     {

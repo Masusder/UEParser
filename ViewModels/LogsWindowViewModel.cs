@@ -22,7 +22,8 @@ public partial class LogsWindowViewModel : ReactiveObject
         Neutral,
         Finished,
         Running,
-        Error
+        Error,
+        Warning
     }
 
     public ELogState LogState
@@ -65,6 +66,7 @@ public partial class LogsWindowViewModel : ReactiveObject
                     ELogState.Running => "Orange",
                     ELogState.Error => "Red",
                     ELogState.Neutral => "#323232",
+                    ELogState.Warning => "#ffcc00",
                     _ => "#323232",
                 })
                 .ToProperty(this, x => x.StateColor);
@@ -76,6 +78,7 @@ public partial class LogsWindowViewModel : ReactiveObject
                     ELogState.Running => "Tasks Running..",
                     ELogState.Error => "Error Occured",
                     ELogState.Neutral => "Waiting.. do something",
+                    ELogState.Warning => "Warning",
                     _ => "Waiting.. do something",
                 })
                 .ToProperty(this, x => x.StateText);
@@ -87,6 +90,7 @@ public partial class LogsWindowViewModel : ReactiveObject
                     ELogState.Running => "Black",
                     ELogState.Error => "White",
                     ELogState.Neutral => "White",
+                    ELogState.Warning => "Black",
                     _ => "White",
                 })
                 .ToProperty(this, x => x.StateTextColor);
