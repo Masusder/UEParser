@@ -13,7 +13,7 @@
         x:DataType="vm:MainWindowViewModel">
   <ui:NavigationView
     Grid.Column="0"
-    x:Name="MyNavigationView"
+    x:Name="NavigationView"
     PaneDisplayMode="Left"
     OpenPaneLength="180"
     IsPaneOpen="False"
@@ -32,6 +32,12 @@
         <StackPanel Orientation="Horizontal">
           <i:Icon Value="fa-solid fa-house" Width="32" Height="32" FontSize="16" Margin="-12, 0, 10, 0" />
           <TextBlock Text="Home" VerticalAlignment="Center" />
+        </StackPanel>
+      </ui:NavigationViewItem>
+      <ui:NavigationViewItem Content="AssetsExtractor" Cursor="Hand" Tag="AssetsExtractor">
+        <StackPanel Orientation="Horizontal">
+          <i:Icon Grid.Column="0" Value="fa-solid fa-file-code" Width="32" Height="32" FontSize="16" Margin="-12,0,10,0"/>
+          <TextBlock Grid.Column="1" Text="Assets Extractor" VerticalAlignment="Center"/>
         </StackPanel>
       </ui:NavigationViewItem>
       <ui:NavigationViewItem Content="Controllers" Cursor="Hand" Tag="Controllers">
@@ -56,12 +62,6 @@
         <StackPanel Orientation="Horizontal">
           <i:Icon Grid.Column="0" Value="fa-solid fa-mobile" Width="32" Height="32" FontSize="16" Margin="-12,0,10,0"/>
           <TextBlock Grid.Column="1" Text="Netease" VerticalAlignment="Center"/>
-        </StackPanel>
-      </ui:NavigationViewItem>
-      <ui:NavigationViewItem Content="Parser" Cursor="Hand" Tag="Parser">
-        <StackPanel Orientation="Horizontal">
-          <i:Icon Grid.Column="0" Value="fa-solid fa-file-code" Width="32" Height="32" FontSize="16" Margin="-12,0,10,0"/>
-          <TextBlock Grid.Column="1" Text="Assets Extractor" VerticalAlignment="Center"/>
         </StackPanel>
       </ui:NavigationViewItem>
     </ui:NavigationView.MenuItems>

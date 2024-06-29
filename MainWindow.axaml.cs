@@ -9,7 +9,8 @@ using Avalonia.Media;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-
+using UEParser.Services;
+using UEParser.Kraken;
 using UEParser.Views;
 
 namespace UEParser;
@@ -29,12 +30,20 @@ public partial class MainWindow : AppWindow
     private async void MainWindow_Loaded(object? sender, EventArgs e)
     {
         var (hasVersionChanged, buildVersion) = Initialize.CheckBuildVersion();
+
+        var config = ConfigurationService.Config;
+        bool updateAPIDuringInitialization = config.Global.UpdateAPIDuringInitialization;
+        if (updateAPIDuringInitialization)
+        {
+            LogsWindowViewModel.Instance.AddLog("You have set up the application to check for Kraken API updates during initialization.", Logger.LogTags.Info);
+            await KrakenAPI.UpdateKrakenApi();
+        }
+
         if (hasVersionChanged)
         {
             _confirmationPopup = new InitializationConfirmPopup();
             var result = await _confirmationPopup.ShowDialog<bool>(this);
             _confirmationPopup = null;
-
 
             if (result)
             {

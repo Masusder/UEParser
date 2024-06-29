@@ -12,6 +12,80 @@ namespace UEParser.Kraken;
 
 public class KrakenAPI
 {
+    public static async Task UpdateKrakenApi()
+    {
+        var config = ConfigurationService.Config;
+
+        LogsWindowViewModel.Instance.AddLog("Looking for latest Kraken API version.", Logger.LogTags.Info);
+
+        string versionHeader = config.Core.VersionData.LatestVersionHeader;
+
+        if (string.IsNullOrEmpty(versionHeader))
+        {
+            throw new InvalidOperationException("Latest Version Header in config is empty or null.. failed to check latest version.");
+        }
+
+        Dictionary<string, string> queryParams = [];
+        queryParams["versionPattern"] = versionHeader;
+
+        string versionContentUrl = ConstructApiUrl("contentVersion", queryParams);
+
+        API.ApiResponse response = await API.FetchUrl(versionContentUrl);
+
+        var responseData = JsonConvert.DeserializeObject<VersionData>(response.Data);
+
+        if (response.Success && responseData != null)
+        {
+            string latestSavedVersion = config.Core.ApiConfig.LatestVersion;
+
+            // Check what's the latest version by its timestamp
+            int maxTimestamp = 0;
+            string? latestVersion = null;
+
+            foreach (var version in responseData.AvailableVersions)
+            {
+                string versionValue = version.Value;
+                int timestamp = int.Parse(versionValue.Split('-')[1]);
+                if (timestamp > maxTimestamp)
+                {
+                    maxTimestamp = timestamp;
+                    latestVersion = version.Key;
+                }
+            }
+
+            if (string.IsNullOrEmpty(latestVersion))
+            {
+                throw new Exception("Kraken version check failed.");
+            }
+
+            config.Core.ApiConfig.LatestVersion = latestVersion;
+
+            if (latestSavedVersion != latestVersion)
+            {
+                LogsWindowViewModel.Instance.AddLog($"Detected new version: '{latestVersion}'", Logger.LogTags.Info);
+
+                await FetchCdnContent();
+                await FetchDynamicCdnContent(CDNOutputDirName.Tomes);
+                await FetchDynamicCdnContent(CDNOutputDirName.Rifts);
+
+                LogsWindowViewModel.Instance.AddLog("Creating game characters helper table from retrieved API.", Logger.LogTags.Info);
+                Helpers.CreateCharacterTable();
+
+                await ConfigurationService.SaveConfiguration();
+
+                LogsWindowViewModel.Instance.AddLog("Successfully retrieved Kraken API.", Logger.LogTags.Success);
+            }
+            else
+            {
+                LogsWindowViewModel.Instance.AddLog("No new version has been detected.", Logger.LogTags.Info);
+            }
+        }
+        else
+        {
+            LogsWindowViewModel.Instance.AddLog($"Failed to fetch latest Kraken version: {response.ErrorMessage}", Logger.LogTags.Error);
+        }
+    }
+
     private static string ConstructApiUrl(string endpoint, Dictionary<string, string>? queryParams = null)
     {
         var config = ConfigurationService.Config;
@@ -78,82 +152,6 @@ public class KrakenAPI
     private class VersionData
     {
         public required Dictionary<string, string> AvailableVersions { get; set; }
-    }
-
-    public static async Task UpdateKrakenApi()
-    {
-        var config = ConfigurationService.Config;
-
-        LogsWindowViewModel.Instance.AddLog("Looking for latest Kraken API version.", Logger.LogTags.Info);
-
-        string versionHeader = config.Core.VersionData.LatestVersionHeader;
-
-        if (string.IsNullOrEmpty(versionHeader))
-        {
-            throw new InvalidOperationException("Latest Version Header in config is empty or null.. failed to check latest version.");
-        }
-
-        Dictionary<string, string> queryParams = [];
-        queryParams["versionPattern"] = versionHeader;
-
-        string versionContentUrl = ConstructApiUrl("contentVersion", queryParams);
-
-        API.ApiResponse response = await API.FetchUrl(versionContentUrl);
-
-        var responseData = JsonConvert.DeserializeObject<VersionData>(response.Data);
-
-        if (response.Success && responseData != null)
-        {
-            string latestSavedVersion = config.Core.ApiConfig.LatestVersion;
-
-            // Check what's the latest version by its timestamp
-            int maxTimestamp = 0;
-            string? latestVersion = null;
-
-            foreach (var version in responseData.AvailableVersions)
-            {
-                string versionValue = version.Value;
-                int timestamp = int.Parse(versionValue.Split('-')[1]);
-                if (timestamp > maxTimestamp)
-                {
-                    maxTimestamp = timestamp;
-                    latestVersion = version.Key;
-                }
-            }
-
-            if (string.IsNullOrEmpty(latestVersion))
-            {
-                throw new Exception("Kraken version check failed.");
-            }
-
-            config.Core.ApiConfig.LatestVersion = latestVersion;
-
-            await ConfigurationService.SaveConfiguration();
-
-            //File.WriteAllText("config.json", JsonConvert.SerializeObject(config, Formatting.Indented));
-
-            if (latestSavedVersion != latestVersion)
-            {
-                LogsWindowViewModel.Instance.AddLog($"Detected new version: '{latestVersion}'", Logger.LogTags.Info);
-
-                await FetchCdnContent();
-                await FetchDynamicCdnContent(CDNOutputDirName.Tomes);
-                await FetchDynamicCdnContent(CDNOutputDirName.Rifts);
-
-                LogsWindowViewModel.Instance.AddLog("Creating game characters helper table from retrieved API.", Logger.LogTags.Info);
-                Helpers.CreateCharacterTable();
-
-                LogsWindowViewModel.Instance.AddLog("Successfully retrieved Kraken API.", Logger.LogTags.Success);
-            } 
-            else
-            {
-                LogsWindowViewModel.Instance.AddLog("No new version has been detected.", Logger.LogTags.Info);
-            }
-        }
-        else
-        {
-            LogsWindowViewModel.Instance.AddLog($"Failed to fetch latest Kraken version: {response.ErrorMessage}", Logger.LogTags.Error);
-        }
     }
 
     private static async Task FetchCdnContent()

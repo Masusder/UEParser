@@ -12,12 +12,23 @@ namespace UEParser;
 
 public class Helpers
 {
-    public static string ConstructVersionHeaderWithBranch()
+    public static string ConstructVersionHeaderWithBranch(bool switchToCompareVersion = false)
     {
         var config = ConfigurationService.Config;
-        var versionHeader = config.Core.VersionData.LatestVersionHeader;
-        var branch = config.Core.VersionData.Branch;
-        var versionWithBranch = $"{versionHeader}_{branch}";
+
+        string versionWithBranch;
+        if (switchToCompareVersion)
+        {
+            var versionHeader = config.Core.VersionData.CompareVersionHeader;
+            var branch = config.Core.VersionData.CompareBranch;
+            versionWithBranch = $"{versionHeader}_{branch}";
+        }
+        else
+        {
+            var versionHeader = config.Core.VersionData.LatestVersionHeader;
+            var branch = config.Core.VersionData.Branch;
+            versionWithBranch = $"{versionHeader}_{branch}";
+        }
 
         return versionWithBranch;
     }

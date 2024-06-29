@@ -15,7 +15,7 @@ public class Initialize
     {
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
 
-        await Task.Delay(1000); // Ugly delay to update UI thread, think of better solution instead
+        //await Task.Delay(1000); // Ugly delay to update UI thread, think of better solution instead
 
         CreateDefaultDirectories();
 
@@ -24,8 +24,8 @@ public class Initialize
         {
             LogsWindowViewModel.Instance.AddLog("Detected new build version of Dead by Daylight.. starting initialization process.", Logger.LogTags.Info);
             LogsWindowViewModel.Instance.AddLog("Exporting game assets.", Logger.LogTags.Info);
-            await Task.Delay(1000); // Ugly delay to update UI, think of better solution instead
-            AssetsManager.InitializeCUE4Parse();
+            //await Task.Delay(1000); // Ugly delay to update UI, think of better solution instead
+            await AssetsManager.InitializeCUE4Parse();
             LogsWindowViewModel.Instance.AddLog("Looking for new S3 Bucket Access Keys.", Logger.LogTags.Info);
             await S3AccessKeys.CheckKeys(); // Check if there's any new S3AccessKeys (method needs to be invoked after 'InitializeCUE4Parse')
             LogsWindowViewModel.Instance.AddLog("Creating helper components to speed up parsing process.", Logger.LogTags.Info);

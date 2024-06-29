@@ -56,6 +56,9 @@ public class MainWindowViewModel : INotifyPropertyChanged
                 case "API":
                     CurrentPage = new APIView();
                     break;
+                case "AssetsExtractor":
+                    CurrentPage = new AssetsExtractorView();
+                    break;
                 default:
                     CurrentPage = new Home();
                     break;

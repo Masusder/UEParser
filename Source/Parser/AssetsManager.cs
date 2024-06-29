@@ -18,13 +18,14 @@ using System.Linq;
 using UEParser.Services;
 using UEParser.Utils;
 using UEParser.ViewModels;
+using System.Threading.Tasks;
 
 namespace UEParser.Parser;
 
 public class AssetsManager
 {
     private const string packagePathToPaks = "DeadByDaylight/Content/Paks";
-    public static void InitializeCUE4Parse()
+    public static async Task InitializeCUE4Parse()
     {
         var config = ConfigurationService.Config;
 
@@ -48,7 +49,7 @@ public class AssetsManager
 
             provider.LoadLocalization(ELanguage.English);
 
-            ParseGameAssets(provider);
+            await ParseGameAssets(provider);
         }
         else
         {
@@ -67,125 +68,133 @@ public class AssetsManager
     private const string packagePluginsDirectory = "DeadByDaylight/Plugins/Runtime/Bhvr";
     private const string packageConfigDirectory = "DeadByDaylight/Config";
     private const string packageLocalizationDirectory = "DeadByDaylight/Content/Localization";
-    private static void ParseGameAssets(DefaultFileProvider provider)
+    private static async Task ParseGameAssets(DefaultFileProvider provider)
     {
-        var files = provider.Files.Values;
-        foreach (var file in files)
+        var files = provider.Files.Values.ToList();
+        int batchSize = 10;  // Process files in smaller batches to manage memory usage
+        int totalFiles = files.Count;
+
+        for (int i = 0; i < totalFiles; i += batchSize)
         {
-            try
+            var batch = files.Skip(i).Take(batchSize);
+
+            foreach (var file in batch)
             {
-                string pathWithExtension = file.Path;
-                string pathWithoutExtension = file.PathWithoutExtension;
-
-                string extension = file.Extension;
-                long size = file.Size;
-
-                if (extensionsToSkip.Contains(extension)) continue;
-
-                bool isInUIDirectory = pathWithExtension.Contains(packageCustomizationDirectory);
-                bool isInDataDirectory = pathWithExtension.Contains(packageDataDirectory);
-                bool isInCharactersDirectory = pathWithExtension.Contains(packageCharactersDirectory);
-                bool isInMeshesDirectory = pathWithExtension.Contains(packageMeshesDirectory);
-                bool isInEffectsDirectory = pathWithExtension.Contains(packageEffectsDirectory);
-                bool isInPluginsDirectory = pathWithExtension.Contains(packagePluginsDirectory);
-                bool isInConfigDirectory = pathWithExtension.Contains(packageConfigDirectory);
-                bool isInLocalizationDirectory = pathWithExtension.Contains(packageLocalizationDirectory);
-
-                bool fileDataChanged = UpdateFileInfoIfNeeded(pathWithoutExtension, extension, size);
-
-                if (!fileDataChanged && !isInConfigDirectory) continue;
-
-                if (!isInUIDirectory &&
-                    !isInDataDirectory &&
-                    !isInCharactersDirectory &&
-                    !isInMeshesDirectory &&
-                    !isInEffectsDirectory &&
-                    !isInPluginsDirectory &&
-                    !isInConfigDirectory &&
-                    !isInLocalizationDirectory)
+                try
                 {
-                    continue;
+                    string extension = file.Extension;
+                    if (extensionsToSkip.Contains(extension)) continue;
+
+                    string pathWithExtension = file.Path;
+                    string pathWithoutExtension = file.PathWithoutExtension;
+                    long size = file.Size;
+
+                    bool isInUIDirectory = pathWithExtension.Contains(packageCustomizationDirectory);
+                    bool isInDataDirectory = pathWithExtension.Contains(packageDataDirectory);
+                    bool isInCharactersDirectory = pathWithExtension.Contains(packageCharactersDirectory);
+                    bool isInMeshesDirectory = pathWithExtension.Contains(packageMeshesDirectory);
+                    bool isInEffectsDirectory = pathWithExtension.Contains(packageEffectsDirectory);
+                    bool isInPluginsDirectory = pathWithExtension.Contains(packagePluginsDirectory);
+                    bool isInConfigDirectory = pathWithExtension.Contains(packageConfigDirectory);
+                    bool isInLocalizationDirectory = pathWithExtension.Contains(packageLocalizationDirectory);
+
+                    bool fileDataChanged = UpdateFileInfoIfNeeded(pathWithoutExtension, extension, size);
+
+                    if (!fileDataChanged && !isInConfigDirectory) continue;
+
+                    if (!isInUIDirectory &&
+                        !isInDataDirectory &&
+                        !isInCharactersDirectory &&
+                        !isInMeshesDirectory &&
+                        !isInEffectsDirectory &&
+                        !isInPluginsDirectory &&
+                        !isInConfigDirectory &&
+                        !isInLocalizationDirectory)
+                    {
+                        continue;
+                    }
+
+                    string exportPath = Path.Combine(outputRootDirectory, pathWithoutExtension);
+
+                    switch (extension)
+                    {
+                        case "uasset":
+                            {
+                                //var allExports = provider.LoadAllObjects(pathWithExtension); // Load possible exports for asset
+
+                                if (isInEffectsDirectory || isInCharactersDirectory || isInMeshesDirectory || isInDataDirectory || isInPluginsDirectory || isInLocalizationDirectory)
+                                {
+                                    var allExports = await Task.Run(() => provider.LoadAllObjects(pathWithExtension));
+                                    string exportData = JsonConvert.SerializeObject(allExports, Formatting.Indented);
+
+                                    FileWriter.SaveJsonFile(exportPath, exportData);
+                                }
+
+                                // if (isInUIDirectory || isInCharactersDirectory || isInPluginsDirectory)
+                                // {
+                                //     foreach (var asset in allExports)
+                                //     {
+                                //         switch (asset)
+                                //         {
+                                //             case UTexture texture:
+                                //                 {
+                                //                     FileWriter.SavePngFile(exportPath, pathWithoutExtension, texture);
+                                //                     break;
+                                //                 }
+                                //             // case UStaticMesh:
+                                //             // case USkeletalMesh:
+                                //             //     {
+                                //             //         FileWriter.SaveMeshes(asset, outputRootDirectory, pathWithoutExtension, exportPath);
+                                //             //         break;
+                                //             //     }
+                                //             default:
+                                //                 break;
+                                //         }
+                                //     }
+                                // }
+                                break;
+                            }
+                        case "locmeta":
+                            {
+                                if (provider.TryCreateReader(pathWithExtension, out FArchive archive))
+                                {
+                                    var metadata = new FTextLocalizationMetaDataResource(archive);
+                                    string exportData = JsonConvert.SerializeObject(metadata, Formatting.Indented);
+                                    FileWriter.SaveJsonFile(exportPath, exportData);
+                                }
+
+                                break;
+                            }
+                        case "locres":
+                            {
+                                if (provider.TryCreateReader(pathWithExtension, out FArchive archive))
+                                {
+                                    var locres = new FTextLocalizationResource(archive);
+                                    string exportData = JsonConvert.SerializeObject(locres, Formatting.Indented);
+                                    FileWriter.SaveJsonFile(exportPath, exportData);
+                                }
+                                break;
+                            }
+                        case "ini":
+                            {
+                                if (provider.TrySaveAsset(pathWithExtension, out byte[] data))
+                                {
+                                    using var stream = new MemoryStream(data) { Position = 0 };
+                                    using var reader = new StreamReader(stream);
+                                    var iniData = reader.ReadToEnd();
+                                    FileWriter.SaveIniFile(exportPath, iniData);
+                                }
+                                break;
+                            }
+                        default:
+                            break;
+                    }
                 }
-
-                string exportPath = Path.Combine(outputRootDirectory, pathWithoutExtension);
-
-                switch (extension)
+                catch (Exception ex)
                 {
-                    case "uasset":
-                        {
-                            var allExports = provider.LoadAllObjects(pathWithoutExtension); // Load possible exports for asset
-
-                            if (isInEffectsDirectory || isInCharactersDirectory || isInMeshesDirectory || isInDataDirectory || isInPluginsDirectory || isInLocalizationDirectory)
-                            {
-                                string exportData = JsonConvert.SerializeObject(allExports, Formatting.Indented);
-
-                                FileWriter.SaveJsonFile(exportPath, exportData);
-                            }
-
-                            // if (isInUIDirectory || isInCharactersDirectory || isInPluginsDirectory)
-                            // {
-                            //     foreach (var asset in allExports)
-                            //     {
-                            //         switch (asset)
-                            //         {
-                            //             case UTexture texture:
-                            //                 {
-                            //                     FileWriter.SavePngFile(exportPath, pathWithoutExtension, texture);
-                            //                     break;
-                            //                 }
-                            //             // case UStaticMesh:
-                            //             // case USkeletalMesh:
-                            //             //     {
-                            //             //         FileWriter.SaveMeshes(asset, outputRootDirectory, pathWithoutExtension, exportPath);
-                            //             //         break;
-                            //             //     }
-                            //             default:
-                            //                 break;
-                            //         }
-                            //     }
-                            // }
-                            break;
-                        }
-                    case "locmeta":
-                        {
-                            if (provider.TryCreateReader(pathWithExtension, out FArchive archive))
-                            {
-                                var metadata = new FTextLocalizationMetaDataResource(archive);
-                                string exportData = JsonConvert.SerializeObject(metadata, Formatting.Indented);
-                                FileWriter.SaveJsonFile(exportPath, exportData);
-                            }
-
-                            break;
-                        }
-                    case "locres":
-                        {
-                            if (provider.TryCreateReader(pathWithExtension, out FArchive archive))
-                            {
-                                var locres = new FTextLocalizationResource(archive);
-                                string exportData = JsonConvert.SerializeObject(locres, Formatting.Indented);
-                                FileWriter.SaveJsonFile(exportPath, exportData);
-                            }
-                            break;
-                        }
-                    case "ini":
-                        {
-                            if (provider.TrySaveAsset(pathWithExtension, out byte[] data))
-                            {
-                                using var stream = new MemoryStream(data) { Position = 0 };
-                                using var reader = new StreamReader(stream);
-                                var iniData = reader.ReadToEnd();
-                                FileWriter.SaveIniFile(exportPath, iniData);
-                            }
-                            break;
-                        }
-                    default:
-                        break;
+                    LogsWindowViewModel.Instance.AddLog($"Failed parsing asset: {ex}", Logger.LogTags.Error);
+                    LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
                 }
-            }
-            catch (Exception ex)
-            {
-                LogsWindowViewModel.Instance.AddLog($"Failed parsing asset: {ex}", Logger.LogTags.Error);
-                LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
             }
         }
 
@@ -201,8 +210,8 @@ public class AssetsManager
 
         if (fileDataChanged)
         {
-            Logger.SaveLog($"Asset size changed: {packagePath}", Logger.LogTags.Info);
-            //LogsWindowViewModel.Instance.AddLog($"Asset size changed: {packagePath}", Logger.LogTags.Info);
+            //Logger.SaveLog($"Asset size changed: {packagePath}", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Asset size changed: {packagePath}", Logger.LogTags.Info);
             FilesRegister.UpdateFileInfo(packagePath, size, extension);
         }
 

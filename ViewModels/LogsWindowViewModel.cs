@@ -1,9 +1,11 @@
 ﻿using Avalonia.Media;
+using Avalonia.Threading;
 using ReactiveUI;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
+using System.Threading.Tasks;
 using System.Reactive.Linq;
 using System.Windows.Input;
+using System;
 
 namespace UEParser.ViewModels;
 
@@ -116,19 +118,38 @@ public partial class LogsWindowViewModel : ReactiveObject
     //    };
     //}
 
-    private void ClearLogs()
+    //private void ClearLogs()
+    //{
+    //    LogEntries.Clear();
+    //    this.RaisePropertyChanged(nameof(LogEntries));
+    //    IsInfoBarOpen = true;
+    //    this.RaisePropertyChanged(nameof(IsInfoBarOpen));
+    //}
+
+    private async Task ClearLogs()
     {
         LogEntries.Clear();
         this.RaisePropertyChanged(nameof(LogEntries));
         IsInfoBarOpen = true;
         this.RaisePropertyChanged(nameof(IsInfoBarOpen));
+
+        // Automatically close InfoBar after 3 seconds
+        await Task.Delay(TimeSpan.FromSeconds(3)).ContinueWith(_ =>
+        {
+            IsInfoBarOpen = false;
+            this.RaisePropertyChanged(nameof(IsInfoBarOpen));
+        });
     }
 
     public void AddLog(string logMessage, Logger.LogTags tag)
     {
-        LogEntry logEntry = ParseLogEntry(logMessage, tag);
-        LogEntries.Add(logEntry);
-        this.RaisePropertyChanged(nameof(LogEntries));
+        // Marshal the UI update to the UI thread
+        Dispatcher.UIThread.Post(() =>
+        {
+            LogEntry logEntry = ParseLogEntry(logMessage, tag);
+            LogEntries.Add(logEntry);
+            this.RaisePropertyChanged(nameof(LogEntries));
+        });
 
         // Save the log to file using Logger class
         Logger.SaveLog(logMessage, tag);

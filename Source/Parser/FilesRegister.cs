@@ -1,7 +1,10 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using UEParser.Models;
 using UEParser.Services;
+using UEParser.ViewModels;
 
 namespace UEParser.Parser;
 
@@ -80,7 +83,7 @@ public class FilesRegister
         string json = JsonConvert.SerializeObject(fileInfoDictionary);
 
         File.WriteAllText(pathToFileRegister, json);
-        Logger.SaveLog("Saved files register", Logger.LogTags.Info);
+        LogsWindowViewModel.Instance.AddLog("Saved files register.", Logger.LogTags.Info);
     }
 
     public static Dictionary<string, FileInfo> MountFileRegisterDictionary()
@@ -116,6 +119,56 @@ public class FilesRegister
                 }
             }
         }
+    }
+
+    private static readonly Lazy<Dictionary<string, FileInfo>> _newAssets = new(RetrieveNewAssets);
+
+    public static Dictionary<string, FileInfo> NewAssets => _newAssets.Value;
+
+    public static Dictionary<string, FileInfo> RetrieveNewAssets()
+    {
+        string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch();
+        string compareVersionWithBranch = Helpers.ConstructVersionHeaderWithBranch(true);
+
+        string filesRegisterName = $"Core_{versionWithBranch}_FilesRegister.json";
+        string compareFilesRegisterName = $"Core_{compareVersionWithBranch}_FilesRegister.json";
+
+        string filesRegisterPath = Path.Combine(filesRegisterDirectoryPath, filesRegisterName);
+        string compareFilesRegisterPath = Path.Combine(filesRegisterDirectoryPath, compareFilesRegisterName);
+
+        if (File.Exists(filesRegisterPath) && File.Exists(compareFilesRegisterPath))
+        {
+            string filesRegisterJson = File.ReadAllText(filesRegisterPath);
+            string compareFilesRegisterJson = File.ReadAllText(compareFilesRegisterPath);
+
+            var filesRegister = JsonConvert.DeserializeObject<Dictionary<string, FileInfo>>(filesRegisterJson);
+            var compareFilesRegister = JsonConvert.DeserializeObject<Dictionary<string, FileInfo>>(compareFilesRegisterJson);
+
+            if (filesRegister == null || compareFilesRegister == null) return [];
+
+            return FindNewAssets(filesRegister, compareFilesRegister);
+        }
+        else
+        {
+            LogsWindowViewModel.Instance.AddLog("Not found file registers.", Logger.LogTags.Error);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            return [];
+        }
+    }
+
+    private static Dictionary<string, FileInfo> FindNewAssets(Dictionary<string, FileInfo> filesRegister, Dictionary<string, FileInfo> compareFilesRegister)
+    {
+        var newAssets = new Dictionary<string, FileInfo>();
+
+        foreach (var kvp in filesRegister)
+        {
+            if (!compareFilesRegister.ContainsKey(kvp.Key))
+            {
+                newAssets[kvp.Key] = kvp.Value;
+            }
+        }
+
+        return newAssets;
     }
 
     public static FileInfo? GetFileInfo(string filePath)

@@ -22,10 +22,12 @@ public class Configuration
 public class GlobalConfig
 {
     public Dictionary<string, string> BranchRoots { get; set; }
+    public bool UpdateAPIDuringInitialization { get; set; }
 
     public GlobalConfig()
     {
         BranchRoots = [];
+        UpdateAPIDuringInitialization = false;
     }
 }
 

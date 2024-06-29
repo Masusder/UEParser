@@ -5,7 +5,7 @@
              xmlns:i="https://github.com/projektanker/icons.avalonia"
              mc:Ignorable="d"
              x:Class="UEParser.Views.Home"
-             d:DesignHeight="200" d:DesignWidth="700">
+             d:DesignHeight="250" d:DesignWidth="700">
   <StackPanel VerticalAlignment="Center">
     <Border HorizontalAlignment="Center"
             VerticalAlignment="Center"
@@ -33,5 +33,12 @@
          HorizontalAlignment="Center"
          VerticalAlignment="Center"
          FontSize="16">Created by <Run FontWeight="500">Masusder</Run> as a part of DBDInfo project</TextBlock>
+    <TextBlock
+               Foreground="Beige"
+         HorizontalAlignment="Center"
+         VerticalAlignment="Center"
+         FontSize="12">
+      Powered with <Run FontWeight="500">CUE4Parse</Run>
+    </TextBlock>
   </StackPanel>
 </UserControl>
