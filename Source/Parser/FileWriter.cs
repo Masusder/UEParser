@@ -114,9 +114,9 @@ public class FileWriter
         }
     }
 
-    public static void SaveIniFile(string exportPath, dynamic exportData)
+    public static void SaveMemoryStreamFile(string exportPath, string exportData, string extension)
     {
-        string exportPathWithExtension = Path.ChangeExtension(exportPath, ".ini");
+        string exportPathWithExtension = Path.ChangeExtension(exportPath, $".{extension}");
 
         var directoryPath = Path.GetDirectoryName(exportPathWithExtension);
         if (directoryPath != null)

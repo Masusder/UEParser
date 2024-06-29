@@ -25,40 +25,111 @@ namespace UEParser.Parser;
 public class AssetsManager
 {
     private const string packagePathToPaks = "DeadByDaylight/Content/Paks";
-    public static async Task InitializeCUE4Parse()
+
+    private static DefaultFileProvider? provider;
+    private static readonly object lockObject = new();
+
+    public static DefaultFileProvider Provider
     {
-        var config = ConfigurationService.Config;
-
-        string pathToGameDirectory = config.Core.PathToGameDirectory;
-        if (pathToGameDirectory != null)
+        get
         {
-            string pathToPaks = Path.Combine(pathToGameDirectory, packagePathToPaks);
-            var provider = new DefaultFileProvider(pathToPaks, SearchOption.TopDirectoryOnly, true, new VersionContainer(EGame.GAME_DeadByDaylight))
+            if (provider == null)
             {
-                MappingsContainer = new FileUsmapTypeMappingsProvider(config.Core.MappingsPath)
-            };
-
-            provider.CustomEncryption = provider.Versions.Game switch
-            {
-                EGame.GAME_DeadByDaylight => DBDAes.DbDDecrypt,
-                _ => DBDAes.DbDDecrypt
-            };
-
-            provider.Initialize(); // will scan local files and read them to know what it has to deal with (PAK/UTOC/UCAS/UASSET/UMAP)
-            provider.SubmitKey(new FGuid(), new FAesKey(config.Core.AesKey)); // decrypt basic info (1 guid - 1 key)
-
-            provider.LoadLocalization(ELanguage.English);
-
-            await ParseGameAssets(provider);
-        }
-        else
-        {
-            LogsWindowViewModel.Instance.AddLog("Not found path to game directory in 'config.json'.", Logger.LogTags.Error);
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+                lock (lockObject)
+                {
+                    if (provider == null)
+                    {
+                        InitializeCUE4Parse();
+                    }
+                }
+            }
+            return provider!;
         }
     }
 
-    private static readonly string[] extensionsToSkip = ["ubulk", "uexp", "ufont", "uplugin", "uproject"];
+    public static void InitializeCUE4Parse()
+    {
+        if (provider != null)
+        {
+            // Provider is already initialized
+            return;
+        }
+
+        lock (lockObject)
+        {
+            if (provider != null)
+            {
+                // Double-check to ensure provider is still null inside the lock
+                return;
+            }
+
+            var config = ConfigurationService.Config;
+
+            string pathToGameDirectory = config.Core.PathToGameDirectory;
+            if (pathToGameDirectory != null)
+            {
+                string pathToPaks = Path.Combine(pathToGameDirectory, packagePathToPaks);
+                provider = new DefaultFileProvider(pathToPaks, SearchOption.TopDirectoryOnly, true, new VersionContainer(EGame.GAME_DeadByDaylight))
+                {
+                    MappingsContainer = new FileUsmapTypeMappingsProvider(config.Core.MappingsPath)
+                };
+
+                provider.CustomEncryption = provider.Versions.Game switch
+                {
+                    EGame.GAME_DeadByDaylight => DBDAes.DbDDecrypt,
+                    _ => DBDAes.DbDDecrypt
+                };
+
+                provider.Initialize(); // will scan local files and read them to know what it has to deal with (PAK/UTOC/UCAS/UASSET/UMAP)
+                provider.SubmitKey(new FGuid(), new FAesKey(config.Core.AesKey)); // decrypt basic info (1 guid - 1 key)
+
+                provider.LoadLocalization(ELanguage.English);
+            }
+            else
+            {
+                LogsWindowViewModel.Instance.AddLog("Not found path to game directory in 'config.json'.", Logger.LogTags.Error);
+                LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+                return;
+            }
+        }
+
+        //await ParseGameAssets(provider);
+    }
+
+    //public static async Task InitializeCUE4Parse()
+    //{
+    //    var config = ConfigurationService.Config;
+
+    //    string pathToGameDirectory = config.Core.PathToGameDirectory;
+    //    if (pathToGameDirectory != null)
+    //    {
+    //        string pathToPaks = Path.Combine(pathToGameDirectory, packagePathToPaks);
+    //        var provider = new DefaultFileProvider(pathToPaks, SearchOption.TopDirectoryOnly, true, new VersionContainer(EGame.GAME_DeadByDaylight))
+    //        {
+    //            MappingsContainer = new FileUsmapTypeMappingsProvider(config.Core.MappingsPath)
+    //        };
+
+    //        provider.CustomEncryption = provider.Versions.Game switch
+    //        {
+    //            EGame.GAME_DeadByDaylight => DBDAes.DbDDecrypt,
+    //            _ => DBDAes.DbDDecrypt
+    //        };
+
+    //        provider.Initialize(); // will scan local files and read them to know what it has to deal with (PAK/UTOC/UCAS/UASSET/UMAP)
+    //        provider.SubmitKey(new FGuid(), new FAesKey(config.Core.AesKey)); // decrypt basic info (1 guid - 1 key)
+
+    //        provider.LoadLocalization(ELanguage.English);
+
+    //        await ParseGameAssets(provider);
+    //    }
+    //    else
+    //    {
+    //        LogsWindowViewModel.Instance.AddLog("Not found path to game directory in 'config.json'.", Logger.LogTags.Error);
+    //        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+    //    }
+    //}
+
+    private static readonly string[] extensionsToSkip = ["ubulk", "uexp", "ufont"];
     private static readonly string outputRootDirectory = Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAssets");
     private const string packageDataDirectory = "DeadByDaylight/Content/Data";
     private const string packageCustomizationDirectory = "DeadByDaylight/Content/UI/UMGAssets/Icons/Customization";
@@ -68,9 +139,9 @@ public class AssetsManager
     private const string packagePluginsDirectory = "DeadByDaylight/Plugins/Runtime/Bhvr";
     private const string packageConfigDirectory = "DeadByDaylight/Config";
     private const string packageLocalizationDirectory = "DeadByDaylight/Content/Localization";
-    private static async Task ParseGameAssets(DefaultFileProvider provider)
+    public static async Task ParseGameAssets()
     {
-        var files = provider.Files.Values.ToList();
+        var files = Provider.Files.Values.ToList();
         int batchSize = 10;  // Process files in smaller batches to manage memory usage
         int totalFiles = files.Count;
 
@@ -82,11 +153,13 @@ public class AssetsManager
             {
                 try
                 {
+                    string pathWithoutExtension = file.PathWithoutExtension;
+                    if (GlobalVariables.fatalCrashAssets.Contains(pathWithoutExtension)) continue;
+
                     string extension = file.Extension;
                     if (extensionsToSkip.Contains(extension)) continue;
 
                     string pathWithExtension = file.Path;
-                    string pathWithoutExtension = file.PathWithoutExtension;
                     long size = file.Size;
 
                     bool isInUIDirectory = pathWithExtension.Contains(packageCustomizationDirectory);
@@ -124,7 +197,7 @@ public class AssetsManager
 
                                 if (isInEffectsDirectory || isInCharactersDirectory || isInMeshesDirectory || isInDataDirectory || isInPluginsDirectory || isInLocalizationDirectory)
                                 {
-                                    var allExports = await Task.Run(() => provider.LoadAllObjects(pathWithExtension));
+                                    var allExports = await Task.Run(() => Provider.LoadAllObjects(pathWithExtension));
                                     string exportData = JsonConvert.SerializeObject(allExports, Formatting.Indented);
 
                                     FileWriter.SaveJsonFile(exportPath, exportData);
@@ -156,7 +229,7 @@ public class AssetsManager
                             }
                         case "locmeta":
                             {
-                                if (provider.TryCreateReader(pathWithExtension, out FArchive archive))
+                                if (Provider.TryCreateReader(pathWithExtension, out FArchive archive))
                                 {
                                     var metadata = new FTextLocalizationMetaDataResource(archive);
                                     string exportData = JsonConvert.SerializeObject(metadata, Formatting.Indented);
@@ -167,7 +240,7 @@ public class AssetsManager
                             }
                         case "locres":
                             {
-                                if (provider.TryCreateReader(pathWithExtension, out FArchive archive))
+                                if (Provider.TryCreateReader(pathWithExtension, out FArchive archive))
                                 {
                                     var locres = new FTextLocalizationResource(archive);
                                     string exportData = JsonConvert.SerializeObject(locres, Formatting.Indented);
@@ -175,14 +248,16 @@ public class AssetsManager
                                 }
                                 break;
                             }
+                        case "uplugin":
+                        case "uproject":
                         case "ini":
                             {
-                                if (provider.TrySaveAsset(pathWithExtension, out byte[] data))
+                                if (Provider.TrySaveAsset(pathWithExtension, out byte[] data))
                                 {
                                     using var stream = new MemoryStream(data) { Position = 0 };
                                     using var reader = new StreamReader(stream);
                                     var iniData = reader.ReadToEnd();
-                                    FileWriter.SaveIniFile(exportPath, iniData);
+                                    FileWriter.SaveMemoryStreamFile(exportPath, iniData, extension);
                                 }
                                 break;
                             }
@@ -198,9 +273,93 @@ public class AssetsManager
             }
         }
 
-        //DeleteUnusedFiles(); // TODO: dont delete all files, delete only datatables
+        // Clean up the fileInfoDictionary
+        FilesRegister.CleanUpFileInfoDictionary(files);
         FilesRegister.SaveFileInfoDictionary();
         LogsWindowViewModel.Instance.AddLog("Finished exporting game assets.", Logger.LogTags.Info);
+    }
+
+    public static async Task ParseMissingAssets(List<string> missingAssetsList)
+    {
+        var files = Provider.Files.Values.ToList();
+
+        foreach (var file in files)
+        {
+            try
+            {
+                string pathWithoutExtension = file.PathWithoutExtension;
+
+                if (GlobalVariables.fatalCrashAssets.Contains(pathWithoutExtension)) continue;
+                if (!missingAssetsList.Contains(pathWithoutExtension)) continue;
+
+                string extension = file.Extension;
+                if (extensionsToSkip.Contains(extension)) continue;
+
+                string pathWithExtension = file.Path;
+                long size = file.Size;
+
+                string exportPath = Path.Combine(outputRootDirectory, pathWithoutExtension);
+
+                switch (extension)
+                {
+                    case "uasset":
+                        {
+                            string debugPath = pathWithExtension;
+                            var allExports = await Task.Run(() => Provider.LoadAllObjects(pathWithExtension));
+                            if (allExports == null) continue;
+                            string exportData = JsonConvert.SerializeObject(allExports, Formatting.Indented);
+
+                            FileWriter.SaveJsonFile(exportPath, exportData);
+
+                            break;
+                        }
+                    case "locmeta":
+                        {
+                            if (Provider.TryCreateReader(pathWithExtension, out FArchive archive))
+                            {
+                                var metadata = new FTextLocalizationMetaDataResource(archive);
+                                string exportData = JsonConvert.SerializeObject(metadata, Formatting.Indented);
+                                FileWriter.SaveJsonFile(exportPath, exportData);
+                            }
+
+                            break;
+                        }
+                    case "locres":
+                        {
+                            if (Provider.TryCreateReader(pathWithExtension, out FArchive archive))
+                            {
+                                var locres = new FTextLocalizationResource(archive);
+                                string exportData = JsonConvert.SerializeObject(locres, Formatting.Indented);
+                                FileWriter.SaveJsonFile(exportPath, exportData);
+                            }
+                            break;
+                        }
+                    case "uplugin":
+                    case "uproject":
+                    case "ini":
+                        {
+                            if (Provider.TrySaveAsset(pathWithExtension, out byte[] data))
+                            {
+                                using var stream = new MemoryStream(data) { Position = 0 };
+                                using var reader = new StreamReader(stream);
+                                var memoryData = reader.ReadToEnd();
+                                FileWriter.SaveMemoryStreamFile(exportPath, memoryData, extension);
+                            }
+                            break;
+                        }
+                    default:
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogsWindowViewModel.Instance.AddLog($"Failed parsing asset: {ex}", Logger.LogTags.Error);
+                LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            }
+        }
+
+        FilesRegister.CleanUpFileInfoDictionary(files);
+        FilesRegister.SaveFileInfoDictionary();
     }
 
     private static bool UpdateFileInfoIfNeeded(string packagePath, string extension, long size)
@@ -210,8 +369,8 @@ public class AssetsManager
 
         if (fileDataChanged)
         {
-            //Logger.SaveLog($"Asset size changed: {packagePath}", Logger.LogTags.Info);
-            LogsWindowViewModel.Instance.AddLog($"Asset size changed: {packagePath}", Logger.LogTags.Info);
+            Logger.SaveLog($"Asset size changed: {packagePath}", Logger.LogTags.Info);
+            //LogsWindowViewModel.Instance.AddLog($"Asset size changed: {packagePath}", Logger.LogTags.Info);
             FilesRegister.UpdateFileInfo(packagePath, size, extension);
         }
 

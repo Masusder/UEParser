@@ -2,9 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using UEParser.Models;
+using System.Linq;
 using UEParser.Services;
 using UEParser.ViewModels;
+using CUE4Parse.FileProvider.Objects;
 
 namespace UEParser.Parser;
 
@@ -84,6 +85,30 @@ public class FilesRegister
 
         File.WriteAllText(pathToFileRegister, json);
         LogsWindowViewModel.Instance.AddLog("Saved files register.", Logger.LogTags.Info);
+    }
+
+    public static void CleanUpFileInfoDictionary(List<GameFile> files)
+    {
+        lock (lockObject)
+        {
+            var filesSet = new HashSet<string>(files.Select(f => f.PathWithoutExtension));
+
+            // Create a list of keys to remove
+            var keysToRemove = new List<string>();
+            foreach (var key in fileInfoDictionary.Keys)
+            {
+                if (!filesSet.Contains(key))
+                {
+                    keysToRemove.Add(key);
+                }
+            }
+
+            // Remove keys from dictionary
+            foreach (var key in keysToRemove)
+            {
+                fileInfoDictionary.Remove(key);
+            }
+        }
     }
 
     public static Dictionary<string, FileInfo> MountFileRegisterDictionary()
