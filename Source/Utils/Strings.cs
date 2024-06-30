@@ -51,7 +51,7 @@ public class StringUtils
         Uri rootPathUri = new(rootPath);
         string relativePath = Uri.UnescapeDataString(rootPathUri.MakeRelativeUri(fullPathUri).ToString().Replace('\\', '/'));
 
-        string directoryToRemove = "Assets/";
+        string directoryToRemove = "ExtractedAssets/";
 
         // Check if the relative path starts with the directory to remove
         if (relativePath.StartsWith(directoryToRemove, StringComparison.OrdinalIgnoreCase))

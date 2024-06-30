@@ -276,6 +276,7 @@ public class AssetsManager
         }
 
         // Clean up the fileInfoDictionary
+        DeleteUnusedFiles();
         FilesRegister.CleanUpFileInfoDictionary(files);
         FilesRegister.SaveFileInfoDictionary();
         LogsWindowViewModel.Instance.AddLog("Finished exporting game assets.", Logger.LogTags.Info);
@@ -419,6 +420,73 @@ public class AssetsManager
         });
     }
 
+    public static async Task ParseUI()
+    {
+        await Task.Run(() =>
+        {
+            var files = Provider.Files.Values.ToList();
+            var newAssets = FilesRegister.NewAssets;
+
+            foreach (var file in files)
+            {
+                try
+                {
+                    string pathWithoutExtension = file.PathWithoutExtension;
+                    if (!newAssets.ContainsKey(pathWithoutExtension)) continue;
+
+                    if (GlobalVariables.fatalCrashAssets.Contains(pathWithoutExtension)) continue;
+
+                    string extension = file.Extension;
+                    if (extensionsToSkip.Contains(extension)) continue;
+
+                    string pathWithExtension = file.Path;
+                    bool isInUIDirectory = pathWithExtension.Contains(packageUIDirectory);
+                    if (!isInUIDirectory) continue;
+
+                    long size = file.Size;
+
+                    string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch();
+                    string outputDirectory = Path.Combine(GlobalVariables.rootDir, "Output", "ExtractedAssets", "UI", versionWithBranch);
+                    string outputPathWithoutExtension = Path.Combine(outputDirectory, pathWithoutExtension);
+                    string outputPath = Path.ChangeExtension(outputPathWithoutExtension, "png");
+
+                    if (File.Exists(outputPath)) continue;
+
+                    switch (extension)
+                    {
+                        case "uasset":
+                            {
+                                var allExports = Provider.LoadAllObjects(pathWithExtension);
+
+                                foreach (var asset in allExports)
+                                {
+                                    switch (asset)
+                                    {
+                                        case UTexture texture:
+                                            {
+                                                FileWriter.SavePngFile(outputPath, pathWithoutExtension, texture);
+                                                break;
+                                            }
+                                        default:
+                                            break;
+                                    }
+                                }
+
+                                break;
+                            }
+                        default:
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogsWindowViewModel.Instance.AddLog($"Failed parsing UI: {ex}", Logger.LogTags.Error);
+                    LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+                }
+            }
+        });
+    }
+
     public static async Task ParseMissingAssets(List<string> missingAssetsList)
     {
         var files = Provider.Files.Values.ToList();
@@ -496,6 +564,7 @@ public class AssetsManager
             }
         }
 
+        DeleteUnusedFiles();
         FilesRegister.CleanUpFileInfoDictionary(files);
         FilesRegister.SaveFileInfoDictionary();
     }
@@ -549,32 +618,43 @@ public class AssetsManager
     //    }
     //}
 
-    // TODO: dont delete all files, delete only datatables
-    //private static void DeleteUnusedFiles()
-    //{
-    //    Logger.SaveLog("Deletion process of unused assets started.", Logger.LogTags.Info);
-    //    // Load fileInfoDictionary from FilesRegister class
-    //    Dictionary<string, FilesRegister.FileInfo> fileInfoDictionary = FilesRegister.MountFileRegisterDictionary();
+    private static void DeleteUnusedFiles()
+    {
+        LogsWindowViewModel.Instance.AddLog("Deletion process of unused assets started.", Logger.LogTags.Info);
+        // Load fileInfoDictionary from FilesRegister class
+        Dictionary<string, FilesRegister.FileInfo> fileInfoDictionary = FilesRegister.MountFileRegisterDictionary();
 
-    //    if (!Directory.Exists(outputRootDirectory))
-    //    {
-    //        Logger.SaveLog("Output directory does not exist.", Logger.LogTags.Info);
-    //        return;
-    //    }
+        if (!Directory.Exists(outputRootDirectory))
+        {
+            LogsWindowViewModel.Instance.AddLog("Output directory does not exist.", Logger.LogTags.Error);
+            return;
+        }
 
-    //    string[] allFiles = Directory.GetFiles(outputRootDirectory, "*", SearchOption.AllDirectories);
+        string[] allFiles = Directory.GetFiles(outputRootDirectory, "*", SearchOption.AllDirectories);
 
-    //    foreach (string file in allFiles)
-    //    {
-    //        string relativePath = StringUtils.GetRelativePathWithoutExtension(file, outputRootDirectory);
+        List<string> listOfDeletedFiles = [];
+        foreach (string file in allFiles)
+        {
+            string relativePath = StringUtils.GetRelativePathWithoutExtension(file, outputRootDirectory);
 
-    //        if (!fileInfoDictionary.ContainsKey(relativePath))
-    //        {
-    //            File.Delete(file);
-    //            Logger.SaveLog($"Deleted file: {file}", Logger.LogTags.Info);
-    //        }
-    //    }
+            // Check if the relativePath includes "Data", as I only want to cleanup datatables
+            if (!relativePath.Contains("Data", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
 
-    //    Logger.SaveLog("Deletion process completed.", Logger.LogTags.Info);
-    //}
+            // Convert relativePath to lowercase for case insensitive comparison
+            string lowerRelativePath = relativePath.ToLowerInvariant();
+
+            if (!fileInfoDictionary.Keys.Any(key => key.Equals(lowerRelativePath, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                listOfDeletedFiles.Add(relativePath);
+                File.Delete(file);
+                LogsWindowViewModel.Instance.AddLog($"Deleted file: {file}", Logger.LogTags.Info);
+            }
+        }
+
+        LogsWindowViewModel.Instance.AddLog($"Deleted total of: {listOfDeletedFiles.Count} files", Logger.LogTags.Info);
+        LogsWindowViewModel.Instance.AddLog("Deletion process completed.", Logger.LogTags.Success);
+    }
 }
