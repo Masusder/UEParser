@@ -19,8 +19,8 @@ public partial class LogsWindowViewModel : ReactiveObject
 
     private ELogState _logState = ELogState.Neutral;
 
-    public enum ELogState 
-    { 
+    public enum ELogState
+    {
         Neutral,
         Finished,
         Running,
@@ -57,6 +57,9 @@ public partial class LogsWindowViewModel : ReactiveObject
 
     private readonly ObservableAsPropertyHelper<string> _stateTextColor;
     public string StateTextColor => _stateTextColor.Value;
+
+    private readonly ObservableAsPropertyHelper<bool> _isLoading;
+    public bool IsLoading => _isLoading.Value;
 
     private LogsWindowViewModel()
     {
@@ -96,6 +99,14 @@ public partial class LogsWindowViewModel : ReactiveObject
                     _ => "White",
                 })
                 .ToProperty(this, x => x.StateTextColor);
+
+        _isLoading = this.WhenAnyValue(x => x.LogState)
+            .Select(state => state switch
+            {
+                ELogState.Running => true,
+                _ => false
+            })
+            .ToProperty(this, x => x.IsLoading);
     }
 
     public ObservableCollection<LogEntry> LogEntries { get; set; } = [];
@@ -146,13 +157,17 @@ public partial class LogsWindowViewModel : ReactiveObject
         // Marshal the UI update to the UI thread
         Dispatcher.UIThread.Post(() =>
         {
+            // Parse the log entry
             LogEntry logEntry = ParseLogEntry(logMessage, tag);
+
+            // Update the UI
             LogEntries.Add(logEntry);
             this.RaisePropertyChanged(nameof(LogEntries));
         });
 
-        // Save the log to file using Logger class
-        Logger.SaveLog(logMessage, tag);
+        // Save the log to file on a background thread
+        Task.Run(() => Logger.SaveLog(logMessage, tag));
+
     }
 
     private static LogEntry ParseLogEntry(string logMessage, Logger.LogTags tag)

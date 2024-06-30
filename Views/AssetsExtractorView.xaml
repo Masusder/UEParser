@@ -16,7 +16,7 @@
             Margin="5"
             Cursor="Hand">
       <StackPanel Orientation="Vertical">
-        <Image Source="avares://UEParser/Resources/iconHelp_DBDlogo.png" Width="64" Height="64" />
+        <!--<Image Source="avares://UEParser/Resources/iconHelp_DBDlogo.png" Width="64" Height="64" />-->
         <TextBlock>
           Everything
         </TextBlock>
@@ -27,9 +27,31 @@
             Margin="5"
             Cursor="Hand">
       <StackPanel Orientation="Vertical">
-        <Image Source="avares://UEParser/Resources/iconHelp_DBDlogo.png" Width="64" Height="64" />
+        <!--<Image Source="avares://UEParser/Resources/iconHelp_DBDlogo.png" Width="64" Height="64" />-->
         <TextBlock>
-          Check for missing assets
+          Check for missing JSON assets
+        </TextBlock>
+      </StackPanel>
+    </Button>
+    <Button Name="ExtractMeshes"
+        Command="{Binding ExtractMeshesCommand}"
+        Margin="5"
+        Cursor="Hand">
+      <StackPanel Orientation="Vertical">
+        <!--<Image Source="avares://UEParser/Resources/iconHelp_DBDlogo.png" Width="64" Height="64" />-->
+        <TextBlock>
+          Extract meshes
+        </TextBlock>
+      </StackPanel>
+    </Button>
+    <Button Name="ExtractTextures"
+    Command="{Binding ExtractTexturesCommand}"
+    Margin="5"
+    Cursor="Hand">
+      <StackPanel Orientation="Vertical">
+        <!--<Image Source="avares://UEParser/Resources/iconHelp_DBDlogo.png" Width="64" Height="64" />-->
+        <TextBlock>
+          Extract textures
         </TextBlock>
       </StackPanel>
     </Button>

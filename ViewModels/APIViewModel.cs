@@ -51,11 +51,9 @@ public class APIViewModel
 
     public void ConstructFullVersion()
     {
-        var config = ConfigurationService.Config;
-        string versionHeader = config.Core.VersionData.LatestVersionHeader;
-        string branch = config.Core.VersionData.Branch.ToString();
+        string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch();
 
-        string fullVersion = $"Selected version: {versionHeader}_{branch}";
+        string fullVersion = $"Selected version: {versionWithBranch}";
         Version = fullVersion;
     }
 

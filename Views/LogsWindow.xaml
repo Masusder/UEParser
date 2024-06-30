@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:i="https://github.com/projektanker/icons.avalonia"
              xmlns:ui="using:FluentAvalonia.UI.Controls"
+             xmlns:li="using:LoadingIndicators.Avalonia"
              mc:Ignorable="d"
              x:Class="UEParser.Views.LogsWindow"
              xmlns:views="clr-namespace:UEParser.Views"
@@ -24,11 +25,12 @@
                            SelectionBrush="#63B8FF"
                            Padding="5, 5, 0, 0"/>
     </ScrollViewer>
-    <Grid Grid.Row="1">
+    <Grid Grid.Row="1" Height="32">
       <GridSplitter Background="{Binding StateColor}" IsEnabled="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
       <TextBlock Text="{Binding StateText}" FontWeight="600" HorizontalAlignment="Left" Padding="5" VerticalAlignment="Center" Foreground="{Binding StateTextColor}"/>
+      <li:LoadingIndicator IsActive="{Binding IsLoading}" Mode="ThreeDots" Foreground="White" HorizontalAlignment="Right" SpeedRatio="1.2" />
     </Grid>
-    <Button Grid.Row="0" HorizontalAlignment="Right" Background="Transparent" Cursor="Hand" Command="{Binding ClearLogsCommand}" VerticalAlignment="Bottom" Margin="10,10,15,10">
+    <Button Grid.Row="0" Width="32" HorizontalAlignment="Right" BorderBrush="Transparent" Background="Transparent" Cursor="Hand" Command="{Binding ClearLogsCommand}" VerticalAlignment="Bottom" Margin="10,10,12.5,10">
       <i:Icon Value="fa-solid fa-trash" Width="16" Height="16" FontSize="16"/>
     </Button>
     <!-- InfoBar to display when logs are cleared -->

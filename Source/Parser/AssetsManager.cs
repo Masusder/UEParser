@@ -133,6 +133,8 @@ public class AssetsManager
     private static readonly string outputRootDirectory = Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAssets");
     private const string packageDataDirectory = "DeadByDaylight/Content/Data";
     private const string packageCustomizationDirectory = "DeadByDaylight/Content/UI/UMGAssets/Icons/Customization";
+    private const string packageUMGAssetsDirectory = "DeadByDaylight/Content/UI/UMGAssets";
+    private const string packageUIDirectory = "DeadByDaylight/Content/UI/UMGAssets/Icons";
     private const string packageCharactersDirectory = "DeadByDaylight/Content/Characters";
     private const string packageMeshesDirectory = "DeadByDaylight/Content/Meshes";
     private const string packageEffectsDirectory = "DeadByDaylight/Content/Effects";
@@ -279,6 +281,144 @@ public class AssetsManager
         LogsWindowViewModel.Instance.AddLog("Finished exporting game assets.", Logger.LogTags.Info);
     }
 
+    public static async Task ParseMeshes()
+    {
+        await Task.Run(() =>
+        {
+            var files = Provider.Files.Values.ToList();
+            var newAssets = FilesRegister.NewAssets;
+
+            foreach (var file in files)
+            {
+                try
+                {
+                    string pathWithoutExtension = file.PathWithoutExtension;
+                    if (!newAssets.ContainsKey(pathWithoutExtension)) continue;
+
+                    if (GlobalVariables.fatalCrashAssets.Contains(pathWithoutExtension)) continue;
+
+                    string extension = file.Extension;
+                    if (extensionsToSkip.Contains(extension)) continue;
+
+                    string pathWithExtension = file.Path;
+                    long size = file.Size;
+
+                    string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch();
+                    string outputDirectory = Path.Combine(GlobalVariables.rootDir, "Output", "ExtractedAssets", "Meshes", versionWithBranch);
+                    string outputPathWithoutExtension = Path.Combine(outputDirectory, pathWithoutExtension);
+                    string outputPath = Path.ChangeExtension(outputPathWithoutExtension, "glb");
+
+                    if (File.Exists(outputPath)) continue;
+
+                    switch (extension)
+                    {
+                        case "uasset":
+                            {
+                                var allExports = Provider.LoadAllObjects(pathWithExtension);
+
+                                foreach (var asset in allExports)
+                                {
+                                    switch (asset)
+                                    {
+
+                                        case UStaticMesh:
+                                        case USkeletalMesh:
+                                            {
+                                                var directoryPath = Path.GetDirectoryName(outputPathWithoutExtension);
+                                                if (directoryPath != null)
+                                                {
+                                                    Directory.CreateDirectory(directoryPath);
+                                                }
+
+                                                FileWriter.SaveMeshes(asset, pathWithoutExtension, outputPath);
+                                                break;
+                                            }
+                                        default:
+                                            break;
+                                    }
+                                }
+
+                                break;
+                            }
+                        default:
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogsWindowViewModel.Instance.AddLog($"Failed parsing mesh: {ex}", Logger.LogTags.Error);
+                    LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+                }
+            }
+        });
+    }
+
+    public static async Task ParseTextures()
+    {
+        await Task.Run(() =>
+        {
+            var files = Provider.Files.Values.ToList();
+            var newAssets = FilesRegister.NewAssets;
+
+            foreach (var file in files)
+            {
+                try
+                {
+                    string pathWithoutExtension = file.PathWithoutExtension;
+                    if (!newAssets.ContainsKey(pathWithoutExtension)) continue;
+
+                    if (GlobalVariables.fatalCrashAssets.Contains(pathWithoutExtension)) continue;
+
+                    string extension = file.Extension;
+                    if (extensionsToSkip.Contains(extension)) continue;
+
+                    string pathWithExtension = file.Path;
+                    bool isInUIDirectory = pathWithExtension.Contains(packageUMGAssetsDirectory);
+                    if (isInUIDirectory) continue;
+                    long size = file.Size;
+
+                    string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch();
+                    string outputDirectory = Path.Combine(GlobalVariables.rootDir, "Output", "ExtractedAssets", "Textures", versionWithBranch);
+                    string outputPathWithoutExtension = Path.Combine(outputDirectory, pathWithoutExtension);
+                    string outputPath = Path.ChangeExtension(outputPathWithoutExtension, "png");
+
+                    if (File.Exists(outputPath)) continue;
+
+                    switch (extension)
+                    {
+                        case "uasset":
+                            {
+                                var allExports = Provider.LoadAllObjects(pathWithExtension);
+
+                                foreach (var asset in allExports)
+                                {
+                                    switch (asset)
+                                    {
+                                        case UTexture texture:
+                                            {
+                                                FileWriter.SavePngFile(outputPath, pathWithoutExtension, texture);
+                                                break;
+                                            }
+                                        default:
+                                            break;
+                                    }
+                                }
+
+                                break;
+                            }
+                        default:
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogsWindowViewModel.Instance.AddLog($"Failed parsing texture: {ex}", Logger.LogTags.Error);
+                    LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+                }
+            }
+        });
+    }
+
     public static async Task ParseMissingAssets(List<string> missingAssetsList)
     {
         var files = Provider.Files.Values.ToList();
@@ -304,9 +444,7 @@ public class AssetsManager
                 {
                     case "uasset":
                         {
-                            string debugPath = pathWithExtension;
                             var allExports = await Task.Run(() => Provider.LoadAllObjects(pathWithExtension));
-                            if (allExports == null) continue;
                             string exportData = JsonConvert.SerializeObject(allExports, Formatting.Indented);
 
                             FileWriter.SaveJsonFile(exportPath, exportData);
@@ -377,33 +515,39 @@ public class AssetsManager
         return fileDataChanged;
     }
 
-    public static void MoveFilesToOutput(string exportPathWithExtension, string packagePath, string extension, string savedFilePath)
-    {
-        string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch();
+    //public static void MoveFilesToOutput(string exportPathWithExtension, string packagePath, string extension, string savedFilePath)
+    //{
+    //    string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch();
+    //    string directoryAssetName = extension switch
+    //    {
+    //        "glb" => "Meshes",
+    //        "png" => "Textures",
+    //        _ => "Unknown",
+    //    };
 
-        string outputDirectory = Path.Combine(GlobalVariables.rootDir, "Output", "ExtractedAssets", versionWithBranch);
+    //    string outputDirectory = Path.Combine(GlobalVariables.rootDir, "Output", "ExtractedAssets", directoryAssetName, versionWithBranch);
 
-        string outputPathWithoutExtension = Path.Combine(outputDirectory, packagePath);
+    //    string outputPathWithoutExtension = Path.Combine(outputDirectory, packagePath);
 
-        var directoryPath = Path.GetDirectoryName(outputPathWithoutExtension);
-        if (directoryPath != null)
-        {
-            Directory.CreateDirectory(directoryPath);
-        }
+    //    var directoryPath = Path.GetDirectoryName(outputPathWithoutExtension);
+    //    if (directoryPath != null)
+    //    {
+    //        Directory.CreateDirectory(directoryPath);
+    //    }
 
-        string outputPath = Path.ChangeExtension(outputPathWithoutExtension, extension);
+    //    string outputPath = Path.ChangeExtension(outputPathWithoutExtension, extension);
 
-        string exportPathToUse = exportPathWithExtension;
-        if (!string.IsNullOrEmpty(savedFilePath))
-        {
-            exportPathToUse = savedFilePath;
-        }
+    //    string exportPathToUse = exportPathWithExtension;
+    //    if (!string.IsNullOrEmpty(savedFilePath))
+    //    {
+    //        exportPathToUse = savedFilePath;
+    //    }
 
-        if (!File.Exists(outputPath))
-        {
-            File.Copy(exportPathToUse, outputPath);
-        }
-    }
+    //    if (!File.Exists(outputPath))
+    //    {
+    //        File.Copy(exportPathToUse, outputPath);
+    //    }
+    //}
 
     // TODO: dont delete all files, delete only datatables
     //private static void DeleteUnusedFiles()

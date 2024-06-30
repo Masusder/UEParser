@@ -9,6 +9,8 @@ using Newtonsoft.Json;
 using SkiaSharp;
 using System.IO;
 using System;
+using CUE4Parse.UE4.Assets.Exports;
+using UEParser.ViewModels;
 
 namespace UEParser.Parser;
 
@@ -51,14 +53,12 @@ public class FileWriter
         }
     }
 
-    public static void SaveMeshes(dynamic asset, string outputRootDirectory, string packagePath, string exportPath)
+    public static void SaveMeshes(UObject asset, string packagePath, string outputPath)
     {
-        string exportPathWithExtension = Path.ChangeExtension(exportPath, ".psk");
-
         var exportOptions = new ExporterOptions
         {
             LodFormat = ELodFormat.FirstLod,
-            MeshFormat = EMeshFormat.ActorX,
+            MeshFormat = EMeshFormat.Gltf2,
             AnimFormat = EAnimFormat.ActorX,
             MaterialFormat = EMaterialFormat.AllLayersNoRef,
             TextureFormat = ETextureFormat.Png,
@@ -69,23 +69,31 @@ public class FileWriter
             ExportMaterials = false
         };
 
+        // Export the file to a temporary directory because TryWriteToDir method creates directories which I dont need
+        var tempOutputDirectory = Path.Combine(Path.GetTempPath(), "ExportTemp");
+        var tempOutputPath = Path.Combine(tempOutputDirectory, Path.GetFileName(outputPath));
+
+        Directory.CreateDirectory(tempOutputDirectory);
+
         var toSave = new Exporter(asset, exportOptions);
-        var directoryInfo = new DirectoryInfo(outputRootDirectory);
+        var directoryInfo = new DirectoryInfo(tempOutputDirectory);
         var success = toSave.TryWriteToDir(directoryInfo, out _, out var savedFilePath);
 
         if (success)
         {
-            AssetsManager.MoveFilesToOutput(exportPathWithExtension, packagePath, "psk", savedFilePath);
+            File.Move(savedFilePath, outputPath);
+            LogsWindowViewModel.Instance.AddLog($"Exported mesh: {packagePath}", Logger.LogTags.Info);
         }
+
+        // Clean up temporary directory
+        Directory.Delete(tempOutputDirectory, true);
     }
 
-    public static void SavePngFile(string exportPath, string packagePath, UTexture texture)
+    public static void SavePngFile(string outputPath, string packagePath, UTexture texture)
     {
         try
         {
-            string exportPathWithExtension = Path.ChangeExtension(exportPath, ".png");
-
-            var directoryPath = Path.GetDirectoryName(exportPathWithExtension);
+            var directoryPath = Path.GetDirectoryName(outputPath);
             if (directoryPath != null)
             {
                 Directory.CreateDirectory(directoryPath);
@@ -95,22 +103,19 @@ public class FileWriter
 
             if (img != null)
             {
-                using (var fileStream = new FileStream(exportPathWithExtension, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
-                {
-                    // Now, we have exclusive access to the file and can proceed with writing to it
-                    img.Encode(SKEncodedImageFormat.Png, 100).SaveTo(fileStream);
-                }
-
-                AssetsManager.MoveFilesToOutput(exportPathWithExtension, packagePath, "png", "");
+                using var fileStream = new FileStream(outputPath, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
+                // Now, we have exclusive access to the file and can proceed with writing to it
+                img.Encode(SKEncodedImageFormat.Png, 100).SaveTo(fileStream);
+                LogsWindowViewModel.Instance.AddLog($"Exported texture: {packagePath}", Logger.LogTags.Info);
             }
             else
             {
-                Logger.SaveLog($"Error saving PNG file, decoded texture is null", Logger.LogTags.Error);
+                LogsWindowViewModel.Instance.AddLog($"Error saving PNG file, decoded texture is null", Logger.LogTags.Error);
             }
         }
         catch (Exception ex)
         {
-            Logger.SaveLog($"Error saving PNG file: {ex}", Logger.LogTags.Error);
+            LogsWindowViewModel.Instance.AddLog($"Error saving PNG file: {ex}", Logger.LogTags.Error);
         }
     }
 

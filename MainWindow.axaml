@@ -8,7 +8,6 @@
         xmlns:vm="clr-namespace:UEParser.ViewModels"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="UEParser.MainWindow"
-        Icon="/Resources/UEParser.ico"
         Title="UEParser"
         x:DataType="vm:MainWindowViewModel">
   <ui:NavigationView

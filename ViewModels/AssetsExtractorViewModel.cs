@@ -13,30 +13,54 @@ namespace UEParser.ViewModels;
 public class AssetsExtractorViewModel
 {
     public ICommand ExtractMissingAssetsCommand { get; }
-    public ICommand CheckMissingAssetsCommand {  get; }
+    public ICommand CheckMissingAssetsCommand { get; }
+    public ICommand ExtractMeshesCommand { get; }
+    public ICommand ExtractTexturesCommand { get; }
 
     public AssetsExtractorViewModel()
     {
         ExtractMissingAssetsCommand = ReactiveCommand.Create(ExtractMissingAssets);
         CheckMissingAssetsCommand = ReactiveCommand.Create(CheckMissingAssets);
+        ExtractMeshesCommand = ReactiveCommand.Create(ExtractMeshes);
+        ExtractTexturesCommand = ReactiveCommand.Create(ExtractTextures);
     }
 
-    private async void ExtractMissingAssets()
+    private void ExtractMissingAssets()
+    {
+        //LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+        //var newAssets = FilesRegister.NewAssets;
+
+
+        // foreach (var file in newAssets)
+        //{
+        //        await Task.Delay(50);
+        //    LogsWindowViewModel.Instance.AddLog($"New asset: {file.Key}", Logger.LogTags.Info);
+
+        //}
+
+
+        //LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+    }
+
+    private async Task ExtractMeshes()
     {
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
-        var newAssets = FilesRegister.NewAssets;
+        LogsWindowViewModel.Instance.AddLog("Starting meshes extraction..", Logger.LogTags.Info);
 
+        await AssetsManager.ParseMeshes();
 
-        foreach (var file in newAssets)
-        {
-            await Task.Delay(100);
-                                   
-            Dispatcher.UIThread.Post(() =>
-            {
-                LogsWindowViewModel.Instance.AddLog($"New asset: {file.Key}", Logger.LogTags.Info);
-            });
-        }
+        LogsWindowViewModel.Instance.AddLog("Finished extracting meshes.", Logger.LogTags.Success);
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+    }
 
+    private async Task ExtractTextures()
+    {
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+        LogsWindowViewModel.Instance.AddLog("Starting textures extraction..", Logger.LogTags.Info);
+
+        await AssetsManager.ParseTextures();
+
+        LogsWindowViewModel.Instance.AddLog("Finished extracting textures.", Logger.LogTags.Success);
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
     }
 
@@ -50,7 +74,6 @@ public class AssetsExtractorViewModel
     {
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
         LogsWindowViewModel.Instance.AddLog("Looking for missing assets..", Logger.LogTags.Info);
-        await Task.Delay(100);
 
         var fileRegisterDictionary = FilesRegister.MountFileRegisterDictionary();
         string pathToExtractedAssets = GlobalVariables.pathToExtractedAssets;
@@ -66,19 +89,22 @@ public class AssetsExtractorViewModel
         };
 
         List<string> missingAssetsList = [];
-        foreach (var file in fileRegisterDictionary)
+        await Task.Run(() =>
         {
-            // Check if file.Key starts with any of the specified directories
-            if (directoriesToMatch.Any(dir => file.Key.StartsWith(dir, StringComparison.OrdinalIgnoreCase)))
+            foreach (var file in fileRegisterDictionary)
             {
-                string localFilePath = Path.Combine(pathToExtractedAssets, file.Key + ".json");
-
-                if (!File.Exists(localFilePath) && file.Value.Extension == "uasset")
+                // Check if file.Key starts with any of the specified directories
+                if (directoriesToMatch.Any(dir => file.Key.StartsWith(dir, StringComparison.OrdinalIgnoreCase)))
                 {
-                    missingAssetsList.Add(file.Key);
+                    string localFilePath = Path.Combine(pathToExtractedAssets, file.Key + ".json");
+
+                    if (!File.Exists(localFilePath) && file.Value.Extension == "uasset")
+                    {
+                        missingAssetsList.Add(file.Key);
+                    }
                 }
             }
-        }
+        });
 
         var fatalCrashAssets = GlobalVariables.fatalCrashAssets;
 
@@ -94,7 +120,7 @@ public class AssetsExtractorViewModel
         else
         {
             LogsWindowViewModel.Instance.AddLog($"Detected total of: {missingAssetsCount} missing assets. Starting export process..", Logger.LogTags.Warning);
-            
+
             await AssetsManager.ParseMissingAssets(missingAssetsList);
 
             LogsWindowViewModel.Instance.AddLog("Finished exporting.", Logger.LogTags.Success);
