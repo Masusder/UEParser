@@ -15,8 +15,6 @@ public class Initialize
     {
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
 
-        //await Task.Delay(1000); // Ugly delay to update UI thread, think of better solution instead
-
         CreateDefaultDirectories();
 
         // If build version number changed update necessary files
@@ -24,14 +22,22 @@ public class Initialize
         {
             LogsWindowViewModel.Instance.AddLog("Detected new build version of Dead by Daylight.. starting initialization process.", Logger.LogTags.Info);
             LogsWindowViewModel.Instance.AddLog("Exporting game assets.", Logger.LogTags.Info);
-            //await Task.Delay(1000); // Ugly delay to update UI, think of better solution instead
-            //AssetsManager.InitializeCUE4Parse();
+            AssetsManager.InitializeCUE4Parse();
             await AssetsManager.ParseGameAssets();
             LogsWindowViewModel.Instance.AddLog("Looking for new S3 Bucket Access Keys.", Logger.LogTags.Info);
-            await S3AccessKeys.CheckKeys(); // Check if there's any new S3AccessKeys (method needs to be invoked after 'InitializeCUE4Parse')
+            await S3AccessKeys.CheckKeys(); // Check if there's any new S3AccessKeys (method needs to be invoked after 'ParseGameAssets')
             LogsWindowViewModel.Instance.AddLog("Creating helper components to speed up parsing process.", Logger.LogTags.Info);
             Helpers.Archives.CreateArchiveQuestObjectiveDB();
             Helpers.Archives.CreateQuestNodeDatabase();
+
+            // Download mappings from github archive
+            bool mappingsExist = Mappings.CheckIfMappingsExist();
+            if (!mappingsExist)
+            {
+                LogsWindowViewModel.Instance.AddLog("Mappings aren't present. Downloading mappings from archive..", Logger.LogTags.Warning);
+                await Mappings.DownloadMappings();
+            }
+
             LogsWindowViewModel.Instance.AddLog("Creating patched localization files to speed up parsing process.", Logger.LogTags.Info);
             Helpers.CreateLocresFiles(); // Create fixed localization to speed up parsing
             LogsWindowViewModel.Instance.AddLog("Saving new build version of Dead by Daylight.", Logger.LogTags.Info);

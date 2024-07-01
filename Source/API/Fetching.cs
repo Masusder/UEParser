@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace UEParser;
@@ -26,6 +27,24 @@ public class API
         catch (HttpRequestException e)
         {
             return new ApiResponse(false, "", $"Error: {e.Message}");
+        }
+    }
+
+    public static async Task<byte[]> FetchFileBytesAsync(string fileUrl)
+    {
+        using var client = new HttpClient();
+
+        try
+        {
+            HttpResponseMessage response = await client.GetAsync(fileUrl);
+            response.EnsureSuccessStatusCode(); 
+
+            byte[] fileBytes = await response.Content.ReadAsByteArrayAsync();
+            return fileBytes;
+        }
+        catch
+        {
+            throw;
         }
     }
 }

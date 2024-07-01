@@ -71,7 +71,6 @@ public class FileWriter
 
         // Export the file to a temporary directory because TryWriteToDir method creates directories which I dont need
         var tempOutputDirectory = Path.Combine(Path.GetTempPath(), "ExportTemp");
-        var tempOutputPath = Path.Combine(tempOutputDirectory, Path.GetFileName(outputPath));
 
         Directory.CreateDirectory(tempOutputDirectory);
 
@@ -103,7 +102,7 @@ public class FileWriter
 
             if (img != null)
             {
-                using var fileStream = new FileStream(outputPath, FileMode.Create, FileAccess.ReadWrite, FileShare.None);
+                using var fileStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write, FileShare.Read);
                 // Now, we have exclusive access to the file and can proceed with writing to it
                 img.Encode(SKEncodedImageFormat.Png, 100).SaveTo(fileStream);
                 LogsWindowViewModel.Instance.AddLog($"Exported texture: {packagePath}", Logger.LogTags.Info);
