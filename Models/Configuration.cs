@@ -42,7 +42,7 @@ public class CoreConfig
     public List<string> EventTomesList { get; set; }
     public VersionData VersionData { get; set; }
     public KrakenApiConfig ApiConfig { get; set; }
-    public HTMLTagConverters HTMLTagConverters { get; set; }
+    //public HTMLTagConverters HTMLTagConverters { get; set; }
 
     public CoreConfig()
     {
@@ -54,7 +54,7 @@ public class CoreConfig
         EventTomesList = [];
         VersionData = new VersionData();
         ApiConfig = new KrakenApiConfig();
-        HTMLTagConverters = new HTMLTagConverters();
+        //HTMLTagConverters = new HTMLTagConverters();
     }
 }
 
@@ -151,57 +151,57 @@ public class NeteaseApiConfig
 }
 
 // HTML Tag converters
-public class HTMLTagConverters
-{
-    public TomeGlyphs TomeGlyphs { get; set; }
-    public TomeCoreMemory TomeCoreMemory { get; set; }
+//public class HTMLTagConverters
+//{
+//    public TomeGlyphs TomeGlyphs { get; set; }
+//    public TomeCoreMemory TomeCoreMemory { get; set; }
 
-    public HTMLTagConverters()
-    {
-        TomeGlyphs = new TomeGlyphs();
-        TomeCoreMemory = new TomeCoreMemory();
-    }
-}
+//    public HTMLTagConverters()
+//    {
+//        TomeGlyphs = new TomeGlyphs();
+//        TomeCoreMemory = new TomeCoreMemory();
+//    }
+//}
 
-// Tome glyphs
-public class TomeGlyphs
-{
-    public List<string> GlyphsArray { get; set; }
-    public Dictionary<string, GlyphDetail> GlyphDetails { get; set; }
+//// Tome glyphs
+//public class TomeGlyphs
+//{
+//    public List<string> GlyphsArray { get; set; }
+//    public Dictionary<string, GlyphDetail> GlyphDetails { get; set; }
 
-    public TomeGlyphs()
-    {
-        GlyphsArray = [];
-        GlyphDetails = [];
-    }
-}
+//    public TomeGlyphs()
+//    {
+//        GlyphsArray = [];
+//        GlyphDetails = [];
+//    }
+//}
 
-// Glyph detail
-public class GlyphDetail
-{
-    public string? Id { get; set; }
-    public string? Html { get; set; }
-}
+//// Glyph detail
+//public class GlyphDetail
+//{
+//    public string? Id { get; set; }
+//    public string? Html { get; set; }
+//}
 
 // Tome core memory
-public class TomeCoreMemory
-{
-    public List<string> CoreMemoryArray { get; set; }
-    public Dictionary<string, CoreMemoryDetail> CoreMemoryDetails { get; set; }
+//public class TomeCoreMemory
+//{
+//    public List<string> CoreMemoryArray { get; set; }
+//    public Dictionary<string, CoreMemoryDetail> CoreMemoryDetails { get; set; }
 
-    public TomeCoreMemory()
-    {
-        CoreMemoryArray = [];
-        CoreMemoryDetails = [];
-    }
-}
+//    public TomeCoreMemory()
+//    {
+//        CoreMemoryArray = [];
+//        CoreMemoryDetails = [];
+//    }
+//}
 
 // Core memory detail
-public class CoreMemoryDetail
-{
-    public string? Id { get; set; }
-    public string? Html { get; set; }
-}
+//public class CoreMemoryDetail
+//{
+//    public string? Id { get; set; }
+//    public string? Html { get; set; }
+//}
 
 // Game branches
 public enum Branch

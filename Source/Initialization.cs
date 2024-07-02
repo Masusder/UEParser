@@ -29,6 +29,7 @@ public class Initialize
             LogsWindowViewModel.Instance.AddLog("Creating helper components to speed up parsing process.", Logger.LogTags.Info);
             Helpers.Archives.CreateArchiveQuestObjectiveDB();
             Helpers.Archives.CreateQuestNodeDatabase();
+            Helpers.CreateTagConverters();
 
             // Download mappings from github archive
             bool mappingsExist = Mappings.CheckIfMappingsExist();
@@ -74,7 +75,7 @@ public class Initialize
         }
         else
         {
-            LogsWindowViewModel.Instance.AddLog("Set path to game directory in 'config.json'.", Logger.LogTags.Error);
+            LogsWindowViewModel.Instance.AddLog("Path to game directory is missing. You need to properly configure app in settings before being able to continue.", Logger.LogTags.Error);
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
         }
 
@@ -85,6 +86,10 @@ public class Initialize
     {
         Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents"));
         Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"));
+        Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Mappings"));
+        Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Dependencies", "FilesRegister"));
+        Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAssets"));
+        Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output"));
     }
 
     private static bool ReadVersion(string savedVersion)

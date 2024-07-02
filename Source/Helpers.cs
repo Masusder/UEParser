@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using UEParser.Models;
 using UEParser.Services;
 
 namespace UEParser;
@@ -129,6 +131,44 @@ public class Helpers
         File.WriteAllText(outputPath, combinedJsonString);
     }
 
+    // This method creates file that contains HTML tag converters
+    // In the game HTML tags are converted to Rich Text Tag and can be found in 'CoreHTMLTagConvertDB.uasset' datatable
+    // For our purpose we use custom values, this can be configured to whatever you need inside 'Dependencies/HelperComponents/tagConverters.json'
+    public static void CreateTagConverters()
+    {
+        string outputPathDirectory = Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents");
+        string outputPath = Path.Combine(outputPathDirectory, "tagConverters.json");
+
+        Directory.CreateDirectory(outputPathDirectory);
+
+        if (File.Exists(outputPath)) return;
+
+        var htmlTagConverters = new Dictionary<string, string>
+        {
+            { "_GFX::CQGRIcon", "<img src=\"/images/Archives/Glyphs/ChallengeIcon_redGlyph.png\" style=\"vertical-align:middle;\" height=\"25px\" width=\"25px\">" },
+            { "_GFX::CQGIBIcon", "<img src=\"/images/Archives/Glyphs/ChallengeIcon_whiteGlyph.png\" style=\"vertical-align:middle;\" height=\"25px\" width=\"25px\">" },
+            { "_GFX::CQGBIcon", "<img src=\"/images/Archives/Glyphs/ChallengeIcon_blueGlyph.png\" style=\"vertical-align:middle;\" height=\"25px\" width=\"25px\">" },
+            { "_GFX::CQGPIcon", "<img src=\"/images/Archives/Glyphs/ChallengeIcon_purpleGlyph.png\" style=\"vertical-align:middle;\" height=\"25px\" width=\"25px\">" },
+            { "_GFX::CQGYIcon", "<img src=\"/images/Archives/Glyphs/ChallengeIcon_yellowGlyph.png\" style=\"vertical-align:middle;\" height=\"25px\" width=\"25px\">" },
+            { "_GFX::CQGGIcon", "<img src=\"/images/Archives/Glyphs/ChallengeIcon_greenGlyph.png\" style=\"vertical-align:middle;\" height=\"25px\" width=\"25px\">" },
+            { "_GFX::CQGOIcon", "<img src=\"/images/Archives/Glyphs/ChallengeIcon_orangeGlyph.png\" style=\"vertical-align:middle;\" height=\"25px\" width=\"25px\">" },
+            { "_GFX::CQGPkIcon", "<img src=\"/images/Archives/Glyphs/ChallengeIcon_pinkGlyph.png\" style=\"vertical-align:middle;\" height=\"25px\" width=\"25px\">" },
+            { "_GFX::CQFrgIcon", "<img src=\"/images/Archives/Glyphs/ChallengeIcon_coreMemory.png\" style=\"vertical-align:middle;\" height=\"25px\" width=\"25px\">" },
+            { "_GFX::CQFrg02", "<img src=\"/images/Archives/Glyphs/ChallengeIcon_coreMemory02.png\" style=\"vertical-align:middle;\" height=\"25px\" width=\"25px\">" },
+            { "_GFX::CQFrg03", "<img src=\"/images/Archives/Glyphs/ChallengeIcon_coreMemory03.png\" style=\"vertical-align:middle;\" height=\"25px\" width=\"25px\">" },
+            { "_GFX::CQFrg04", "<img src=\"/images/Archives/Glyphs/ChallengeIcon_coreMemory04.png\" style=\"vertical-align:middle;\" height=\"25px\" width=\"25px\">" }
+        };
+
+        TagConverters data = new()
+        {
+            HTMLTagConverters = htmlTagConverters
+        };
+
+        string jsonString = JsonConvert.SerializeObject(data, Formatting.Indented);
+
+        File.WriteAllText(outputPath, jsonString);
+    }
+
     public class Archives
     {
         public static void CreateArchiveQuestObjectiveDB()
@@ -187,7 +227,6 @@ public class Helpers
                     }
                 }
             }
-
 
             string combinedJsonString = JsonConvert.SerializeObject(jsonObject, Formatting.Indented);
 

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Reactive.Linq;
 using System.Windows.Input;
 using System;
+using System.Diagnostics;
+using System.IO;
 
 namespace UEParser.ViewModels;
 
@@ -14,7 +16,8 @@ public partial class LogsWindowViewModel : ReactiveObject
     private static LogsWindowViewModel? _instance;
     public static LogsWindowViewModel Instance => _instance ??= new LogsWindowViewModel();
 
-    public ICommand? ClearLogsCommand { get; }
+    public ICommand ClearLogsCommand { get; }
+    public ICommand OpenOutputCommand { get; }
     public bool IsInfoBarOpen { get; private set; }
 
     private ELogState _logState = ELogState.Neutral;
@@ -34,21 +37,6 @@ public partial class LogsWindowViewModel : ReactiveObject
         set => this.RaiseAndSetIfChanged(ref _logState, value);
     }
 
-    //private string _stateColor = "#323232";
-
-    //public string StateColor
-    //{
-    //    get { return _stateColor; }
-    //    set
-    //    {
-    //        if (_stateColor != value)
-    //        {
-    //            _stateColor = value;
-    //            OnPropertyChanged(nameof(StateColor));
-    //        }
-    //    }
-    //}
-
     private readonly ObservableAsPropertyHelper<string> _stateColor;
     public string StateColor => _stateColor.Value;
 
@@ -64,6 +52,7 @@ public partial class LogsWindowViewModel : ReactiveObject
     private LogsWindowViewModel()
     {
         ClearLogsCommand = ReactiveCommand.Create(ClearLogs);
+        OpenOutputCommand = ReactiveCommand.Create(OpenOutput);
         _stateColor = this.WhenAnyValue(x => x.LogState)
                 .Select(state => state switch
                 {
@@ -114,28 +103,28 @@ public partial class LogsWindowViewModel : ReactiveObject
     public void ChangeLogState(ELogState newState)
     {
         LogState = newState;
-        //SetStateColor();
     }
 
-    //private void SetStateColor()
-    //{
-    //    StateColor = LogState switch
-    //    {
-    //        ELogState.Finished => "Green",
-    //        ELogState.Running => "Yellow",
-    //        ELogState.Error => "Red",
-    //        ELogState.Neutral => "#323232",
-    //        _ => "#323232",
-    //    };
-    //}
+    private static void OpenOutput()
+    {
+        string outputFolder = Path.Combine(GlobalVariables.rootDir, "Output");
+        Directory.CreateDirectory(outputFolder);
 
-    //private void ClearLogs()
-    //{
-    //    LogEntries.Clear();
-    //    this.RaisePropertyChanged(nameof(LogEntries));
-    //    IsInfoBarOpen = true;
-    //    this.RaisePropertyChanged(nameof(IsInfoBarOpen));
-    //}
+        // Check if the output folder exists before attempting to open it
+        if (Directory.Exists(outputFolder))
+        {
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                // Open the folder in file explorer
+                ProcessStartInfo startInfo = new()
+                {
+                    Arguments = outputFolder,
+                    FileName = "explorer.exe"
+                };
+                Process.Start(startInfo);
+            });
+        }
+    }
 
     private async Task ClearLogs()
     {

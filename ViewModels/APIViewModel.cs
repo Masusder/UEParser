@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using UEParser.Services;
 using UEParser.Kraken;
 using System.Threading.Tasks;
 using System;

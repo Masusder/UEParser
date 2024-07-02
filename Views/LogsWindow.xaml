@@ -30,9 +30,22 @@
       <TextBlock Text="{Binding StateText}" FontWeight="600" HorizontalAlignment="Left" Padding="5" VerticalAlignment="Center" Foreground="{Binding StateTextColor}"/>
       <li:LoadingIndicator IsActive="{Binding IsLoading}" Mode="ThreeDots" Foreground="White" HorizontalAlignment="Right" SpeedRatio="1.2" />
     </Grid>
-    <Button Grid.Row="0" Width="32" HorizontalAlignment="Right" BorderBrush="Transparent" Background="Transparent" Cursor="Hand" Command="{Binding ClearLogsCommand}" VerticalAlignment="Bottom" Margin="10,10,12.5,10">
-      <i:Icon Value="fa-solid fa-trash" Width="16" Height="16" FontSize="16"/>
-    </Button>
+    <StackPanel Orientation="Vertical" HorizontalAlignment="Right" Spacing="5" Margin="10,10,12.5,10" VerticalAlignment="Bottom">
+      <StackPanel Spacing="2.5" Margin="0,0,3,0">
+        <Button Grid.Row="0" ToolTip.Tip="Scroll to top" Width="24" Height="24" HorizontalAlignment="Right" BorderBrush="Transparent" Background="Transparent" Cursor="Hand" Click="ScrollToTop" VerticalAlignment="Bottom">
+          <i:Icon Value="fa-solid fa-circle-up" Width="16" Height="16" FontSize="12"/>
+        </Button>
+        <Button Grid.Row="0" ToolTip.Tip="Scroll to bottom" Width="24" Height="24" HorizontalAlignment="Right" BorderBrush="Transparent" Background="Transparent" Cursor="Hand" Click="ScrollToBottom" VerticalAlignment="Bottom">
+          <i:Icon Value="fa-solid fa-circle-down" Width="16" Height="16" FontSize="12"/>
+        </Button>
+      </StackPanel>
+      <Button Grid.Row="0" ToolTip.Tip="Open Output" Width="32" HorizontalAlignment="Right" BorderBrush="Transparent" Background="Transparent" Cursor="Hand" Command="{Binding OpenOutputCommand}" VerticalAlignment="Bottom">
+        <i:Icon Value="fa-solid fa-folder" Width="16" Height="16" FontSize="16"/>
+      </Button>
+      <Button Grid.Row="0" ToolTip.Tip="Clear Logs" Width="32" HorizontalAlignment="Right" BorderBrush="Transparent" Background="Transparent" Cursor="Hand" Command="{Binding ClearLogsCommand}" VerticalAlignment="Bottom">
+        <i:Icon Value="fa-solid fa-trash" Width="16" Height="16" FontSize="16"/>
+      </Button>
+    </StackPanel>
     <!-- InfoBar to display when logs are cleared -->
     <ui:InfoBar x:Name="InfoBarControl" Title="Logs Cleared"
                 IsOpen="{Binding IsInfoBarOpen}"

@@ -12,7 +12,6 @@ namespace UEParser.ViewModels;
 
 public class AssetsExtractorViewModel
 {
-    public ICommand ExtractMissingAssetsCommand { get; }
     public ICommand CheckMissingAssetsCommand { get; }
     public ICommand ExtractMeshesCommand { get; }
     public ICommand ExtractTexturesCommand { get; }
@@ -20,28 +19,10 @@ public class AssetsExtractorViewModel
 
     public AssetsExtractorViewModel()
     {
-        ExtractMissingAssetsCommand = ReactiveCommand.Create(ExtractMissingAssets);
         CheckMissingAssetsCommand = ReactiveCommand.Create(CheckMissingAssets);
         ExtractMeshesCommand = ReactiveCommand.Create(ExtractMeshes);
         ExtractTexturesCommand = ReactiveCommand.Create(ExtractTextures);
         ExtractUICommand = ReactiveCommand.Create(ExtractUI);
-    }
-
-    private void ExtractMissingAssets()
-    {
-        //LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
-        //var newAssets = FilesRegister.NewAssets;
-
-
-        // foreach (var file in newAssets)
-        //{
-        //        await Task.Delay(50);
-        //    LogsWindowViewModel.Instance.AddLog($"New asset: {file.Key}", Logger.LogTags.Info);
-
-        //}
-
-
-        //LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
     }
 
     private async Task ExtractMeshes()
