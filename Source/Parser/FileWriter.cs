@@ -6,31 +6,51 @@ using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse.UE4.Assets.Exports.Material;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SkiaSharp;
 using System.IO;
 using System;
 using CUE4Parse.UE4.Assets.Exports;
 using UEParser.ViewModels;
+using System.Collections.Generic;
+using System.Linq;
+using UEParser.Utils;
 
 namespace UEParser.Parser;
 
 public class FileWriter
 {
-    // public static void SaveParsedDB<T>(T data, string path, string tag)
-    // {
-    //     try
-    //     {
-    //         string json = JsonConvert.SerializeObject(data, Formatting.Indented);
+    public static void SaveParsedDB<T>(Dictionary<string, T> data, string path, string tag)
+    {
+        try
+        {
+            var sortedObj = data.OrderBy(kvp =>
+            {
+                if (!int.TryParse(kvp.Key.Replace("Tome", ""), out int result))
+                    return int.MaxValue; // If parsing fails, place it at the end
+                return result;
+            }, Comparer<int>.Default)
+            .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-    //         File.WriteAllText(path, json);
+            string json = JsonConvert.SerializeObject(sortedObj, Formatting.Indented);
 
-    //         Logger.SaveLog($"[{tag}] Database saved to: {path}", Logger.LogTags.Info);
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         Logger.SaveLog($"Error saving '{tag}' database: {ex}", Logger.LogTags.Error);
-    //     }
-    // }
+            var directoryPath = Path.GetDirectoryName(path);
+            if (directoryPath != null)
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            File.WriteAllText(path, json);
+
+            string strippedPath = StringUtils.StripRootDir(path);
+
+            LogsWindowViewModel.Instance.AddLog($"[{tag}] Database saved to: {strippedPath}", Logger.LogTags.Info);
+        }
+        catch (Exception ex)
+        {
+            LogsWindowViewModel.Instance.AddLog($"Error saving '{tag}' database: {ex}", Logger.LogTags.Error);
+        }
+    }
 
     public static void SaveJsonFile(string exportPath, string data)
     {

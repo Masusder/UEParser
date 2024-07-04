@@ -1,9 +1,16 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        x:Class="UEParser.Views.APIView"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            x:Class="UEParser.Views.APIView"
              xmlns:vm="clr-namespace:UEParser.ViewModels"
+             xmlns:i="https://github.com/projektanker/icons.avalonia"
              x:DataType="vm:APIViewModel">
   <StackPanel Margin="20" VerticalAlignment="Center" HorizontalAlignment="Center">
+    <i:Icon Value="fa-brands fa-gitkraken" Foreground="#2f4a7a" Width="150" Height="150" FontSize="128" >
+      <i:Icon.Effect>
+        <DropShadowDirectionEffect Color="Black" Direction="0" ShadowDepth="0" Opacity="0.5"/>
+      </i:Icon.Effect>
+    </i:Icon>
+    <TextBlock HorizontalAlignment="Center" FontWeight="700" FontSize="32" Text="Kraken API" Margin="0, 0, 0, 7.5" VerticalAlignment="Center" />
     <TextBlock HorizontalAlignment="Center" Text="{Binding Version}" Margin="0, 0, 0, 0" VerticalAlignment="Center" />
     <TextBlock HorizontalAlignment="Center" FontSize="12" Foreground="AntiqueWhite" Text="You can change selected version in settings." Margin="0, 5, 0, 15" VerticalAlignment="Center" />
     <Button Content="Fetch Data" Command="{Binding FetchDataCommand}" Cursor="Hand" FontWeight="500" HorizontalAlignment="Center" VerticalAlignment="Center" />

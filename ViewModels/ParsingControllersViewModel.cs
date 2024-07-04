@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 using ReactiveUI;
+using System.Threading.Tasks;
 using UEParser.Views;
 
 namespace UEParser.ViewModels;
@@ -27,10 +28,13 @@ public class ParsingControllersViewModel : ReactiveObject
         LogsWindowViewModel.Instance.AddLog("Data parsed successfully.", Logger.LogTags.Success);
     }
 
-    private void ParseRifts()
+    private async Task ParseRifts()
     {
-        LogsWindowViewModel.Instance.AddLog("[Rifts] Parsing data..", Logger.LogTags.Info);
-        LogsWindowViewModel.Instance.AddLog("[Rifts] Data parsed successfully.", Logger.LogTags.Success);
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+
+        await APIComposers.Rifts.InitializeRiftsDB();
+
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
     }
 
     private void ParseCharacters()

@@ -8,18 +8,18 @@ namespace UEParser.Utils;
 
 public class StringUtils
 {
-    public static string ChangeToNeteasePath(string path)
-    {
-        string pathWithoutGame = path.Replace("/Game/", "");
-        if (pathWithoutGame.StartsWith('/'))
-        {
-            pathWithoutGame = pathWithoutGame[1..];
-        }
-        string modifiedPath = Path.Combine("/netease", "assets", pathWithoutGame);
-        string unifiedSlashes = modifiedPath.Replace("\\", "/");
+    //public static string ChangeToNeteasePath(string path)
+    //{
+    //    string pathWithoutGame = path.Replace("/Game/", "");
+    //    if (pathWithoutGame.StartsWith('/'))
+    //    {
+    //        pathWithoutGame = pathWithoutGame[1..];
+    //    }
+    //    string modifiedPath = Path.Combine("/netease", "assets", pathWithoutGame);
+    //    string unifiedSlashes = modifiedPath.Replace("\\", "/");
 
-        return unifiedSlashes;
-    }
+    //    return unifiedSlashes;
+    //}
 
     public static string GetCollectionName(dynamic asset)
     {
@@ -86,5 +86,62 @@ public class StringUtils
         }
 
         return input;
+    }
+
+    public static string StripExtractedAssetsDir(string fullPath)
+    {
+        string pathToExtractedAssets = GlobalVariables.pathToExtractedAssets;
+
+        // Check if fullPath starts with pathToExtractedAssets
+        if (fullPath.StartsWith(pathToExtractedAssets, StringComparison.OrdinalIgnoreCase))
+        {
+            // Strip pathToExtractedAssets from fullPath
+            string strippedPath = fullPath[pathToExtractedAssets.Length..];
+
+            // Remove leading directory separator if present
+            if (strippedPath.StartsWith(Path.DirectorySeparatorChar) || strippedPath.StartsWith(Path.AltDirectorySeparatorChar))
+            {
+                strippedPath = strippedPath[1..];
+            }
+
+            return strippedPath;
+        }
+        else
+        {
+            // Return fullPath unchanged if pathToExtractedAssets is not found
+            return fullPath;
+        }
+    }
+
+    public static string StripRootDir(string fullPath) 
+    {
+        string rootDir = GlobalVariables.rootDir;
+
+        // Check if fullPath starts with rootDir
+        if (fullPath.StartsWith(rootDir, StringComparison.OrdinalIgnoreCase))
+        {
+            // Strip rootDir from fullPath
+            string strippedPath = fullPath[rootDir.Length..];
+
+            // Remove leading directory separator if present
+            if (strippedPath.StartsWith(Path.DirectorySeparatorChar) || strippedPath.StartsWith(Path.AltDirectorySeparatorChar))
+            {
+                strippedPath = strippedPath[1..];
+            }
+
+            return strippedPath;
+        }
+        else
+        {
+            // Return fullPath unchanged if rootDir is not found
+            return fullPath;
+        }
+    }
+
+    public static string LangSplit(string input)
+    {
+        string[] parts = input.Split('_', '.');
+        string result = parts[1];
+        return result;
     }
 }

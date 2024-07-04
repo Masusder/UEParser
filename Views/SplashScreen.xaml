@@ -2,35 +2,52 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:i="https://github.com/projektanker/icons.avalonia"
              mc:Ignorable="d"
              x:Class="UEParser.Views.SplashScreen"
              d:DesignHeight="300" d:DesignWidth="400">
-  <UserControl.Background>
-    <RadialGradientBrush
-      GradientOrigin="0.5,0.5" Center="0.5,0.5" Radius="2">
-      <GradientStop Color="#2AA9EB" Offset="0" />
-      <GradientStop Color="Dodgerblue" Offset="0.25" />
-      <GradientStop Color="Blue" Offset="0.75" />
-    </RadialGradientBrush>
-  </UserControl.Background>
-  <Grid>
+  <UserControl.Styles>
+    <Style Selector="Grid.SplashBackground">
+      <Style.Animations>
+        <Animation Duration="0:0:02"
+                   IterationCount="Infinite"
+                   PlaybackDirection="Alternate">
+          <KeyFrame Cue="0%">
+            <Setter Property="Background">
+              <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" Radius="2">
+                <GradientStop Color="Dodgerblue" Offset="0"/>
+                <GradientStop Color="Dodgerblue" Offset="0.25"/>
+                <GradientStop Color="Blue" Offset="0.5"/>
+              </RadialGradientBrush>
+            </Setter>
+          </KeyFrame>
+          <KeyFrame Cue="100%">
+            <Setter Property="Background">
+              <RadialGradientBrush GradientOrigin="0.5,0.5" Center="0.5,0.5" Radius="2">
+                <GradientStop Offset="0.1" Color="#00ffd5"/>
+                <GradientStop Offset="0.25" Color="Dodgerblue"/>
+              </RadialGradientBrush>
+            </Setter>
+          </KeyFrame>
+        </Animation>
+      </Style.Animations>
+    </Style>
+  </UserControl.Styles>
+  <Grid Classes="SplashBackground">
     <Border HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Width="256"
-                Height="256"
-                BorderBrush="Transparent"
-                BorderThickness="0">
+            VerticalAlignment="Center"
+            Width="256"
+            Height="256"
+            BorderBrush="Transparent"
+            BorderThickness="0">
       <Border.Effect>
         <DropShadowEffect BlurRadius="30"
                           Color="Black"
-                          Opacity="0.5"
-                           />
+                          Opacity="0.5" />
       </Border.Effect>
       <Image Source="avares://UEParser/Resources/DBDInfoLogo.png"
              HorizontalAlignment="Center"
              VerticalAlignment="Center"
-             Width="256"/>
+             Width="256" />
     </Border>
   </Grid>
 </UserControl>

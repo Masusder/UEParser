@@ -50,9 +50,7 @@ public class APIViewModel
 
     public void ConstructFullVersion()
     {
-        string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch();
-
-        string fullVersion = $"Selected version: {versionWithBranch}";
+        string fullVersion = $"Selected version: {GlobalVariables.versionWithBranch}";
         Version = fullVersion;
     }
 

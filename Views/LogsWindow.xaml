@@ -23,7 +23,9 @@
       <SelectableTextBlock TextWrapping="Wrap"
                            x:Name="LogTextBlock"
                            SelectionBrush="#63B8FF"
-                           Padding="5, 5, 0, 0"/>
+                           Padding="5, 5, 0, 0"
+                           Focusable="True"
+                           />
     </ScrollViewer>
     <Grid Grid.Row="1" Height="32">
       <GridSplitter Background="{Binding StateColor}" IsEnabled="False" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>

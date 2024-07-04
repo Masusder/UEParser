@@ -42,7 +42,12 @@ namespace UEParser.Views
         private void UpdateLogText()
         {
             var viewModel = (LogsWindowViewModel?)DataContext;
-            var logTextBlock = this.FindControl<SelectableTextBlock>("LogTextBlock");
+            var logTextBlock = this.FindControl<SelectableTextBlock>("LogTextBlock") ?? new SelectableTextBlock();
+
+            logTextBlock.GotFocus += (sender, e) =>
+            {
+                e.Handled = true;
+            };
 
             if (viewModel == null) return;
 
