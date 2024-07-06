@@ -83,18 +83,6 @@ namespace UEParser.Views
             }
         }
 
-        //public void ScrollToTop(object sender, RoutedEventArgs args)
-        //{
-        //    var scrollViewer = this.FindControl<ScrollViewer>("LogScrollViewer");
-        //    if (scrollViewer != null)
-        //    {
-        //        if (scrollViewer.Offset.Y + scrollViewer.Viewport.Height >= scrollViewer.Extent.Height)
-        //        {
-        //            scrollViewer.ScrollToHome();
-        //        }
-        //    }
-        //}
-
         public void ScrollToTop(object sender, RoutedEventArgs args)
         {
             var scrollViewer = this.FindControl<ScrollViewer>("LogScrollViewer");

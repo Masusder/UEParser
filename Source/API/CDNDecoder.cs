@@ -3,7 +3,10 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Ionic.Zlib;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using UEParser.Services;
+using Sprache;
 
 namespace UEParser.CDNDecoder;
 
@@ -31,7 +34,30 @@ public class DbdDecryption
             return DecompressDbdZlib(inputText, branch);
         }
 
+        // In case of encryption key not being valid
+        // inputText will still go past all above methods without any errors
+        // but result will be meaningless string
+        // check for that here
+        if (!string.IsNullOrEmpty(inputText) && !IsValidJson(inputText))
+        {
+            throw new Exception("Decrypted data is not a valid JSON. Most likely encryption key is invalid.");
+        }
+
         return inputText;
+    }
+
+    private static bool IsValidJson(string strInput)
+    {
+        if (string.IsNullOrWhiteSpace(strInput)) return true;
+        try
+        {
+            var obj = JToken.Parse(strInput);
+            return true;
+        }
+        catch (JsonReaderException)
+        {
+            return false;
+        }
     }
 
     private static string DecryptDbdAsset(string inputText, string branch)

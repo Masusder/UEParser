@@ -62,7 +62,7 @@ public class KrakenAPI
 
             if (latestSavedVersion != latestVersion)
             {
-                LogsWindowViewModel.Instance.AddLog($"Detected new version: '{latestVersion}'", Logger.LogTags.Info);
+                LogsWindowViewModel.Instance.AddLog($"Detected new version: '{latestVersion}'.", Logger.LogTags.Info);
 
                 await FetchCdnContent();
                 await FetchDynamicCdnContent(CDNOutputDirName.Tomes);
@@ -169,7 +169,7 @@ public class KrakenAPI
 
         foreach (string cdnEndpoint in cdnEndpoints.Keys)
         {
-            LogsWindowViewModel.Instance.AddLog($"Fetching CDN: '{cdnEndpoint}'", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Fetching CDN: '{cdnEndpoint}'.", Logger.LogTags.Info);
 
             string outputPath = Path.Combine(outputDir, cdnEndpoint + ".json");
             string url = ConstructCdnUrl(cdnEndpoints[cdnEndpoint]);

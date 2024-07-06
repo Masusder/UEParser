@@ -6,6 +6,12 @@ using UEParser.Views;
 
 namespace UEParser.ViewModels;
 
+public class StringResources
+{
+    public required string Title { get; set; }
+    public required string Description { get; set; }
+}
+
 public class ParsingControllersViewModel : ReactiveObject
 {
     private static readonly Lazy<ParsingControllersViewModel> lazy = new(() => new());

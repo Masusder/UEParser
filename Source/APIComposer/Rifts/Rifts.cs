@@ -13,8 +13,7 @@ namespace UEParser.APIComposers;
 
 public class Rifts
 {
-    private static readonly string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch();
-    private static readonly dynamic? archiveRewardData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.rootDir, "Output", "API", versionWithBranch, "archiveRewardData.json"));
+    private static readonly dynamic? archiveRewardData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.rootDir, "Output", "API", GlobalVariables.versionWithBranch, "archiveRewardData.json"));
     private static readonly Dictionary<string, Dictionary<string, Models.LocalizationEntry>> localizationData = [];
 
     public static async Task InitializeRiftsDB()
@@ -56,7 +55,7 @@ public class Rifts
                     bool exists = eventTomesArray?.Any(x => x == riftId) ?? true;
                     if (!exists)
                     {
-                        string pathToRiftFile = Path.Combine(GlobalVariables.rootDir, "Output", "API", versionWithBranch, "Rifts", $"{riftId}.json");
+                        string pathToRiftFile = Path.Combine(GlobalVariables.rootDir, "Output", "API", GlobalVariables.versionWithBranch, "Rifts", $"{riftId}.json");
                         if (!File.Exists(pathToRiftFile))
                         {
                             LogsWindowViewModel.Instance.AddLog("Not found Rift data. Make sure to update API first.", Logger.LogTags.Error);
@@ -64,7 +63,7 @@ public class Rifts
                             continue;
                         }
 
-                        var riftData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.rootDir, "Output", "API", versionWithBranch, "Rifts", $"{riftId}.json"));
+                        var riftData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.rootDir, "Output", "API", GlobalVariables.versionWithBranch, "Rifts", $"{riftId}.json"));
 
                         string riftIdTitleCase = RiftUtils.TomeToTitleCase(riftId);
 
