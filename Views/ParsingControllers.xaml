@@ -71,6 +71,7 @@
             </TextBlock>
           </StackPanel>
         </Button>
+
         <Button Name="CharactersController"
                 Command="{Binding ParseCharactersCommand}"
                 Cursor="Hand"
@@ -87,6 +88,25 @@
             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Characters</TextBlock>
           </StackPanel>
         </Button>
+
+        <Button Name="CosmeticsController"
+                Command="{Binding ParseCosmeticsCommand}"
+                Cursor="Hand"
+                Margin="5">
+          <StackPanel Orientation="Vertical">
+            <TextBlock Text="3"
+                 HorizontalAlignment="Right"
+                 VerticalAlignment="Top"
+                 Margin="0,0,-5,-30"
+                 FontSize="14"
+                 FontWeight="Medium"
+                 Foreground="White"/>
+            <Image Source="avares://UEParser/Resources/icon_Store.png" Width="64" Height="64" />
+            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Cosmetics</TextBlock>
+          </StackPanel>
+        </Button>
+
+
       </StackPanel>
       <StackPanel
             Orientation="Horizontal"

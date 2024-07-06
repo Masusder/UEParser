@@ -33,12 +33,12 @@
       <li:LoadingIndicator IsActive="{Binding IsLoading}" Mode="ThreeDots" Foreground="White" HorizontalAlignment="Right" SpeedRatio="1.2" />
     </Grid>
     <StackPanel Orientation="Vertical" HorizontalAlignment="Right" Spacing="5" Margin="10,10,12.5,10" VerticalAlignment="Bottom">
-      <StackPanel Spacing="2.5" Margin="0,0,3,0">
-        <Button Grid.Row="0" ToolTip.Tip="Scroll to top" Width="24" Height="24" HorizontalAlignment="Right" BorderBrush="Transparent" Background="Transparent" Cursor="Hand" Click="ScrollToTop" VerticalAlignment="Bottom">
-          <i:Icon Value="fa-solid fa-circle-up" Width="16" Height="16" FontSize="12"/>
+      <StackPanel Spacing="2.5">
+        <Button Grid.Row="0" ToolTip.Tip="Scroll to top" Width="32" HorizontalAlignment="Right" BorderBrush="Transparent" Background="Transparent" Cursor="Hand" Click="ScrollToTop" VerticalAlignment="Bottom">
+          <i:Icon Value="fa-solid fa-circle-up" Width="16" Height="16" FontSize="16"/>
         </Button>
-        <Button Grid.Row="0" ToolTip.Tip="Scroll to bottom" Width="24" Height="24" HorizontalAlignment="Right" BorderBrush="Transparent" Background="Transparent" Cursor="Hand" Click="ScrollToBottom" VerticalAlignment="Bottom">
-          <i:Icon Value="fa-solid fa-circle-down" Width="16" Height="16" FontSize="12"/>
+        <Button Grid.Row="0" ToolTip.Tip="Scroll to bottom" Width="32" HorizontalAlignment="Right" BorderBrush="Transparent" Background="Transparent" Cursor="Hand" Click="ScrollToBottom" VerticalAlignment="Bottom">
+          <i:Icon Value="fa-solid fa-circle-down" Width="16" Height="16" FontSize="16"/>
         </Button>
       </StackPanel>
       <Button Grid.Row="0" ToolTip.Tip="Open Output" Width="32" HorizontalAlignment="Right" BorderBrush="Transparent" Background="Transparent" Cursor="Hand" Command="{Binding OpenOutputCommand}" VerticalAlignment="Bottom">

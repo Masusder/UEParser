@@ -20,12 +20,14 @@ public class ParsingControllersViewModel : ReactiveObject
     public ICommand? ParseEverythingCommand { get; }
     public ICommand? ParseRiftsCommand { get; }
     public ICommand? ParseCharactersCommand { get; }
+    public ICommand? ParseCosmeticsCommand { get; }
 
     private ParsingControllersViewModel()
     {
         ParseEverythingCommand = ReactiveCommand.Create(ParseEverything);
         ParseRiftsCommand = ReactiveCommand.Create(ParseRifts);
         ParseCharactersCommand = ReactiveCommand.Create(ParseCharacters);
+        ParseCosmeticsCommand = ReactiveCommand.Create(ParseCosmetics);
     }
 
     private void ParseEverything()
@@ -43,9 +45,21 @@ public class ParsingControllersViewModel : ReactiveObject
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
     }
 
-    private void ParseCharacters()
+    private async Task ParseCharacters()
     {
-        LogsWindowViewModel.Instance.AddLog("[Characters] Parsing data..", Logger.LogTags.Info);
-        LogsWindowViewModel.Instance.AddLog("[Characters] Data parsed successfully.", Logger.LogTags.Success);
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+
+        await APIComposers.Characters.InitializeCharactersDB();
+
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+    }
+
+    private async Task ParseCosmetics()
+    {
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+
+        await APIComposers.Cosmetics.InitializeCosmeticsDB();
+
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
     }
 }

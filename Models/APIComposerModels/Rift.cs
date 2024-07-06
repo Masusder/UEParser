@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace UEParser.Models;
 
 public class Rift
 {
+    // <summary>
+    // Rift name
+    // </summary>
     public required string Name { get; set; }
 
     // <summary>

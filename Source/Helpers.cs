@@ -14,6 +14,13 @@ namespace UEParser;
 
 public class Helpers
 {
+    public static string[] FindFilePathsInExtractedAssetsCaseInsensitive(string fileToFind)
+    {
+        return Directory.GetFiles(Path.Combine(GlobalVariables.pathToExtractedAssets), "*", SearchOption.AllDirectories)
+            .Where(file => string.Equals(Path.GetFileName(file), fileToFind, StringComparison.OrdinalIgnoreCase))
+            .ToArray();
+    }
+
     public static string ConstructVersionHeaderWithBranch(bool switchToCompareVersion = false)
     {
         var config = ConfigurationService.Config;

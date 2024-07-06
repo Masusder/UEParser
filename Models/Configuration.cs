@@ -81,6 +81,7 @@ public class VersionData
 public class KrakenApiConfig
 {
     public string LatestVersion { get; set; }
+    public string? CustomVersion { get; set; }
     public string ApiBaseUrl { get; set; }
     public string SteamApiBaseUrl { get; set; }
     public string CdnBaseUrl { get; set; }
@@ -93,6 +94,7 @@ public class KrakenApiConfig
     public KrakenApiConfig()
     {
         LatestVersion = "";
+        CustomVersion = null;
         ApiBaseUrl = "";
         SteamApiBaseUrl = "";
         CdnBaseUrl = "";

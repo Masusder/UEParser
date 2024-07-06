@@ -34,6 +34,15 @@ public class KrakenAPI
 
         var responseData = JsonConvert.DeserializeObject<VersionData>(response.Data);
 
+        string? customVersion = config.Core.ApiConfig.CustomVersion;
+        if (config.Core.ApiConfig.CustomVersion != null)
+        {
+            LogsWindowViewModel.Instance.AddLog($"API Version has been overridden with custom value set in settings - '{customVersion}'. If you wish to use latest version you should remove value set in 'CustomVersion' property.", Logger.LogTags.Warning);
+            await RetrieveData();
+
+            return;
+        }
+
         if (response.Success && responseData != null)
         {
             string latestSavedVersion = config.Core.ApiConfig.LatestVersion;
@@ -64,16 +73,17 @@ public class KrakenAPI
             {
                 LogsWindowViewModel.Instance.AddLog($"Detected new version: '{latestVersion}'.", Logger.LogTags.Info);
 
-                await FetchCdnContent();
-                await FetchDynamicCdnContent(CDNOutputDirName.Tomes);
-                await FetchDynamicCdnContent(CDNOutputDirName.Rifts);
+                //await FetchCdnContent();
+                //await FetchDynamicCdnContent(CDNOutputDirName.Tomes);
+                //await FetchDynamicCdnContent(CDNOutputDirName.Rifts);
 
-                LogsWindowViewModel.Instance.AddLog("Creating game characters helper table from retrieved API.", Logger.LogTags.Info);
-                Helpers.CreateCharacterTable();
+                //LogsWindowViewModel.Instance.AddLog("Creating game characters helper table from retrieved API.", Logger.LogTags.Info);
+                //Helpers.CreateCharacterTable();
 
-                await ConfigurationService.SaveConfiguration();
+                //await ConfigurationService.SaveConfiguration();
 
-                LogsWindowViewModel.Instance.AddLog("Successfully retrieved Kraken API.", Logger.LogTags.Success);
+                //LogsWindowViewModel.Instance.AddLog("Successfully retrieved Kraken API.", Logger.LogTags.Success);
+                await RetrieveData();
             }
             else
             {
@@ -84,6 +94,20 @@ public class KrakenAPI
         {
             LogsWindowViewModel.Instance.AddLog($"Failed to fetch latest Kraken version: {response.ErrorMessage}", Logger.LogTags.Error);
         }
+    }
+
+    private static async Task RetrieveData()
+    {
+        await FetchCdnContent();
+        await FetchDynamicCdnContent(CDNOutputDirName.Tomes);
+        await FetchDynamicCdnContent(CDNOutputDirName.Rifts);
+
+        LogsWindowViewModel.Instance.AddLog("Creating game characters helper table from retrieved API.", Logger.LogTags.Info);
+        Helpers.CreateCharacterTable();
+
+        await ConfigurationService.SaveConfiguration();
+
+        LogsWindowViewModel.Instance.AddLog("Successfully retrieved Kraken API.", Logger.LogTags.Success);
     }
 
     private static string ConstructApiUrl(string endpoint, Dictionary<string, string>? queryParams = null)
@@ -139,7 +163,18 @@ public class KrakenAPI
         string apiBaseUrl = config.Core.ApiConfig.CdnBaseUrl;
 
         string cdnRoot = config.Global.BranchRoots[branch];
-        string latestVersion = config.Core.ApiConfig.LatestVersion;
+
+        string? customVersion = config.Core.ApiConfig.CustomVersion;
+
+        string latestVersion;
+        if (customVersion != null)
+        {
+            latestVersion = customVersion;
+        }
+        else
+        {
+            latestVersion = config.Core.ApiConfig.LatestVersion;
+        }
 
         string contentSegmentWithoutRoot = config.Core.ApiConfig.CdnContentSegment;
         string contentSegment = string.Format(contentSegmentWithoutRoot, cdnRoot);

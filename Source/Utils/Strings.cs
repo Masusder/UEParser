@@ -3,10 +3,12 @@ using Newtonsoft.Json;
 using System;
 using System.IO;
 using UEParser.Models;
+using System.Text.RegularExpressions;
+using System.Collections.Generic;
 
 namespace UEParser.Utils;
 
-public class StringUtils
+public partial class StringUtils
 {
     //public static string ChangeToNeteasePath(string path)
     //{
@@ -143,5 +145,111 @@ public class StringUtils
         string[] parts = input.Split('_', '.');
         string result = parts[1];
         return result;
+    }
+
+    public static string DoubleDotsSplit(string input)
+    {
+        string[] parts = input.Split("::");
+        string result = parts[1];
+
+        return result;
+    }
+
+    [GeneratedRegex("VE_(.*)$")]
+    private static partial Regex SplitVERegex();
+    public static string StringSplitVE(string input)
+    {
+        // Split the input string using "VE_" as the separator
+        Match match = SplitVERegex().Match(input);
+        if (match.Success)
+        {
+            // Return the substring after "VE_"
+            // In specific cases (ex. Camper) return custom string
+            return match.Groups[1].Value switch
+            {
+                "Camper" => "Survivor",
+                "Slasher" => "Killer",
+                _ => match.Groups[1].Value,
+            };
+        }
+        else
+        {
+            throw new ArgumentException("Input string is not in the expected format.");
+        }
+    }
+
+    public static string AddRootDirectory(string path, string rootDirectory)
+    {
+        // Normalize the path separators to handle both '\' and '/'
+        path = path.Replace('\\', '/');
+
+        // Ensure the path does not start with a directory separator
+        if (path.StartsWith('/') || path.StartsWith('\\'))
+        {
+            path = path[1..];
+        }
+
+        // Combine the images directory with the path, ensuring correct separators
+        string fullPath = Path.Combine(rootDirectory, path);
+
+        return fullPath;
+    }
+
+    private static bool IsInDBDCharactersDir(int characterIndex)
+    {
+        HashSet<int> charactersSet = [268435464, 41];
+        return charactersSet.Contains(characterIndex);
+    }
+
+    public static string ModifyPath(string path, string replacement, bool isInDBDCharacters = false, int characterIndex = -1)
+    {
+        if (!isInDBDCharacters)
+        {
+            isInDBDCharacters = IsInDBDCharactersDir(characterIndex);
+        }
+
+        // Check if the delimiter exists in the original path
+        if (!path.Contains('.'))
+        {
+            return path;
+        }
+
+        string[] pathParts = path.Split('.');
+        int lastIndex = pathParts.Length - 1;
+
+        // Replace the last part with the specified string
+        pathParts[lastIndex] = replacement;
+        string fixedPath = string.Join(".", pathParts);
+        string modifiedPath = fixedPath;
+
+        if (!path.Contains("/Game") && !path.Contains("DeadByDaylight") && !path.Contains("/Engine"))
+        {
+            int dynamicPartIndex = fixedPath.IndexOf('/', 1); // Start searching after the first slash
+
+            if (dynamicPartIndex != -1)
+            {
+                // Insert "/Content/" after the dynamic part
+                modifiedPath = fixedPath.Insert(dynamicPartIndex + 1, "Content/");
+            }
+
+            if (isInDBDCharacters)
+            {
+                modifiedPath = Path.Combine("/DeadByDaylight/Plugins/Runtime/Bhvr/DBDCharacters", modifiedPath);
+            }
+            else
+            {
+                modifiedPath = Path.Combine("/DeadByDaylight/Plugins/Runtime/Bhvr/DLC", modifiedPath);
+            }
+        }
+        else
+        {
+            // Replace the specified part with the custom replacement
+            modifiedPath = fixedPath.Replace("/Game", "/DeadByDaylight/Content");
+        }
+
+        // Remove double slashes (because BHVR isn't consistent)
+        modifiedPath = modifiedPath.Replace("//", "/");
+
+        return modifiedPath;
     }
 }
