@@ -23,8 +23,8 @@ public class Initialize
             LogsWindowViewModel.Instance.AddLog("Detected new build version of Dead by Daylight.. starting initialization process.", Logger.LogTags.Info);
             LogsWindowViewModel.Instance.AddLog("Exporting game assets.", Logger.LogTags.Info);
             await Task.Delay(100);
-            //AssetsManager.InitializeCUE4Parse();
-            //await AssetsManager.ParseGameAssets();
+            AssetsManager.InitializeCUE4Parse();
+            await AssetsManager.ParseGameAssets();
             LogsWindowViewModel.Instance.AddLog("Looking for new S3 Bucket Access Keys.", Logger.LogTags.Info);
             await S3AccessKeys.CheckKeys(); // Check if there's any new S3AccessKeys (method needs to be invoked after 'ParseGameAssets')
             LogsWindowViewModel.Instance.AddLog("Creating helper components to speed up parsing process.", Logger.LogTags.Info);
@@ -41,9 +41,9 @@ public class Initialize
                 await Mappings.DownloadMappings();
             }
 
-            //LogsWindowViewModel.Instance.AddLog("Creating patched localization files to speed up parsing process.", Logger.LogTags.Info);
-            //Helpers.CreateLocresFiles(); // Create fixed localization to speed up parsing
-            //LogsWindowViewModel.Instance.AddLog("Saving new build version of Dead by Daylight.", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog("Creating patched localization files to speed up parsing process.", Logger.LogTags.Info);
+            Helpers.CreateLocresFiles(); // Create fixed localization to speed up parsing
+            LogsWindowViewModel.Instance.AddLog("Saving new build version of Dead by Daylight.", Logger.LogTags.Info);
             await SaveBuildVersion(buildVersion); // Save new build version
         }
 
@@ -95,6 +95,7 @@ public class Initialize
         Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output", "API"));
         Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output", "ExtractedAssets"));
         Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData"));
+        Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output", "ModelsData"));
     }
 
     private static bool ReadVersion(string savedVersion)
