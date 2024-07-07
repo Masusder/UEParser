@@ -3,6 +3,7 @@ using System.Windows.Input;
 using ReactiveUI;
 using System.Threading.Tasks;
 using UEParser.Views;
+using System.Collections.Generic;
 
 namespace UEParser.ViewModels;
 
@@ -10,6 +11,7 @@ public class StringResources
 {
     public required string Title { get; set; }
     public required string Description { get; set; }
+    public string? Requirements { get; set; }
 }
 
 public class ParsingControllersViewModel : ReactiveObject

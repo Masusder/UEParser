@@ -26,6 +26,8 @@ public class Rifts
 
             parsedRiftsDB = ParseRifts(parsedRiftsDB);
 
+            LogsWindowViewModel.Instance.AddLog($"[Rifts] Parsed total of {parsedRiftsDB.Count} items.", Logger.LogTags.Info);
+
             ParseLocalizationAndSave(parsedRiftsDB);
         });
     }

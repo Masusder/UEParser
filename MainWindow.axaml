@@ -10,6 +10,11 @@
         x:Class="UEParser.MainWindow"
         Title="UEParser"
         x:DataType="vm:MainWindowViewModel">
+  <Window.Styles>
+    <Style Selector="TextBlock[Text=UEParser]" >
+      <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+  </Window.Styles>
   <ui:NavigationView
     Grid.Column="0"
     x:Name="NavigationView"

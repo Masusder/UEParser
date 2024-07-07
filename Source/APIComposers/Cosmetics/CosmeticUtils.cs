@@ -185,13 +185,15 @@ public class CosmeticUtils
         return inclusionVersion.TrimStart(' ').TrimEnd(' ');
     }
 
+    // Deprecated cosmetic descriptions use both description and collection description combined
+    // For our purpose we just use one description
     public static string ParseCosmeticDescription(dynamic data, string propertyName)
     {
         string? firstDescription = data?["UIData"]?["Description"]?[propertyName];
         string? secondDescription = data?["CollectionDescription"]?[propertyName];
         string? localizedDescription = data?["UIData"]?["Description"]?["LocalizedString"];
 
-        if (firstDescription != null && localizedDescription == "\t")
+        if (firstDescription != null && localizedDescription == "\t") // Turkish localization is missing '\t' for some cosmetics therefore it needs to be checked
         {
             return secondDescription ?? throw new Exception("Not found cosmetic description.");
         }

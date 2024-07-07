@@ -197,10 +197,11 @@ public partial class StringUtils
 
     private static bool IsInDBDCharactersDir(int characterIndex)
     {
-        HashSet<int> charactersSet = [268435464, 41];
+        List<int> charactersSet = [268435464, 41, 42, 268435469, 268435466, 268435465];
         return charactersSet.Contains(characterIndex);
     }
 
+    // I hate this
     public static string ModifyPath(string path, string replacement, bool isInDBDCharacters = false, int characterIndex = -1)
     {
         if (!isInDBDCharacters)
@@ -234,10 +235,12 @@ public partial class StringUtils
 
             if (isInDBDCharacters)
             {
+                modifiedPath = modifiedPath.TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
                 modifiedPath = Path.Combine("/DeadByDaylight/Plugins/Runtime/Bhvr/DBDCharacters", modifiedPath);
             }
             else
             {
+                modifiedPath = modifiedPath.TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
                 modifiedPath = Path.Combine("/DeadByDaylight/Plugins/Runtime/Bhvr/DLC", modifiedPath);
             }
         }
@@ -249,7 +252,87 @@ public partial class StringUtils
 
         // Remove double slashes (because BHVR isn't consistent)
         modifiedPath = modifiedPath.Replace("//", "/");
+        modifiedPath = modifiedPath.Replace("\\", "/");
 
         return modifiedPath;
+    }
+
+    public static string SplitTextureName(string fullName)
+    {
+        const string prefix = "Texture2D ";
+
+        if (fullName.StartsWith(prefix))
+        {
+            return fullName[prefix.Length..];
+        }
+
+        return fullName;
+    }
+
+    public static string ExtractStringInSingleQuotes(string input)
+    {
+        const string prefix = "MaterialInstanceConstant ";
+        const string prefix2 = "Material ";
+
+        int start = input.IndexOf("'") + 1; // Find the index of the opening single quote
+        int end = input.IndexOf("'", start); // Find the index of the closing single quote
+        if (start >= 0 && end > start)
+        {
+            return input[start..end];
+        }
+        else if (input.StartsWith(prefix))
+        {
+            // Extract the object name by removing the prefix
+            return input[prefix.Length..];
+        }
+        else if (input.StartsWith(prefix2))
+        {
+            return input[prefix2.Length..];
+        }
+        else
+        {
+            return input;
+        }
+    }
+
+    public static string ExtractObjectName(string fullName)
+    {
+        // Assuming the object name always starts with one of the specified prefixes
+        const string prefix1 = "Material ";
+        const string prefix2 = "MaterialInstanceConstant'";
+        const string prefix3 = "Material'";
+
+        if (fullName.StartsWith(prefix1))
+        {
+            return fullName[prefix1.Length..];
+        }
+        else if (fullName.StartsWith(prefix2))
+        {
+            int startIndex = prefix2.Length;
+            int length = fullName.Length - startIndex - 1;
+            return fullName.Substring(startIndex, length);
+        }
+        else if (fullName.StartsWith(prefix3))
+        {
+            int startIndex = prefix3.Length;
+            int length = fullName.Length - startIndex - 1;
+            return fullName.Substring(startIndex, length);
+        }
+
+        // If none of the prefixes are found, return the full name as is
+        return fullName;
+    }
+
+    public static string RemoveDoubleSlashes(string path)
+    {
+        string replacedPath = path.Replace("//", "/");
+
+        return replacedPath;
+    }
+
+    public static string GetSubstringAfterLastDot(string path)
+    {
+        int lastDotIndex = path.LastIndexOf('.');
+        return lastDotIndex >= 0 ? path[(lastDotIndex + 1)..] : path;
     }
 }

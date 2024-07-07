@@ -5,6 +5,9 @@ using Avalonia.Markup.Xaml;
 using UEParser.ViewModels;
 using System.Text.Json.Serialization;
 using Avalonia.Controls.Primitives;
+using System.Linq;
+using System;
+using Avalonia;
 
 namespace UEParser.Views;
 
@@ -22,6 +25,7 @@ public partial class ParsingControllers : UserControl
         AvaloniaXamlLoader.Load(this);
     }
 
+    private static readonly char[] separator = [';'];
     private void Button_PointerEnter(object sender, PointerEventArgs e)
     {
         if (sender is not Button button)
@@ -48,6 +52,31 @@ public partial class ParsingControllers : UserControl
             if (!string.IsNullOrEmpty(buttonInfo.Description))
             {
                 descriptionText.Inlines?.Add(new Run { Text = buttonInfo.Description });
+            }
+
+            // Add Requirements
+            if (buttonInfo.Requirements != null && buttonInfo.Requirements.Length != 0)
+            {
+                descriptionText.Inlines?.Add(new TextBlock { Margin = new Thickness(0, 10, 0, 0) }); // Adjust top margin as needed
+                descriptionText.Inlines?.Add(new LineBreak());
+                descriptionText.Inlines?.Add(new Run { Text = "Requirements:", FontWeight = Avalonia.Media.FontWeight.Bold });
+                descriptionText.Inlines?.Add(new LineBreak());
+
+                // Split requirements by ;
+                var requirementsArray = buttonInfo.Requirements.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+
+                // Add each requirement
+                foreach (var requirement in requirementsArray)
+                {
+                    descriptionText.Inlines?.Add(new Run { Text = $"• {requirement.Trim()}", Foreground = Avalonia.Media.Brushes.AntiqueWhite });
+                    descriptionText.Inlines?.Add(new LineBreak());
+                }
+
+                // Remove the last comma or separator
+                if (descriptionText.Inlines?.Count > 0)
+                {
+                    descriptionText.Inlines?.Remove(descriptionText.Inlines.Last());
+                }
             }
         }
 

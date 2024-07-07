@@ -8,6 +8,7 @@ using System.Windows.Input;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace UEParser.ViewModels;
 
@@ -164,11 +165,25 @@ public partial class LogsWindowViewModel : ReactiveObject
         var logEntry = new LogEntry();
 
         string stringTag = $"[{tag.ToString().ToUpper()}]: ";
-
         Color tagColor = GetTagColor(tag);
 
+        // Regular expression pattern to match text inside []
+        string pattern = @"\[(.*?)\]";
+
+        // Find all matches of the pattern
+        MatchCollection matches = Regex.Matches(logMessage, pattern);
+
+        // Remove the matched segments from the logMessage
+        string cleanedLogMessage = Regex.Replace(logMessage, pattern, "");
+
         logEntry.Segments.Add(new LogSegment { Text = stringTag, Color = new SolidColorBrush(tagColor) });
-        logEntry.Segments.Add(new LogSegment { Text = logMessage, Color = new SolidColorBrush(Colors.White) });
+        // Iterate through matches and add them as separate segments
+        foreach (Match match in matches)
+        {
+            string matchedText = match.Groups[1].Value; // Get text inside []
+            logEntry.Segments.Add(new LogSegment { Text = $"[{matchedText}]", Color = new SolidColorBrush(Colors.AntiqueWhite) });
+        }
+        logEntry.Segments.Add(new LogSegment { Text = cleanedLogMessage, Color = new SolidColorBrush(Colors.White) });
 
         return logEntry;
     }

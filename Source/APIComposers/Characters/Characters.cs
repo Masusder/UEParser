@@ -5,36 +5,40 @@ using UEParser.Utils;
 using UEParser.ViewModels;
 using System.IO;
 using Newtonsoft.Json;
+
+using UEParser.Models;
 using UEParser.Parser;
 
 namespace UEParser.APIComposers;
 
 public class Characters
 {
-    private static readonly Dictionary<string, Dictionary<string, Models.LocalizationEntry>> localizationData = [];
+    private static readonly Dictionary<string, Dictionary<string, LocalizationEntry>> localizationData = [];
 
     public static async Task InitializeCharactersDB()
     {
         await Task.Run(() =>
         {
-            Dictionary<string, Models.Character> parsedCharactersDB = [];
+            Dictionary<string, Character> parsedCharactersDB = [];
 
             LogsWindowViewModel.Instance.AddLog($"[Characters] Starting parsing process..", Logger.LogTags.Info);
 
             parsedCharactersDB = ParseCharacters(parsedCharactersDB);
 
+            LogsWindowViewModel.Instance.AddLog($"[Characters] Parsed total of {parsedCharactersDB.Count} items.", Logger.LogTags.Info);
+
             ParseLocalizationAndSave(parsedCharactersDB);
         });
     }
 
-    private static Dictionary<string, Models.Character> ParseCharacters(Dictionary<string, Models.Character> parsedCharactersDB)
+    private static Dictionary<string, Character> ParseCharacters(Dictionary<string, Character> parsedCharactersDB)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("CharacterDescriptionDB.json");
 
         foreach (string filePath in filePaths)
         {
             string packagePath = StringUtils.StripExtractedAssetsDir(filePath);
-            LogsWindowViewModel.Instance.AddLog($"[Rifts] Processing: {packagePath}", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"[Characters] Processing: {packagePath}", Logger.LogTags.Info);
 
             var assetItems = FileUtils.LoadDynamicJson(filePath);
             if ((assetItems?[0]?["Rows"]) == null)
@@ -71,19 +75,19 @@ public class Characters
                 string backStory = item.Value["Backstory"]["Key"];
                 string biography = item.Value["Biography"]["Key"];
 
-                Dictionary<string, Models.LocalizationEntry> localizationModel = new()
+                Dictionary<string, LocalizationEntry> localizationModel = new()
                 {
-                    ["Name"] = new Models.LocalizationEntry
+                    ["Name"] = new LocalizationEntry
                     {
                         Key = displayName,
                         SourceString = item.Value["DisplayName"]["SourceString"]
                     },
-                    ["BackStory"] = new Models.LocalizationEntry
+                    ["BackStory"] = new LocalizationEntry
                     {
                         Key = backStory,
                         SourceString = item.Value["Backstory"]["SourceString"]
                     },
-                    ["Biography"] = new Models.LocalizationEntry
+                    ["Biography"] = new LocalizationEntry
                     {
                         Key = biography,
                         SourceString = item.Value["Biography"]["SourceString"]
@@ -92,7 +96,7 @@ public class Characters
 
                 localizationData.TryAdd(characterIndex, localizationModel);
 
-                Models.Character model = new()
+                Character model = new()
                 {
                     Name = displayName,
                     Role = roleOutput,
@@ -130,7 +134,7 @@ public class Characters
             Dictionary<string, string> languageKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString) ?? throw new Exception($"Failed to load following locres file: {langKey}.");
 
             var objectString = JsonConvert.SerializeObject(parsedCharactersDB);
-            Dictionary<string, Models.Character> localizedCharactersDB = JsonConvert.DeserializeObject<Dictionary<string, Models.Character>>(objectString) ?? [];
+            Dictionary<string, Character> localizedCharactersDB = JsonConvert.DeserializeObject<Dictionary<string, Models.Character>>(objectString) ?? [];
 
             foreach (var item in localizedCharactersDB)
             {
@@ -152,7 +156,7 @@ public class Characters
                             localizedString = entry.Value.SourceString;
                         }
 
-                        var propertyInfo = typeof(Models.Character).GetProperty(entry.Key);
+                        var propertyInfo = typeof(Character).GetProperty(entry.Key);
                         propertyInfo?.SetValue(item.Value, localizedString);
                     }
                     catch (Exception ex)
