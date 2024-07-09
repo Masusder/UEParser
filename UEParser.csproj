@@ -139,9 +139,4 @@
     <UpToDateCheckInput Remove="Views\APIView.xaml" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="CUE4Parse\CUE4Parse-Conversion\CUE4Parse-Conversion.csproj" />
-    <ProjectReference Include="CUE4Parse\CUE4Parse\CUE4Parse.csproj" />
-  </ItemGroup>
-
 </Project>

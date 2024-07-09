@@ -13,7 +13,7 @@
       <Setter Property="CornerRadius" Value="5" />
       <Setter Property="Background">
         <Setter.Value>
-          <LinearGradientBrush StartPoint="-100%,-100%" EndPoint="50%,100%">
+          <LinearGradientBrush Opacity="0.75" StartPoint="-400%,-200%" EndPoint="50%,100%">
             <GradientStop Color="DodgerBlue" Offset="0"/>
             <GradientStop Color="Transparent" Offset="1"/>
           </LinearGradientBrush>
@@ -165,6 +165,33 @@
                  Foreground="White"/>
             <Image Source="avares://UEParser/Resources/icon_Store.png" Width="64" Height="64" />
             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Cosmetics</TextBlock>
+          </StackPanel>
+        </Button>
+
+        <Button Name="PerksController"
+        Command="{Binding ParsePerksCommand}"
+                                        PointerEntered="Button_PointerEnter"
+        PointerExited="Button_PointerLeave"
+        Cursor="Hand"
+        Margin="5">
+          <Button.Resources>
+            <ResourceDictionary>
+              <vm:StringResources x:Key="ButtonInfo"
+                                  Title="Perks"
+                                  Description="Parse Perks data.">
+              </vm:StringResources>
+            </ResourceDictionary>
+          </Button.Resources>
+          <StackPanel Orientation="Vertical">
+            <TextBlock Text="5"
+                 HorizontalAlignment="Right"
+                 VerticalAlignment="Top"
+                 Margin="0,0,-5,-30"
+                 FontSize="14"
+                 FontWeight="Medium"
+                 Foreground="White"/>
+            <Image Source="avares://UEParser/Resources/iconHelp_perks.png" Width="64" Height="64" />
+            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Perks</TextBlock>
           </StackPanel>
         </Button>
 

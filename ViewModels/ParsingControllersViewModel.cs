@@ -23,6 +23,7 @@ public class ParsingControllersViewModel : ReactiveObject
     public ICommand? ParseRiftsCommand { get; }
     public ICommand? ParseCharactersCommand { get; }
     public ICommand? ParseCosmeticsCommand { get; }
+    public ICommand? ParsePerksCommand { get; }
 
     private ParsingControllersViewModel()
     {
@@ -30,6 +31,7 @@ public class ParsingControllersViewModel : ReactiveObject
         ParseRiftsCommand = ReactiveCommand.Create(ParseRifts);
         ParseCharactersCommand = ReactiveCommand.Create(ParseCharacters);
         ParseCosmeticsCommand = ReactiveCommand.Create(ParseCosmetics);
+        ParsePerksCommand = ReactiveCommand.Create(ParsePerks);
     }
 
     private void ParseEverything()
@@ -61,6 +63,15 @@ public class ParsingControllersViewModel : ReactiveObject
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
 
         await APIComposers.Cosmetics.InitializeCosmeticsDB();
+
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+    }
+
+    private async Task ParsePerks()
+    {
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+
+        await APIComposers.Perks.InitializePerksDB();
 
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
     }

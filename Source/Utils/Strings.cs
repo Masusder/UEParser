@@ -204,7 +204,7 @@ public partial class StringUtils
             path = path[1..];
         }
 
-        // Combine the images directory with the path, ensuring correct separators
+        // Combine the root directory with the path, ensuring correct separators
         string fullPath = Path.Combine(rootDirectory, path);
 
         return fullPath;

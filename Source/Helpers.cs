@@ -376,34 +376,34 @@ public class Helpers
                     continue;
                 }
 
-                Type entryType = dynamicItem[entry.Key].GetType();
+                var propertyInfo = dynamicItem.GetType().GetProperty(entry.Key);
 
-                if (entry.Value.Count > 0 && entryType == typeof(JArray))
+                if (propertyInfo != null)
                 {
-                    for (int i = 0; i < entry.Value.Count; i++)
+                    if (entry.Value.Count > 0 && propertyInfo.PropertyType == typeof(JArray))
                     {
                         JArray localizedStrings = [];
 
-                        if (languageKeys.TryGetValue(entry.Value[i].Key, out string? langValue))
+                        foreach (var localizationEntry in entry.Value)
                         {
-                            localizedStrings.Add(langValue);
-                        }
-                        else
-                        {
-                            if (!itemsWithoutLocalization.Contains(id))
+                            if (languageKeys.TryGetValue(localizationEntry.Key, out string? langValue))
                             {
-                                LogsWindowViewModel.Instance.AddLog($"Missing localization string -> LangKey: '{langKey}', Property: '{entry.Key}', StringKey: '{entry.Value[i].Key}', RowId: '{id}', FallbackString: '{entry.Value[i].SourceString}'", Logger.LogTags.Warning);
+                                localizedStrings.Add(langValue);
                             }
+                            else
+                            {
+                                if (!itemsWithoutLocalization.Contains(id))
+                                {
+                                    LogsWindowViewModel.Instance.AddLog($"Missing localization string -> LangKey: '{langKey}', Property: '{entry.Key}', StringKey: '{localizationEntry.Key}', RowId: '{id}', FallbackString: '{localizationEntry.SourceString}'", Logger.LogTags.Warning);
+                                }
 
-                            localizedStrings.Add(entry.Value[i].SourceString);
+                                localizedStrings.Add(localizationEntry.SourceString);
+                            }
                         }
 
-                        dynamicItem[entry.Key] = localizedStrings;
+                        propertyInfo.SetValue(dynamicItem, localizedStrings);
                     }
-                }
-                else if (entry.Value.Count == 1)
-                {
-                    try
+                    else if (entry.Value.Count == 1)
                     {
                         string localizedString;
 
@@ -421,11 +421,7 @@ public class Helpers
                             localizedString = entry.Value[0].SourceString;
                         }
 
-                        dynamicItem[entry.Key] = localizedString.ToString();
-                    }
-                    catch (Exception ex)
-                    {
-                        LogsWindowViewModel.Instance.AddLog($"Missing localization string -> LangKey: '{langKey}', Property: '{entry.Key}', StringKey: '{entry.Value[0].Key}', RowId: '{id}', FallbackString: '{entry.Value[0].SourceString}' <- {ex}", Logger.LogTags.Warning);
+                        propertyInfo.SetValue(dynamicItem, localizedString);
                     }
                 }
             }

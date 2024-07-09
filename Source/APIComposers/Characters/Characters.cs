@@ -13,7 +13,7 @@ namespace UEParser.APIComposers;
 
 public class Characters
 {
-    private static readonly Dictionary<string, Dictionary<string, LocalizationEntry>> localizationData = [];
+    private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> localizationData = [];
 
     public static async Task InitializeCharactersDB()
     {
@@ -75,23 +75,29 @@ public class Characters
                 string backStory = item.Value["Backstory"]["Key"];
                 string biography = item.Value["Biography"]["Key"];
 
-                Dictionary<string, LocalizationEntry> localizationModel = new()
+                Dictionary<string, List<LocalizationEntry>> localizationModel = new()
                 {
-                    ["Name"] = new LocalizationEntry
-                    {
-                        Key = displayName,
-                        SourceString = item.Value["DisplayName"]["SourceString"]
-                    },
-                    ["BackStory"] = new LocalizationEntry
-                    {
-                        Key = backStory,
-                        SourceString = item.Value["Backstory"]["SourceString"]
-                    },
-                    ["Biography"] = new LocalizationEntry
-                    {
-                        Key = biography,
-                        SourceString = item.Value["Biography"]["SourceString"]
-                    }
+                    ["Name"] = [
+                    new LocalizationEntry
+                        {
+                            Key = displayName,
+                            SourceString = item.Value["DisplayName"]["SourceString"]
+                        }
+                    ],
+                    ["BackStory"] = [
+                    new LocalizationEntry
+                        {
+                            Key = backStory,
+                            SourceString = item.Value["Backstory"]["SourceString"]
+                        }
+                    ],
+                    ["Biography"] = [
+                        new LocalizationEntry
+                        {
+                            Key = biography,
+                            SourceString = item.Value["Biography"]["SourceString"]
+                        }
+                    ]
                 };
 
                 localizationData.TryAdd(characterIndex, localizationModel);
@@ -136,35 +142,36 @@ public class Characters
             var objectString = JsonConvert.SerializeObject(parsedCharactersDB);
             Dictionary<string, Character> localizedCharactersDB = JsonConvert.DeserializeObject<Dictionary<string, Character>>(objectString) ?? [];
 
-            foreach (var item in localizedCharactersDB)
-            {
-                string characterIndex = item.Key;
-                var localizationDataEntry = localizationData[characterIndex];
+            Helpers.LocalizeDB(localizedCharactersDB, localizationData, languageKeys, langKey);
+            //foreach (var item in localizedCharactersDB)
+            //{
+            //    string characterIndex = item.Key;
+            //    var localizationDataEntry = localizationData[characterIndex];
 
-                foreach (var entry in localizationDataEntry)
-                {
-                    try
-                    {
-                        string localizedString;
-                        if (languageKeys.TryGetValue(entry.Value.Key, out string? langValue))
-                        {
-                            localizedString = langValue;
-                        }
-                        else
-                        {
-                            LogsWindowViewModel.Instance.AddLog($"Missing localization string -> Property: '{entry.Key}', LangKey: '{langKey}', RowId: '{characterIndex}', FallbackString: '{entry.Value.SourceString}'", Logger.LogTags.Warning);
-                            localizedString = entry.Value.SourceString;
-                        }
+            //    foreach (var entry in localizationDataEntry)
+            //    {
+            //        try
+            //        {
+            //            string localizedString;
+            //            if (languageKeys.TryGetValue(entry.Value.Key, out string? langValue))
+            //            {
+            //                localizedString = langValue;
+            //            }
+            //            else
+            //            {
+            //                LogsWindowViewModel.Instance.AddLog($"Missing localization string -> Property: '{entry.Key}', LangKey: '{langKey}', RowId: '{characterIndex}', FallbackString: '{entry.Value.SourceString}'", Logger.LogTags.Warning);
+            //                localizedString = entry.Value.SourceString;
+            //            }
 
-                        var propertyInfo = typeof(Character).GetProperty(entry.Key);
-                        propertyInfo?.SetValue(item.Value, localizedString);
-                    }
-                    catch (Exception ex)
-                    {
-                        LogsWindowViewModel.Instance.AddLog($"Missing localization string -> Property: '{entry.Key}', LangKey: '{langKey}', RowId: '{characterIndex}', FallbackString: '{entry.Value.SourceString}' <- {ex}", Logger.LogTags.Warning);
-                    }
-                }
-            }
+            //            var propertyInfo = typeof(Character).GetProperty(entry.Key);
+            //            propertyInfo?.SetValue(item.Value, localizedString);
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            LogsWindowViewModel.Instance.AddLog($"Missing localization string -> Property: '{entry.Key}', LangKey: '{langKey}', RowId: '{characterIndex}', FallbackString: '{entry.Value.SourceString}' <- {ex}", Logger.LogTags.Warning);
+            //        }
+            //    }
+            //}
 
             string outputPath = Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, langKey, "Characters.json");
 
