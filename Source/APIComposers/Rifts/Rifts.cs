@@ -9,18 +9,20 @@ using UEParser.Services;
 using UEParser.Parser;
 using System.Threading.Tasks;
 
+using UEParser.Models;
+
 namespace UEParser.APIComposers;
 
 public class Rifts
 {
     private static readonly dynamic? archiveRewardData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.rootDir, "Output", "API", GlobalVariables.versionWithBranch, "archiveRewardData.json"));
-    private static readonly Dictionary<string, Dictionary<string, Models.LocalizationEntry>> localizationData = [];
+    private static readonly Dictionary<string, Dictionary<string, LocalizationEntry>> localizationData = [];
 
     public static async Task InitializeRiftsDB()
     {
         await Task.Run(() =>
         {
-            Dictionary<string, Models.Rift> parsedRiftsDB = [];
+            Dictionary<string, Rift> parsedRiftsDB = [];
 
             LogsWindowViewModel.Instance.AddLog($"[Rifts] Starting parsing process..", Logger.LogTags.Info);
 
@@ -32,7 +34,7 @@ public class Rifts
         });
     }
 
-    private static Dictionary<string, Models.Rift> ParseRifts(Dictionary<string, Models.Rift> parsedRiftsDB)
+    private static Dictionary<string, Rift> ParseRifts(Dictionary<string, Rift> parsedRiftsDB)
     {
         var config = ConfigurationService.Config;
         var eventTomesArray = config.Core.EventTomesList;
@@ -70,9 +72,9 @@ public class Rifts
 
                     string riftIdTitleCase = RiftUtils.TomeToTitleCase(riftId);
 
-                    Dictionary<string, Models.LocalizationEntry> localizationModel = new()
+                    Dictionary<string, LocalizationEntry> localizationModel = new()
                     {
-                        ["Name"] = new Models.LocalizationEntry
+                        ["Name"] = new LocalizationEntry
                         {
                             Key = item.Value["Title"]["Key"],
                             SourceString = item.Value["Title"]["SourceString"]
@@ -81,13 +83,13 @@ public class Rifts
 
                     localizationData.TryAdd(riftIdTitleCase, localizationModel);
 
-                    Models.Rift model = new()
+                    Rift model = new()
                     {
                         Name = item.Value["Title"]["Key"],
                         Requirement = riftData?.GetValue(riftId, StringComparison.OrdinalIgnoreCase)?["requirement"],
                         EndDate = archiveRewardData?.GetValue(riftId, StringComparison.OrdinalIgnoreCase)?["endDate"],
                         StartDate = archiveRewardData?.GetValue(riftId, StringComparison.OrdinalIgnoreCase)?["startDate"],
-                        TierInfo = riftData?.GetValue(riftId, StringComparison.OrdinalIgnoreCase)?["tierInfo"]?.ToObject<List<Models.TierInfo>>() ?? new List<Models.TierInfo>()
+                        TierInfo = riftData?.GetValue(riftId, StringComparison.OrdinalIgnoreCase)?["tierInfo"]?.ToObject<List<TierInfo>>() ?? new List<TierInfo>()
                     };
 
                     parsedRiftsDB.Add(riftIdTitleCase, model);
@@ -98,7 +100,7 @@ public class Rifts
         return parsedRiftsDB;
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, Models.Rift> parsedRiftsDB)
+    private static void ParseLocalizationAndSave(Dictionary<string, Rift> parsedRiftsDB)
     {
         LogsWindowViewModel.Instance.AddLog($"[Rifts] Starting localization process..", Logger.LogTags.Info);
 
@@ -114,7 +116,7 @@ public class Rifts
             Dictionary<string, string> languageKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString) ?? throw new Exception($"Failed to load following locres file: {langKey}.");
 
             var objectString = JsonConvert.SerializeObject(parsedRiftsDB);
-            Dictionary<string, Models.Rift> localizedRiftsDB = JsonConvert.DeserializeObject<Dictionary<string, Models.Rift>>(objectString) ?? [];
+            Dictionary<string, Rift> localizedRiftsDB = JsonConvert.DeserializeObject<Dictionary<string, Rift>>(objectString) ?? [];
 
             foreach (var item in localizedRiftsDB)
             {
@@ -136,7 +138,7 @@ public class Rifts
                             localizedString = entry.Value.SourceString;
                         }
 
-                        var propertyInfo = typeof(Models.Rift).GetProperty(entry.Key);
+                        var propertyInfo = typeof(Rift).GetProperty(entry.Key);
                         propertyInfo?.SetValue(item.Value, localizedString);
 
                     }

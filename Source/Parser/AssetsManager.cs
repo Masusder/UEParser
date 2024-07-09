@@ -6,6 +6,7 @@ using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse.MappingsProvider;
 using CUE4Parse.UE4.Assets.Exports.SkeletalMesh;
 using CUE4Parse.UE4.Assets.Exports.StaticMesh;
+using CUE4Parse.UE4.Assets.Exports.Animation;
 using CUE4Parse.UE4.Localization;
 using CUE4Parse.UE4.Readers;
 using CUE4Parse.GameTypes.DBD.Encryption.Aes;
@@ -305,6 +306,79 @@ public class AssetsManager
                 catch (Exception ex)
                 {
                     LogsWindowViewModel.Instance.AddLog($"Failed parsing mesh: {ex}", Logger.LogTags.Error);
+                    LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+                }
+            }
+        });
+    }
+
+    public static async Task ParseAnimations()
+    {
+        await Task.Run(() =>
+        {
+            var files = Provider.Files.Values.ToList();
+            var newAssets = FilesRegister.NewAssets;
+
+            foreach (var file in files)
+            {
+                try
+                {
+                    string pathWithoutExtension = file.PathWithoutExtension;
+                    if (!newAssets.ContainsKey(pathWithoutExtension)) continue;
+
+                    if (GlobalVariables.fatalCrashAssets.Contains(pathWithoutExtension)) continue;
+
+                    string extension = file.Extension;
+                    if (extensionsToSkip.Contains(extension)) continue;
+
+                    string pathWithExtension = file.Path;
+                    long size = file.Size;
+
+                    string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch();
+                    string outputDirectory = Path.Combine(GlobalVariables.rootDir, "Output", "ExtractedAssets", "Animations", versionWithBranch);
+                    string outputPathWithoutExtension = Path.Combine(outputDirectory, pathWithoutExtension);
+                    string outputPath = Path.ChangeExtension(outputPathWithoutExtension, "psa");
+
+                    if (File.Exists(outputPath)) continue;
+
+                    switch (extension)
+                    {
+                        case "uasset":
+                            {
+                                var allExports = Provider.LoadAllObjects(pathWithExtension);
+
+                                foreach (var asset in allExports)
+                                {
+                                    switch (asset)
+                                    {
+
+                                        case UAnimSequence:
+                                        case UAnimMontage:
+                                        case UAnimComposite:
+                                            {
+                                                var directoryPath = Path.GetDirectoryName(outputPathWithoutExtension);
+                                                if (directoryPath != null)
+                                                {
+                                                    Directory.CreateDirectory(directoryPath);
+                                                }
+
+                                                FileWriter.SaveAnimations(asset, pathWithoutExtension, outputPath);
+                                                break;
+                                            }
+                                        default:
+                                            break;
+                                    }
+                                }
+
+                                break;
+                            }
+                        default:
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogsWindowViewModel.Instance.AddLog($"Failed parsing animation: {ex}", Logger.LogTags.Error);
                     LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
                 }
             }

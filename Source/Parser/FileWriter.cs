@@ -108,6 +108,41 @@ public class FileWriter
         Directory.Delete(tempOutputDirectory, true);
     }
 
+    public static void SaveAnimations(UObject asset, string packagePath, string outputPath)
+    {
+        var exportOptions = new ExporterOptions
+        {
+            LodFormat = ELodFormat.FirstLod,
+            MeshFormat = EMeshFormat.Gltf2,
+            AnimFormat = EAnimFormat.ActorX,
+            MaterialFormat = EMaterialFormat.AllLayersNoRef,
+            TextureFormat = ETextureFormat.Png,
+            CompressionFormat = EFileCompressionFormat.None,
+            Platform = ETexturePlatform.DesktopMobile,
+            SocketFormat = ESocketFormat.Bone,
+            ExportMorphTargets = false,
+            ExportMaterials = false
+        };
+
+        // Export the file to a temporary directory because TryWriteToDir method creates directories which I dont need
+        var tempOutputDirectory = Path.Combine(Path.GetTempPath(), "ExportTemp");
+
+        Directory.CreateDirectory(tempOutputDirectory);
+
+        var toSave = new Exporter(asset, exportOptions);
+        var directoryInfo = new DirectoryInfo(tempOutputDirectory);
+        var success = toSave.TryWriteToDir(directoryInfo, out _, out var savedFilePath);
+
+        if (success)
+        {
+            File.Move(savedFilePath, outputPath);
+            LogsWindowViewModel.Instance.AddLog($"Exported animation: {packagePath}", Logger.LogTags.Info);
+        }
+
+        // Clean up temporary directory
+        Directory.Delete(tempOutputDirectory, true);
+    }
+
     public static void SavePngFile(string outputPath, string packagePath, UTexture texture)
     {
         try

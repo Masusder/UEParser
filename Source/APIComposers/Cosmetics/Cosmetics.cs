@@ -18,7 +18,7 @@ namespace UEParser.APIComposers;
 
 public class Cosmetics
 {
-    private static readonly Dictionary<string, Dictionary<string, LocalizationEntry>> localizationData = [];
+    private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> localizationData = [];
     private static readonly dynamic catalogData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.rootDir, "Output", "API", GlobalVariables.versionWithBranch, "catalog.json")) ?? throw new Exception("Failed to load catalog data.");
     private static readonly Dictionary<string, Rift> riftData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Rift>>(Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, "en", "Rifts.json"));
     private static readonly Dictionary<string, int> catalogDictionary = CosmeticUtils.CreateCatalogDictionary(catalogData);
@@ -91,7 +91,7 @@ public class Cosmetics
 
                     DateTime releaseDate = catalogData[matchingIndex]["metaData"]["releaseDate"];
 
-                    string collectionName = StringUtils.GetCollectionName(item);
+                    List<LocalizationEntry> collectionName = CosmeticUtils.GetCollectionName(item);
 
                     string inclusionVersionRaw = item.Value["InclusionVersion"];
                     string inclusionVersion = CosmeticUtils.TrimInclusionVersion(inclusionVersionRaw);
@@ -102,28 +102,37 @@ public class Cosmetics
 
                     DateTime? limitedTimeEndDate = CosmeticUtils.GrabLimitedTimeEndDate(catalogData, matchingIndex);
 
-                    Dictionary<string, Models.LocalizationEntry> localizationModel = new()
+                    Dictionary<string, List<LocalizationEntry>> localizationModel = new()
                     {
-                        ["CosmeticName"] = new Models.LocalizationEntry
-                        {
-                            Key = item.Value["UIData"]["DisplayName"]["Key"],
-                            SourceString = item.Value["UIData"]["DisplayName"]["SourceString"]
-                        },
-                        ["Description"] = new Models.LocalizationEntry
-                        {
-                            Key = descriptionKey,
-                            SourceString = CosmeticUtils.ParseCosmeticDescription(item.Value, "SourceString")
-                        }
+                        ["CosmeticName"] =
+                        [
+                            new()
+                            {
+                                Key = item.Value["UIData"]["DisplayName"]["Key"],
+                                SourceString = item.Value["UIData"]["DisplayName"]["SourceString"],
+
+                            }
+                        ],
+                        ["Description"] =
+                        [
+                            new()
+                            {
+                                Key = descriptionKey,
+                                SourceString = CosmeticUtils.ParseCosmeticDescription(item.Value, "SourceString"),
+
+                            }
+                        ],
+                        ["CollectionName"] = collectionName
                     };
 
                     localizationData.TryAdd(cosmeticId, localizationModel);
 
-                    Models.Outfit model = new()
+                    Outfit model = new()
                     {
                         CosmeticId = cosmeticId,
                         CosmeticName = item.Value["UIData"]["DisplayName"]["LocalizedString"],
                         Description = descriptionKey,
-                        CollectionName = collectionName,
+                        CollectionName = "",
                         IconFilePathList = iconPath,
                         EventId = eventId,
                         Type = "outfit",
@@ -201,7 +210,7 @@ public class Cosmetics
                 string category = item.Value["Category"];
                 string type = StringUtils.DoubleDotsSplit(category);
 
-                string collectionName = StringUtils.GetCollectionName(item);
+                List<LocalizationEntry> collectionName = CosmeticUtils.GetCollectionName(item);
 
                 string gameIconPath = item.Value["UIData"]["IconFilePathList"][0];
                 string iconPath = StringUtils.AddRootDirectory(gameIconPath, "/images/");
@@ -231,7 +240,7 @@ public class Cosmetics
                 dynamic materialsMap = item.Value["MaterialsMap"];
                 dynamic texturesMap = item.Value["TexturesMap"];
 
-                JArray searchTags = CosmeticUtils.ConstructSearchTags(item);
+                List<LocalizationEntry> searchTags = CosmeticUtils.ConstructSearchTags(item);
 
                 if (modelDataPath != "None")
                 {
@@ -247,18 +256,26 @@ public class Cosmetics
 
                 string descriptionKey = CosmeticUtils.ParseCosmeticDescription(item.Value, "Key");
 
-                Dictionary<string, LocalizationEntry> localizationModel = new()
+                Dictionary<string, List<LocalizationEntry>> localizationModel = new()
                 {
-                    ["CosmeticName"] = new LocalizationEntry
-                    {
-                        Key = item.Value["UIData"]["DisplayName"]["Key"],
-                        SourceString = item.Value["UIData"]["DisplayName"]["SourceString"]
-                    },
-                    ["Description"] = new LocalizationEntry
-                    {
-                        Key = descriptionKey,
-                        SourceString = CosmeticUtils.ParseCosmeticDescription(item.Value, "SourceString")
-                    }
+                    ["CosmeticName"] =
+                    [
+                        new()
+                        {
+                            Key = item.Value["UIData"]["DisplayName"]["Key"],
+                            SourceString = item.Value["UIData"]["DisplayName"]["SourceString"],
+                        }
+                    ],
+                    ["Description"] =
+                    [
+                        new() 
+                        {
+                            Key = descriptionKey,
+                            SourceString = CosmeticUtils.ParseCosmeticDescription(item.Value, "SourceString"),
+                        }
+                    ],
+                    ["CollectionName"] = collectionName,
+                    ["SearchTags"] = searchTags
                 };
 
                 localizationData.TryAdd(cosmeticId, localizationModel);
@@ -269,10 +286,10 @@ public class Cosmetics
                     CosmeticName = item.Value["UIData"]["DisplayName"]["LocalizedString"],
                     Description = descriptionKey,
                     IconFilePathList = iconPath,
-                    SearchTags = searchTags,
+                    SearchTags = [],
                     SecondaryIcon = secondaryIcon,
                     ModelDataPath = fullModelDataPath,
-                    CollectionName = collectionName,
+                    CollectionName = "",
                     InclusionVersion = inclusionVersion,
                     EventId = eventId,
                     Role = role,
@@ -369,13 +386,16 @@ public class Cosmetics
             };
             parsedCosmeticsDB.Add(id, currency);
 
-            Dictionary<string, LocalizationEntry> localizationModel = new()
+            Dictionary<string, List<LocalizationEntry>> localizationModel = new()
             {
-                ["CosmeticName"] = new LocalizationEntry
-                {
-                    Key = nameKey,
-                    SourceString = id
-                }
+                ["CosmeticName"] =
+                [
+                    new()
+                    {
+                        Key = nameKey,
+                        SourceString = id
+                    }
+                ]
             };
 
             localizationData.TryAdd(id, localizationModel);
@@ -423,39 +443,68 @@ public class Cosmetics
             var objectString = JsonConvert.SerializeObject(parsedCosmeticsDB);
             Dictionary<string, object> localizedCosmeticsDB = JsonConvert.DeserializeObject<Dictionary<string, object>>(objectString) ?? [];
 
-            foreach (var item in localizedCosmeticsDB)
-            {
-                string cosmeticId = item.Key;
-                var localizationDataEntry = localizationData[cosmeticId];
+            Helpers.LocalizeDB(localizedCosmeticsDB, localizationData, languageKeys, langKey);
 
-                foreach (var entry in localizationDataEntry)
-                {
-                    try
-                    {
-                        string localizedString;
-                        if (languageKeys.TryGetValue(entry.Value.Key, out string? langValue))
-                        {
-                            localizedString = langValue;
-                        }
-                        else
-                        {
-                            if (!itemsWithoutLocalization.Contains(cosmeticId))
-                            {
-                                LogsWindowViewModel.Instance.AddLog($"Missing localization string -> Property: '{entry.Key}', LangKey: '{langKey}', RowId: '{cosmeticId}', FallbackString: '{entry.Value.SourceString}'", Logger.LogTags.Warning);
-                            }
+            //foreach (var item in localizedCosmeticsDB)
+            //{
+            //    string cosmeticId = item.Key;
+            //    var localizationDataEntry = localizationData[cosmeticId];
 
-                            localizedString = entry.Value.SourceString;
-                        }
+            //    // TODO: support localization of string arrays
+            //    foreach (var entry in localizationDataEntry)
+            //    {
+            //        dynamic dynamicItem = item.Value;
+            //        Type entryType = dynamicItem[entry.Key].GetType();
+            //        if (entry.Value.Count > 0 && entryType == typeof(JArray))
+            //        {
+            //            for (int i = 0; i < entry.Value.Count; i++)
+            //            {
+            //                JArray localizedStrings = [];
+            //                if (languageKeys.TryGetValue(entry.Value[0].Key, out string? langValue))
+            //                {
+            //                    localizedStrings.Add(langValue);
+            //                }
+            //                else
+            //                {
+            //                    if (!itemsWithoutLocalization.Contains(cosmeticId))
+            //                    {
+            //                        LogsWindowViewModel.Instance.AddLog($"Missing localization string -> Property: '{entry.Key}', LangKey: '{langKey}', RowId: '{cosmeticId}', FallbackString: '{entry.Value[i].SourceString}'", Logger.LogTags.Warning);
+            //                    }
 
-                        dynamic dynamicItem = item.Value;
-                        dynamicItem[entry.Key] = localizedString;
-                    }
-                    catch (Exception ex)
-                    {
-                        LogsWindowViewModel.Instance.AddLog($"Missing localization string -> Property: '{entry.Key}', LangKey: '{langKey}', RowId: '{cosmeticId}', FallbackString: '{entry.Value.SourceString}' <- {ex}", Logger.LogTags.Warning);
-                    }
-                }
-            }
+            //                    localizedStrings.Add(entry.Value[i].SourceString);
+            //                }
+
+            //                dynamicItem[entry.Key] = localizedStrings;
+            //            }
+            //        }
+            //        else if (entry.Value.Count == 1)
+            //        {
+            //            try
+            //            {
+            //                string localizedString;
+            //                if (languageKeys.TryGetValue(entry.Value[0].Key, out string? langValue))
+            //                {
+            //                    localizedString = langValue;
+            //                }
+            //                else
+            //                {
+            //                    if (!itemsWithoutLocalization.Contains(cosmeticId))
+            //                    {
+            //                        LogsWindowViewModel.Instance.AddLog($"Missing localization string -> Property: '{entry.Key}', LangKey: '{langKey}', RowId: '{cosmeticId}', FallbackString: '{entry.Value[0].SourceString}'", Logger.LogTags.Warning);
+            //                    }
+
+            //                    localizedString = entry.Value[0].SourceString;
+            //                }
+
+            //                dynamicItem[entry.Key] = localizedString.ToString();
+            //            }
+            //            catch (Exception ex)
+            //            {
+            //                LogsWindowViewModel.Instance.AddLog($"Missing localization string -> Property: '{entry.Key}', LangKey: '{langKey}', RowId: '{cosmeticId}', FallbackString: '{entry.Value[0].SourceString}' <- {ex}", Logger.LogTags.Warning);
+            //            }
+            //        }
+            //    }
+            //}
 
             string outputPath = Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, langKey, "Cosmetics.json");
 

@@ -23,31 +23,46 @@ public partial class StringUtils
     //    return unifiedSlashes;
     //}
 
-    public static string GetCollectionName(dynamic asset)
-    {
-        // Check if "CollectionName" exists in the root of the asset
-        if (asset.Value["CollectionName"] != null)
-        {
-            // Check if "LocalizedString" exists within "CollectionName"
-            if (asset.Value["CollectionName"]["LocalizedString"] != null)
-            {
-                return asset.Value["CollectionName"]["LocalizedString"].ToString();
-            }
-        }
+    //public static List<LocalizationEntry> GetCollectionName(dynamic asset)
+    //{
+    //    var localizationEntries = new List<LocalizationEntry>();
+    //    // Check if "CollectionName" exists in the root of the asset
+    //    if (asset.Value["CollectionName"] != null)
+    //    {
+    //        // Check if "LocalizedString" exists within "CollectionName"
+    //        if (asset.Value["CollectionName"]["LocalizedString"] != null)
+    //        {
+    //            LocalizationEntry entry = new()
+    //            {
+    //                Key = asset.Value["CollectionName"]["Key"].ToString(),
+    //                SourceString = asset.Value["CollectionName"]["SourceString"].ToString()
+    //            };
+    //            localizationEntries.Add(entry);
 
-        // Check if "UIData" exists
-        if (asset.Value["UIData"] != null && asset.Value["UIData"]["CollectionName"] != null)
-        {
-            // Check if "LocalizedString" exists within nested "CollectionName"
-            if (asset.Value["UIData"]["CollectionName"]["LocalizedString"] != null)
-            {
-                return asset.Value["UIData"]["CollectionName"]["LocalizedString"].ToString();
-            }
-        }
+    //            return localizationEntries;
+    //        }
+    //    }
 
-        // If any part of the path is missing or null, return empty string
-        return "";
-    }
+    //    // Check if "UIData" exists
+    //    if (asset.Value["UIData"] != null && asset.Value["UIData"]["CollectionName"] != null)
+    //    {
+    //        // Check if "LocalizedString" exists within nested "CollectionName"
+    //        if (asset.Value["UIData"]["CollectionName"]["LocalizedString"] != null)
+    //        {
+    //            LocalizationEntry entry = new()
+    //            {
+    //                Key = asset.Value["UIData"]["CollectionName"]["Key"].ToString(),
+    //                SourceString = asset.Value["UIData"]["CollectionName"]["SourceString"].ToString()
+    //            };
+    //            localizationEntries.Add(entry);
+
+    //            return localizationEntries;
+    //        }
+    //    }
+
+    //    // If any part of the path is missing or null, return empty string
+    //    return localizationEntries;
+    //}
 
     public static string GetRelativePathWithoutExtension(string fullPath, string rootPath)
     {

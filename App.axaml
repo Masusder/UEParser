@@ -11,7 +11,7 @@
     <ResourceDictionary>
       <Color x:Key="SystemAccentColor">#1E90FF</Color>
       <Color x:Key="SystemAccentColorLight1">#63B8FF</Color>
-      <Color x:Key="SystemAccentColorLight2">#87CEFA</Color>
+      <Color x:Key="SystemAccentColorLight2">#1E90FF</Color> <!--#87CEFA -->
       <Color x:Key="SystemAccentColorLight3">#B0E2FF</Color>
       <Color x:Key="SystemAccentColorDark1">#1C86EE</Color>
       <Color x:Key="SystemAccentColorDark2">#1874CD</Color>

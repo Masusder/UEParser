@@ -6,26 +6,77 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UEParser.Utils;
+using UEParser.Models;
 
 namespace UEParser.APIComposers;
 
 public class CosmeticUtils
 {
-    public static JArray ConstructSearchTags(dynamic item)
+    public static List<LocalizationEntry> ConstructSearchTags(dynamic item)
     {
-        JArray searchTags = [];
+        List<LocalizationEntry> searchTags = [];
         if (item.Value?["SearchTags"] is JArray searchTagsRaw)
         {
             foreach (JToken tag in searchTagsRaw)
             {
-                if (tag["Key"] is JToken searchTagKey)
+                string? tagKey = tag["Key"]?.ToString();
+                string? tagSourceString = tag["SourceString"]?.ToString();
+
+                if (tagKey != null && tagSourceString != null)
                 {
-                    searchTags.Add(searchTagKey);
+                    LocalizationEntry entry = new()
+                    {
+                        Key = tagKey,
+                        SourceString = tagSourceString
+                    };
+
+                    searchTags.Add(entry);
                 }
             }
         }
 
         return searchTags;
+    }
+
+    public static List<LocalizationEntry> GetCollectionName(dynamic asset)
+    {
+        var localizationEntries = new List<LocalizationEntry>();
+        // Check if "CollectionName" exists in the root of the asset
+        if (asset.Value["CollectionName"] != null)
+        {
+            // Check if "LocalizedString" exists within "CollectionName"
+            if (asset.Value["CollectionName"]["LocalizedString"] != null)
+            {
+                LocalizationEntry entry = new()
+                {
+                    Key = asset.Value["CollectionName"]["Key"].ToString(),
+                    SourceString = asset.Value["CollectionName"]["SourceString"].ToString()
+                };
+                localizationEntries.Add(entry);
+
+                return localizationEntries;
+            }
+        }
+
+        // Check if "UIData" exists
+        if (asset.Value["UIData"] != null && asset.Value["UIData"]["CollectionName"] != null)
+        {
+            // Check if "LocalizedString" exists within nested "CollectionName"
+            if (asset.Value["UIData"]["CollectionName"]["LocalizedString"] != null)
+            {
+                LocalizationEntry entry = new()
+                {
+                    Key = asset.Value["UIData"]["CollectionName"]["Key"].ToString(),
+                    SourceString = asset.Value["UIData"]["CollectionName"]["SourceString"].ToString()
+                };
+                localizationEntries.Add(entry);
+
+                return localizationEntries;
+            }
+        }
+
+        // If any part of the path is missing or null, return empty string
+        return localizationEntries;
     }
 
     public static DateTime? GrabLimitedTimeEndDate(dynamic catalogData, int matchingIndex)

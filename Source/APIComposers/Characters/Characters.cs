@@ -118,7 +118,7 @@ public class Characters
         return parsedCharactersDB;
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, Models.Character> parsedCharactersDB)
+    private static void ParseLocalizationAndSave(Dictionary<string, Character> parsedCharactersDB)
     {
         LogsWindowViewModel.Instance.AddLog($"[Characters] Starting localization process..", Logger.LogTags.Info);
 
@@ -134,7 +134,7 @@ public class Characters
             Dictionary<string, string> languageKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString) ?? throw new Exception($"Failed to load following locres file: {langKey}.");
 
             var objectString = JsonConvert.SerializeObject(parsedCharactersDB);
-            Dictionary<string, Character> localizedCharactersDB = JsonConvert.DeserializeObject<Dictionary<string, Models.Character>>(objectString) ?? [];
+            Dictionary<string, Character> localizedCharactersDB = JsonConvert.DeserializeObject<Dictionary<string, Character>>(objectString) ?? [];
 
             foreach (var item in localizedCharactersDB)
             {

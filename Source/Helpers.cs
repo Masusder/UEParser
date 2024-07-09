@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using UEParser.Services;
 using UEParser.Utils;
 using UEParser.Models;
+using UEParser.ViewModels;
 
 namespace UEParser;
 
@@ -342,6 +343,92 @@ public class Helpers
             string combinedJsonString = JsonConvert.SerializeObject(jsonObject, Formatting.Indented);
 
             File.WriteAllText(outputPath, combinedJsonString);
+        }
+    }
+
+    // Dynamic localization method, TODO: support JSON nesting
+    // Might abandon trying to make it work for all parsers since it deeply depends on the data
+    private static readonly string[] itemsWithoutLocalization = [
+        "C_Head01",
+        "D_Head01",
+        "J_Head01",
+        "M_Head01",
+        "S01_Head01",
+        "DF_Head04",
+        "D_Head02",
+        "TR_Head03",
+        "Default_Badge",
+        "Default_Banner"
+    ];
+    public static void LocalizeDB<T>(Dictionary<string, T> localizedDB, Dictionary<string, Dictionary<string, List<LocalizationEntry>>> localizationData, Dictionary<string, string> languageKeys, string langKey)
+    {
+        foreach (var item in localizedDB)
+        {
+            string id = item.Key;
+            var localizationDataEntry = localizationData[id];
+
+            foreach (var entry in localizationDataEntry)
+            {
+                dynamic? dynamicItem = item.Value;
+
+                if (dynamicItem == null)
+                {
+                    continue;
+                }
+
+                Type entryType = dynamicItem[entry.Key].GetType();
+
+                if (entry.Value.Count > 0 && entryType == typeof(JArray))
+                {
+                    for (int i = 0; i < entry.Value.Count; i++)
+                    {
+                        JArray localizedStrings = [];
+
+                        if (languageKeys.TryGetValue(entry.Value[i].Key, out string? langValue))
+                        {
+                            localizedStrings.Add(langValue);
+                        }
+                        else
+                        {
+                            if (!itemsWithoutLocalization.Contains(id))
+                            {
+                                LogsWindowViewModel.Instance.AddLog($"Missing localization string -> LangKey: '{langKey}', Property: '{entry.Key}', StringKey: '{entry.Value[i].Key}', RowId: '{id}', FallbackString: '{entry.Value[i].SourceString}'", Logger.LogTags.Warning);
+                            }
+
+                            localizedStrings.Add(entry.Value[i].SourceString);
+                        }
+
+                        dynamicItem[entry.Key] = localizedStrings;
+                    }
+                }
+                else if (entry.Value.Count == 1)
+                {
+                    try
+                    {
+                        string localizedString;
+
+                        if (languageKeys.TryGetValue(entry.Value[0].Key, out string? langValue))
+                        {
+                            localizedString = langValue;
+                        }
+                        else
+                        {
+                            if (!itemsWithoutLocalization.Contains(id))
+                            {
+                                LogsWindowViewModel.Instance.AddLog($"Missing localization string -> LangKey: '{langKey}', Property: '{entry.Key}', StringKey: '{entry.Value[0].Key}', RowId: '{id}', FallbackString: '{entry.Value[0].SourceString}'", Logger.LogTags.Warning);
+                            }
+
+                            localizedString = entry.Value[0].SourceString;
+                        }
+
+                        dynamicItem[entry.Key] = localizedString.ToString();
+                    }
+                    catch (Exception ex)
+                    {
+                        LogsWindowViewModel.Instance.AddLog($"Missing localization string -> LangKey: '{langKey}', Property: '{entry.Key}', StringKey: '{entry.Value[0].Key}', RowId: '{id}', FallbackString: '{entry.Value[0].SourceString}' <- {ex}", Logger.LogTags.Warning);
+                    }
+                }
+            }
         }
     }
 }

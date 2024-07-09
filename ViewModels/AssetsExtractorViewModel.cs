@@ -16,6 +16,7 @@ public class AssetsExtractorViewModel
     public ICommand ExtractMeshesCommand { get; }
     public ICommand ExtractTexturesCommand { get; }
     public ICommand ExtractUICommand { get; }
+    public ICommand ExtractAnimationsCommand { get; }
 
     public AssetsExtractorViewModel()
     {
@@ -23,6 +24,7 @@ public class AssetsExtractorViewModel
         ExtractMeshesCommand = ReactiveCommand.Create(ExtractMeshes);
         ExtractTexturesCommand = ReactiveCommand.Create(ExtractTextures);
         ExtractUICommand = ReactiveCommand.Create(ExtractUI);
+        ExtractAnimationsCommand = ReactiveCommand.Create(ExtractAnimations);
     }
 
     private async Task ExtractMeshes()
@@ -55,6 +57,17 @@ public class AssetsExtractorViewModel
         await AssetsManager.ParseUI();
 
         LogsWindowViewModel.Instance.AddLog("Finished extracting UI.", Logger.LogTags.Success);
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+    }
+
+    private async Task ExtractAnimations()
+    {
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+        LogsWindowViewModel.Instance.AddLog("Starting animations extraction..", Logger.LogTags.Info);
+
+        await AssetsManager.ParseAnimations();
+
+        LogsWindowViewModel.Instance.AddLog("Finished extracting animations.", Logger.LogTags.Success);
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
     }
 
