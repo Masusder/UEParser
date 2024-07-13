@@ -6,9 +6,8 @@ using Ionic.Zlib;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using UEParser.Services;
-using Sprache;
 
-namespace UEParser.CDNDecoder;
+namespace UEParser.Kraken;
 
 public class DbdDecryption
 {

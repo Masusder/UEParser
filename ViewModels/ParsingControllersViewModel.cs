@@ -19,11 +19,12 @@ public class ParsingControllersViewModel : ReactiveObject
     private static readonly Lazy<ParsingControllersViewModel> lazy = new(() => new());
     public static ParsingControllersViewModel Instance => lazy.Value;
 
-    public ICommand? ParseEverythingCommand { get; }
-    public ICommand? ParseRiftsCommand { get; }
-    public ICommand? ParseCharactersCommand { get; }
-    public ICommand? ParseCosmeticsCommand { get; }
-    public ICommand? ParsePerksCommand { get; }
+    public ICommand ParseEverythingCommand { get; }
+    public ICommand ParseRiftsCommand { get; }
+    public ICommand ParseCharactersCommand { get; }
+    public ICommand ParseCosmeticsCommand { get; }
+    public ICommand ParsePerksCommand { get; }
+    public ICommand ParseTomesCommand { get; }
 
     private ParsingControllersViewModel()
     {
@@ -32,6 +33,7 @@ public class ParsingControllersViewModel : ReactiveObject
         ParseCharactersCommand = ReactiveCommand.Create(ParseCharacters);
         ParseCosmeticsCommand = ReactiveCommand.Create(ParseCosmetics);
         ParsePerksCommand = ReactiveCommand.Create(ParsePerks);
+        ParseTomesCommand = ReactiveCommand.Create(ParseTomes);
     }
 
     private void ParseEverything()
@@ -72,6 +74,15 @@ public class ParsingControllersViewModel : ReactiveObject
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
 
         await APIComposers.Perks.InitializePerksDB();
+
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+    }
+
+    private async Task ParseTomes()
+    {
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+
+        await APIComposers.Tomes.InitializeTomesDB();
 
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
     }

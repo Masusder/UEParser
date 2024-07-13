@@ -200,24 +200,35 @@
             Orientation="Horizontal"
             HorizontalAlignment="Center"
             VerticalAlignment="Center">
-        <Button Name="MainController2"
-                Command="{Binding ParseEverythingCommand}"
-                Margin="5"
-                Cursor="Hand">
+
+        <Button Name="TomesController"
+        Command="{Binding ParseTomesCommand}"
+                                        PointerEntered="Button_PointerEnter"
+        PointerExited="Button_PointerLeave"
+        Cursor="Hand"
+        Margin="5">
+          <Button.Resources>
+            <ResourceDictionary>
+              <vm:StringResources x:Key="ButtonInfo"
+                                  Title="Tomes"
+                                  Description="Parse Tomes data."
+                                  Requirements="Updated API;Parsed Cosmetics;Parsed Characters;Initialized helper components">
+              </vm:StringResources>
+            </ResourceDictionary>
+          </Button.Resources>
           <StackPanel Orientation="Vertical">
-            <TextBlock Text="4"
-         HorizontalAlignment="Right"
-         VerticalAlignment="Top"
-          Margin="0,0,-5,-30"
-         FontSize="14"
-         FontWeight="Medium"
-         Foreground="White"/>
-            <Image Source="avares://UEParser/Resources/iconHelp_DBDlogo.png" Width="64" Height="64" />
-            <TextBlock>
-              Everything
-            </TextBlock>
+            <TextBlock Text="6"
+                 HorizontalAlignment="Right"
+                 VerticalAlignment="Top"
+                 Margin="0,0,-5,-30"
+                 FontSize="14"
+                 FontWeight="Medium"
+                 Foreground="White"/>
+            <Image Source="avares://UEParser/Resources/iconHelp_archivesQuests.png" Width="64" Height="64" />
+            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Tomes</TextBlock>
           </StackPanel>
         </Button>
+        
         <Button Name="RiftsController2"
                 Command="{Binding ParseRiftsCommand}"
                 Cursor="Hand"

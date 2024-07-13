@@ -2,12 +2,8 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.JavaScript;
-using System.Text;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using UEParser.Models;
 using UEParser.Parser;
@@ -18,7 +14,7 @@ namespace UEParser.APIComposers;
 
 public class Cosmetics
 {
-    private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> localizationData = [];
+    private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
     private static readonly dynamic catalogData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.rootDir, "Output", "API", GlobalVariables.versionWithBranch, "catalog.json")) ?? throw new Exception("Failed to load catalog data.");
     private static readonly Dictionary<string, Rift> riftData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Rift>>(Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, "en", "Rifts.json"));
     private static readonly Dictionary<string, int> catalogDictionary = CosmeticUtils.CreateCatalogDictionary(catalogData);
@@ -125,13 +121,13 @@ public class Cosmetics
                         ["CollectionName"] = collectionName
                     };
 
-                    localizationData.TryAdd(cosmeticId, localizationModel);
+                   LocalizationData.TryAdd(cosmeticId, localizationModel);
 
                     Outfit model = new()
                     {
                         CosmeticId = cosmeticId,
-                        CosmeticName = item.Value["UIData"]["DisplayName"]["LocalizedString"],
-                        Description = descriptionKey,
+                        CosmeticName = "",
+                        Description = "",
                         CollectionName = "",
                         IconFilePathList = iconPath,
                         EventId = eventId,
@@ -278,13 +274,13 @@ public class Cosmetics
                     ["SearchTags"] = searchTags
                 };
 
-                localizationData.TryAdd(cosmeticId, localizationModel);
+                LocalizationData.TryAdd(cosmeticId, localizationModel);
 
                 CustomzatiomItem model = new()
                 {
                     CosmeticId = cosmeticId,
-                    CosmeticName = item.Value["UIData"]["DisplayName"]["LocalizedString"],
-                    Description = descriptionKey,
+                    CosmeticName = "",
+                    Description = "",
                     IconFilePathList = iconPath,
                     SearchTags = [],
                     SecondaryIcon = secondaryIcon,
@@ -379,7 +375,7 @@ public class Cosmetics
             {
                 Type = "Currency",
                 CosmeticId = id,
-                CosmeticName = nameKey,
+                CosmeticName = "",
                 Description = "",
                 IconFilePathList = iconFilePath,
                 TomeId = null
@@ -398,7 +394,7 @@ public class Cosmetics
                 ]
             };
 
-            localizationData.TryAdd(id, localizationModel);
+            LocalizationData.TryAdd(id, localizationModel);
         }
 
         // Add the currencies using the helper method with localization
@@ -443,7 +439,7 @@ public class Cosmetics
             var objectString = JsonConvert.SerializeObject(parsedCosmeticsDB);
             Dictionary<string, object> localizedCosmeticsDB = JsonConvert.DeserializeObject<Dictionary<string, object>>(objectString) ?? [];
 
-            Helpers.LocalizeDB(localizedCosmeticsDB, localizationData, languageKeys, langKey);
+            Helpers.LocalizeDB(localizedCosmeticsDB, LocalizationData, languageKeys, langKey);
 
             //foreach (var item in localizedCosmeticsDB)
             //{

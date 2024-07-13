@@ -63,12 +63,14 @@ public class Outfit
     public bool Unbreakable { get; set; }
 
     /// <summary>
-    /// Indicates whether cosmetic is available for purchase (server-sided)
+    /// Indicates whether cosmetic is available for purchase 
+    /// (server-sided)
     /// </summary>
     public bool Purchasable { get; set; }
 
     /// <summary>
-    /// Release date of the cosmetics (server-sided)
+    /// Release date of the cosmetics 
+    /// (server-sided)
     /// </summary>
     public DateTime ReleaseDate { get; set; }
 
@@ -105,7 +107,8 @@ public class Outfit
     public required JArray OutfitItems { get; set; }
 
     /// <summary>
-    /// Discount percentage (server-sided)
+    /// Discount percentage 
+    /// (server-sided)
     /// </summary>
     public double DiscountPercentage { get; set; }
 
@@ -222,7 +225,8 @@ public class CustomzatiomItem
     public int Character { get; set; }
 
     /// <summary>
-    /// Indicates whether cosmetic is available for purchase (server-sided)
+    /// Indicates whether cosmetic is available for purchase
+    /// (server-sided)
     /// </summary>
     public bool Purchasable { get; set; }
 

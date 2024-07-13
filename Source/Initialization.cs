@@ -28,10 +28,10 @@ public class Initialize
             LogsWindowViewModel.Instance.AddLog("Looking for new S3 Bucket Access Keys.", Logger.LogTags.Info);
             await S3AccessKeys.CheckKeys(); // Check if there's any new S3AccessKeys (method needs to be invoked after 'ParseGameAssets')
             LogsWindowViewModel.Instance.AddLog("Creating helper components to speed up parsing process.", Logger.LogTags.Info);
-            Helpers.Archives.CreateArchiveQuestObjectiveDB();
-            Helpers.Archives.CreateQuestNodeDatabase();
+            Helpers.CreateArchiveQuestObjectiveDB();
+            Helpers.CreateQuestNodeDatabase();
             Helpers.CreateTagConverters();
-            Helpers.CharacterBlueprints.CombineCharacterBlueprints();
+            Helpers.CombineCharacterBlueprints();
 
             // Download mappings from github archive
             bool mappingsExist = Mappings.CheckIfMappingsExist();
