@@ -82,7 +82,7 @@ public class DbdDecryption
 
         var config = ConfigurationService.Config;
 
-        string ENCRYPTED_KEY = config?.Core.ApiConfig.S3AccessKeys[resultKeyId] ?? throw new Exception("Not found matching keys inside Config file, key: " + resultKeyId);
+        string ENCRYPTED_KEY = config.Core.ApiConfig.S3AccessKeys[resultKeyId] ?? throw new Exception("Not found matching keys inside Config file, key: " + resultKeyId);
 
         byte[] DECRYPTED_KEY = Convert.FromBase64String(ENCRYPTED_KEY ?? "");
 

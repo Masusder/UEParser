@@ -59,7 +59,7 @@ public partial class ParsingControllers : UserControl
             {
                 descriptionText.Inlines?.Add(new TextBlock { Margin = new Thickness(0, 10, 0, 0) }); // Adjust top margin as needed
                 descriptionText.Inlines?.Add(new LineBreak());
-                descriptionText.Inlines?.Add(new Run { Text = "Requirements:", FontWeight = Avalonia.Media.FontWeight.Bold });
+                descriptionText.Inlines?.Add(new Run { Text = "Requirements:", FontWeight = Avalonia.Media.FontWeight.Bold, FontSize = 12 });
                 descriptionText.Inlines?.Add(new LineBreak());
 
                 // Split requirements by ;
@@ -68,7 +68,7 @@ public partial class ParsingControllers : UserControl
                 // Add each requirement
                 foreach (var requirement in requirementsArray)
                 {
-                    descriptionText.Inlines?.Add(new Run { Text = $"• {requirement.Trim()}", Foreground = Avalonia.Media.Brushes.AntiqueWhite });
+                    descriptionText.Inlines?.Add(new Run { Text = $"• {requirement.Trim()}", Foreground = Avalonia.Media.Brushes.AntiqueWhite, FontSize = 12 });
                     descriptionText.Inlines?.Add(new LineBreak());
                 }
 

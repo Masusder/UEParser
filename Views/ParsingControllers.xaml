@@ -7,7 +7,11 @@
              x:Class="UEParser.Views.ParsingControllers"
              xmlns:views="clr-namespace:UEParser.Views"
              xmlns:vm="clr-namespace:UEParser.ViewModels"
+             xmlns:convert="clr-namespace:UEParser.Converters"
              x:DataType="vm:ParsingControllersViewModel">
+  <UserControl.Resources>
+    <convert:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+  </UserControl.Resources>
   <UserControl.Styles>
     <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="CornerRadius" Value="5" />
@@ -53,11 +57,13 @@
          Margin="0,0,0,10"
         Foreground="AntiqueWhite"/>
       <StackPanel
-                Orientation="Horizontal"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center">
+        Orientation="Horizontal"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center">
+
         <Button Name="MainController"
                 Command="{Binding ParseEverythingCommand}"
+                IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
                 Margin="5"
                 PointerEntered="Button_PointerEnter"
                 PointerExited="Button_PointerLeave"
@@ -71,20 +77,22 @@
           </Button.Resources>
           <StackPanel Orientation="Vertical">
             <TextBlock Text="1"
-                             HorizontalAlignment="Right"
-                             VerticalAlignment="Top"
-                              Margin="0,0,-5,-30"
-                             FontSize="14"
-                             FontWeight="Medium"
-                             Foreground="White"/>
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Top"
+                       Margin="0,0,-5,-30"
+                       FontSize="14"
+                       FontWeight="Medium"
+                       Foreground="White"/>
             <Image Source="avares://UEParser/Resources/iconHelp_DBDlogo.png" Width="64" Height="64" />
             <TextBlock>
               Everything
             </TextBlock>
           </StackPanel>
         </Button>
+
         <Button Name="RiftsController"
                 Command="{Binding ParseRiftsCommand}"
+                IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
                 Cursor="Hand"
                 PointerEntered="Button_PointerEnter"
                 PointerExited="Button_PointerLeave"
@@ -100,12 +108,12 @@
           </Button.Resources>
           <StackPanel Orientation="Vertical">
             <TextBlock Text="2"
-                   HorizontalAlignment="Right"
-                   VerticalAlignment="Top"
-                    Margin="0,0,-5,-30"
-                   FontSize="14"
-                   FontWeight="Medium"
-                   Foreground="White"/>
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Top"
+                       Margin="0,0,-5,-30"
+                       FontSize="14"
+                       FontWeight="Medium"
+                       Foreground="White"/>
             <Image Source="avares://UEParser/Resources/iconHelp_archivesRewards.png" Width="64" Height="64" />
             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
               Rifts
@@ -115,7 +123,8 @@
 
         <Button Name="CharactersController"
                 Command="{Binding ParseCharactersCommand}"
-                                PointerEntered="Button_PointerEnter"
+                IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
+                PointerEntered="Button_PointerEnter"
                 PointerExited="Button_PointerLeave"
                 Cursor="Hand"
                 Margin="5">
@@ -129,12 +138,12 @@
           </Button.Resources>
           <StackPanel Orientation="Vertical">
             <TextBlock Text="3"
-         HorizontalAlignment="Right"
-         VerticalAlignment="Top"
-          Margin="0,0,-5,-30"
-         FontSize="14"
-         FontWeight="Medium"
-         Foreground="White"/>
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Top"
+                       Margin="0,0,-5,-30"
+                       FontSize="14"
+                       FontWeight="Medium"
+                       Foreground="White"/>
             <Image Source="avares://UEParser/Resources/help_levelIcon_survivor.png" Width="64" Height="64" />
             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Characters</TextBlock>
           </StackPanel>
@@ -142,7 +151,8 @@
 
         <Button Name="CosmeticsController"
                 Command="{Binding ParseCosmeticsCommand}"
-                                                PointerEntered="Button_PointerEnter"
+                IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
+                PointerEntered="Button_PointerEnter"
                 PointerExited="Button_PointerLeave"
                 Cursor="Hand"
                 Margin="5">
@@ -169,11 +179,12 @@
         </Button>
 
         <Button Name="PerksController"
-        Command="{Binding ParsePerksCommand}"
-                                        PointerEntered="Button_PointerEnter"
-        PointerExited="Button_PointerLeave"
-        Cursor="Hand"
-        Margin="5">
+                Command="{Binding ParsePerksCommand}"
+                IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
+                PointerEntered="Button_PointerEnter"
+                PointerExited="Button_PointerLeave"
+                Cursor="Hand"
+                Margin="5">
           <Button.Resources>
             <ResourceDictionary>
               <vm:StringResources x:Key="ButtonInfo"
@@ -202,17 +213,18 @@
             VerticalAlignment="Center">
 
         <Button Name="TomesController"
-        Command="{Binding ParseTomesCommand}"
-                                        PointerEntered="Button_PointerEnter"
-        PointerExited="Button_PointerLeave"
-        Cursor="Hand"
-        Margin="5">
+                Command="{Binding ParseTomesCommand}"
+                IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
+                PointerEntered="Button_PointerEnter"
+                PointerExited="Button_PointerLeave"
+                Cursor="Hand"
+                Margin="5">
           <Button.Resources>
             <ResourceDictionary>
               <vm:StringResources x:Key="ButtonInfo"
                                   Title="Tomes"
                                   Description="Parse Tomes data."
-                                  Requirements="Updated API;Parsed Cosmetics;Parsed Characters;Initialized helper components">
+                                  Requirements="Updated API;Parsed Cosmetics;Parsed Characters;Parsed Perks;Initialized helper components">
               </vm:StringResources>
             </ResourceDictionary>
           </Button.Resources>
@@ -228,27 +240,63 @@
             <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Tomes</TextBlock>
           </StackPanel>
         </Button>
-        
-        <Button Name="RiftsController2"
-                Command="{Binding ParseRiftsCommand}"
+
+        <Button Name="AddonsController"
+                Command="{Binding ParseAddonsCommand}"
+                IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
+                PointerEntered="Button_PointerEnter"
+                PointerExited="Button_PointerLeave"
                 Cursor="Hand"
                 Margin="5">
+          <Button.Resources>
+            <ResourceDictionary>
+              <vm:StringResources x:Key="ButtonInfo"
+                                  Title="Addons"
+                                  Description="Parse Addons data.">
+              </vm:StringResources>
+            </ResourceDictionary>
+          </Button.Resources>
           <StackPanel Orientation="Vertical">
-            <Image Source="avares://UEParser/Resources/iconHelp_archivesRewards.png" Width="64" Height="64" />
-            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">
-              Rifts
-            </TextBlock>
+            <TextBlock Text="6"
+                 HorizontalAlignment="Right"
+                 VerticalAlignment="Top"
+                 Margin="0,0,-5,-30"
+                 FontSize="14"
+                 FontWeight="Medium"
+                 Foreground="White"/>
+            <Image Source="avares://UEParser/Resources/iconHelpLoading_addons.png" Width="64" Height="64" />
+            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Addons</TextBlock>
           </StackPanel>
         </Button>
-        <Button Name="CharactersController2"
-                Command="{Binding ParseCharactersCommand}"
+
+        <Button Name="ItemsController"
+                Command="{Binding ParseItemsCommand}"
+                IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
+                PointerEntered="Button_PointerEnter"
+                PointerExited="Button_PointerLeave"
                 Cursor="Hand"
                 Margin="5">
+          <Button.Resources>
+            <ResourceDictionary>
+              <vm:StringResources x:Key="ButtonInfo"
+                                  Title="Items"
+                                  Description="Parse Items data.">
+              </vm:StringResources>
+            </ResourceDictionary>
+          </Button.Resources>
           <StackPanel Orientation="Vertical">
-            <Image Source="avares://UEParser/Resources/help_levelIcon_survivor.png" Width="64" Height="64" />
-            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Characters</TextBlock>
+            <TextBlock Text="6"
+                 HorizontalAlignment="Right"
+                 VerticalAlignment="Top"
+                 Margin="0,0,-5,-30"
+                 FontSize="14"
+                 FontWeight="Medium"
+                 Foreground="White"/>
+            <Image Source="avares://UEParser/Resources/iconHelpLoading_items.png" Width="64" Height="64" />
+            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Items</TextBlock>
           </StackPanel>
         </Button>
+
       </StackPanel>
     </StackPanel>
     <Popup x:Name="TextPopup"  Opacity="0" PlacementMode="Bottom" VerticalOffset="-10" >
@@ -256,8 +304,7 @@
         <ScaleTransform/>
       </Popup.RenderTransform>
       <Border x:Name="TextBorder" BorderBrush="#1AFFFFFF" BorderThickness="1" Background="#F2202020" Opacity="0" CornerRadius="7.5">
-        <TextBlock x:Name="DescriptionText"
-               HorizontalAlignment="Center"
+        <TextBlock x:Name="DescriptionText" HorizontalAlignment="Center"
                VerticalAlignment="Center"
                TextAlignment="Center"
                    Foreground="White"

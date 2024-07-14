@@ -2,10 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
 using UEParser.Utils;
+using UEParser.Models;
+using UEParser.ViewModels;
 
 namespace UEParser.APIComposers;
 
@@ -149,5 +152,90 @@ public class TomeUtils
         }
 
         return coordinates;
+    }
+
+    private static Dictionary<string, string> CreatePerksDictionary(Dictionary<string, Perk> PerksData)
+    {
+        var perksDictionary = new Dictionary<string, string>();
+
+        foreach (var item in PerksData)
+        {
+            string keyLower = item.Key.ToLower();
+            perksDictionary[keyLower] = item.Key;
+        }
+
+        return perksDictionary;
+    }
+
+    public static void FormatDescriptionParameters(Dictionary<string, Tome> localizedTomesDB, Dictionary<string, int> CharacterIds, Dictionary<string, Character> CharactersData, Dictionary<string, Perk> PerksData, TagConverters HTMLTagConverters)
+    {
+        var perksDictionary = CreatePerksDictionary(PerksData);
+        foreach (var item in localizedTomesDB)
+        {
+            if (item.Value.Levels == null) continue;
+
+            for (int levelIndex = 0; levelIndex < item.Value.Levels.Count; levelIndex++)
+            {
+                var level = item.Value.Levels[levelIndex];
+
+                if (level.Nodes == null) continue;
+
+                foreach (var node in level.Nodes)
+                {
+                    string? nodeDescription = node.Value.Description;
+
+                    if (nodeDescription == null) continue;
+
+                    JArray? descriptionParametersArray = node.Value.DescriptionParams;
+                    List<dynamic>? descriptionParameters = descriptionParametersArray?.Select(x => (dynamic)x).ToList();
+
+                    foreach (var tag in HTMLTagConverters.HTMLTagConverters)
+                    {
+                        nodeDescription = nodeDescription.Replace(tag.Key, tag.Value);
+                    }
+
+                    node.Value.Description = nodeDescription;
+
+                    if (descriptionParameters?.Count > 0)
+                    {
+                        for (int i = 0; i < descriptionParameters.Count; i++)
+                        {
+                            dynamic param = descriptionParameters[i];
+                            string paramString = param.ToString();
+
+                            if (CharacterIds.ContainsKey(paramString.ToLower()))
+                            {
+                                var characterId = CharacterIds[paramString.ToLower()];
+                                string? characterString = characterId.ToString();
+
+                                if (characterString != null)
+                                {
+                                    string characterName = CharactersData[characterString].Name;
+                                    descriptionParameters[i] = characterName;
+                                }
+
+                            }
+
+                            if (perksDictionary.TryGetValue(paramString.ToLower(), out string? matchingString))
+                            {
+                                string? perkName = PerksData[matchingString].Name;
+                                if (perkName != null)
+                                {
+                                    descriptionParameters[i] = perkName;
+                                }
+                                else
+                                {
+                                    LogsWindowViewModel.Instance.AddLog($"Not found perk param: {paramString}.", Logger.LogTags.Warning);
+                                }
+                            }
+                        }
+
+                        string formattedDescription = string.Format(nodeDescription, descriptionParameters.ToArray());
+
+                        node.Value.Description = formattedDescription;
+                    }
+                }
+            }
+        }
     }
 }

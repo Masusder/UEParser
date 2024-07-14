@@ -3,17 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using UEParser.Models;
 using UEParser.Parser;
 using UEParser.ViewModels;
 using UEParser.Utils;
-using UEParser.Services;
 using Newtonsoft.Json.Linq;
-using System.Text.Json.Nodes;
-using System.Reflection;
-using System.Collections;
 
 namespace UEParser.APIComposers;
 
@@ -24,6 +19,7 @@ public class Tomes
     private static readonly Dictionary<string, object> QuestNodeDatabase = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, object>>(Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "questNodeDatabase.json"));
     private static readonly Dictionary<string, object> QuestObjectiveDatabase = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, object>>(Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "questObjectiveDatabase.json"));
     private static readonly Dictionary<string, int> CharacterIds = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, int>>(Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "characterIds.json"));
+    private static readonly TagConverters HTMLTagConverters = FileUtils.LoadJsonFileWithTypeCheck<TagConverters>(Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "tagConverters.json"));
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
 
     public static async Task InitializeTomesDB()
@@ -83,34 +79,24 @@ public class Tomes
 
                 List<Level> levels = CreateLevels(tomeIdTitleCase, tomeData, localizationModel);
 
-                //localizationModel["Name"] = [
-                //    new LocalizationEntry
-                //    {
-                //        Key = item.Value["Title"]["Key"],
-                //        SourceString = item.Value["Title"]["SourceString"]
-                //    }
-                //];
+                localizationModel["Name"] = [
+                    new LocalizationEntry
+                    {
+                        Key = item.Value["Title"]["Key"],
+                        SourceString = item.Value["Title"]["SourceString"]
+                    }
+                ];
 
-                //localizationModel["Description"] = [
-                //    new LocalizationEntry
-                //    {
-                //        Key = item.Value["PurchasePassPopupMessage"]["Key"],
-                //        SourceString = item.Value["PurchasePassPopupMessage"]["SourceString"]
-                //    }
-                //];
-
-
-                //if (!string.IsNullOrEmpty(rulesDescriptionKey) && !string.IsNullOrEmpty(rulesDescriptionSourceString))
-                //{
-                //    localizationModel[localizationNameString] =
-                //    [
-                //        new LocalizationEntry
-                //{
-                //    Key = rulesDescriptionKey,
-                //    SourceString = rulesDescriptionSourceString
-                //}
-                //    ];
-                //}
+                if (item.Value["PurchasePassPopupMessage"]["Key"] != null)
+                {
+                    localizationModel["Description"] = [
+                        new LocalizationEntry
+                    {
+                        Key = item.Value["PurchasePassPopupMessage"]["Key"],
+                        SourceString = item.Value["PurchasePassPopupMessage"]["SourceString"]
+                    }
+                    ];
+                }
 
                 LocalizationData.TryAdd(tomeIdTitleCase, localizationModel);
 
@@ -119,8 +105,8 @@ public class Tomes
                     Name = "",
                     Description = "",
                     Levels = levels,
-                    RiftID = tomeData?.GetValue(item.Name, StringComparison.OrdinalIgnoreCase)?["riftId"],
-                    NewTomePopup = tomeData?.GetValue(item.Name, StringComparison.OrdinalIgnoreCase)?["newTomePopup"]
+                    RiftID = tomeData.GetValue(tomeId, StringComparison.OrdinalIgnoreCase)["riftId"],
+                    NewTomePopup = tomeData.GetValue(tomeId, StringComparison.OrdinalIgnoreCase)["newTomePopup"]
                 };
 
                 parsedTomesDB.Add(tomeIdTitleCase, model);
@@ -193,6 +179,8 @@ public class Tomes
                 questId = node.Value["clientInfoId"];
             }
 
+            if (questId == null) throw new Exception("Not found questId.");
+
             reward = questId switch
             {
                 "End" => (JArray)tomeData.GetValue(tomeId, StringComparison.OrdinalIgnoreCase)["level"][levelIndex]["endNodeRewards"],
@@ -239,21 +227,24 @@ public class Tomes
 
         if (clientValue == null) throw new Exception("Node data client value is null.");
 
-        string nodeName = clientValue["DisplayName"]["Key"];
+        string nodeNameKey = clientValue["DisplayName"]["Key"];
+        string nodeNameSourceString = clientValue["DisplayName"]["SourceString"];
 
         string iconPathRaw = clientValue["IconPath"];
         string iconPath = StringUtils.AddRootDirectory(iconPathRaw, "/images/");
-            //"/images/" + clientValue?["IconPath"];
+
         string playerRoleRaw = clientValue["PlayerRole"];
-        string? rulesDescription = null;
-        string? objectiveDescription;
+        string playerRole = StringUtils.StringSplitVE(playerRoleRaw);
+
+        string? objectiveDescriptionKey;
+        string? objectiveDescriptionSourceString;
 
         string? rulesDescriptionKey = null;
         string? rulesDescriptionSourceString = null;
         if (QuestObjectiveDatabase.TryGetValue(questId, out dynamic? value))
         {
-            objectiveDescription = value["Description"]["Key"];
-            rulesDescription = value["RulesDescription"]["Key"];
+            objectiveDescriptionKey = value["Description"]["Key"];
+            objectiveDescriptionSourceString = value["Description"]["SourceString"];
 
             rulesDescriptionKey = value["RulesDescription"]["Key"];
             rulesDescriptionSourceString = value["RulesDescription"]["SourceString"];
@@ -263,10 +254,9 @@ public class Tomes
             QuestNodeDatabase.TryGetValue(questId, out dynamic? objValue);
 
             // May I ask BHVR why descriptions for some nodes are split between two databases?
-            objectiveDescription = objValue?["Description"]["Key"];
+            objectiveDescriptionKey = objValue?["Description"]["Key"];
+            objectiveDescriptionSourceString = objValue?["Description"]["SourceString"];
         }
-
-        string playerRole = StringUtils.StringSplitVE(playerRoleRaw);
 
         // Add custom image for 'end' and 'start' nodes
         // For Reward set icon path for cosmetic icon
@@ -276,7 +266,7 @@ public class Tomes
         }
         else if (clientQuestId == "reward")
         {
-            nodeName = "Reward";
+            //nodeNameKey = "Reward";
             for (int rewardIndex = 0; rewardIndex < tomesJson.GetValue(tomeId, StringComparison.OrdinalIgnoreCase)["level"][levelIndex]["nodes"][nodeId]["reward"].Count; rewardIndex++)
             {
                 string rewardId = tomesJson.GetValue(tomeId, StringComparison.OrdinalIgnoreCase)["level"][levelIndex]["nodes"][nodeId]["reward"][rewardIndex]["id"];
@@ -290,7 +280,8 @@ public class Tomes
         }
 
         string localizationRulesDescriptionString = $"Levels.{levelIndex}.Nodes.{nodeId}.RulesDescription";
-        //string localizationNameString = $"Levels.{levelIndex}.Nodes.{nodeId}.Name";
+        string localizationNameString = $"Levels.{levelIndex}.Nodes.{nodeId}.Name";
+        string localizationDescriptionString = $"Levels.{levelIndex}.Nodes.{nodeId}.Description";
 
         if (!string.IsNullOrEmpty(rulesDescriptionKey) && !string.IsNullOrEmpty(rulesDescriptionSourceString))
         {
@@ -300,6 +291,30 @@ public class Tomes
                 {
                     Key = rulesDescriptionKey,
                     SourceString = rulesDescriptionSourceString
+                }
+            ];
+        }
+
+        if (!string.IsNullOrEmpty(nodeNameKey) && !string.IsNullOrEmpty(nodeNameSourceString))
+        {
+            localizationModel[localizationNameString] =
+            [
+                new LocalizationEntry
+                {
+                    Key = nodeNameKey,
+                    SourceString = nodeNameSourceString
+                }
+            ];
+        }
+
+        if (!string.IsNullOrEmpty(objectiveDescriptionKey) && !string.IsNullOrEmpty(objectiveDescriptionSourceString))
+        {
+            localizationModel[localizationDescriptionString] =
+            [
+                new LocalizationEntry
+                {
+                    Key = objectiveDescriptionKey,
+                    SourceString = objectiveDescriptionSourceString
                 }
             ];
         }
@@ -336,6 +351,11 @@ public class Tomes
 
             Helpers.LocalizeDB(localizedTomesDB, LocalizationData, languageKeys, langKey);
 
+            var charactersData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Character>>(Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, langKey, "Characters.json"));
+            var perksData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Perk>>(Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, langKey, "Perks.json"));
+
+            TomeUtils.FormatDescriptionParameters(localizedTomesDB, CharacterIds, charactersData, perksData, HTMLTagConverters);
+
             //LocalizeTomesDB(localizedTomesDB, languageKeys, langKey);
 
             string outputPath = Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, langKey, "Tomes.json");
@@ -343,190 +363,4 @@ public class Tomes
             FileWriter.SaveParsedDB(localizedTomesDB, outputPath, "Tomes");
         }
     }
-
-    //public static void LocalizeTomesDB<T>(Dictionary<string, T> localizedDB, Dictionary<string, string> languageKeys, string langKey)
-    //{
-    //    foreach (var item in localizedDB)
-    //    {
-    //        string id = item.Key;
-    //        LocalizationData.TryGetValue(id, out var localizationDataEntry);
-
-    //        if (localizationDataEntry == null)
-    //        {
-    //            continue;
-    //        }
-
-    //        foreach (var entry in localizationDataEntry)
-    //        {
-    //            string propertiesKeys = entry.Key;
-    //            string[] splitKeys = propertiesKeys.Split('.');
-
-    //            if (item.Value == null) continue;
-
-    //            object nestedValue = GetNestedValue(item.Value, splitKeys);
-
-    //            // Here, nestedValue should hold the final value of the nested property
-    //            if (nestedValue != null)
-    //            {
-    //                // Modify nestedValue (example: append "Modified" to string)
-    //                if (nestedValue is string stringValue)
-    //                {
-    //                    nestedValue = "@#Modified";
-    //                }
-    //                else if (nestedValue is IList list)
-    //                {
-    //                    // Example: modify the first element of the list
-    //                    if (list.Count > 0)
-    //                    {
-    //                        list[0] = "@#Modified";
-    //                    }
-    //                }
-    //                else
-    //                {
-    //                    // Handle other types as needed
-    //                }
-
-    //                // Update localizedDB with modified value
-    //                UpdateNestedValue(localizedDB, id, splitKeys, nestedValue);
-    //            }
-    //        }
-    //    }
-    //}
-
-    //private static void UpdateNestedValue<T>(Dictionary<string, T> dictionary, string id, string[] keys, object newValue)
-    //{
-    //    // Get the original value from the dictionary
-    //    if (dictionary.TryGetValue(id, out T originalValue))
-    //    {
-    //        // Navigate to the nested property using keys and update its value
-    //        object current = originalValue;
-    //        for (int i = 0; i < keys.Length - 1; i++)
-    //        {
-    //            string key = keys[i];
-    //            Type currentType = current.GetType();
-
-    //            if (currentType.IsGenericType && currentType.GetGenericTypeDefinition() == typeof(Dictionary<,>))
-    //            {
-    //                PropertyInfo indexer = currentType.GetProperty("Item");
-    //                current = indexer.GetValue(current, new object[] { key });
-    //            }
-    //            else if (typeof(IEnumerable<object>).IsAssignableFrom(currentType))
-    //            {
-    //                current = GetEnumerableElement(current, key);
-    //            }
-    //            else
-    //            {
-    //                PropertyInfo propInfo = currentType.GetProperty(key);
-    //                if (propInfo != null)
-    //                {
-    //                    current = propInfo.GetValue(current);
-    //                }
-    //                else
-    //                {
-    //                    return; // Property not found
-    //                }
-    //            }
-    //        }
-
-    //        // Update the final nested property with newValue
-    //        string lastKey = keys[keys.Length - 1];
-    //        Type finalType = current.GetType();
-
-    //        if (finalType.IsGenericType && finalType.GetGenericTypeDefinition() == typeof(Dictionary<,>))
-    //        {
-    //            PropertyInfo indexer = finalType.GetProperty("Item");
-    //            indexer.SetValue(current, newValue, new object[] { lastKey });
-    //        }
-    //        else if (typeof(IList).IsAssignableFrom(finalType))
-    //        {
-    //            if (int.TryParse(lastKey, out int index))
-    //            {
-    //                IList list = (IList)current;
-    //                if (index >= 0 && index < list.Count)
-    //                {
-    //                    list[index] = newValue;
-    //                }
-    //            }
-    //            // Handle other types of lists if needed
-    //        }
-    //        else
-    //        {
-    //            PropertyInfo propInfo = finalType.GetProperty(lastKey);
-    //            if (propInfo != null && propInfo.CanWrite)
-    //            {
-    //                propInfo.SetValue(current, newValue);
-    //            }
-    //        }
-
-    //        // Update the dictionary with the modified originalValue
-    //        dictionary[id] = originalValue;
-    //    }
-    //}
-
-    //private static object GetNestedValue(object obj, string[] keys)
-    //{
-    //    foreach (var key in keys)
-    //    {
-    //        if (obj == null)
-    //        {
-    //            return null;
-    //        }
-
-    //        Type objType = obj.GetType();
-
-    //        if (objType.IsGenericType && objType.GetGenericTypeDefinition() == typeof(Dictionary<,>))
-    //        {
-    //            // Handle case where obj is a dictionary
-    //            PropertyInfo indexer = objType.GetProperty("Item");
-    //            obj = indexer.GetValue(obj, new object[] { key });
-    //        }
-    //        else if (typeof(IEnumerable<object>).IsAssignableFrom(objType))
-    //        {
-    //            // Handle case where obj is an IEnumerable<object>
-    //            obj = GetEnumerableElement(obj, key);
-    //        }
-    //        else
-    //        {
-    //            // Handle case where obj is a class or object
-    //            PropertyInfo propInfo = objType.GetProperty(key);
-    //            if (propInfo != null)
-    //            {
-    //                obj = propInfo.GetValue(obj);
-    //            }
-    //            else
-    //            {
-    //                obj = null;
-    //                break;
-    //            }
-    //        }
-    //    }
-
-    //    return obj;
-    //}
-
-    //private static object GetEnumerableElement(object obj, string key)
-    //{
-    //    IEnumerable<object> enumerable = (IEnumerable<object>)obj;
-
-    //    // Attempt to parse key as an index
-    //    if (int.TryParse(key, out int index))
-    //    {
-    //        // Access by index
-    //        try
-    //        {
-    //            obj = enumerable.ElementAt(index);
-    //        }
-    //        catch (ArgumentOutOfRangeException)
-    //        {
-    //            obj = null;
-    //        }
-    //    }
-    //    else
-    //    {
-    //        // Access by property name (not supported in this simplified example)
-    //        obj = null;
-    //    }
-
-    //    return obj;
-    //}
 }

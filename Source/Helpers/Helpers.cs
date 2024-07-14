@@ -44,69 +44,6 @@ public partial class Helpers
         return versionWithBranch;
     }
 
-    //public static void CreateLocresFiles()
-    //{
-    //    // Search for locres files
-    //    string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies\\ExtractedAssets\\DeadByDaylight\\Content\\Localization\\DeadByDaylight\\"), "DeadByDaylight.json", SearchOption.AllDirectories);
-
-    //    List<string> localizationsList = new(filePaths);
-
-    //    // Grab locres definition and remove from original list 
-    //    // Note that this will only work if locres defintion is first (and should be first) on the list
-    //    string locresDefinitionPath = localizationsList.First();
-    //    localizationsList.RemoveRange(0, Math.Min(1, localizationsList.Count));
-
-    //    // Loop through locres files
-    //    string? outputName = null;
-    //    foreach (var directoryItem in localizationsList)
-    //    {
-    //        // Empty object to add fixed locres to
-    //        var emptyObject = new Dictionary<string, string>();
-
-    //        // Read locres file
-    //        string locresJsonItem = File.ReadAllText(directoryItem);
-    //        Dictionary<string, dynamic>? locresJson = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(locresJsonItem);
-    //        if (locresJson != null)
-    //        {
-    //            foreach (var locresItem in locresJson)
-    //            {
-    //                foreach (var singleItem in locresItem.Value)
-    //                {
-    //                    if (!emptyObject.ContainsKey(singleItem.Name))
-    //                    {
-    //                        emptyObject.Add(singleItem.Name, singleItem.Value.ToString());
-    //                    }
-    //                }
-    //            }
-    //        }
-
-    //        // Split directory path to search for language key
-    //        string[] directoryPathSplit = directoryItem.Split(Path.DirectorySeparatorChar);
-
-    //        // Read available language keys
-    //        dynamic? locresDefintion = JsonConvert.DeserializeObject(File.ReadAllText(locresDefinitionPath));
-
-    //        if (locresDefintion != null)
-    //        {
-    //            foreach (var langKey in locresDefintion["CompiledCultures"])
-    //            {
-    //                // Get name of the language
-    //                bool exists = Array.Exists(directoryPathSplit, element => element == langKey.Value);
-
-    //                if (exists)
-    //                {
-    //                    outputName = langKey;
-    //                }
-    //            }
-    //        }
-
-    //        // Output fixed localization file
-    //        string combinedJsonString = JsonConvert.SerializeObject(emptyObject, Formatting.Indented);
-
-    //        File.WriteAllText($"Dependencies/Locres/locres_{outputName}.json", combinedJsonString);
-    //    }
-    //}
-
     public static void CreateCharacterTable()
     {
         string versionWithBranch = ConstructVersionHeaderWithBranch();
@@ -178,241 +115,6 @@ public partial class Helpers
         File.WriteAllText(outputPath, jsonString);
     }
 
-    //public class CharacterBlueprints
-    //{
-    //    public static void CombineCharacterBlueprints()
-    //    {
-    //        string outputPath = Path.Combine(GlobalVariables.rootDir, "Dependencies/HelperComponents/characterBlueprintsLinkage.json");
-
-    //        var characters = TraverseCharacterDescriptionDB();
-    //        var cosmetics = TraverseCharacterDescriptionOverrideDB();
-
-    //        var characterBlueprints = new CharacterBlueprintsModel
-    //        {
-    //            Characters = characters,
-    //            Cosmetics = cosmetics
-    //        };
-
-    //        string data = JsonConvert.SerializeObject(characterBlueprints, Formatting.Indented);
-
-    //        File.WriteAllText(outputPath, data);
-    //    }
-
-    //    private static Dictionary<string, CharacterData> TraverseCharacterDescriptionDB()
-    //    {
-    //        string[] filePaths = FindFilePathsInExtractedAssetsCaseInsensitive("CharacterDescriptionDB.json");
-    //            //Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAssets", "DeadByDaylight"), "CharacterDescriptionDB.json", SearchOption.AllDirectories);
-    //        var characters = new Dictionary<string, CharacterData>();
-
-    //        foreach (string filePath in filePaths)
-    //        {
-    //            bool isInDBDCharacters = false;
-    //            if (filePath.Contains("DBDCharacters"))
-    //            {
-    //                isInDBDCharacters = true;
-    //            }
-
-    //            string jsonString = File.ReadAllText(filePath);
-    //            List<Dictionary<string, dynamic>>? items = JsonConvert.DeserializeObject<List<Dictionary<string, dynamic>>>(jsonString);
-    //            if (items?[0]?["Rows"] != null)
-    //            {
-    //                foreach (var item in items[0]["Rows"])
-    //                {
-    //                    string characterIndex = item.Name;
-
-    //                    string gameBlueprintPathRaw = item.Value["GamePawn"]["AssetPathName"];
-    //                    string gameBlueprintPath = StringUtils.ModifyPath(gameBlueprintPathRaw, "json", isInDBDCharacters, int.Parse(characterIndex));
-
-    //                    string menuBlueprintPathRaw = item.Value["MenuPawn"]["AssetPathName"];
-    //                    string menuBlueprintPath = StringUtils.ModifyPath(menuBlueprintPathRaw, "json", isInDBDCharacters, int.Parse(characterIndex));
-
-    //                    characters[characterIndex] = new CharacterData
-    //                    {
-    //                        GameBlueprint = gameBlueprintPath,
-    //                        MenuBlueprint = menuBlueprintPath
-    //                    };
-    //                }
-    //            }
-    //        }
-
-    //        return characters;
-    //    }
-
-    //    private static Dictionary<string, CosmeticData> TraverseCharacterDescriptionOverrideDB()
-    //    {
-    //        string[] filePaths = FindFilePathsInExtractedAssetsCaseInsensitive("CharacterDescriptionOverrideDB.json");
-    //            //Directory.GetFiles(Path.Combine(Constants.ROOT_DIR, "Dependencies", "ExtractedAssets", "DeadByDaylight", "Content", "Data"), "CharacterDescriptionOverrideDB.json", SearchOption.AllDirectories);
-    //        var cosmetics = new Dictionary<string, CosmeticData>();
-
-    //        foreach (string filePath in filePaths)
-    //        {
-    //            bool isInDBDCharacters = false;
-    //            if (filePath.Contains("DBDCharacters"))
-    //            {
-    //                isInDBDCharacters = true;
-    //            }
-
-    //            string jsonString = File.ReadAllText(filePath);
-    //            List<Dictionary<string, dynamic>>? items = JsonConvert.DeserializeObject<List<Dictionary<string, dynamic>>>(jsonString);
-    //            if (items?[0]?["Rows"] != null)
-    //            {
-    //                foreach (var item in items[0]["Rows"])
-    //                {
-    //                    string cosmeticId = item.Name;
-    //                    JArray cosmeticItems = item.Value["RequiredItemIds"];
-    //                    string gameBlueprintPathRaw = item.Value["GameBlueprint"]["AssetPathName"];
-    //                    string gameBlueprintPath = StringUtils.ModifyPath(gameBlueprintPathRaw, "json", isInDBDCharacters);
-
-    //                    string menuBlueprintPathRaw = item.Value["MenuBlueprint"]["AssetPathName"];
-    //                    string menuBlueprintPath = StringUtils.ModifyPath(menuBlueprintPathRaw, "json", isInDBDCharacters);
-
-    //                    cosmetics[cosmeticId] = new CosmeticData
-    //                    {
-    //                        CosmeticItems = cosmeticItems,
-    //                        GameBlueprint = gameBlueprintPath,
-    //                        MenuBlueprint = menuBlueprintPath
-    //                    };
-    //                }
-    //            }
-    //        }
-
-    //        return cosmetics;
-    //    }
-    //}
-
-    //public class Archives
-    //{
-    //    public static void CreateArchiveQuestObjectiveDB()
-    //    {
-    //        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAssets"), "ArchiveQuestObjectiveDB.json", SearchOption.AllDirectories);
-
-    //        string outputPath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "questObjectiveDatabase.json");
-
-    //        Dictionary<string, object> jsonObject = [];
-
-    //        foreach (string filePath in filePaths)
-    //        {
-    //            string jsonString = File.ReadAllText(filePath);
-    //            List<Dictionary<string, dynamic>>? items = JsonConvert.DeserializeObject<List<Dictionary<string, dynamic>>>(jsonString);
-
-    //            if (items?[0]?["Rows"] != null)
-    //            {
-    //                foreach (var item in items[0]["Rows"])
-    //                {
-    //                    if (!jsonObject.ContainsKey(item.Name.ToLower()))
-    //                    {
-    //                        jsonObject.Add(item.Name.ToLower(), item.Value);
-    //                    }
-    //                }
-    //            }
-    //        }
-
-    //        string combinedJsonString = JsonConvert.SerializeObject(jsonObject, Formatting.Indented);
-
-    //        File.WriteAllText(outputPath, combinedJsonString);
-    //    }
-
-    //    public static void CreateQuestNodeDatabase()
-    //    {
-    //        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAssets"), "ArchiveNodeDB.json", SearchOption.AllDirectories);
-
-    //        string outputPath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "questNodeDatabase.json");
-
-
-    //        Dictionary<string, object> jsonObject = [];
-
-
-    //        foreach (string filePath in filePaths)
-    //        {
-    //            string jsonString = File.ReadAllText(filePath);
-    //            List<Dictionary<string, dynamic>>? items = JsonConvert.DeserializeObject<List<Dictionary<string, dynamic>>>(jsonString);
-
-    //            if (items?[0]?["Rows"] != null)
-    //            {
-    //                foreach (var item in items[0]["Rows"])
-    //                {
-    //                    if (!jsonObject.ContainsKey(item.Name.ToLower()))
-    //                    {
-    //                        jsonObject.Add(item.Name.ToLower(), item.Value);
-    //                    }
-    //                }
-    //            }
-    //        }
-
-    //        string combinedJsonString = JsonConvert.SerializeObject(jsonObject, Formatting.Indented);
-
-    //        File.WriteAllText(outputPath, combinedJsonString);
-    //    }
-    //}
-
-    //public static dynamic GetNestedPropertyValue(object obj, string path)
-    //{
-    //    string[] parts = path.Split('.');
-    //    foreach (string part in parts)
-    //    {
-    //        if (obj == null) return null;
-
-    //        if (int.TryParse(part, out int index))
-    //        {
-    //            // Handle array or list indexing
-    //            if (obj is IEnumerable enumerable)
-    //            {
-    //                obj = enumerable.Cast<object>().ElementAtOrDefault(index);
-    //            }
-    //            else
-    //            {
-    //                throw new ArgumentException($"Property path '{path}' is invalid. '{part}' is not an array or list index.");
-    //            }
-    //        }
-    //        else
-    //        {
-    //            // Handle property access
-    //            if (obj.GetType().IsGenericType)
-    //            {
-    //                var type = obj.GetType().GetGenericTypeDefinition();
-    //                if (type == typeof(Dictionary<,>))
-    //                {
-    //                    // Handle Dictionary<,>
-    //                    var dictionary = (IDictionary)obj;
-    //                    if (dictionary.Contains(part))
-    //                    {
-    //                        obj = dictionary[part];
-    //                    }
-    //                    else
-    //                    {
-    //                        throw new ArgumentException($"Property path '{path}' is invalid. '{part}' is not a key of '{obj.GetType().Name}'.");
-    //                    }
-    //                }
-    //                else if (type == typeof(KeyValuePair<,>))
-    //                {
-    //                    // Handle KeyValuePair<,>
-    //                    dynamic pair = obj;
-    //                    if (pair.Key == part)
-    //                    {
-    //                        obj = pair.Value;
-    //                    }
-    //                    else
-    //                    {
-    //                        throw new ArgumentException($"Property path '{path}' is invalid. '{part}' is not a key of '{obj.GetType().Name}'.");
-    //                    }
-    //                }
-    //            }
-    //            else
-    //            {
-    //                PropertyInfo property = obj.GetType().GetProperty(part);
-    //                if (property == null)
-    //                {
-    //                    throw new ArgumentException($"Property path '{path}' is invalid. '{part}' is not a property of '{obj.GetType().Name}'.");
-    //                }
-    //                obj = property.GetValue(obj);
-    //            }
-    //        }
-    //    }
-    //    return obj;
-    //}
-
-    // Dynamic localization method, TODO: support JSON nesting
-    // Might abandon trying to make it work for all parsers since it deeply depends on the data
     private static readonly string[] itemsWithoutLocalization = [
         "C_Head01",
         "D_Head01",
@@ -423,76 +125,10 @@ public partial class Helpers
         "D_Head02",
         "TR_Head03",
         "Default_Badge",
-        "Default_Banner"
+        "Default_Banner",
+        "Item_Camper_K33MagicItem_Bracers",
+        "Item_Camper_K33MagicItem_Boots"
     ];
-    //public static void LocalizeDB<T>(Dictionary<string, T> localizedDB, Dictionary<string, Dictionary<string, List<LocalizationEntry>>> localizationData, Dictionary<string, string> languageKeys, string langKey)
-    //{
-    //    foreach (var item in localizedDB)
-    //    {
-    //        string id = item.Key;
-    //        var localizationDataEntry = localizationData[id];
-
-    //        foreach (var entry in localizationDataEntry)
-    //        {
-    //            dynamic? dynamicItem = item.Value;
-
-    //            if (dynamicItem == null)
-    //            {
-    //                continue;
-    //            }
-
-    //            var propertyInfo = dynamicItem.GetType().GetProperty(entry.Key);
-
-    //            if (propertyInfo != null)
-    //            {
-    //                if (entry.Value.Count > 0 && propertyInfo.GetType() == typeof(JArray))
-    //                {
-    //                    JArray localizedStrings = [];
-
-    //                    foreach (var localizationEntry in entry.Value)
-    //                    {
-    //                        if (languageKeys.TryGetValue(localizationEntry.Key, out string? langValue))
-    //                        {
-    //                            localizedStrings.Add(langValue);
-    //                        }
-    //                        else
-    //                        {
-    //                            if (!itemsWithoutLocalization.Contains(id))
-    //                            {
-    //                                LogsWindowViewModel.Instance.AddLog($"Missing localization string -> LangKey: '{langKey}', Property: '{entry.Key}', StringKey: '{localizationEntry.Key}', RowId: '{id}', FallbackString: '{localizationEntry.SourceString}'", Logger.LogTags.Warning);
-    //                            }
-
-    //                            localizedStrings.Add(localizationEntry.SourceString);
-    //                        }
-    //                    }
-
-    //                    propertyInfo.SetValue(dynamicItem, localizedStrings);
-    //                }
-    //                else if (entry.Value.Count == 1)
-    //                {
-    //                    string localizedString;
-
-    //                    if (languageKeys.TryGetValue(entry.Value[0].Key, out string? langValue))
-    //                    {
-    //                        localizedString = langValue;
-    //                    }
-    //                    else
-    //                    {
-    //                        if (!itemsWithoutLocalization.Contains(id))
-    //                        {
-    //                            LogsWindowViewModel.Instance.AddLog($"Missing localization string -> LangKey: '{langKey}', Property: '{entry.Key}', StringKey: '{entry.Value[0].Key}', RowId: '{id}', FallbackString: '{entry.Value[0].SourceString}'", Logger.LogTags.Warning);
-    //                        }
-
-    //                        localizedString = entry.Value[0].SourceString;
-    //                    }
-
-    //                    propertyInfo.SetValue(dynamicItem, localizedString);
-    //                }
-    //            }
-    //        }
-    //    }
-    //}
-
     // Dynamic localization method
     // Supports localzation of nested data - ex. 'Levels.0.Nodes.node_T19_L1_01.Name'
     public static void LocalizeDB<T>(
@@ -545,8 +181,17 @@ public partial class Helpers
                 else if (entry.Value.Count == 1)
                 {
                     string localizedString;
+                    string? localizationKey = entry.Value[0].Key;
 
-                    if (languageKeys.TryGetValue(entry.Value[0].Key, out string? langValue))
+                    if (localizationKey == null)
+                    {
+                        if (!itemsWithoutLocalization.Contains(id))
+                        {
+                            LogsWindowViewModel.Instance.AddLog($"Null localization key -> LangKey: '{langKey}', Property: '{entry.Key}', RowId: '{id}', FallbackString: 'null'", Logger.LogTags.Warning);
+                        }
+                        localizedString = entry.Value[0].SourceString;
+                    }
+                    else if (languageKeys.TryGetValue(localizationKey, out string? langValue))
                     {
                         localizedString = langValue;
                     }

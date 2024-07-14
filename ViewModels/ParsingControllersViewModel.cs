@@ -2,8 +2,7 @@
 using System.Windows.Input;
 using ReactiveUI;
 using System.Threading.Tasks;
-using UEParser.Views;
-using System.Collections.Generic;
+using UEParser.APIComposers;
 
 namespace UEParser.ViewModels;
 
@@ -25,6 +24,15 @@ public class ParsingControllersViewModel : ReactiveObject
     public ICommand ParseCosmeticsCommand { get; }
     public ICommand ParsePerksCommand { get; }
     public ICommand ParseTomesCommand { get; }
+    public ICommand ParseAddonsCommand { get; }
+    public ICommand ParseItemsCommand { get; }
+
+    private bool _isParsing;
+    public bool IsParsing
+    {
+        get => _isParsing;
+        set => this.RaiseAndSetIfChanged(ref _isParsing, value);
+    }
 
     private ParsingControllersViewModel()
     {
@@ -34,56 +42,98 @@ public class ParsingControllersViewModel : ReactiveObject
         ParseCosmeticsCommand = ReactiveCommand.Create(ParseCosmetics);
         ParsePerksCommand = ReactiveCommand.Create(ParsePerks);
         ParseTomesCommand = ReactiveCommand.Create(ParseTomes);
+        ParseAddonsCommand = ReactiveCommand.Create(ParseAddons);
+        ParseItemsCommand = ReactiveCommand.Create(ParseItems);
     }
 
-    private void ParseEverything()
+    private async void ParseEverything()
     {
-        LogsWindowViewModel.Instance.AddLog("Parsing all data..", Logger.LogTags.Info);
-        LogsWindowViewModel.Instance.AddLog("Data parsed successfully.", Logger.LogTags.Success);
+        IsParsing = true;
+        await ParseRifts();
+        await ParseCharacters();
+        await ParseCosmetics();
+        await ParsePerks();
+        await ParseTomes();
+        await ParseAddons();
+        await ParseItems();
+        await ParseAddons();
+        IsParsing = false;
     }
 
     private async Task ParseRifts()
     {
+        IsParsing = true;
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
 
-        await APIComposers.Rifts.InitializeRiftsDB();
+        await Rifts.InitializeRiftsDB();
 
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        IsParsing = false;
     }
 
     private async Task ParseCharacters()
     {
+        IsParsing = true;
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
 
-        await APIComposers.Characters.InitializeCharactersDB();
+        await Characters.InitializeCharactersDB();
 
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        IsParsing = false;
     }
 
     private async Task ParseCosmetics()
     {
+        IsParsing = true;
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
 
-        await APIComposers.Cosmetics.InitializeCosmeticsDB();
+        await Cosmetics.InitializeCosmeticsDB();
 
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        IsParsing = false;
     }
 
     private async Task ParsePerks()
     {
+        IsParsing = true;
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
 
-        await APIComposers.Perks.InitializePerksDB();
+        await Perks.InitializePerksDB();
 
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        IsParsing = false;
     }
 
     private async Task ParseTomes()
     {
+        IsParsing = true;
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
 
-        await APIComposers.Tomes.InitializeTomesDB();
+        await Tomes.InitializeTomesDB();
 
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        IsParsing = false;
+    }
+
+    private async Task ParseAddons()
+    {
+        IsParsing = true;
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+
+        await Addons.InitializeAddonsDB();
+
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        IsParsing = false;
+    }
+
+    private async Task ParseItems()
+    {
+        IsParsing = true;
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+
+        await Items.InitializeItemsDB();
+
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        IsParsing = false;
     }
 }
