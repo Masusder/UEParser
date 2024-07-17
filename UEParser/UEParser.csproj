@@ -13,8 +13,6 @@
     <PublishSingleFile>True</PublishSingleFile>
     <NoWarn>NU1701</NoWarn> <!-- Suppress Ionic.Zlib package warning -->
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-    <GenerateTargetFrameworkAttribute>False</GenerateTargetFrameworkAttribute>
     <StartupObject>UEParser.Program</StartupObject>
   </PropertyGroup>
 
