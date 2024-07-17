@@ -26,6 +26,9 @@ public class ParsingControllersViewModel : ReactiveObject
     public ICommand ParseTomesCommand { get; }
     public ICommand ParseAddonsCommand { get; }
     public ICommand ParseItemsCommand { get; }
+    public ICommand ParseOfferingsCommand { get; }
+    public ICommand ParseMapsCommand { get; }
+    public ICommand ParseDlcsCommand { get; }
 
     private bool _isParsing;
     public bool IsParsing
@@ -44,6 +47,9 @@ public class ParsingControllersViewModel : ReactiveObject
         ParseTomesCommand = ReactiveCommand.Create(ParseTomes);
         ParseAddonsCommand = ReactiveCommand.Create(ParseAddons);
         ParseItemsCommand = ReactiveCommand.Create(ParseItems);
+        ParseOfferingsCommand = ReactiveCommand.Create(ParseOfferings);
+        ParseMapsCommand = ReactiveCommand.Create(ParseMaps);
+        ParseDlcsCommand = ReactiveCommand.Create(ParseDlcs);
     }
 
     private async void ParseEverything()
@@ -57,6 +63,9 @@ public class ParsingControllersViewModel : ReactiveObject
         await ParseAddons();
         await ParseItems();
         await ParseAddons();
+        await ParseOfferings();
+        await ParseMaps();
+        await ParseDlcs();
         IsParsing = false;
     }
 
@@ -132,6 +141,39 @@ public class ParsingControllersViewModel : ReactiveObject
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
 
         await Items.InitializeItemsDB();
+
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        IsParsing = false;
+    }
+
+    private async Task ParseOfferings()
+    {
+        IsParsing = true;
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+
+        await Offerings.InitializeOfferingsDB();
+
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        IsParsing = false;
+    }
+
+    private async Task ParseMaps()
+    {
+        IsParsing = true;
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+
+        await Maps.InitializeMapsDB();
+
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        IsParsing = false;
+    }
+
+    private async Task ParseDlcs()
+    {
+        IsParsing = true;
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+
+        await DLCs.InitializeDlcsDB();
 
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         IsParsing = false;

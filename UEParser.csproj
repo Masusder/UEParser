@@ -18,49 +18,6 @@
     <StartupObject>UEParser.Program</StartupObject>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <BuildInParallel>false</BuildInParallel>
-    <CMakeProject>../UEParser/CUE4Parse/CUE4Parse-Natives/</CMakeProject>
-    <CMakeBuildDir>$(CMakeProject)builddir</CMakeBuildDir>
-    <CMakeExecutable>C:\Program Files\CMake\bin\cmake.exe</CMakeExecutable>
-  </PropertyGroup>
-
-
-
-  <Target Name="Build-Natives" BeforeTargets="BeforeBuild" AfterTargets="AfterBuild">
-    <MakeDir Directories="$(CMakeBuildDir)" Condition="!Exists('$(CMakeBuildDir)')" />
-    <Exec Command="&quot;$(CMakeExecutable)&quot; .." ConsoleToMSBuild="true" WorkingDirectory="$(CMakeBuildDir)" IgnoreExitCode="true">
-      <Output TaskParameter="ConsoleOutput" PropertyName="OutputOfExec" />
-      <Output TaskParameter="ExitCode" PropertyName="CMakeExitCode" />
-    </Exec>
-    <Exec Condition=" '$(CMakeExitCode)' == '0' " Command="&quot;$(CMakeExecutable)&quot; --build . --config $(Configuration) --target install" ConsoleToMSBuild="true" WorkingDirectory="$(CMakeBuildDir)">
-      <Output TaskParameter="ConsoleOutput" PropertyName="OutputOfExec" />
-      <Output TaskParameter="ExitCode" PropertyName="CMakeExitCode" />
-    </Exec>
-    <Message Condition=" '$(CMakeExitCode)' != '0' " Importance="high" Text="CUE4Parse-Natives build failed. Continuing without it. ERROR: '$(OutputOfExec)'" />
-    <ItemGroup Condition=" '$(CMakeExitCode)' == '0' ">
-      <Content Include="..\UEParser\CUE4Parse\CUE4Parse-Natives\bin\$(Configuration)\CUE4Parse-Natives.dll" Condition=" '$(OS)' == 'Windows_NT' ">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        <PackagePath>lib/$(TargetFramework)</PackagePath>
-        <PackageCopyToOutput>true</PackageCopyToOutput>
-      </Content>
-      <Content Include="..\UEParser\CUE4Parse\CUE4Parse-Natives\bin\$(Configuration)\CUE4Parse-Natives.pdb" Condition=" '$(Configuration)' == 'Debug' And  '$(OS)' == 'Windows_NT' ">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        <Pack>false</Pack>
-      </Content>
-      <Content Include="$(CMakeBuildDir)/CUE4Parse-Natives.so" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' ">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        <PackagePath>lib/$(TargetFramework)</PackagePath>
-        <PackageCopyToOutput>true</PackageCopyToOutput>
-      </Content>
-      <Content Include="$(CMakeBuildDir)/CUE4Parse-Natives.dylib" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' ">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        <PackagePath>lib/$(TargetFramework)</PackagePath>
-        <PackageCopyToOutput>true</PackageCopyToOutput>
-      </Content>
-    </ItemGroup>
-  </Target>
-
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.0.11" />
     <PackageReference Include="Avalonia.Desktop" Version="11.0.11" />
@@ -76,7 +33,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Projektanker.Icons.Avalonia.FontAwesome" Version="9.3.0" />
 
-    <PackageReference Include="Infrablack.UE4Config" Version="0.7.2.97" />
+    <!--<PackageReference Include="Infrablack.UE4Config" Version="0.7.2.97" />
     <PackageReference Include="LZMA-SDK" Version="22.1.1" />
     <PackageReference Include="OffiUtils" Version="1.1.0" />
     <PackageReference Include="Oodle.NET" Version="2.0.2" />
@@ -90,7 +47,7 @@
 
     <PackageReference Include="SharpGLTF.Core" Version="1.0.0-alpha0023" />
     <PackageReference Include="SharpGLTF.Toolkit" Version="1.0.0-alpha0023" />
-    <PackageReference Include="SkiaSharp" Version="2.88.8" />
+    <PackageReference Include="SkiaSharp" Version="2.88.8" />-->
   </ItemGroup>
 
   <ItemGroup>
@@ -137,6 +94,11 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\APIView.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CUE4Parse\CUE4Parse-Conversion\CUE4Parse-Conversion.csproj" />
+    <ProjectReference Include="..\CUE4Parse\CUE4Parse\CUE4Parse.csproj" />
   </ItemGroup>
 
 </Project>

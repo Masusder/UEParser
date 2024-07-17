@@ -16,7 +16,7 @@ namespace UEParser.APIComposers;
 public class Rifts
 {
     private static readonly dynamic? archiveRewardData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.rootDir, "Output", "API", GlobalVariables.versionWithBranch, "archiveRewardData.json"));
-    private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> localizationData = [];
+    private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
 
     public static async Task InitializeRiftsDB()
     {
@@ -38,7 +38,6 @@ public class Rifts
     {
         var config = ConfigurationService.Config;
         var eventTomesArray = config.Core.EventTomesList;
-        //string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.pathToExtractedAssets), "ArchiveDB.json", SearchOption.AllDirectories);
 
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("ArchiveDB.json");
 
@@ -63,14 +62,14 @@ public class Rifts
                     string pathToRiftFile = Path.Combine(GlobalVariables.rootDir, "Output", "API", GlobalVariables.versionWithBranch, "Rifts", $"{riftId}.json");
                     if (!File.Exists(pathToRiftFile))
                     {
-                        LogsWindowViewModel.Instance.AddLog("Not found Rift data. Make sure to update API first.", Logger.LogTags.Error);
+                        LogsWindowViewModel.Instance.AddLog($"Not found Rift data for '{riftId}'. Make sure to update API first or add any missing event tomes to config.", Logger.LogTags.Error);
                         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
                         continue;
                     }
 
                     var riftData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.rootDir, "Output", "API", GlobalVariables.versionWithBranch, "Rifts", $"{riftId}.json"));
 
-                    string riftIdTitleCase = RiftUtils.TomeToTitleCase(riftId);
+                    string riftIdTitleCase = StringUtils.TomeToTitleCase(riftId);
 
                     Dictionary<string, List<LocalizationEntry>> localizationModel = new()
                     {
@@ -83,7 +82,7 @@ public class Rifts
                         ]
                     };
 
-                    localizationData.TryAdd(riftIdTitleCase, localizationModel);
+                    LocalizationData.TryAdd(riftIdTitleCase, localizationModel);
 
                     Rift model = new()
                     {
@@ -120,37 +119,7 @@ public class Rifts
             var objectString = JsonConvert.SerializeObject(parsedRiftsDB);
             Dictionary<string, Rift> localizedRiftsDB = JsonConvert.DeserializeObject<Dictionary<string, Rift>>(objectString) ?? [];
 
-            Helpers.LocalizeDB(localizedRiftsDB, localizationData, languageKeys, langKey);
-            //foreach (var item in localizedRiftsDB)
-            //{
-            //    string riftId = item.Key;
-            //    var localizationDataEntry = localizationData[riftId];
-
-            //    foreach (var entry in localizationDataEntry)
-            //    {
-            //        try
-            //        {
-            //            string localizedString;
-            //            if (languageKeys.TryGetValue(entry.Value.Key, out string? langValue))
-            //            {
-            //                localizedString = langValue;
-            //            }
-            //            else
-            //            {
-            //                LogsWindowViewModel.Instance.AddLog($"Missing localization string -> Property: '{entry.Key}', LangKey: '{langKey}', RowId: '{riftId}', FallbackString: '{entry.Value.SourceString}'", Logger.LogTags.Warning);
-            //                localizedString = entry.Value.SourceString;
-            //            }
-
-            //            var propertyInfo = typeof(Rift).GetProperty(entry.Key);
-            //            propertyInfo?.SetValue(item.Value, localizedString);
-
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            LogsWindowViewModel.Instance.AddLog($"Missing localization string -> Property: '{entry.Key}', LangKey: '{langKey}', RowId: '{riftId}', FallbackString: '{entry.Value.SourceString}' <- {ex}", Logger.LogTags.Warning);
-            //        }
-            //    }
-            //}
+            Helpers.LocalizeDB(localizedRiftsDB, LocalizationData, languageKeys, langKey);
 
             string outputPath = Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, langKey, "Rifts.json");
 

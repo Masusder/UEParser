@@ -130,7 +130,7 @@ public class ModelData
                 string objectName = FindObjectName(material, meshMaterialItems.IsSkeletalMaterials);
 
                 // Ignore materials that I don't need
-                string[] objectsToIgnore = ["lambert1", "lambert2", "Default_Material"];
+                string[] objectsToIgnore = ["lambert1", "lambert2", "lambert3", "Default_Material"];
 
                 if (objectsToIgnore.Contains(objectName)) continue;
 

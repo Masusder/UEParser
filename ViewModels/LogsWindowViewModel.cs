@@ -181,7 +181,10 @@ public partial class LogsWindowViewModel : ReactiveObject
         foreach (Match match in matches)
         {
             string matchedText = match.Groups[1].Value; // Get text inside []
-            logEntry.Segments.Add(new LogSegment { Text = $"[{matchedText}]", Color = new SolidColorBrush(Colors.AntiqueWhite) });
+            if (!string.IsNullOrEmpty(matchedText)) // Ensure text isn't empty
+            {
+                logEntry.Segments.Add(new LogSegment { Text = $"[{matchedText}]", Color = new SolidColorBrush(Colors.AntiqueWhite) });
+            }
         }
         logEntry.Segments.Add(new LogSegment { Text = cleanedLogMessage, Color = new SolidColorBrush(Colors.White) });
 

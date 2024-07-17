@@ -63,7 +63,7 @@ public class Tomes
             foreach (var item in assetItems[0]["Rows"])
             {
                 string tomeId = item.Name;
-                string tomeIdTitleCase = TomeUtils.TomeToTitleCase(tomeId);
+                string tomeIdTitleCase = StringUtils.TomeToTitleCase(tomeId);
 
                 string pathToTomeFile = Path.Combine(GlobalVariables.rootDir, "Output", "API", GlobalVariables.versionWithBranch, "Tomes", $"{tomeIdTitleCase}.json");
                 if (!File.Exists(pathToTomeFile))

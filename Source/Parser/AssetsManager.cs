@@ -664,6 +664,6 @@ public class AssetsManager
         }
 
         LogsWindowViewModel.Instance.AddLog($"Deleted total of: {listOfDeletedFiles.Count} files", Logger.LogTags.Info);
-        LogsWindowViewModel.Instance.AddLog("Deletion process completed.", Logger.LogTags.Success);
+        LogsWindowViewModel.Instance.AddLog("Deletion process completed.", Logger.LogTags.Info);
     }
 }

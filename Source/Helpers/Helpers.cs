@@ -127,7 +127,13 @@ public partial class Helpers
         "Default_Badge",
         "Default_Banner",
         "Item_Camper_K33MagicItem_Bracers",
-        "Item_Camper_K33MagicItem_Boots"
+        "Item_Camper_K33MagicItem_Boots",
+        "jnk_gasstation",
+        "Frm_Farmhouse",
+        "Frm_Slaughterhouse",
+        "Frm_Silo",
+        "Frm_CornField",
+        "Frm_Barn"
     ];
     // Dynamic localization method
     // Supports localzation of nested data - ex. 'Levels.0.Nodes.node_T19_L1_01.Name'

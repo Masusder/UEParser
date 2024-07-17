@@ -9,6 +9,7 @@ using UEParser.Services;
 
 namespace UEParser.Kraken;
 
+// Special thanks to Archengius for help
 public class DbdDecryption
 {
     private static readonly string ASSET_ENCRYPTION_PREFIX = "DbdDAwAC";
@@ -70,7 +71,7 @@ public class DbdDecryption
         var decodedBufferAndKeyId = Convert.FromBase64String(inputTextNoPrefix);
 
         int branchLength = branch.Length;
-        int sliceLength = 7 + branchLength;
+        int sliceLength = 7 + branchLength; // Full version length, such as 7.4.0_live + start of heading character
         var keyIdBuffer = new byte[sliceLength];
         Array.Copy(decodedBufferAndKeyId, keyIdBuffer, sliceLength);
         for (int i = 0; i < keyIdBuffer.Length; i++)

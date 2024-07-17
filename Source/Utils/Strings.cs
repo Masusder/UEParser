@@ -289,8 +289,8 @@ public partial class StringUtils
         const string prefix = "MaterialInstanceConstant ";
         const string prefix2 = "Material ";
 
-        int start = input.IndexOf("'") + 1; // Find the index of the opening single quote
-        int end = input.IndexOf("'", start); // Find the index of the closing single quote
+        int start = input.IndexOf('\'') + 1; // Find the index of the opening single quote
+        int end = input.IndexOf('\'', start); // Find the index of the closing single quote
         if (start >= 0 && end > start)
         {
             return input[start..end];
@@ -349,5 +349,29 @@ public partial class StringUtils
     {
         int lastDotIndex = path.LastIndexOf('.');
         return lastDotIndex >= 0 ? path[(lastDotIndex + 1)..] : path;
+    }
+
+    public static string TransformImagePathSpecialPacks(string input)
+    {
+        // Define the regex pattern to match both formats
+        string pattern = @"/Game/UI/UMGAssets/Icons/Banners/BundleBanners/(SpecialPack|ChapterBundles)/([^./]+)\.\w+";
+
+        // Replace the matched pattern with the desired format
+        string transformedString = Regex.Replace(input, pattern, "/images/UI/Icons/Banners/BundleBanners/$1/$2.png");
+
+        return transformedString;
+    }
+
+    // BHVR uses codenames such as "TOME19", to make it consistent in all cases turn it into "Tome"
+    public static string TomeToTitleCase(string input)
+    {
+        if (string.IsNullOrEmpty(input) || !input.StartsWith("tome", StringComparison.OrdinalIgnoreCase))
+        {
+            return input;
+        }
+
+        string firstChar = input[..1].ToUpper();
+        string restOfChars = input[1..].ToLower();
+        return firstChar + restOfChars;
     }
 }
