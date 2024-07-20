@@ -25,11 +25,13 @@ public class APIViewModel
         }
     }
 
-    public ICommand? FetchDataCommand { get; }
+    public ICommand FetchAPICommand { get; }
+    public ICommand DownloadDynamicAssetsCommand { get; }
 
     public APIViewModel()
     {
-        FetchDataCommand = ReactiveCommand.Create(FetchData);
+        FetchAPICommand = ReactiveCommand.Create(FetchData);
+        DownloadDynamicAssetsCommand = ReactiveCommand.Create(DownloadDynamicAssets);
         ConstructFullVersion();
     }
 
@@ -39,6 +41,21 @@ public class APIViewModel
         {
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
             await KrakenAPI.UpdateKrakenApi();
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        }
+        catch (Exception ex)
+        {
+            LogsWindowViewModel.Instance.AddLog(ex.Message, Logger.LogTags.Error);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+        }
+    }
+
+    private async Task DownloadDynamicAssets()
+    {
+        try
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+            await KrakenAPI.DownloadDynamicContent();
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
         catch (Exception ex)

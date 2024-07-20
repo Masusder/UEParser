@@ -78,7 +78,7 @@ public class FileWriter
         var exportOptions = new ExporterOptions
         {
             LodFormat = ELodFormat.FirstLod,
-            MeshFormat = EMeshFormat.Gltf2,
+            MeshFormat = EMeshFormat.ActorX,
             AnimFormat = EAnimFormat.ActorX,
             MaterialFormat = EMaterialFormat.AllLayersNoRef,
             TextureFormat = ETextureFormat.Png,

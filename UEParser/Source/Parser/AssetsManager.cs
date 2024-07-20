@@ -246,6 +246,9 @@ public class AssetsManager
         {
             var files = Provider.Files.Values.ToList();
             var newAssets = FilesRegister.NewAssets;
+            int extractedAssetsCount = 0;
+
+            LogsWindowViewModel.Instance.AddLog($"Detected total of {newAssets.Count} modified assets.", Logger.LogTags.Info);
 
             foreach (var file in files)
             {
@@ -265,7 +268,7 @@ public class AssetsManager
                     string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch();
                     string outputDirectory = Path.Combine(GlobalVariables.rootDir, "Output", "ExtractedAssets", "Meshes", versionWithBranch);
                     string outputPathWithoutExtension = Path.Combine(outputDirectory, pathWithoutExtension);
-                    string outputPath = Path.ChangeExtension(outputPathWithoutExtension, "glb");
+                    string outputPath = Path.ChangeExtension(outputPathWithoutExtension, "psk");
 
                     if (File.Exists(outputPath)) continue;
 
@@ -274,6 +277,8 @@ public class AssetsManager
                         case "uasset":
                             {
                                 var allExports = Provider.LoadAllObjects(pathWithExtension);
+
+                                extractedAssetsCount++;
 
                                 foreach (var asset in allExports)
                                 {
@@ -308,6 +313,11 @@ public class AssetsManager
                     LogsWindowViewModel.Instance.AddLog($"Failed parsing mesh: {ex}", Logger.LogTags.Error);
                     LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
                 }
+            }
+
+            if (extractedAssetsCount > 0)
+            {
+                LogsWindowViewModel.Instance.AddLog($"Extracted total of {extractedAssetsCount} meshes.", Logger.LogTags.Info);
             }
         });
     }

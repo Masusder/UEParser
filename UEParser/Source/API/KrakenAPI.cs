@@ -6,6 +6,8 @@ using System;
 using System.Linq;
 using UEParser.Services;
 using UEParser.ViewModels;
+using UEParser.Utils;
+using UEParser.Models.KrakenCDN;
 
 namespace UEParser.Kraken;
 
@@ -296,6 +298,88 @@ public class KrakenAPI
 
                 File.WriteAllText(outputPath, decodedData);
             }
+        }
+    }
+
+    private static string ConstructDynamicAssetCdnUrl(string uri)
+    {
+        var config = ConfigurationService.Config;
+
+        string branch = config.Core.VersionData.Branch.ToString();
+        string cdnBaseUrl = config.Core.ApiConfig.CdnBaseUrl;
+
+        string cdnRoot = config.Global.BranchRoots[branch];
+
+        string? customVersion = config.Core.ApiConfig.CustomVersion;
+
+        string latestVersion;
+        if (customVersion != null)
+        {
+            latestVersion = customVersion;
+        }
+        else
+        {
+            latestVersion = config.Core.ApiConfig.LatestVersion;
+        }
+
+        string contentSegmentWithoutRoot = config.Core.ApiConfig.CdnContentSegment;
+        string contentSegment = string.Format(contentSegmentWithoutRoot, cdnRoot);
+
+        string s3AccessKey = config.Core.ApiConfig.S3AccessKeys[GlobalVariables.versionWithBranch];
+
+        string cdnBaseUrlWithBranch = string.Format(cdnBaseUrl, branch);
+        string cdnFullUrl = cdnBaseUrlWithBranch + Path.Combine(contentSegment, latestVersion, s3AccessKey, uri).Replace("\\", "/");
+
+        return cdnFullUrl;
+    }
+
+    public static async Task DownloadDynamicContent()
+    {
+        string dynamicContentFilePath = Path.Combine(GlobalVariables.rootDir, "Output", "API", GlobalVariables.versionWithBranch, "dynamicContent.json");
+
+        if (File.Exists(dynamicContentFilePath))
+        {
+            DynamicContent dynamicContentData = FileUtils.LoadJsonFileWithTypeCheck<DynamicContent>(dynamicContentFilePath);
+
+            foreach (var (_, downloadStrategy, packagedPath, _, uri) in dynamicContentData.Entries)
+            {
+                string extension = Path.GetExtension(uri).TrimStart('.');
+                string modifiedPackagedPath = StringUtils.ModifyPath(packagedPath, extension);
+
+                string assetOutputPath = Path.Combine(GlobalVariables.pathToDynamicAssets, GlobalVariables.versionWithBranch, modifiedPackagedPath.TrimStart('/'));
+                //if (downloadStrategy == "preferRemote")
+                //{
+                //    assetOutputPath = Path.Combine(GlobalVariables.pathToDynamicAssets, GlobalVariables.versionWithBranch, modifiedPackagedPath);
+                //}
+                //else
+                //{
+                //    assetOutputPath = Path.Combine(GlobalVariables.pathToDynamicAssets, GlobalVariables.versionWithBranch, uri);
+                //}
+
+                if (File.Exists(assetOutputPath)) continue;
+
+                Directory.CreateDirectory(Path.GetDirectoryName(assetOutputPath) ?? throw new InvalidOperationException($"Invalid directory path for asset: {assetOutputPath}"));
+
+                string cdnUrl = ConstructDynamicAssetCdnUrl(uri);
+
+                try
+                {
+                    byte[] fileBytes = await API.FetchFileBytesAsync(cdnUrl);
+                    await File.WriteAllBytesAsync(assetOutputPath, fileBytes);
+                    LogsWindowViewModel.Instance.AddLog($"Successfully downloaded: {uri}", Logger.LogTags.Info);
+                }
+                catch (Exception ex)
+                {
+                    LogsWindowViewModel.Instance.AddLog($"Failed to download {uri}: {ex.Message}", Logger.LogTags.Error);
+                }
+            }
+
+            LogsWindowViewModel.Instance.AddLog("Successfully downloaded dynamic content.", Logger.LogTags.Success);
+        }
+        else
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog("Failed to load Dynamic Content file. Did you forget to update API first?", Logger.LogTags.Error);
         }
     }
 }

@@ -406,22 +406,23 @@ public class Cosmetics
         AddCurrencyWithLocalization("WinterEventCurrency", "CURRENCY_WinterEventCurrency_NAME", "/images/Currency/WinterEventCurrency_Icon.png");
         AddCurrencyWithLocalization("SpringEventCurrency", "CURRENCY_SpringEventCurrency_NAME", "/images/Currency/SpringEventCurrency_Icon.png");
         AddCurrencyWithLocalization("AnniversaryEventCurrency", "CURRENCY_AnniversaryEventCurrency_NAME", "/images/Currency/AnniversaryEventCurrency_Icon.png");
+        AddCurrencyWithLocalization("Shards", "Shards", "/images/Currency/Shards_Icon.png");
 
         return parsedCosmeticsDB;
     }
 
-    private static readonly string[] itemsWithoutLocalization = [
-        "C_Head01",
-        "D_Head01",
-        "J_Head01",
-        "M_Head01",
-        "S01_Head01",
-        "DF_Head04",
-        "D_Head02",
-        "TR_Head03",
-        "Default_Badge",
-        "Default_Banner"
-    ];
+    //private static readonly string[] itemsWithoutLocalization = [
+    //    "C_Head01",
+    //    "D_Head01",
+    //    "J_Head01",
+    //    "M_Head01",
+    //    "S01_Head01",
+    //    "DF_Head04",
+    //    "D_Head02",
+    //    "TR_Head03",
+    //    "Default_Badge",
+    //    "Default_Banner"
+    //];
     private static void ParseLocalizationAndSave(Dictionary<string, object> parsedCosmeticsDB)
     {
         LogsWindowViewModel.Instance.AddLog($"[Cosmetics] Starting localization process..", Logger.LogTags.Info);

@@ -37,7 +37,7 @@ public class Initialize
             bool mappingsExist = Mappings.CheckIfMappingsExist();
             if (!mappingsExist)
             {
-                LogsWindowViewModel.Instance.AddLog("Mappings aren't present. Downloading mappings from archive..", Logger.LogTags.Warning);
+                LogsWindowViewModel.Instance.AddLog("Mappings aren't present in local files. Downloading mappings from archive..", Logger.LogTags.Warning);
                 await Mappings.DownloadMappings();
             }
 
@@ -130,5 +130,11 @@ public class Initialize
         config.Core.BuildVersionNumber = newBuildVersion;
 
         await ConfigurationService.SaveConfiguration();
+    }
+
+    // TODO: search for game version and branch in binary
+    public static void BinarySearchGameVersion()
+    {
+
     }
 }

@@ -71,7 +71,7 @@
           <StackPanel Orientation="Vertical" MinWidth="225" VerticalAlignment="Center" HorizontalAlignment="Center">
             <TextBlock FontWeight="Bold">Extract meshes</TextBlock>
             <TextBlock FontSize="12" Margin="0,5,0,0">
-              Extract meshes (<Run Foreground="#514FC0">GLB</Run> format).
+              Extract meshes (<Run Foreground="#514FC0">PSK</Run> format).
             </TextBlock>
           </StackPanel>
           <Button Background="DodgerBlue" Name="ExtractMeshes" Command="{Binding ExtractMeshesCommand}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">
@@ -149,7 +149,7 @@
         <StackPanel Orientation="Vertical" MinWidth="225" VerticalAlignment="Center" HorizontalAlignment="Center">
           <TextBlock FontWeight="Bold">Extract Animations</TextBlock>
           <TextBlock FontSize="12" Margin="0,5,0,0">
-            Extract animations (<Run Foreground="Red">PSK</Run> format).
+            Extract animations (<Run Foreground="Red">PSA</Run> format).
           </TextBlock>
         </StackPanel>
         <Button Background="DodgerBlue" Name="ExtractAnimations" Command="{Binding ExtractAnimationsCommand}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">

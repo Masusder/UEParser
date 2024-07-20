@@ -13,6 +13,9 @@
     <TextBlock HorizontalAlignment="Center" FontWeight="700" FontSize="32" Text="Kraken API" Margin="0, 0, 0, 7.5" VerticalAlignment="Center" />
     <TextBlock HorizontalAlignment="Center" Text="{Binding Version}" Margin="0, 0, 0, 0" VerticalAlignment="Center" />
     <TextBlock HorizontalAlignment="Center" FontSize="12" Foreground="AntiqueWhite" Text="You can change selected version in settings." Margin="0, 5, 0, 15" VerticalAlignment="Center" />
-    <Button Content="Fetch Data" Command="{Binding FetchDataCommand}" Cursor="Hand" FontWeight="500" HorizontalAlignment="Center" VerticalAlignment="Center" />
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
+      <Button Content="Fetch API" Command="{Binding FetchAPICommand}" Cursor="Hand" FontWeight="500" HorizontalAlignment="Center" VerticalAlignment="Center" />
+      <Button Content="Download Dynamic Assets" Command="{Binding DownloadDynamicAssetsCommand}" Cursor="Hand" FontWeight="500" HorizontalAlignment="Center" VerticalAlignment="Center" />
+    </StackPanel>
   </StackPanel>
 </UserControl>

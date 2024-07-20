@@ -71,111 +71,201 @@ public class ParsingControllersViewModel : ReactiveObject
 
     private async Task ParseRifts()
     {
-        IsParsing = true;
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
 
-        await Rifts.InitializeRiftsDB();
+            await Rifts.InitializeRiftsDB();
 
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-        IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            IsParsing = false;
+        }
+        catch (Exception ex)
+        {
+            IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
     }
 
     private async Task ParseCharacters()
     {
-        IsParsing = true;
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
 
-        await Characters.InitializeCharactersDB();
+            await Characters.InitializeCharactersDB();
 
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-        IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            IsParsing = false;
+        }
+        catch (Exception ex)
+        {
+            IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
     }
 
     private async Task ParseCosmetics()
     {
-        IsParsing = true;
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
 
-        await Cosmetics.InitializeCosmeticsDB();
+            await Cosmetics.InitializeCosmeticsDB();
 
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-        IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            IsParsing = false;
+        }
+        catch (Exception ex)
+        {
+            IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
     }
 
     private async Task ParsePerks()
     {
-        IsParsing = true;
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
 
-        await Perks.InitializePerksDB();
+            await Perks.InitializePerksDB();
 
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-        IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            IsParsing = false;
+        }
+        catch (Exception ex)
+        {
+            IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
     }
 
     private async Task ParseTomes()
     {
-        IsParsing = true;
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
 
-        await Tomes.InitializeTomesDB();
+            await Tomes.InitializeTomesDB();
 
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-        IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            IsParsing = false;
+        }
+        catch (Exception ex)
+        {
+            IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
     }
 
     private async Task ParseAddons()
     {
-        IsParsing = true;
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
 
-        await Addons.InitializeAddonsDB();
+            await Addons.InitializeAddonsDB();
 
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-        IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            IsParsing = false;
+        }
+        catch (Exception ex)
+        {
+            IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
     }
 
     private async Task ParseItems()
     {
-        IsParsing = true;
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
 
-        await Items.InitializeItemsDB();
+            await Items.InitializeItemsDB();
 
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-        IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            IsParsing = false;
+        }
+        catch (Exception ex)
+        {
+            IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
     }
 
     private async Task ParseOfferings()
     {
-        IsParsing = true;
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
 
-        await Offerings.InitializeOfferingsDB();
+            await Offerings.InitializeOfferingsDB();
 
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-        IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            IsParsing = false;
+        }
+        catch (Exception ex)
+        {
+            IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
     }
 
     private async Task ParseMaps()
     {
-        IsParsing = true;
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
 
-        await Maps.InitializeMapsDB();
+            await Maps.InitializeMapsDB();
 
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-        IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            IsParsing = false;
+        }
+        catch (Exception ex)
+        {
+            IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
     }
 
     private async Task ParseDlcs()
     {
-        IsParsing = true;
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
 
-        await DLCs.InitializeDlcsDB();
+            await DLCs.InitializeDlcsDB();
 
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-        IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            IsParsing = false;
+        }
+        catch (Exception ex)
+        {
+            IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
     }
 }
