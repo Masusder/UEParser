@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using UEParser.Models;
 using UEParser.Parser;
@@ -47,72 +45,100 @@ public class Journals
 
             foreach (var item in assetItems[0]["Rows"])
             {
-                //string journalId = item.Name;
+                string tomeId = item.Name;
 
-                //List<Vignette> vignettes = [];
-                //foreach (var vignette in item.Value["Vignettes"])
-                //{
-                //    List<Entry> entries = [];
-                //    foreach (var entry in vignette["Entries"])
-                //    {
-                //        string? rewardImageOutputPath = null;
-                //        string rewardImageAssetPathName = entry["RewardImage"]["AssetPathName"];
-                //        if (rewardImageAssetPathName != "None")
-                //        {
-                //            string[] pathComponents = rewardImageAssetPathName.Split('/');
+                Dictionary<string, List<LocalizationEntry>> localizationModel = [];
 
-                //            int assetsIndex = Array.IndexOf(pathComponents, "Assets");
+                List<Vignette> vignettes = [];
+                for (int vignetteIndex = 0; vignetteIndex < item.Value["Vignettes"].Count; vignetteIndex++)
+                {
+                    List<Entry> entries = [];
+                    for (int entryIndex = 0; entryIndex < item.Value["Vignettes"][vignetteIndex]["Entries"].Count; entryIndex++)
+                    {
+                        string? rewardImageOutputPath = null;
+                        string rewardImageAssetPathName = item.Value["Vignettes"][vignetteIndex]["Entries"][entryIndex]["RewardImage"]["AssetPathName"];
+                        if (rewardImageAssetPathName != "None")
+                        {
+                            string[] pathComponents = rewardImageAssetPathName.Split('/');
 
-                //            string directoryPath = string.Join("/", pathComponents, assetsIndex, pathComponents.Length - assetsIndex - 1);
-                //            string fileName = Path.GetFileNameWithoutExtension(pathComponents[pathComponents.Length - 1]);
+                            int assetsIndex = Array.IndexOf(pathComponents, "Assets");
 
-                //            // construct the desired output path
-                //            rewardImageOutputPath = $"/images/{directoryPath}/{fileName}.png";
-                //        }
+                            string directoryPath = string.Join("/", pathComponents, assetsIndex, pathComponents.Length - assetsIndex - 1);
+                            string fileName = Path.GetFileNameWithoutExtension(pathComponents[^1]);
 
-                //        RewardImage rewardImage = new()
-                //        {
-                //            AssetPathName = rewardImageOutputPath,
-                //            SubPathString = entry["RewardImage"]["SubPathString"]
-                //        };
+                            // construct the desired output path
+                            rewardImageOutputPath = $"/images/{directoryPath}/{fileName}.png";
+                        }
 
-                //        Audio audio = new()
-                //        {
-                //            Path = null,
-                //            HasAudio = entry["HasAudio"]
-                //        };
+                        RewardImage rewardImage = new()
+                        {
+                            AssetPathName = rewardImageOutputPath,
+                            SubPathString = item.Value["Vignettes"][vignetteIndex]["Entries"][entryIndex]["RewardImage"]["SubPathString"]
+                        };
 
-                //        Entry entryModel = new()
-                //        {
-                //            Title = entry["Title"]["Key"],
-                //            Text = entry["Text"]["Key"],
-                //            Audio = audio,
-                //            RewardImage = rewardImage
-                //        };
+                        Audio audio = new()
+                        {
+                            Path = null,
+                            HasAudio = item.Value["Vignettes"][vignetteIndex]["Entries"][entryIndex]["HasAudio"]
+                        };
 
-                //        entries.Add(entryModel);
-                //    }
+                        string localizationTitleString = $"Vignettes.{vignetteIndex}.Entries.{entryIndex}.Title";
+                        string localizationTextString = $"Vignettes.{vignetteIndex}.Entries.{entryIndex}.Text";
 
-                //    Vignette vignetteModel = new()
-                //    {
-                //        VignetteId = vignette["VignetteId"],
-                //        Name = vignette["Title"]["Key"],
-                //        SubTitle = vignette["Subtitle"]["Key"],
-                //        Entries = entries
-                //    };
+                        string titleKey = item.Value["Vignettes"][vignetteIndex]["Entries"][entryIndex]["Title"]["Key"];
+                        string titleSourceString = item.Value["Vignettes"][vignetteIndex]["Entries"][entryIndex]["Title"]["SourceString"];
 
-                //    vignettes.Add(vignetteModel);
-                //}
+                        string textKey = item.Value["Vignettes"][vignetteIndex]["Entries"][entryIndex]["Text"]["Key"];
+                        string textSourceString = item.Value["Vignettes"][vignetteIndex]["Entries"][entryIndex]["Text"]["SourceString"];
 
-                //Journal model = new()
-                //{
-                //    TomeName = null,
-                //    Vignettes = vignettes
-                //};
+                        Helpers.AddLocalizationEntry(localizationModel, localizationTitleString, titleKey, titleSourceString);
+                        Helpers.AddLocalizationEntry(localizationModel, localizationTextString, textKey, textSourceString);
 
-                //string fixedTomeId = StringUtils.TomeToTitleCase(item.Name);
+                        Entry entryModel = new()
+                        {
+                            Title = "",
+                            Text = "",
+                            Audio = audio,
+                            RewardImage = rewardImage
+                        };
 
-                //parsedJournalsDB.Add(journalId, model);
+                        entries.Add(entryModel);
+                    }
+
+                    string localizationNameString = $"Vignettes.{vignetteIndex}.Name";
+                    string localizationSubtitleString = $"Vignettes.{vignetteIndex}.SubTitle";
+
+                    string nameKey = item.Value["Vignettes"][vignetteIndex]["Title"]["Key"];
+                    string nameSourceString = item.Value["Vignettes"][vignetteIndex]["Title"]["SourceString"];
+
+                    string subtitleKey = item.Value["Vignettes"][vignetteIndex]["Subtitle"]["Key"];
+                    string subtitleSourceString = item.Value["Vignettes"][vignetteIndex]["Subtitle"]["SourceString"];
+
+                    Helpers.AddLocalizationEntry(localizationModel, localizationNameString, nameKey, nameSourceString);
+                    Helpers.AddLocalizationEntry(localizationModel, localizationSubtitleString, subtitleKey, subtitleSourceString);
+
+                    Vignette vignetteModel = new()
+                    {
+                        VignetteId = item.Value["Vignettes"][vignetteIndex]["VignetteId"],
+                        Name = "",
+                        SubTitle = "",
+                        Entries = entries
+                    };
+
+                    vignettes.Add(vignetteModel);
+                }
+
+                Journal model = new()
+                {
+                    TomeName = "",
+                    Vignettes = vignettes
+                };
+
+                string tomeIdTitleCase = StringUtils.TomeToTitleCase(tomeId);
+
+                LocalizationData.TryAdd(tomeIdTitleCase, localizationModel);
+
+                parsedJournalsDB.Add(tomeIdTitleCase, model);
             }
         }
     }
@@ -136,6 +162,8 @@ public class Journals
             Dictionary<string, Journal> localizedJournalsDB = JsonConvert.DeserializeObject<Dictionary<string, Journal>>(objectString) ?? [];
 
             Helpers.LocalizeDB(localizedJournalsDB, LocalizationData, languageKeys, langKey);
+
+            JournalUtils.PopulateTomeNames(localizedJournalsDB, langKey);
 
             string outputPath = Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, langKey, "Journals.json");
 

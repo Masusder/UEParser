@@ -23,7 +23,7 @@
       <SelectableTextBlock TextWrapping="Wrap"
                            x:Name="LogTextBlock"
                            SelectionBrush="#63B8FF"
-                           Padding="5, 5, 0, 0"
+                           Padding="5, 5, 38, 0"
                            Focusable="True"
                            />
     </ScrollViewer>

@@ -29,6 +29,10 @@ public class ParsingControllersViewModel : ReactiveObject
     public ICommand ParseOfferingsCommand { get; }
     public ICommand ParseMapsCommand { get; }
     public ICommand ParseDlcsCommand { get; }
+    public ICommand ParseJournalsCommand { get; }
+    public ICommand ParseSpecialEventsCommand { get; }
+    public ICommand ParseCollectionsCommand { get; }
+    public ICommand ParseBundlesCommand { get; }
 
     private bool _isParsing;
     public bool IsParsing
@@ -50,6 +54,10 @@ public class ParsingControllersViewModel : ReactiveObject
         ParseOfferingsCommand = ReactiveCommand.Create(ParseOfferings);
         ParseMapsCommand = ReactiveCommand.Create(ParseMaps);
         ParseDlcsCommand = ReactiveCommand.Create(ParseDlcs);
+        ParseJournalsCommand = ReactiveCommand.Create(ParseJournals);
+        ParseSpecialEventsCommand = ReactiveCommand.Create(ParseSpecialEvents);
+        ParseCollectionsCommand = ReactiveCommand.Create(ParseCollections);
+        ParseBundlesCommand = ReactiveCommand.Create(ParseBundles);
     }
 
     private async void ParseEverything()
@@ -66,6 +74,10 @@ public class ParsingControllersViewModel : ReactiveObject
         await ParseOfferings();
         await ParseMaps();
         await ParseDlcs();
+        await ParseJournals();
+        await ParseSpecialEvents();
+        await ParseCollections();
+        await ParseBundles();
         IsParsing = false;
     }
 
@@ -80,6 +92,12 @@ public class ParsingControllersViewModel : ReactiveObject
 
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
             IsParsing = false;
+        }
+        catch (TypeInitializationException ex)
+        {
+            IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"Error occured, make sure you meet requirements of this parser! {ex.Message}", Logger.LogTags.Error);
         }
         catch (Exception ex)
         {
@@ -121,6 +139,12 @@ public class ParsingControllersViewModel : ReactiveObject
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
             IsParsing = false;
         }
+        catch (TypeInitializationException ex)
+        {
+            IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"Error occured, make sure you meet requirements of this parser! {ex.Message}", Logger.LogTags.Error);
+        }
         catch (Exception ex)
         {
             IsParsing = false;
@@ -160,6 +184,12 @@ public class ParsingControllersViewModel : ReactiveObject
 
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
             IsParsing = false;
+        }
+        catch (TypeInitializationException ex)
+        {
+            IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"Error occured, make sure you meet requirements of this parser! {ex.Message}", Logger.LogTags.Error);
         }
         catch (Exception ex)
         {
@@ -260,6 +290,98 @@ public class ParsingControllersViewModel : ReactiveObject
 
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
             IsParsing = false;
+        }
+        catch (Exception ex)
+        {
+            IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
+    }
+
+    private async Task ParseJournals()
+    {
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+
+            await Journals.InitializeJournalsDB();
+
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            IsParsing = false;
+        }
+        catch (Exception ex)
+        {
+            IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
+    }
+
+    private async Task ParseSpecialEvents()
+    {
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+
+            await SpecialEvents.InitializeSpecialEventsDB();
+
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            IsParsing = false;
+        }
+        catch (Exception ex)
+        {
+            IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
+    }
+
+    private async Task ParseCollections()
+    {
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+
+            await Collections.InitializeCollectionsDB();
+
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            IsParsing = false;
+        }
+        catch (TypeInitializationException ex)
+        {
+            IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"Error occured, make sure you meet requirements of this parser! {ex.Message}", Logger.LogTags.Error);
+        }
+        catch (Exception ex)
+        {
+            IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
+    }
+
+    private async Task ParseBundles()
+    {
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+
+            await Bundles.InitializeBundlesDB();
+
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            IsParsing = false;
+        }
+        catch (TypeInitializationException ex)
+        {
+            IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"Error occured, make sure you meet requirements of this parser! {ex.Message}", Logger.LogTags.Error);
         }
         catch (Exception ex)
         {

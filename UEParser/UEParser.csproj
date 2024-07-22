@@ -11,9 +11,11 @@
     <PublishTrimmed>False</PublishTrimmed>
     <PublishAot>False</PublishAot>
     <PublishSingleFile>True</PublishSingleFile>
-    <NoWarn>NU1701</NoWarn> <!-- Suppress Ionic.Zlib package warning -->
+    <NoWarn>NU1701, 1591</NoWarn> <!-- Suppress Ionic.Zlib package and docs warning -->
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <StartupObject>UEParser.Program</StartupObject>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

@@ -6,6 +6,9 @@ using UEParser.Parser;
 using UEParser.Services;
 using UEParser.ViewModels;
 using UEParser.Kraken;
+using System.Runtime.InteropServices;
+using System.Diagnostics;
+using System.Text;
 
 namespace UEParser;
 
@@ -59,7 +62,7 @@ public class Initialize
         string buildVersion = "";
 
         bool hasVersionChanged = false;
-        if (!string.IsNullOrEmpty(gameDirectoryPath))
+        if (!string.IsNullOrEmpty(gameDirectoryPath) && Directory.Exists(gameDirectoryPath))
         {
             string[] buildVersionPath = Directory.GetFiles(gameDirectoryPath, "DeadByDaylightVersionNumber.txt", SearchOption.AllDirectories);
             if (buildVersionPath.Length != 0)
@@ -135,6 +138,5 @@ public class Initialize
     // TODO: search for game version and branch in binary
     public static void BinarySearchGameVersion()
     {
-
     }
 }

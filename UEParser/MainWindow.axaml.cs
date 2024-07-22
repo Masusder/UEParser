@@ -34,8 +34,6 @@ public partial class MainWindow : AppWindow
         var config = ConfigurationService.Config;
         bool updateAPIDuringInitialization = config.Global.UpdateAPIDuringInitialization;
 
-        Initialize.BinarySearchGameVersion();
-
         if (updateAPIDuringInitialization)
         {
             LogsWindowViewModel.Instance.AddLog("You have set up the application to check for Kraken API updates during initialization.", Logger.LogTags.Info);

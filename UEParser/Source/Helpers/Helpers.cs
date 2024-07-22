@@ -146,6 +146,9 @@ public partial class Helpers
         foreach (var item in localizedDB)
         {
             string id = item.Key;
+
+            if (!localizationData.ContainsKey(id)) continue;
+
             var localizationDataEntry = localizationData[id];
 
             foreach (var entry in localizationDataEntry)
@@ -395,4 +398,20 @@ public partial class Helpers
         return obj;
     }
 
+    public static void AddLocalizationEntry(Dictionary<string, List<LocalizationEntry>> localizationModel, string key, string entryKey, string entrySourceString)
+    {
+        // Dynamic localization method supports null values
+        // but if you don't want to see warnings about null values you should use this method
+        // as it will prevent from adding null ones to localzation model
+        if (!string.IsNullOrEmpty(entryKey) && !string.IsNullOrEmpty(entrySourceString))
+        {
+            localizationModel[key] =
+            [
+                new() {
+                    Key = entryKey,
+                    SourceString = entrySourceString
+                }
+            ];
+        }
+    }
 }

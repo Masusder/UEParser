@@ -356,8 +356,6 @@ public class Tomes
 
             TomeUtils.FormatDescriptionParameters(localizedTomesDB, CharacterIds, charactersData, perksData, HTMLTagConverters);
 
-            //LocalizeTomesDB(localizedTomesDB, languageKeys, langKey);
-
             string outputPath = Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, langKey, "Tomes.json");
 
             FileWriter.SaveParsedDB(localizedTomesDB, outputPath, "Tomes");

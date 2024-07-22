@@ -26,12 +26,12 @@ public class Entry
 
 public class Audio
 {
-    public required string Path { get; set; }
+    public required string? Path { get; set; }
     public bool HasAudio { get; set; }
 }
 
 public class RewardImage
 {
-    public required string AssetPathName { get; set; }
+    public required string? AssetPathName { get; set; }
     public required string SubPathString { get; set; }
 }

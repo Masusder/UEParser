@@ -88,7 +88,7 @@ public class FileWriter
             ExportMorphTargets = true,
             ExportMaterials = false
         };
-
+        
         // Export the file to a temporary directory because TryWriteToDir method creates directories which I dont need
         var tempOutputDirectory = Path.Combine(Path.GetTempPath(), "ExportTemp");
 

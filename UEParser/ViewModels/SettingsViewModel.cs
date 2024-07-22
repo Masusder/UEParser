@@ -9,6 +9,7 @@ using System.Windows.Input;
 using UEParser.Services;
 using UEParser.Views;
 using Avalonia;
+using System.Web;
 
 namespace UEParser.ViewModels;
 
@@ -45,6 +46,8 @@ public class SettingsViewModel : INotifyPropertyChanged
         bool userConfirmedRestart = await ShowRestartPopup();
         if (userConfirmedRestart)
         {
+            var config = ConfigurationService.Config;
+            config.Core.PathToGameDirectory = PathToGameDirectory ?? "";
             await ConfigurationService.SaveConfiguration();
             RestartApplication();
         }
@@ -94,7 +97,9 @@ public class SettingsViewModel : INotifyPropertyChanged
         if (result.Count > 0)
         {
             string selectedDirectoryPath = result[0].Path.AbsolutePath;
-            PathToGameDirectory = selectedDirectoryPath;
+            string decodedPath = HttpUtility.UrlDecode(selectedDirectoryPath);
+
+            PathToGameDirectory = decodedPath;
         }
     }
 
