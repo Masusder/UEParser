@@ -24,7 +24,7 @@
       <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10">
         <TextBlock Text="Game Directory Path" Margin="0,0,10,0" VerticalAlignment="Center" />
         <TextBox x:Name="DirectoryTextBox" Text="{Binding PathToGameDirectory}" Width="300" IsReadOnly="True" Margin="0, 0, 10, 0" />
-        <Button Cursor="Hand" Command="{Binding OpenDirectoryDialogCommand}">
+        <Button Cursor="Hand" Command="{Binding OpenDirectoryDialogCommand}" CommandParameter="PathToGameDirectory">
           <i:Icon Value="fa-solid fa-ellipsis" FontSize="10"/>
         </Button>
       </StackPanel>

@@ -64,6 +64,7 @@
     <AvaloniaXaml Include="Views\InitializationConfirmPopup.xaml" />
     <AvaloniaXaml Include="Views\Home.xaml" />
     <AvaloniaXaml Include="Views\AssetsExtractorView.xaml" />
+    <AvaloniaXaml Include="Views\UpdateManagerView.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -86,6 +87,9 @@
       <Generator>MSBuild:Compile</Generator>
     </None>
     <None Update="Views\SplashScreen.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="Views\UpdateManagerView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
   </ItemGroup>

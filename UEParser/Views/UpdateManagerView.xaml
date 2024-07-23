@@ -1,0 +1,12 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:UEParser.ViewModels"
+             x:Class="UEParser.Views.UpdateManagerView"
+             x:DataType="vm:UpdateManagerViewModel">
+    <StackPanel HorizontalAlignment="Center">
+        <TextBlock HorizontalAlignment="Center" Text="Upload parsed data to S3 bucket"
+                   FontSize="24"
+                   Margin="0,0,0,20" />
+        <Button HorizontalAlignment="Center" Content="Update Now" />
+    </StackPanel>
+</UserControl>

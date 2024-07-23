@@ -24,6 +24,15 @@ public class Initialize
         if (hasVersionChanged)
         {
             LogsWindowViewModel.Instance.AddLog("Detected new build version of Dead by Daylight.. starting initialization process.", Logger.LogTags.Info);
+            
+            // Download mappings from github archive
+            bool mappingsExist = Mappings.CheckIfMappingsExist();
+            if (!mappingsExist)
+            {
+                LogsWindowViewModel.Instance.AddLog("Mappings aren't present in local files. Downloading mappings from archive..", Logger.LogTags.Warning);
+                await Mappings.DownloadMappings();
+            }
+
             LogsWindowViewModel.Instance.AddLog("Exporting game assets.", Logger.LogTags.Info);
             await Task.Delay(100);
             AssetsManager.InitializeCUE4Parse();
@@ -35,15 +44,6 @@ public class Initialize
             Helpers.CreateQuestNodeDatabase();
             Helpers.CreateTagConverters();
             Helpers.CombineCharacterBlueprints();
-
-            // Download mappings from github archive
-            bool mappingsExist = Mappings.CheckIfMappingsExist();
-            if (!mappingsExist)
-            {
-                LogsWindowViewModel.Instance.AddLog("Mappings aren't present in local files. Downloading mappings from archive..", Logger.LogTags.Warning);
-                await Mappings.DownloadMappings();
-            }
-
             LogsWindowViewModel.Instance.AddLog("Creating patched localization files to speed up parsing process.", Logger.LogTags.Info);
             Helpers.CreateLocresFiles(); // Create fixed localization to speed up parsing
             LogsWindowViewModel.Instance.AddLog("Saving new build version of Dead by Daylight.", Logger.LogTags.Info);

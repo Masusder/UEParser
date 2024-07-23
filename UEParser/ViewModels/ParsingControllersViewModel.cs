@@ -23,6 +23,7 @@ public class ParsingControllersViewModel : ReactiveObject
     public ICommand ParseCharactersCommand { get; }
     public ICommand ParseCosmeticsCommand { get; }
     public ICommand ParsePerksCommand { get; }
+    public ICommand ParseCharacterClassesCommand { get; }
     public ICommand ParseTomesCommand { get; }
     public ICommand ParseAddonsCommand { get; }
     public ICommand ParseItemsCommand { get; }
@@ -48,6 +49,7 @@ public class ParsingControllersViewModel : ReactiveObject
         ParseCharactersCommand = ReactiveCommand.Create(ParseCharacters);
         ParseCosmeticsCommand = ReactiveCommand.Create(ParseCosmetics);
         ParsePerksCommand = ReactiveCommand.Create(ParsePerks);
+        ParseCharacterClassesCommand = ReactiveCommand.Create(ParseCharacterClasses);
         ParseTomesCommand = ReactiveCommand.Create(ParseTomes);
         ParseAddonsCommand = ReactiveCommand.Create(ParseAddons);
         ParseItemsCommand = ReactiveCommand.Create(ParseItems);
@@ -161,6 +163,26 @@ public class ParsingControllersViewModel : ReactiveObject
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
 
             await Perks.InitializePerksDB();
+
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            IsParsing = false;
+        }
+        catch (Exception ex)
+        {
+            IsParsing = false;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
+    }
+
+    private async Task ParseCharacterClasses()
+    {
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+
+            await CharacterClasses.InitializeCharacterClassesDB();
 
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
             IsParsing = false;

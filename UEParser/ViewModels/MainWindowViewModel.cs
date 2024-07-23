@@ -50,6 +50,9 @@ public class MainWindowViewModel : INotifyPropertyChanged
                 case "Controllers":
                     CurrentPage = new ParsingControllers();
                     break;
+                case "WebsiteUpdate":
+                    CurrentPage = new UpdateManagerView();
+                    break;
                 case "Settings":
                     OpenSettingsWindow();
                     break;

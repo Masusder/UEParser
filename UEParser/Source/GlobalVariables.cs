@@ -12,6 +12,7 @@ public class GlobalVariables
     public static readonly string pathToParsedData = Path.Combine(rootDir, "Output", "ParsedData");
     public static readonly string pathToKrakenApi = Path.Combine(rootDir, "Output", "API");
     public static readonly string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch(); // Ex. "8.1.0_ptb"
+    public static readonly string compareVersionWithBranch = Helpers.ConstructVersionHeaderWithBranch(true);
 
     // List of assets that cause fatal crash of the app and cannot be parsed!
     public static readonly List<string> fatalCrashAssets = [

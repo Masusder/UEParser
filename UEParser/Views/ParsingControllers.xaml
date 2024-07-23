@@ -218,6 +218,35 @@
             HorizontalAlignment="Center"
             VerticalAlignment="Center">
 
+        <Button Name="CharacterClassesController"
+                      Command="{Binding ParseCharacterClassesCommand}"
+                      IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
+                      PointerEntered="Button_PointerEnter"
+                      PointerExited="Button_PointerLeave"
+                      Cursor="Hand"
+                      MinWidth="110"
+                      MinHeight="110"
+                      Margin="5">
+          <Button.Resources>
+            <ResourceDictionary>
+              <vm:StringResources x:Key="ButtonInfo"
+                                  Title="Character Classes"
+                                  Description="Parse Character Classes data.">
+              </vm:StringResources>
+            </ResourceDictionary>
+          </Button.Resources>
+          <StackPanel Orientation="Vertical">
+            <TextBlock Text="6"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Top"
+                       FontSize="14"
+                       FontWeight="Black"
+                       Foreground="White"/>
+            <Image Source="avares://UEParser/Resources/iconClass_Scout.png" Width="64" Height="64" />
+            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center">Classes</TextBlock>
+          </StackPanel>
+        </Button>
+
         <Button Name="TomesController"
                 Command="{Binding ParseTomesCommand}"
                 IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
@@ -232,12 +261,12 @@
               <vm:StringResources x:Key="ButtonInfo"
                                   Title="Tomes"
                                   Description="Parse Tomes data."
-                                  Requirements="Updated API;Parsed Cosmetics;Parsed Characters;Parsed Perks;Initialized helper components">
+                                  Requirements="Updated API;Parsed Cosmetics;Parsed Characters;Parsed Perks;Parsed Character Classes;Initialized helper components">
               </vm:StringResources>
             </ResourceDictionary>
           </Button.Resources>
           <StackPanel Orientation="Vertical">
-            <TextBlock Text="6"
+            <TextBlock Text="7"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Top"
                        FontSize="14"
@@ -266,7 +295,7 @@
             </ResourceDictionary>
           </Button.Resources>
           <StackPanel Orientation="Vertical">
-            <TextBlock Text="7"
+            <TextBlock Text="8"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Top"
                        FontSize="14"
@@ -295,7 +324,7 @@
             </ResourceDictionary>
           </Button.Resources>
           <StackPanel Orientation="Vertical">
-            <TextBlock Text="8"
+            <TextBlock Text="9"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Top"
                        FontSize="14"
@@ -324,7 +353,7 @@
             </ResourceDictionary>
           </Button.Resources>
           <StackPanel Orientation="Vertical">
-            <TextBlock Text="9"
+            <TextBlock Text="10"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Top"
                        FontSize="14"
@@ -353,7 +382,7 @@
             </ResourceDictionary>
           </Button.Resources>
           <StackPanel Orientation="Vertical">
-            <TextBlock Text="10"
+            <TextBlock Text="11"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Top"
                        FontSize="14"
@@ -389,7 +418,7 @@
             </ResourceDictionary>
           </Button.Resources>
           <StackPanel Orientation="Vertical">
-            <TextBlock Text="11"
+            <TextBlock Text="12"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Top"
                        FontSize="14"
@@ -419,7 +448,7 @@
             </ResourceDictionary>
           </Button.Resources>
           <StackPanel Orientation="Vertical">
-            <TextBlock Text="12"
+            <TextBlock Text="13"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Top"
                        FontSize="14"
@@ -448,7 +477,7 @@
             </ResourceDictionary>
           </Button.Resources>
           <StackPanel Orientation="Vertical">
-            <TextBlock Text="13"
+            <TextBlock Text="14"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Top"
                        FontSize="14"
@@ -478,7 +507,7 @@
             </ResourceDictionary>
           </Button.Resources>
           <StackPanel Orientation="Vertical">
-            <TextBlock Text="14"
+            <TextBlock Text="15"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Top"
                        FontSize="14"
@@ -508,7 +537,7 @@
             </ResourceDictionary>
           </Button.Resources>
           <StackPanel Orientation="Vertical">
-            <TextBlock Text="15"
+            <TextBlock Text="16"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Top"
                        FontSize="14"

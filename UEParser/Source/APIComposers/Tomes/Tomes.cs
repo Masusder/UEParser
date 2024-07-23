@@ -351,10 +351,11 @@ public class Tomes
 
             Helpers.LocalizeDB(localizedTomesDB, LocalizationData, languageKeys, langKey);
 
-            var charactersData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Character>>(Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, langKey, "Characters.json"));
-            var perksData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Perk>>(Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, langKey, "Perks.json"));
+            var charactersData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Character>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Characters.json"));
+            var perksData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Perk>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Perks.json"));
+            var characterClassesData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, CharacterClass>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "CharacterClasses.json"));
 
-            TomeUtils.FormatDescriptionParameters(localizedTomesDB, CharacterIds, charactersData, perksData, HTMLTagConverters);
+            TomeUtils.FormatDescriptionParameters(localizedTomesDB, CharacterIds, charactersData, perksData, HTMLTagConverters, characterClassesData);
 
             string outputPath = Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, langKey, "Tomes.json");
 

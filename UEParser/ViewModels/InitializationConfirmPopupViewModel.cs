@@ -1,8 +1,7 @@
 ﻿using ReactiveUI;
 using System;
 using System.Reactive;
-using System.Threading.Tasks;
-using UEParser;
+using System.Reactive.Linq;
 
 namespace UEParser.ViewModels;
 
@@ -10,13 +9,50 @@ public class InitializationConfirmPopupViewModel : ReactiveObject
 {
     public event Action<bool>? CloseAction; // Event to notify the view to close the popup
 
+    private string? _currentVersion;
+    public string? CurrentVersion
+    {
+        get => _currentVersion;
+        set => this.RaiseAndSetIfChanged(ref _currentVersion, value);
+    }
+
+    private string? _compareVersion;
+    public string? CompareVersion
+    {
+        get => _compareVersion;
+        set => this.RaiseAndSetIfChanged(ref _compareVersion, value);
+    }
+
+    private string? _canContinue;
+    public string? CanContinue
+    {
+        get => _canContinue;
+        set => this.RaiseAndSetIfChanged(ref _canContinue, value);
+    }
+
     public ReactiveCommand<Unit, Unit> YesCommand { get; }
     public ReactiveCommand<Unit, Unit> NoCommand { get; }
 
     public InitializationConfirmPopupViewModel()
     {
-        YesCommand = ReactiveCommand.Create(OnYesClicked);
+        CurrentVersion = SetVersion();
+        CompareVersion = SetVersion(true);
+        var canExecuteYesCommand = this.WhenAnyValue(x => x.CurrentVersion)
+                                        .Select(version => !string.IsNullOrEmpty(version) && version != "---");
+        YesCommand = ReactiveCommand.Create(OnYesClicked, canExecuteYesCommand);
         NoCommand = ReactiveCommand.Create(OnNoClicked);
+    }
+
+    private static string SetVersion(bool isCompareVersion = false)
+    {
+        string version = isCompareVersion ? GlobalVariables.compareVersionWithBranch : GlobalVariables.versionWithBranch;
+
+        if (string.IsNullOrEmpty(version) || version.StartsWith('_'))
+        {
+            version = "---";
+        }
+
+        return version;
     }
 
     private void OnYesClicked()
@@ -26,7 +62,6 @@ public class InitializationConfirmPopupViewModel : ReactiveObject
 
     private void OnNoClicked()
     {
-        // Notify the view to close the popup
         CloseAction?.Invoke(false);
     }
 }

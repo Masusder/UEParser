@@ -20,8 +20,15 @@ namespace UEParser.Views
             InitializeComponent();
             DataContext = LogsWindowViewModel.Instance;
 
+            string versionWithBranch = GlobalVariables.versionWithBranch;
+            if (string.IsNullOrEmpty(versionWithBranch) || versionWithBranch.StartsWith('_'))
+            {
+                versionWithBranch = "---";
+            }
+
             var viewModel = (LogsWindowViewModel)DataContext;
             viewModel.AddLog("UEParser started.", Logger.LogTags.Info);
+            viewModel.AddLog($"Current version: {versionWithBranch}", Logger.LogTags.Info);
 
             viewModel.PropertyChanged += (sender, e) =>
             {

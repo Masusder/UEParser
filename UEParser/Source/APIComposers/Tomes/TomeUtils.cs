@@ -87,8 +87,18 @@ public class TomeUtils
                         {
                             string characterString = node.Value["objectives"][questId]["conditions"][conditionIndex]["value"][0];
                             objectiveParams[paramIndex] = characterString;
-
-
+                        }
+                    }
+                }
+                else if (paramString == "class")
+                {
+                    JArray conditions = node.Value["objectives"][questId]["conditions"];
+                    for (int conditionIndex = 0; conditionIndex < conditions.Count; conditionIndex++)
+                    {
+                        if (node.Value["objectives"][questId]["conditions"][conditionIndex]["key"] == "class")
+                        {
+                            string classValue = node.Value["objectives"][questId]["conditions"][conditionIndex]["value"][0];
+                            objectiveParams[paramIndex] = $"class::{classValue}"; // Combined with "class::" to avoid conflicts in format description method
                         }
                     }
                 }
@@ -150,7 +160,7 @@ public class TomeUtils
         return perksDictionary;
     }
 
-    public static void FormatDescriptionParameters(Dictionary<string, Tome> localizedTomesDB, Dictionary<string, int> CharacterIds, Dictionary<string, Character> CharactersData, Dictionary<string, Perk> PerksData, TagConverters HTMLTagConverters)
+    public static void FormatDescriptionParameters(Dictionary<string, Tome> localizedTomesDB, Dictionary<string, int> CharacterIds, Dictionary<string, Character> CharactersData, Dictionary<string, Perk> PerksData, TagConverters HTMLTagConverters, Dictionary<string, CharacterClass> CharacterClassesData)
     {
         var perksDictionary = CreatePerksDictionary(PerksData);
         foreach (var item in localizedTomesDB)
@@ -186,6 +196,16 @@ public class TomeUtils
                             dynamic param = descriptionParameters[i];
                             string paramString = param.ToString();
 
+                            if (paramString.StartsWith("class::"))
+                            {
+                                var characterClassId = StringUtils.DoubleDotsSplit(paramString);
+                                if (CharacterClassesData.TryGetValue(characterClassId, out CharacterClass? value))
+                                {
+                                    string characterClassName = value.Name;
+                                    descriptionParameters[i] = characterClassName;
+                                }
+                            }
+
                             if (CharacterIds.ContainsKey(paramString.ToLower()))
                             {
                                 var characterId = CharacterIds[paramString.ToLower()];
@@ -196,7 +216,6 @@ public class TomeUtils
                                     string characterName = CharactersData[characterString].Name;
                                     descriptionParameters[i] = characterName;
                                 }
-
                             }
 
                             if (perksDictionary.TryGetValue(paramString.ToLower(), out string? matchingString))

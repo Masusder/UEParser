@@ -10,6 +10,7 @@ using UEParser.Services;
 using UEParser.Views;
 using Avalonia;
 using System.Web;
+using System.Collections.Generic;
 
 namespace UEParser.ViewModels;
 
@@ -17,17 +18,23 @@ public class SettingsViewModel : INotifyPropertyChanged
 {
     private string? _pathToGameDirectory;
 
+    //public string? PathToGameDirectory
+    //{
+    //    get { return _pathToGameDirectory; }
+    //    set
+    //    {
+    //        if (_pathToGameDirectory != value)
+    //        {
+    //            _pathToGameDirectory = value;
+    //            OnPropertyChanged(nameof(PathToGameDirectory));
+    //        }
+    //    }
+    //}
+
     public string? PathToGameDirectory
     {
-        get { return _pathToGameDirectory; }
-        set
-        {
-            if (_pathToGameDirectory != value)
-            {
-                _pathToGameDirectory = value;
-                OnPropertyChanged(nameof(PathToGameDirectory));
-            }
-        }
+        get => _pathToGameDirectory;
+        set => SetProperty(ref _pathToGameDirectory, value);
     }
 
     public ICommand? OpenDirectoryDialogCommand { get; }
@@ -37,7 +44,7 @@ public class SettingsViewModel : INotifyPropertyChanged
     {
         var config = ConfigurationService.Config;
         PathToGameDirectory = config.Core.PathToGameDirectory;
-        OpenDirectoryDialogCommand = ReactiveCommand.CreateFromTask(OpenDirectoryDialog);
+        OpenDirectoryDialogCommand = ReactiveCommand.CreateFromTask<string>(OpenDirectoryDialog);
         SaveSettingsCommand = ReactiveCommand.CreateFromTask(SaveSettings);
     }
 
@@ -87,7 +94,7 @@ public class SettingsViewModel : INotifyPropertyChanged
     }
 
     // TODO: make this command reusable
-    private async Task OpenDirectoryDialog()
+    private async Task OpenDirectoryDialog(string propertyName)
     {
         var window = new Window();
 
@@ -99,8 +106,29 @@ public class SettingsViewModel : INotifyPropertyChanged
             string selectedDirectoryPath = result[0].Path.AbsolutePath;
             string decodedPath = HttpUtility.UrlDecode(selectedDirectoryPath);
 
-            PathToGameDirectory = decodedPath;
+            //PathToGameDirectory = decodedPath;
+
+            UpdateProperty(propertyName, decodedPath);
         }
+    }
+
+    private void UpdateProperty(string propertyName, string path)
+    {
+        var property = GetType().GetProperty(propertyName);
+        if (property != null && property.PropertyType == typeof(string))
+        {
+            property.SetValue(this, path);
+            OnPropertyChanged(propertyName);
+        }
+    }
+
+    private bool SetProperty<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    {
+        if (EqualityComparer<T>.Default.Equals(field, value)) return false;
+
+        field = value;
+        OnPropertyChanged(propertyName);
+        return true;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

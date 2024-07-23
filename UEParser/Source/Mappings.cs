@@ -45,7 +45,9 @@ public class Mappings
 
             await File.WriteAllBytesAsync(mappingsOutputPath, fileBytes);
 
-            LogsWindowViewModel.Instance.AddLog($"Downloaded mappings for {versionHeaderWithBranch} version.", Logger.LogTags.Success);
+            LogsWindowViewModel.Instance.AddLog($"Downloaded mappings for {versionHeaderWithBranch} version. Saving path to mappings in config.", Logger.LogTags.Success);
+
+            await SaveMappingsPath(mappingsOutputPath);
         }
         catch
         {
@@ -64,5 +66,13 @@ public class Mappings
         }
 
         return false;
+    }
+
+    private static async Task SaveMappingsPath(string mappingsOutputPath)
+    {
+        var config = ConfigurationService.Config;
+        config.Core.MappingsPath = mappingsOutputPath;
+
+        await ConfigurationService.SaveConfiguration();
     }
 }
