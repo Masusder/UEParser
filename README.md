@@ -12,8 +12,8 @@ This tool is designed to fully utilize the way Dead by Daylight actually works, 
 This project wouldn't be possible without great team behind [CUE4Parse](https://github.com/FabianFG/CUE4Parse) library.
 
 ## Table of Contents
-
 - [Features](#features)
+- [Screenshots](#screenshots)
 - [Installation](#installation)
 
 ## Features
@@ -24,6 +24,9 @@ This project wouldn't be possible without great team behind [CUE4Parse](https://
 - Extraction of encrypted game APIs.<br/>
 
 **This is personal feature which allows to serve game's data through network. Just ignore.*
+
+## Screenshots
+<img src="https://i.imgur.com/doRx4dQ.png" alt="UEParser Presentation">
 
 ## Installation
 
