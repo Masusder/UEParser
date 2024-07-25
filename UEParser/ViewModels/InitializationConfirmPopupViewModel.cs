@@ -2,6 +2,7 @@
 using System;
 using System.Reactive;
 using System.Reactive.Linq;
+using UEParser.Services;
 
 namespace UEParser.ViewModels;
 
@@ -35,10 +36,15 @@ public class InitializationConfirmPopupViewModel : ReactiveObject
 
     public InitializationConfirmPopupViewModel()
     {
+        var config = ConfigurationService.Config;
+        string pathToGameDirectory = config.Core.PathToGameDirectory;
+
         CurrentVersion = SetVersion();
         CompareVersion = SetVersion(true);
+
+        // Block initialization if current version build isn't defined, same for path to game directory
         var canExecuteYesCommand = this.WhenAnyValue(x => x.CurrentVersion)
-                                        .Select(version => !string.IsNullOrEmpty(version) && version != "---");
+                                        .Select(version => !string.IsNullOrEmpty(version) && version != "---" && !string.IsNullOrEmpty(pathToGameDirectory));
         YesCommand = ReactiveCommand.Create(OnYesClicked, canExecuteYesCommand);
         NoCommand = ReactiveCommand.Create(OnNoClicked);
     }

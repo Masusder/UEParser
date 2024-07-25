@@ -7,6 +7,6 @@
         <TextBlock HorizontalAlignment="Center" Text="Upload parsed data to S3 bucket"
                    FontSize="24"
                    Margin="0,0,0,20" />
-        <Button HorizontalAlignment="Center" Content="Update Now" />
+        <Button HorizontalAlignment="Center" Content="Upload" Command="{Binding UploadParsedDataCommand}" />
     </StackPanel>
 </UserControl>

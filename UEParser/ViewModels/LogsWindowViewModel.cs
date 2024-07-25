@@ -17,6 +17,10 @@ public partial class LogsWindowViewModel : ReactiveObject
     private static LogsWindowViewModel? _instance;
     public static LogsWindowViewModel Instance => _instance ??= new LogsWindowViewModel();
 
+    // Define the maximum number of log entries
+    // too many entries hurt performance
+    private const int MaxLogEntries = 250;
+
     public ICommand ClearLogsCommand { get; }
     public ICommand OpenOutputCommand { get; }
     public bool IsInfoBarOpen { get; private set; }
@@ -152,6 +156,13 @@ public partial class LogsWindowViewModel : ReactiveObject
 
             // Update the UI
             LogEntries.Add(logEntry);
+
+            // Truncate the log entries if they exceed the maximum limit
+            if (LogEntries.Count > MaxLogEntries)
+            {
+                LogEntries.RemoveAt(0);
+            }
+
             this.RaisePropertyChanged(nameof(LogEntries));
         });
 

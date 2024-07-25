@@ -2,6 +2,7 @@
 using System.IO;
 using System;
 using System.Reflection;
+using UEParser.ViewModels;
 
 namespace UEParser;
 
@@ -51,14 +52,10 @@ public class Logger
                 using StreamWriter writer = File.AppendText(logFilePath);
                 writer.WriteLine($"[{DateTime.Now}] [{logTag}] {logMessage}");
             }
-            else
-            {
-                Console.WriteLine($"Not found log instance.");
-            }
         }
-        catch (Exception ex)
+        catch 
         {
-            Console.WriteLine($"Error while saving log: {ex}");
+            // do nothing
         }
     }
 }

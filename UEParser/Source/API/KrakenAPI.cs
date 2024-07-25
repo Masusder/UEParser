@@ -8,10 +8,11 @@ using UEParser.Services;
 using UEParser.ViewModels;
 using UEParser.Utils;
 using UEParser.Models.KrakenCDN;
+using System.Text.RegularExpressions;
 
 namespace UEParser.Kraken;
 
-public class KrakenAPI
+public partial class KrakenAPI
 {
     public static async Task UpdateKrakenApi()
     {
@@ -47,6 +48,22 @@ public class KrakenAPI
         if (response.Success && responseData != null)
         {
             string latestSavedVersion = config.Core.ApiConfig.LatestVersion;
+
+            // If version pattern request fails try substring version
+            // For example change version "8.1.1" to "8.1"
+            // This happens because BHVR sometimes keeps the same API version
+            // while changing version of the build
+            // Other possible solution would be to use separate version for API and build
+            if (responseData.AvailableVersions.Count == 0)
+            {
+                versionContentUrl = versionContentUrl[..^2];
+                API.ApiResponse desperateRequest = await API.FetchUrl(versionContentUrl);
+
+                if (!desperateRequest.Success) throw new Exception($"Failed to fetch latest Kraken version: {desperateRequest.ErrorMessage}");
+                responseData = JsonConvert.DeserializeObject<VersionData>(desperateRequest.Data);
+            }
+
+            if (responseData?.AvailableVersions == null) throw new Exception($"Failed to fetch latest Kraken version.");
 
             // Check what's the latest version by its timestamp
             int maxTimestamp = 0;
@@ -90,6 +107,7 @@ public class KrakenAPI
             {
                 LogsWindowViewModel.Instance.AddLog("No new version has been detected.", Logger.LogTags.Info);
             }
+
         }
         else
         {
@@ -301,6 +319,25 @@ public class KrakenAPI
         }
     }
 
+    [GeneratedRegex(@"^(?<version>\d+\.\d+\.\d+)_.+(?<environment>live|qa|stage|dev|cert|uat)$")]
+    private static partial Regex GetVersionAndEnvironmentRegex();
+
+    private static string DeconstructKrakenApiVersion(string latestVersion)
+    {
+        var regex = GetVersionAndEnvironmentRegex();
+
+        Match match = regex.Match(latestVersion);
+        if (!match.Success)
+        {
+            return "";
+        }
+
+        string version = match.Groups["version"].Value;
+        string environment = match.Groups["environment"].Value;
+
+        return $"{version}_{environment}";
+    }
+
     private static string ConstructDynamicAssetCdnUrl(string uri)
     {
         var config = ConfigurationService.Config;
@@ -325,7 +362,9 @@ public class KrakenAPI
         string contentSegmentWithoutRoot = config.Core.ApiConfig.CdnContentSegment;
         string contentSegment = string.Format(contentSegmentWithoutRoot, cdnRoot);
 
-        string s3AccessKey = config.Core.ApiConfig.S3AccessKeys[GlobalVariables.versionWithBranch];
+        // Use Kraken API version instead of one configured locally!
+        string krakenApiVersion = DeconstructKrakenApiVersion(latestVersion);
+        string s3AccessKey = config.Core.ApiConfig.S3AccessKeys[krakenApiVersion];
 
         string cdnBaseUrlWithBranch = string.Format(cdnBaseUrl, branch);
         string cdnFullUrl = cdnBaseUrlWithBranch + Path.Combine(contentSegment, latestVersion, s3AccessKey, uri).Replace("\\", "/");
