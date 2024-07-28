@@ -11,31 +11,84 @@ using UEParser.Views;
 using Avalonia;
 using System.Web;
 using System.Collections.Generic;
+using UEParser.Models;
+using System.Linq;
+using System.Text.RegularExpressions;
+using Avalonia.Data;
 
 namespace UEParser.ViewModels;
 
-public class SettingsViewModel : INotifyPropertyChanged
+public partial class SettingsViewModel : INotifyPropertyChanged
 {
     private string? _pathToGameDirectory;
-
-    //public string? PathToGameDirectory
-    //{
-    //    get { return _pathToGameDirectory; }
-    //    set
-    //    {
-    //        if (_pathToGameDirectory != value)
-    //        {
-    //            _pathToGameDirectory = value;
-    //            OnPropertyChanged(nameof(PathToGameDirectory));
-    //        }
-    //    }
-    //}
-
     public string? PathToGameDirectory
     {
         get => _pathToGameDirectory;
         set => SetProperty(ref _pathToGameDirectory, value);
     }
+
+    private string? _pathToMappings;
+    public string? PathToMappings
+    {
+        get => _pathToMappings;
+        set => SetProperty(ref _pathToMappings, value);
+    }
+
+    private bool _updateApiDuringInitialization = false;
+    public bool UpdateApiDuringInitialization
+    {
+        get => _updateApiDuringInitialization;
+        set => SetProperty(ref _updateApiDuringInitialization, value);
+    }
+
+    private Branch _selectedCurrentBranch;
+    public Branch SelectedCurrentBranch
+    {
+        get => _selectedCurrentBranch;
+        set => SetProperty(ref _selectedCurrentBranch, value);
+    }
+
+    private Branch _selectedComparisonBranch;
+    public Branch SelectedComparisonBranch
+    {
+        get => _selectedComparisonBranch;
+        set => SetProperty(ref _selectedComparisonBranch, value);
+
+    }
+
+    private string? _selectedCurrentVersion;
+    public string? SelectedCurrentVersion
+    {
+        get => _selectedCurrentVersion;
+        set 
+        {
+            if (SetProperty(ref _selectedCurrentVersion, value))
+            {
+                if (!IsValidVersion(value))
+                {
+                    throw new DataValidationException("Invalid version");
+                }
+            }
+        }
+    }
+
+    private string? _selectedComparisonVersion;
+    public string? SelectedComparisonVersion
+    {
+        get => _selectedComparisonVersion;
+        set
+        {
+            if (SetProperty(ref _selectedComparisonVersion, value))
+            {
+                if (!IsValidVersion(value))
+                {
+                    throw new DataValidationException("Invalid version");
+                }
+            }
+        }
+    }
+
+    public static Branch[] Branches => Enum.GetValues(typeof(Branch)).Cast<Branch>().ToArray();
 
     public ICommand? OpenDirectoryDialogCommand { get; }
     public ICommand? SaveSettingsCommand { get; }
@@ -44,8 +97,21 @@ public class SettingsViewModel : INotifyPropertyChanged
     {
         var config = ConfigurationService.Config;
         PathToGameDirectory = config.Core.PathToGameDirectory;
+        PathToMappings = config.Core.MappingsPath;
+        SelectedCurrentBranch = config.Core.VersionData.Branch;
+        SelectedComparisonBranch = config.Core.VersionData.CompareBranch;
+        SelectedCurrentVersion = config.Core.VersionData.LatestVersionHeader;
+        SelectedComparisonVersion = config.Core.VersionData.CompareVersionHeader;
+        UpdateApiDuringInitialization = config.Global.UpdateAPIDuringInitialization;
         OpenDirectoryDialogCommand = ReactiveCommand.CreateFromTask<string>(OpenDirectoryDialog);
-        SaveSettingsCommand = ReactiveCommand.CreateFromTask(SaveSettings);
+
+        var canSave = this.WhenAnyValue(
+            x => x.SelectedCurrentVersion,
+            x => x.SelectedComparisonVersion,
+            (currentVersion, comparisonVersion) => IsValidVersion(currentVersion) && IsValidVersion(comparisonVersion)
+        );
+
+        SaveSettingsCommand = ReactiveCommand.CreateFromTask(SaveSettings, canSave);
     }
 
     private async Task SaveSettings()
@@ -55,9 +121,25 @@ public class SettingsViewModel : INotifyPropertyChanged
         {
             var config = ConfigurationService.Config;
             config.Core.PathToGameDirectory = PathToGameDirectory ?? "";
+            config.Core.MappingsPath = PathToMappings ?? "";
+            config.Global.UpdateAPIDuringInitialization = UpdateApiDuringInitialization;
+            config.Core.VersionData.Branch = SelectedCurrentBranch;
+            config.Core.VersionData.CompareBranch = SelectedComparisonBranch;
+            config.Core.VersionData.LatestVersionHeader = SelectedCurrentVersion;
+            config.Core.VersionData.CompareVersionHeader = SelectedComparisonVersion;
             await ConfigurationService.SaveConfiguration();
             RestartApplication();
         }
+    }
+
+    [GeneratedRegex(@"^[0-9]+(\.[0-9]+)*$")]
+    private static partial Regex VersionRegex();
+    private static bool IsValidVersion(string? version)
+    {
+        if (string.IsNullOrWhiteSpace(version)) return true;
+
+        var regex = VersionRegex();
+        return regex.IsMatch(version);
     }
 
     private static void RestartApplication()
@@ -88,12 +170,11 @@ public class SettingsViewModel : INotifyPropertyChanged
 
         view.Show();
 
-        bool userConfirmedRestart = viewModel.UserConfirmedRestart;
+        //bool userConfirmedRestart = viewModel.UserConfirmedRestart;
 
         return await tcs.Task;
     }
 
-    // TODO: make this command reusable
     private async Task OpenDirectoryDialog(string propertyName)
     {
         var window = new Window();

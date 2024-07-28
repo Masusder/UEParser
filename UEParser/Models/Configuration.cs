@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -40,8 +41,8 @@ public class CoreConfig
     public string PathToGameDirectory { get; set; }
     public string MappingsPath { get; set; }
     public string AesKey { get; set; }
-    public List<string> TomesList { get; set; }
-    public List<string> EventTomesList { get; set; }
+    public HashSet<string> TomesList { get; set; }
+    public HashSet<string> EventTomesList { get; set; }
     public VersionData VersionData { get; set; }
     public KrakenApiConfig ApiConfig { get; set; }
 
@@ -51,43 +52,23 @@ public class CoreConfig
         PathToGameDirectory = "";
         MappingsPath = "";
         AesKey = "0x22b1639b548124925cf7b9cbaa09f9ac295fcf0324586d6b37ee1d42670b39b3";
-        TomesList = [
-            "Tome01",
-            "Tome02",
-            "Tome03",
-            "Tome04",
-            "Tome05",
-            "Tome06",
-            "Tome07",
-            "Tome08",
-            "Tome09",
-            "Tome10",
-            "Tome11",
-            "Tome12",
-            "Tome13",
-            "Tome14",
-            "Tome15",
-            "Tome16",
-            "Tome17",
-            "Tome18",
-            "Tome19",
-            "Tome20"
-        ];
-        EventTomesList = [
-            "Halloween2021",
-            "Halloween2022",
-            "Anniversary2022",
-            "Anniversary2023",
-            "Winter2022",
-            "Summer2023",
-            "Halloween2023",
-            "Winter2023",
-            "DreadByDaylightZodiac",
-            "Spring2024",
-            "ChocolateBoxV1",
-            "Anniversary2024",
-            "CalamariV1"
-        ];
+
+        var defaultTomes = new HashSet<string>
+        {
+            "Tome01", "Tome02", "Tome03", "Tome04", "Tome05", "Tome06", "Tome07",
+            "Tome08", "Tome09", "Tome10", "Tome11", "Tome12", "Tome13", "Tome14",
+            "Tome15", "Tome16", "Tome17", "Tome18", "Tome19", "Tome20"
+        };
+
+        var defaultEventTomes = new HashSet<string>
+        {
+            "Halloween2021", "Halloween2022", "Anniversary2022", "Anniversary2023",
+            "Winter2022", "Summer2023", "Halloween2023", "Winter2023",
+            "DreadByDaylightZodiac", "Spring2024", "ChocolateBoxV1", "Anniversary2024", "CalamariV1"
+        };
+
+        TomesList = defaultTomes;
+        EventTomesList = defaultEventTomes;
         VersionData = new VersionData();
         ApiConfig = new KrakenApiConfig();
     }
@@ -96,10 +77,10 @@ public class CoreConfig
 // Version data
 public class VersionData
 {
-    public string LatestVersionHeader { get; set; }
+    public string? LatestVersionHeader { get; set; }
     [JsonConverter(typeof(StringEnumConverter))]
     public Branch Branch { get; set; }
-    public string CompareVersionHeader { get; set; }
+    public string? CompareVersionHeader { get; set; }
     [JsonConverter(typeof(StringEnumConverter))]
     public Branch CompareBranch { get; set; }
 
@@ -158,12 +139,15 @@ public class KrakenApiConfig
         // Gotta Catch ’Em All
         S3AccessKeys = new()
         {
+            // Start of V2 encryption algorithm
             { "4.6.0", "uRqLnp6p9WUrTJ6nNXlv7z9VZRjbXvRFKEcF/spEn9k=" },
             { "4.7.0", "DJ1LTHLgxRNq7v7fsyG3AQONlsdN49gJ+oY9UuVCSzQ=" },
             { "5.0.0", "CADqND0WPwViwTPzhAiOjR/IrB5TCFInww+k1cmUg70=" },
             { "5.1.0", "GgkY5gFWXzqqxaqUFGb2x+CzdGuJ00nJ2XwV+AoBwuc=" },
             { "5.2.0", "gqONp7FrUqdbp3hS/iMmhphUQ5yPH8eKlkDQk+2QVkI=" },
             { "5.3.0", "vNYfdH/OVNau1dUy/JOIMMkI+gPxnquB69nedKGBBvk=" },
+            // End of V2 encryption algorithm
+            // Start of V3 encryption algorithm
             { "5.3.0_cert", "6HxjMJLRW4DXPqOj9y6af2zO95HkqYhH6uTxipELMZw=" },
             { "5.3.0_live", "sh+W8ya0xlYBYQoqhgMxJ+TdqlETZBbcUdVaRNq2l+A=" },
             { "5.3.0_ptb", "xu1pyspLvsA7BkL71zUNMq4gNCaGoGRopv9+68HQ3R0=" },
@@ -188,7 +172,7 @@ public class KrakenApiConfig
             { "5.6.0_ptb", "DmrJVDG631UkxDDVM7awzOG8ErlbtXLL9QS0ySPgJe0=" },
             { "5.6.0_qa", "HRoXOqvL+41vE/+uNkYmdXWcovszJ2RlscB/4Fb1XIw=" },
             { "5.6.0_stage", "fowjOfz5iAPj9LGTFWeFvJrP3CYqxSkqFgvK8Aii/58=" },
-            { "5.7.0", "+Xz9ctno/PGWBPa6II2+8YTKpK1MlLs/EbuRBZO+ag0=" },
+            { "5.7.0", "+Xz9ctno/PGWBPa6II2+8YTKpK1MlLs/EbuRBZO+ag0=" }, // Global keys have been deprecated as of 5.7.0
             { "5.7.0_cert", "t7ChbXsRRHp8zmAezKQOhje2Mzer/ZlBdMUXxrQtGp4=" },
             { "5.7.0_live", "i/PvMOjjZvG23HS+kocrzGsOBZk8M7ZipTENTX0dvNM=" },
             { "5.7.0_ptb", "l15ppTB/NkKXnvT25wjwOGglWEFd4pYfXcfe7zwlYY0=" },
@@ -312,8 +296,12 @@ public class KrakenApiConfig
             { "8.1.0_ptb", "EnYFfS63mcoBvBBMCV6VVgkEGtVlReqa8n4bw5M4qgQ=" },
             { "8.1.0_qa", "NOqDNLSGuu/6uZ2ezNiV6Sr42gfJkS46riDX3UfEoDI=" },
             { "8.1.0_stage", "kUxPy+fwYWStoAtJHmxlL9NWNyktBr6qbeRiwup0vEg=" },
+            // End of V3 encryption algorithm
+            // Start of test builds? Couldn't figure decryption
             { "9999.17.0", "pGJJqK8oYVFKVSZwynOFAGAYniIZd/ycyFBZc8L7HJk=" },
             { "9999.7.0", "vGeAns6/FR+tisIgyJYAoQAaaQT8+wdKcJuKvFfCiXw=" },
+            // End of test builds?
+            // Start of mobile access keys, deprecated since NetEase took over mobile, used V2 encryption algorithm
             { "m_5.0.2", "BTbDF5V4GcEFSVgmdfdmb9vovbGLMkw4ZdtXuuK+IWk=" },
             { "m_5.1.0", "jI1nZdabca4x3Mynac45DQH9jvAZF2fZROl5ctn6Iao=" },
             { "m_5.1.1", "jI1nZdabca4x3Mynac45DQH9jvAZF2fZROl5ctn6Iao=" },
@@ -321,6 +309,7 @@ public class KrakenApiConfig
             { "m_5.2.1", "4sa7tZpejk4g09GqTswxMDzeHczz5zgKIQNs94lamfk=" },
             { "m_5.3.0", "FpGfN0mxxojdSWVEiGHS5okmfxUVtAZk8jCylbLljU4=" },
             { "m_5.4.0", "lCwFZZa+a5m1Xf8xd5kkj7IX0ak7fkbARkGiRj/qh2Y=" }
+            // End of mobile access keys
         };
     }
 }

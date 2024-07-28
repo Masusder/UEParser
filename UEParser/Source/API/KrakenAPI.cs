@@ -257,9 +257,9 @@ public partial class KrakenAPI
 
         string branch = config.Core.VersionData.Branch.ToString();
 
-        List<string> tomesList = config.Core.TomesList;
-        List<string> eventTomesList = config.Core.EventTomesList;
-        List<string> combinedTomesList = [.. tomesList, .. eventTomesList];
+        HashSet<string> tomesList = config.Core.TomesList;
+        HashSet<string> eventTomesList = config.Core.EventTomesList;
+        HashSet<string> combinedTomesList = [.. tomesList, .. eventTomesList];
 
         string cdnEndpoint = config.Core.ApiConfig.DynamicCdnEndpoints[outputDirNameString];
 

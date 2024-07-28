@@ -1,38 +1,135 @@
 <Window xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:i="https://github.com/projektanker/icons.avalonia"
-             mc:Ignorable="d"
-             Width="600"
-             Height="600"
-             WindowStartupLocation="CenterScreen"
-             Icon="/Resources/UEParser.ico"
-             x:Class="UEParser.Views.Settings"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="https://github.com/projektanker/icons.avalonia"
+        mc:Ignorable="d"
+        Width="600"
+        Height="600"
+        WindowStartupLocation="CenterScreen"
+        Icon="/Resources/UEParser.ico"
+        x:Class="UEParser.Views.Settings"
         Title="UEParser - Settings"
-             d:DesignHeight="600" d:DesignWidth="450"
+        d:DesignHeight="600" d:DesignWidth="600"
         xmlns:vm="clr-namespace:UEParser.ViewModels"
+        xmlns:convert="clr-namespace:UEParser.Converters"
         x:DataType="vm:SettingsViewModel">
-  <DockPanel LastChildFill="True">
-    <!-- Content -->
-    <StackPanel DockPanel.Dock="Top" Orientation="Vertical" HorizontalAlignment="Center">
-      <TextBlock Text="Settings"
-         HorizontalAlignment="Center"
-         VerticalAlignment="Center"
-                 FontWeight="700"
-         FontSize="24"/>
-      <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="10">
-        <TextBlock Text="Game Directory Path" Margin="0,0,10,0" VerticalAlignment="Center" />
-        <TextBox x:Name="DirectoryTextBox" Text="{Binding PathToGameDirectory}" Width="300" IsReadOnly="True" Margin="0, 0, 10, 0" />
-        <Button Cursor="Hand" Command="{Binding OpenDirectoryDialogCommand}" CommandParameter="PathToGameDirectory">
-          <i:Icon Value="fa-solid fa-ellipsis" FontSize="10"/>
-        </Button>
-      </StackPanel>
-    </StackPanel>
-    <Button Cursor="Hand" Command="{Binding SaveSettingsCommand}" DockPanel.Dock="Bottom" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,10">
-      <StackPanel Orientation="Horizontal">
+  <Window.Styles>
+
+    <Style Selector="TabControl WrapPanel">
+      <Setter Property="Background" Value="#323232" />
+      <Setter Property="Height" Value="52" />
+    </Style>
+
+    <Style Selector=".saveSettingsButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#2b9348"/>
+      <Setter Property="CornerRadius" Value="4"/>
+    </Style>
+
+  </Window.Styles>
+  <DockPanel>
+    <TabControl HorizontalAlignment="Stretch" DockPanel.Dock="Top">
+      <TabItem>
+        <TabItem.Header>
+          <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+            <i:Icon FontSize="14" Value="fa-solid fa-toolbox"/>
+            <TextBlock FontSize="16" FontWeight="700" VerticalAlignment="Center">Main</TextBlock>
+          </StackPanel>
+        </TabItem.Header>
+        <StackPanel Orientation="Horizontal" Spacing="15" HorizontalAlignment="Center">
+
+          <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10" Spacing="15">
+
+            <StackPanel>
+              <TextBlock FontWeight="600" Text="Input Current Version" Margin="0,0,0,7.5" VerticalAlignment="Center" HorizontalAlignment="Center" />
+              <TextBox MaxLength="8" Watermark="e.x. '8.1.0'" Text="{Binding SelectedCurrentVersion}" />
+            </StackPanel>
+
+            <Separator/>
+            
+            <StackPanel>
+              <TextBlock FontWeight="600" Text="Select Current Branch" Margin="0,0,0,7.5" VerticalAlignment="Center" HorizontalAlignment="Center" />
+              <ComboBox HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        MaxDropDownHeight="175"
+                        ItemsSource="{Binding Branches}"
+                        SelectedItem="{Binding SelectedCurrentBranch}">
+              </ComboBox>
+            </StackPanel>
+          </StackPanel>
+
+          <Border Width="1" Height="125" Background="#323232" Margin="10,0" />
+
+          <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10" Spacing="15">
+
+            <StackPanel>
+              <TextBlock FontWeight="600" Text="Input Comparsion Version" Margin="0,0,0,7.5" VerticalAlignment="Center" HorizontalAlignment="Center" />
+              <TextBox MaxLength="8" Watermark="e.x. '7.6.0'" Text="{Binding SelectedComparisonVersion}"/>
+            </StackPanel>
+
+            <Separator/>
+
+            <StackPanel>
+              <TextBlock FontWeight="600" Text="Select Comparison Branch" Margin="0,0,0,7.5" VerticalAlignment="Center" HorizontalAlignment="Center" />
+              <ComboBox HorizontalAlignment="Center"  
+                        VerticalAlignment="Center" 
+                        MaxDropDownHeight="175"
+                        ItemsSource="{Binding Branches}"
+                        SelectedItem="{Binding SelectedComparisonBranch}">
+              </ComboBox>
+            </StackPanel>
+          </StackPanel>
+
+        </StackPanel>
+      </TabItem>
+      <TabItem>
+        <TabItem.Header>
+          <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+            <i:Icon FontSize="14" Value="fa-solid fa-road"/>
+            <TextBlock FontSize="16" FontWeight="700" VerticalAlignment="Center">Paths</TextBlock>
+          </StackPanel>
+        </TabItem.Header>
+        <StackPanel Spacing="7.5">
+          
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,15,0,15">
+          <TextBlock Width="175" FontWeight="600" Text="Core Game Directory Path" Margin="0,0,10,0" VerticalAlignment="Center" />
+          <TextBox x:Name="DirectoryTextBox" Text="{Binding PathToGameDirectory}" Width="200" IsReadOnly="True" Margin="0, 0, 10, 0" />
+          <Button Cursor="Hand" Command="{Binding OpenDirectoryDialogCommand}" CommandParameter="PathToGameDirectory">
+            <i:Icon Value="fa-solid fa-ellipsis" FontSize="10"/>
+          </Button>
+        </StackPanel>
+
+        <Separator MaxWidth="500"/>
+          
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,15,0,15">
+          <TextBlock Width="175" FontWeight="600" Text="Mappings Path" Margin="0,0,10,0" VerticalAlignment="Center" />
+          <TextBox x:Name="MappingsTextBox" Text="{Binding PathToMappings}" Width="200" IsReadOnly="True" Margin="0, 0, 10, 0" />
+          <Button Cursor="Hand" Command="{Binding OpenDirectoryDialogCommand}" CommandParameter="PathToMappings">
+            <i:Icon Value="fa-solid fa-ellipsis" FontSize="10"/>
+          </Button>
+        </StackPanel>
+          
+        </StackPanel>
+      </TabItem>
+      <TabItem>
+        <TabItem.Header>
+          <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
+            <i:Icon FontSize="14" Value="fa-solid fa-gears"/>
+            <TextBlock FontSize="16" FontWeight="700" VerticalAlignment="Center">Other</TextBlock>
+          </StackPanel>
+        </TabItem.Header>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+          <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock FontWeight="600" Text="Update Kraken API during startup?" Margin="0,10,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <ToggleSwitch HorizontalAlignment="Center" Name="UpdateApiDuringInitializationSwitch" IsChecked="{Binding UpdateApiDuringInitialization}" />
+          </StackPanel>
+        </StackPanel>
+      </TabItem>
+    </TabControl>
+    <Button Cursor="Hand" Command="{Binding SaveSettingsCommand}" Classes="saveSettingsButton" DockPanel.Dock="Bottom" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,10">
+      <StackPanel Orientation="Horizontal" Spacing="5">
         <i:Icon Value="fa-solid fa-save" />
-        <TextBlock Margin="5,0,0,0">Save Settings</TextBlock>
+        <TextBlock>Save Settings</TextBlock>
       </StackPanel>
     </Button>
   </DockPanel>
