@@ -3,10 +3,26 @@
              xmlns:vm="clr-namespace:UEParser.ViewModels"
              x:Class="UEParser.Views.UpdateManagerView"
              x:DataType="vm:UpdateManagerViewModel">
-    <StackPanel HorizontalAlignment="Center">
-        <TextBlock HorizontalAlignment="Center" Text="Upload parsed data to S3 bucket"
-                   FontSize="24"
-                   Margin="0,0,0,20" />
-        <Button HorizontalAlignment="Center" Content="Upload" Command="{Binding UploadParsedDataCommand}" />
+  <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+    <Image Source="avares://UEParser/Resources/AmazonAWS_Icon.png" Width="150" Height="150" >
+      <Image.Effect>
+        <DropShadowDirectionEffect Color="Black" Direction="0" ShadowDepth="0" Opacity="0.5"/>
+      </Image.Effect>
+    </Image>
+    <TextBlock HorizontalAlignment="Center"
+               FontWeight="700"
+               FontSize="32"
+               Text="Update Manager"
+               Margin="0, 15, 0, 7.5"
+               VerticalAlignment="Center" />
+    <StackPanel Spacing="7.5">
+      <TextBlock HorizontalAlignment="Center"
+                 Text="Upload parsed data to S3 bucket"
+                 FontSize="16"/>
+      <Button HorizontalAlignment="Center"
+              Cursor="Hand"
+              Content="Upload"
+              Command="{Binding UploadParsedDataCommand}" />
     </StackPanel>
+  </StackPanel>
 </UserControl>

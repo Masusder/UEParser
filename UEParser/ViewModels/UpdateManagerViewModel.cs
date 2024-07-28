@@ -26,21 +26,19 @@ public class UpdateManagerViewModel : ReactiveObject
 
         foreach (string filePath in Directory.EnumerateFiles(pathToParsedData, "*.json", SearchOption.AllDirectories))
         {
-            string? minifiedFilePath = MinifyJsonFile(filePath);
+            string minifiedFilePath = MinifyJsonFile(filePath);
 
-            if (minifiedFilePath != null)
-            {
+
                 // TODO: add upload logic
                 //await UploadFileToS3(minifiedFilePath);
                 //PrettifyJsonFile(filePath); // Re-indent the JSON file after upload
-            }
+            
         }
     }
 
-    private static string? MinifyJsonFile(string filePath)
+    private static string MinifyJsonFile(string filePath)
     {
-        try
-        {
+
             string jsonContent = File.ReadAllText(filePath);
 
             // Parse the JSON content and write it back in minified format
@@ -57,18 +55,12 @@ public class UpdateManagerViewModel : ReactiveObject
             }
 
             return filePath;
-        }
-        catch
-        {
-            //Console.WriteLine($"An error occurred while minifying {filePath}: {ex.Message}");
-            return null;
-        }
+
     }
 
     private static void PrettifyJsonFile(string filePath)
     {
-        try
-        {
+
             string jsonContent = File.ReadAllText(filePath);
 
             // Parse the JSON content and write it back in indented format
@@ -83,10 +75,6 @@ public class UpdateManagerViewModel : ReactiveObject
 
             File.WriteAllBytes(filePath, stream.ToArray());
 
-        }
-        catch
-        {
-            //Console.WriteLine($"An error occurred while prettifying {filePath}: {ex.Message}");
-        }
+
     }
 }

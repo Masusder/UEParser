@@ -15,6 +15,8 @@ using UEParser.Models;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Avalonia.Data;
+using System.Collections.ObjectModel;
+using System.Reactive;
 
 namespace UEParser.ViewModels;
 
@@ -88,21 +90,73 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         }
     }
 
+    private string? _newTome;
+    public string? NewTome
+    {
+        get => _newTome;
+        set => SetProperty(ref _newTome, value);
+    }
+
+    private string? _newEventTome;
+    public string? NewEventTome
+    {
+        get => _newEventTome;
+        set => SetProperty(ref _newEventTome, value);
+    }
+
+    private string? _aesKey;
+    public string? AESKey
+    {
+        get => _aesKey;
+        set => SetProperty(ref _aesKey, value);
+    }
+
+    private string? _customVersion;
+    public string? CustomVersion
+    {
+        get => _customVersion;
+        set => SetProperty(ref _customVersion, value);
+    }
+
+    public ObservableCollection<string> TomesList { get; }
+    public ObservableCollection<string> EventTomesList { get; }
+
     public static Branch[] Branches => Enum.GetValues(typeof(Branch)).Cast<Branch>().ToArray();
 
     public ICommand? OpenDirectoryDialogCommand { get; }
     public ICommand? SaveSettingsCommand { get; }
+    public ICommand RemoveTomeCommand { get; }
+    public ICommand RemoveEventTomeCommand { get; }
 
     public SettingsViewModel()
     {
         var config = ConfigurationService.Config;
+
+        // Paths
         PathToGameDirectory = config.Core.PathToGameDirectory;
         PathToMappings = config.Core.MappingsPath;
+
+        // Branches
         SelectedCurrentBranch = config.Core.VersionData.Branch;
         SelectedComparisonBranch = config.Core.VersionData.CompareBranch;
+
+        // Versions
         SelectedCurrentVersion = config.Core.VersionData.LatestVersionHeader;
         SelectedComparisonVersion = config.Core.VersionData.CompareVersionHeader;
+        CustomVersion = config.Core.ApiConfig.CustomVersion;
+
+        // Booleans
         UpdateApiDuringInitialization = config.Global.UpdateAPIDuringInitialization;
+
+        // Other
+        var hashSetTomesList = config.Core.TomesList;
+        TomesList = new ObservableCollection<string>(hashSetTomesList);
+
+        var hashSetEventTomesList = config.Core.EventTomesList;
+        EventTomesList = new ObservableCollection<string>(hashSetEventTomesList);
+
+        AESKey = config.Core.AesKey;
+
         OpenDirectoryDialogCommand = ReactiveCommand.CreateFromTask<string>(OpenDirectoryDialog);
 
         var canSave = this.WhenAnyValue(
@@ -112,6 +166,8 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         );
 
         SaveSettingsCommand = ReactiveCommand.CreateFromTask(SaveSettings, canSave);
+        RemoveTomeCommand = ReactiveCommand.Create<string>(RemoveTome);
+        RemoveEventTomeCommand = ReactiveCommand.Create<string>(RemoveEventTome);
     }
 
     private async Task SaveSettings()
@@ -120,16 +176,59 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         if (userConfirmedRestart)
         {
             var config = ConfigurationService.Config;
+
+            // Paths
             config.Core.PathToGameDirectory = PathToGameDirectory ?? "";
             config.Core.MappingsPath = PathToMappings ?? "";
-            config.Global.UpdateAPIDuringInitialization = UpdateApiDuringInitialization;
+
+            // Branches
             config.Core.VersionData.Branch = SelectedCurrentBranch;
             config.Core.VersionData.CompareBranch = SelectedComparisonBranch;
+
+            // Versions
             config.Core.VersionData.LatestVersionHeader = SelectedCurrentVersion;
             config.Core.VersionData.CompareVersionHeader = SelectedComparisonVersion;
+            config.Core.ApiConfig.CustomVersion = CustomVersion;
+
+            // Booleans
+            config.Global.UpdateAPIDuringInitialization = UpdateApiDuringInitialization;
+
+            // Other
+            config.Core.TomesList = new HashSet<string>(TomesList);
+            config.Core.EventTomesList = new HashSet<string>(EventTomesList);
+            config.Core.AesKey = AESKey ?? "";
+
             await ConfigurationService.SaveConfiguration();
             RestartApplication();
         }
+    }
+
+    public void AddTome()
+    {
+        if (!string.IsNullOrWhiteSpace(NewTome) && !TomesList.Contains(NewTome))
+        {
+            TomesList.Add(NewTome);
+            NewTome = string.Empty;
+        }
+    }
+
+    public void AddEventTome()
+    {
+        if (!string.IsNullOrWhiteSpace(NewEventTome) && !EventTomesList.Contains(NewEventTome))
+        {
+            TomesList.Add(NewEventTome);
+            NewEventTome = string.Empty;
+        }
+    }
+
+    public void RemoveTome(string tome)
+    {
+        TomesList.Remove(tome);
+    }
+
+    public void RemoveEventTome(string tome)
+    {
+        EventTomesList.Remove(tome);
     }
 
     [GeneratedRegex(@"^[0-9]+(\.[0-9]+)*$")]

@@ -38,7 +38,7 @@
        Text="Data Parsers"
        FontWeight="700"
        FontSize="32"
-   Foreground="White"
+        Foreground="White"
 />
       <TextBlock
  HorizontalAlignment="Center"

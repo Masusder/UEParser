@@ -4,15 +4,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:i="https://github.com/projektanker/icons.avalonia"
         mc:Ignorable="d"
-        Width="600"
+        Width="700"
         Height="600"
         WindowStartupLocation="CenterScreen"
         Icon="/Resources/UEParser.ico"
         x:Class="UEParser.Views.Settings"
         Title="UEParser - Settings"
-        d:DesignHeight="600" d:DesignWidth="600"
+        d:DesignHeight="600" d:DesignWidth="700"
         xmlns:vm="clr-namespace:UEParser.ViewModels"
         xmlns:convert="clr-namespace:UEParser.Converters"
+        x:Name="SettingsView"
         x:DataType="vm:SettingsViewModel">
   <Window.Styles>
 
@@ -23,6 +24,11 @@
 
     <Style Selector=".saveSettingsButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
       <Setter Property="Background" Value="#2b9348"/>
+      <Setter Property="CornerRadius" Value="4"/>
+    </Style>
+
+    <Style Selector=".removeTomeButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="Red"/>
       <Setter Property="CornerRadius" Value="4"/>
     </Style>
 
@@ -46,7 +52,7 @@
             </StackPanel>
 
             <Separator/>
-            
+
             <StackPanel>
               <TextBlock FontWeight="600" Text="Select Current Branch" Margin="0,0,0,7.5" VerticalAlignment="Center" HorizontalAlignment="Center" />
               <ComboBox HorizontalAlignment="Center"
@@ -71,8 +77,8 @@
 
             <StackPanel>
               <TextBlock FontWeight="600" Text="Select Comparison Branch" Margin="0,0,0,7.5" VerticalAlignment="Center" HorizontalAlignment="Center" />
-              <ComboBox HorizontalAlignment="Center"  
-                        VerticalAlignment="Center" 
+              <ComboBox HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
                         MaxDropDownHeight="175"
                         ItemsSource="{Binding Branches}"
                         SelectedItem="{Binding SelectedComparisonBranch}">
@@ -90,25 +96,25 @@
           </StackPanel>
         </TabItem.Header>
         <StackPanel Spacing="7.5">
-          
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,15,0,15">
-          <TextBlock Width="175" FontWeight="600" Text="Core Game Directory Path" Margin="0,0,10,0" VerticalAlignment="Center" />
-          <TextBox x:Name="DirectoryTextBox" Text="{Binding PathToGameDirectory}" Width="200" IsReadOnly="True" Margin="0, 0, 10, 0" />
-          <Button Cursor="Hand" Command="{Binding OpenDirectoryDialogCommand}" CommandParameter="PathToGameDirectory">
-            <i:Icon Value="fa-solid fa-ellipsis" FontSize="10"/>
-          </Button>
-        </StackPanel>
 
-        <Separator MaxWidth="500"/>
-          
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,15,0,15">
-          <TextBlock Width="175" FontWeight="600" Text="Mappings Path" Margin="0,0,10,0" VerticalAlignment="Center" />
-          <TextBox x:Name="MappingsTextBox" Text="{Binding PathToMappings}" Width="200" IsReadOnly="True" Margin="0, 0, 10, 0" />
-          <Button Cursor="Hand" Command="{Binding OpenDirectoryDialogCommand}" CommandParameter="PathToMappings">
-            <i:Icon Value="fa-solid fa-ellipsis" FontSize="10"/>
-          </Button>
-        </StackPanel>
-          
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,15,0,15">
+            <TextBlock Width="175" FontWeight="600" Text="Core Game Directory Path" Margin="0,0,10,0" VerticalAlignment="Center" />
+            <TextBox x:Name="DirectoryTextBox" Text="{Binding PathToGameDirectory}" Width="200" IsReadOnly="True" Margin="0, 0, 10, 0" />
+            <Button Cursor="Hand" Command="{Binding OpenDirectoryDialogCommand}" CommandParameter="PathToGameDirectory">
+              <i:Icon Value="fa-solid fa-ellipsis" FontSize="10"/>
+            </Button>
+          </StackPanel>
+
+          <Separator MaxWidth="500"/>
+
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,15,0,15">
+            <TextBlock Width="175" FontWeight="600" Text="Mappings Path" Margin="0,0,10,0" VerticalAlignment="Center" />
+            <TextBox x:Name="MappingsTextBox" Text="{Binding PathToMappings}" Width="200" IsReadOnly="True" Margin="0, 0, 10, 0" />
+            <Button Cursor="Hand" Command="{Binding OpenDirectoryDialogCommand}" CommandParameter="PathToMappings">
+              <i:Icon Value="fa-solid fa-ellipsis" FontSize="10"/>
+            </Button>
+          </StackPanel>
+
         </StackPanel>
       </TabItem>
       <TabItem>
@@ -118,11 +124,95 @@
             <TextBlock FontSize="16" FontWeight="700" VerticalAlignment="Center">Other</TextBlock>
           </StackPanel>
         </TabItem.Header>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-          <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-            <TextBlock FontWeight="600" Text="Update Kraken API during startup?" Margin="0,10,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" />
-            <ToggleSwitch HorizontalAlignment="Center" Name="UpdateApiDuringInitializationSwitch" IsChecked="{Binding UpdateApiDuringInitialization}" />
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Spacing="7.5">
+          <StackPanel Spacing="7.5" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+              <TextBlock FontWeight="600" Text="Update Kraken API during startup?" Margin="0,10,0,0" HorizontalAlignment="Center" VerticalAlignment="Center" />
+              <ToggleSwitch HorizontalAlignment="Center" Name="UpdateApiDuringInitializationSwitch" IsChecked="{Binding UpdateApiDuringInitialization}" />
+            </StackPanel>
+
+            <Border Width="1" Height="45" Background="#323232" Margin="10,0" />
+
+            <StackPanel>
+              <TextBlock FontWeight="600" Text="Override API Version" Margin="0,10,0,7.5" VerticalAlignment="Center" HorizontalAlignment="Center" />
+              <TextBox MaxLength="30" MaxWidth="250" Width="250" Watermark="e.x. '8.1.0_1877175live'" Text="{Binding CustomVersion}" />
+            </StackPanel>
+
           </StackPanel>
+
+          <Separator />
+
+          <StackPanel>
+            <TextBlock FontWeight="600" Text="AES Key" Margin="0,0,0,7.5" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            <TextBox MaxLength="66" MaxWidth="555" Watermark="e.x. '0x22b1639b548124925cf7b9cbaa09f9ac295fcf0324586d6b37ee1d42670b39b3'" Text="{Binding AESKey}" Margin="0,0,0,10" />
+          </StackPanel>
+
+          <Separator />
+
+          <StackPanel Orientation="Horizontal">
+
+            <StackPanel Margin="10">
+              <StackPanel Orientation="Horizontal" Spacing="12.5" Margin="0,0,0,10">
+                <TextBox Width="200" MaxLength="8" Watermark="Enter new tome" Text="{Binding NewTome}" />
+                <Button Content="Add Tome" Command="{Binding AddTome}" Cursor="Hand" />
+              </StackPanel>
+              <Expander Header="Tomes List" MaxHeight="250" IsExpanded="false">
+                <ListBox ItemsSource="{Binding TomesList}"
+                         VerticalAlignment="Stretch"
+                         HorizontalAlignment="Stretch"
+                         x:Name="TomesListBox"
+                         DataContext="{Binding}">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate>
+                      <StackPanel Orientation="Horizontal">
+                        <TextBlock VerticalAlignment="Center"
+                                   Text="{Binding}"
+                                   Width="150"/>
+                        <Button Classes="removeTomeButton"
+                                Cursor="Hand"
+                                Content="Remove"
+                                Command="{Binding #TomesListBox.((vm:SettingsViewModel)DataContext).RemoveTomeCommand}"
+                                CommandParameter="{Binding}" />
+                      </StackPanel>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+              </Expander>
+            </StackPanel>
+
+            <Border Width="1" Height="125" Background="#323232" Margin="10,0" />
+
+            <StackPanel Margin="10">
+              <StackPanel Orientation="Horizontal" Spacing="12.5" Margin="0,0,0,10">
+                <TextBox Width="200" MaxLength="8" Watermark="Enter new event tome" Text="{Binding NewEventTome}" />
+                <Button Content="Add Tome" Command="{Binding AddEventTome}" Cursor="Hand" />
+              </StackPanel>
+              <Expander Header="Event Tomes List" MaxHeight="250" IsExpanded="false">
+                <ListBox ItemsSource="{Binding EventTomesList}"
+                         VerticalAlignment="Stretch"
+                         HorizontalAlignment="Stretch"
+                         x:Name="EventTomesListBox">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate>
+                      <StackPanel Orientation="Horizontal">
+                        <TextBlock VerticalAlignment="Center"
+                                   Text="{Binding}"
+                                   Width="150"/>
+                        <Button Classes="removeTomeButton"
+                                Cursor="Hand"
+                                Content="Remove"
+                                Command="{Binding #EventTomesListBox.((vm:SettingsViewModel)DataContext).RemoveEventTomeCommand}"
+                                CommandParameter="{Binding}" />
+                      </StackPanel>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+              </Expander>
+            </StackPanel>
+
+          </StackPanel>
+
         </StackPanel>
       </TabItem>
     </TabControl>

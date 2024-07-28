@@ -20,7 +20,7 @@ public partial class KrakenAPI
 
         LogsWindowViewModel.Instance.AddLog("Looking for latest Kraken API version.", Logger.LogTags.Info);
 
-        string versionHeader = config.Core.VersionData.LatestVersionHeader;
+        string? versionHeader = config.Core.VersionData.LatestVersionHeader;
 
         if (string.IsNullOrEmpty(versionHeader))
         {
@@ -37,7 +37,7 @@ public partial class KrakenAPI
         var responseData = JsonConvert.DeserializeObject<VersionData>(response.Data);
 
         string? customVersion = config.Core.ApiConfig.CustomVersion;
-        if (config.Core.ApiConfig.CustomVersion != null)
+        if (!string.IsNullOrEmpty(config.Core.ApiConfig.CustomVersion))
         {
             LogsWindowViewModel.Instance.AddLog($"API Version has been overridden with custom value set in settings - '{customVersion}'. If you wish to use latest version you should remove value set in 'CustomVersion' property.", Logger.LogTags.Warning);
             await RetrieveData();

@@ -10,6 +10,7 @@ using Avalonia.Animation.Easings;
 using Avalonia.Threading;
 using System;
 using System.Threading.Tasks;
+using UEParser.Services;
 
 namespace UEParser.Views
 {
@@ -20,6 +21,7 @@ namespace UEParser.Views
             InitializeComponent();
             DataContext = LogsWindowViewModel.Instance;
 
+            var config = ConfigurationService.Config;
             string versionWithBranch = GlobalVariables.versionWithBranch;
             if (string.IsNullOrEmpty(versionWithBranch) || versionWithBranch.StartsWith('_'))
             {
@@ -28,7 +30,8 @@ namespace UEParser.Views
 
             var viewModel = (LogsWindowViewModel)DataContext;
             viewModel.AddLog("UEParser started.", Logger.LogTags.Info);
-            viewModel.AddLog($"Current version: {versionWithBranch}", Logger.LogTags.Info);
+            viewModel.AddLog($"Current core build version: {config.Core.BuildVersionNumber}", Logger.LogTags.Info);
+            viewModel.AddLog($"Configured version: {versionWithBranch}", Logger.LogTags.Info);
 
             viewModel.PropertyChanged += (sender, e) =>
             {

@@ -28,7 +28,7 @@
                FontWeight="700"
                HorizontalAlignment="Center"
                VerticalAlignment="Center"
-               FontSize="28"/>
+               FontSize="32"/>
     <TextBlock
          Foreground="Beige"
          HorizontalAlignment="Center"
