@@ -105,4 +105,15 @@
     <ProjectReference Include="..\CUE4Parse\CUE4Parse\CUE4Parse.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <SourceDir>$(MSBuildProjectDirectory)\..\UEModelsConverter</SourceDir>
+    <SourceFile>$(SourceDir)\UEModelsConverter.py</SourceFile>
+    <DestinationDir>$(TargetDir).data</DestinationDir>
+    <DestinationFile>$(DestinationDir)\UEModelsConverter.py</DestinationFile>
+  </PropertyGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="powershell -Command &quot;New-Item -ItemType Directory -Force -Path '$(TargetDir).data'; Copy-Item -Path '$(SourceFile)' -Destination '$(TargetDir).data\UEModelsConverter.py' -Force&quot;" />
+  </Target>
+
 </Project>

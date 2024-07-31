@@ -25,11 +25,13 @@ public class Configuration
 public class GlobalConfig
 {
     public Dictionary<string, string> BranchRoots { get; set; }
+    public string BlenderPath { get; set; }
     public bool UpdateAPIDuringInitialization { get; set; }
 
     public GlobalConfig()
     {
         BranchRoots = [];
+        BlenderPath = "";
         UpdateAPIDuringInitialization = false;
     }
 }
@@ -342,9 +344,17 @@ public class NeteaseConfig
 // Sensitive config, such as credentials
 public class SensitiveConfig
 {
+    public string S3AccessKey { get; set; }
+    public string S3SecretKey { get; set; }
+    public string S3BucketName { get; set; }
+    public string AWSRegion { get; set; }
+
     public SensitiveConfig()
     {
-
+        S3AccessKey = "";
+        S3SecretKey = "";
+        S3BucketName = "";
+        AWSRegion = "";
     }
 }
 

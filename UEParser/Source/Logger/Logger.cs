@@ -17,7 +17,8 @@ public class Logger
         Info,
         Warning,
         Error,
-        Exit
+        Exit,
+        Debug
     }
 
     static Logger()

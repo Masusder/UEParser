@@ -6,6 +6,7 @@ using Ionic.Zlib;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using UEParser.Services;
+using UEParser.ViewModels;
 
 namespace UEParser.Kraken;
 
@@ -46,6 +47,13 @@ public class DbdDecryption
         {
             throw new Exception("Decrypted data is not a valid JSON. Most likely encryption key is invalid.");
         }
+
+#if DEBUG
+        if (string.IsNullOrEmpty(inputText))
+        {
+            LogsWindowViewModel.Instance.AddLog("Decrypted data was null. CDN request failed.", Logger.LogTags.Debug);
+        }
+#endif
 
         return inputText;
     }

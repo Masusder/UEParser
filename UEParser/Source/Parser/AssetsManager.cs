@@ -467,13 +467,14 @@ public class AssetsManager
         {
             var files = Provider.Files.Values.ToList();
             var newAssets = FilesRegister.NewAssets;
+            var modifiedAssets = FilesRegister.ModifiedAssets;
 
             foreach (var file in files)
             {
                 try
                 {
                     string pathWithoutExtension = file.PathWithoutExtension;
-                    if (!newAssets.ContainsKey(pathWithoutExtension)) continue;
+                    if (!newAssets.ContainsKey(pathWithoutExtension) && !modifiedAssets.ContainsKey(pathWithoutExtension)) continue;
 
                     if (GlobalVariables.fatalCrashAssets.Contains(pathWithoutExtension)) continue;
 

@@ -411,18 +411,6 @@ public class Cosmetics
         return parsedCosmeticsDB;
     }
 
-    //private static readonly string[] itemsWithoutLocalization = [
-    //    "C_Head01",
-    //    "D_Head01",
-    //    "J_Head01",
-    //    "M_Head01",
-    //    "S01_Head01",
-    //    "DF_Head04",
-    //    "D_Head02",
-    //    "TR_Head03",
-    //    "Default_Badge",
-    //    "Default_Banner"
-    //];
     private static void ParseLocalizationAndSave(Dictionary<string, object> parsedCosmeticsDB)
     {
         LogsWindowViewModel.Instance.AddLog($"[Cosmetics] Starting localization process..", Logger.LogTags.Info);
@@ -442,66 +430,7 @@ public class Cosmetics
 
             Helpers.LocalizeDB(localizedCosmeticsDB, LocalizationData, languageKeys, langKey);
 
-            //foreach (var item in localizedCosmeticsDB)
-            //{
-            //    string cosmeticId = item.Key;
-            //    var localizationDataEntry = localizationData[cosmeticId];
-
-            //    // TODO: support localization of string arrays
-            //    foreach (var entry in localizationDataEntry)
-            //    {
-            //        dynamic dynamicItem = item.Value;
-            //        Type entryType = dynamicItem[entry.Key].GetType();
-            //        if (entry.Value.Count > 0 && entryType == typeof(JArray))
-            //        {
-            //            for (int i = 0; i < entry.Value.Count; i++)
-            //            {
-            //                JArray localizedStrings = [];
-            //                if (languageKeys.TryGetValue(entry.Value[0].Key, out string? langValue))
-            //                {
-            //                    localizedStrings.Add(langValue);
-            //                }
-            //                else
-            //                {
-            //                    if (!itemsWithoutLocalization.Contains(cosmeticId))
-            //                    {
-            //                        LogsWindowViewModel.Instance.AddLog($"Missing localization string -> Property: '{entry.Key}', LangKey: '{langKey}', RowId: '{cosmeticId}', FallbackString: '{entry.Value[i].SourceString}'", Logger.LogTags.Warning);
-            //                    }
-
-            //                    localizedStrings.Add(entry.Value[i].SourceString);
-            //                }
-
-            //                dynamicItem[entry.Key] = localizedStrings;
-            //            }
-            //        }
-            //        else if (entry.Value.Count == 1)
-            //        {
-            //            try
-            //            {
-            //                string localizedString;
-            //                if (languageKeys.TryGetValue(entry.Value[0].Key, out string? langValue))
-            //                {
-            //                    localizedString = langValue;
-            //                }
-            //                else
-            //                {
-            //                    if (!itemsWithoutLocalization.Contains(cosmeticId))
-            //                    {
-            //                        LogsWindowViewModel.Instance.AddLog($"Missing localization string -> Property: '{entry.Key}', LangKey: '{langKey}', RowId: '{cosmeticId}', FallbackString: '{entry.Value[0].SourceString}'", Logger.LogTags.Warning);
-            //                    }
-
-            //                    localizedString = entry.Value[0].SourceString;
-            //                }
-
-            //                dynamicItem[entry.Key] = localizedString.ToString();
-            //            }
-            //            catch (Exception ex)
-            //            {
-            //                LogsWindowViewModel.Instance.AddLog($"Missing localization string -> Property: '{entry.Key}', LangKey: '{langKey}', RowId: '{cosmeticId}', FallbackString: '{entry.Value[0].SourceString}' <- {ex}", Logger.LogTags.Warning);
-            //            }
-            //        }
-            //    }
-            //}
+            CosmeticUtils.AddAmountToCurrencyPacks(localizedCosmeticsDB);
 
             string outputPath = Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, langKey, "Cosmetics.json");
 

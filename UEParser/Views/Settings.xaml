@@ -38,7 +38,7 @@
       <TabItem>
         <TabItem.Header>
           <StackPanel Orientation="Horizontal" Spacing="5" VerticalAlignment="Center">
-            <i:Icon FontSize="14" Value="fa-solid fa-toolbox"/>
+            <i:Icon FontSize="14" Value="fa-solid fa-code-branch"/>
             <TextBlock FontSize="16" FontWeight="700" VerticalAlignment="Center">Main</TextBlock>
           </StackPanel>
         </TabItem.Header>
@@ -105,12 +105,22 @@
             </Button>
           </StackPanel>
 
-          <Separator MaxWidth="500"/>
+          <Separator />
 
           <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,15,0,15">
             <TextBlock Width="175" FontWeight="600" Text="Mappings Path" Margin="0,0,10,0" VerticalAlignment="Center" />
             <TextBox x:Name="MappingsTextBox" Text="{Binding PathToMappings}" Width="200" IsReadOnly="True" Margin="0, 0, 10, 0" />
             <Button Cursor="Hand" Command="{Binding OpenDirectoryDialogCommand}" CommandParameter="PathToMappings">
+              <i:Icon Value="fa-solid fa-ellipsis" FontSize="10"/>
+            </Button>
+          </StackPanel>
+
+          <Separator />
+
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,15,0,15">
+            <TextBlock Width="175" FontWeight="600" Text="Blender Path" Margin="0,0,10,0" VerticalAlignment="Center" />
+            <TextBox x:Name="BlenderPathTextBox" Text="{Binding BlenderPath}" Width="200" IsReadOnly="True" Margin="0, 0, 10, 0" />
+            <Button Cursor="Hand" Command="{Binding OpenFileDialogCommand}" CommandParameter="BlenderPath">
               <i:Icon Value="fa-solid fa-ellipsis" FontSize="10"/>
             </Button>
           </StackPanel>

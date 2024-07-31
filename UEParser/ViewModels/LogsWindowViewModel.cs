@@ -9,6 +9,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace UEParser.ViewModels;
 
@@ -168,7 +169,27 @@ public partial class LogsWindowViewModel : ReactiveObject
 
         // Save the log to file on a background thread
         Task.Run(() => Logger.SaveLog(logMessage, tag));
+    }
 
+    public void UpdateLog(string logMessage, Logger.LogTags tag)
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            var existingLogEntry = LogEntries.LastOrDefault();
+            if (existingLogEntry != null)
+            {
+                existingLogEntry.Segments.Clear();
+                foreach (var segment in ParseLogEntry(logMessage, tag).Segments)
+                {
+                    existingLogEntry.Segments.Add(segment);
+                }
+                this.RaisePropertyChanged(nameof(LogEntries));
+            }
+            else
+            {
+                AddLog(logMessage, tag);
+            }
+        });
     }
 
     private static LogEntry ParseLogEntry(string logMessage, Logger.LogTags tag)
@@ -215,6 +236,8 @@ public partial class LogsWindowViewModel : ReactiveObject
                 return Colors.Yellow;
             case Logger.LogTags.Success:
                 return Colors.GreenYellow;
+            case Logger.LogTags.Debug:
+                return Colors.Orange;
             default:
                 return Colors.White;
         }

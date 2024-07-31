@@ -130,6 +130,29 @@ public partial class StringUtils
         }
     }
 
+    public static string StripDynamicDirectory(string fullPath, string directoryRoot)
+    {
+        // Check if fullPath starts with directoryRoot
+        if (fullPath.StartsWith(directoryRoot, StringComparison.OrdinalIgnoreCase))
+        {
+            // Strip directoryRoot from fullPath
+            string strippedPath = fullPath[directoryRoot.Length..];
+
+            // Remove leading directory separator if present
+            if (strippedPath.StartsWith(Path.DirectorySeparatorChar) || strippedPath.StartsWith(Path.AltDirectorySeparatorChar))
+            {
+                strippedPath = strippedPath[1..];
+            }
+
+            return strippedPath;
+        }
+        else
+        {
+            // Return fullPath unchanged if directoryRoot is not found
+            return fullPath;
+        }
+    }
+
     public static string StripRootDir(string fullPath) 
     {
         string rootDir = GlobalVariables.rootDir;

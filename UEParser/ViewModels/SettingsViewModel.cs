@@ -36,6 +36,13 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         set => SetProperty(ref _pathToMappings, value);
     }
 
+    private string? _blenderPath;
+    public string? BlenderPath
+    {
+        get => _blenderPath;
+        set => SetProperty(ref _blenderPath, value);
+    }
+
     private bool _updateApiDuringInitialization = false;
     public bool UpdateApiDuringInitialization
     {
@@ -124,6 +131,7 @@ public partial class SettingsViewModel : INotifyPropertyChanged
     public static Branch[] Branches => Enum.GetValues(typeof(Branch)).Cast<Branch>().ToArray();
 
     public ICommand? OpenDirectoryDialogCommand { get; }
+    public ICommand OpenFileDialogCommand { get; }
     public ICommand? SaveSettingsCommand { get; }
     public ICommand RemoveTomeCommand { get; }
     public ICommand RemoveEventTomeCommand { get; }
@@ -135,6 +143,7 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         // Paths
         PathToGameDirectory = config.Core.PathToGameDirectory;
         PathToMappings = config.Core.MappingsPath;
+        BlenderPath = config.Global.BlenderPath;
 
         // Branches
         SelectedCurrentBranch = config.Core.VersionData.Branch;
@@ -158,6 +167,7 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         AESKey = config.Core.AesKey;
 
         OpenDirectoryDialogCommand = ReactiveCommand.CreateFromTask<string>(OpenDirectoryDialog);
+        OpenFileDialogCommand = ReactiveCommand.CreateFromTask<string>(OpenFileDialog);
 
         var canSave = this.WhenAnyValue(
             x => x.SelectedCurrentVersion,
@@ -180,6 +190,7 @@ public partial class SettingsViewModel : INotifyPropertyChanged
             // Paths
             config.Core.PathToGameDirectory = PathToGameDirectory ?? "";
             config.Core.MappingsPath = PathToMappings ?? "";
+            config.Global.BlenderPath = BlenderPath ?? "";
 
             // Branches
             config.Core.VersionData.Branch = SelectedCurrentBranch;
@@ -274,6 +285,7 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         return await tcs.Task;
     }
 
+    // Pick directory
     private async Task OpenDirectoryDialog(string propertyName)
     {
         var window = new Window();
@@ -286,7 +298,22 @@ public partial class SettingsViewModel : INotifyPropertyChanged
             string selectedDirectoryPath = result[0].Path.AbsolutePath;
             string decodedPath = HttpUtility.UrlDecode(selectedDirectoryPath);
 
-            //PathToGameDirectory = decodedPath;
+            UpdateProperty(propertyName, decodedPath);
+        }
+    }
+
+    // Pick file
+    private async Task OpenFileDialog(string propertyName)
+    {
+        var window = new Window();
+
+        var storage = window.StorageProvider;
+
+        var result = await storage.OpenFilePickerAsync(new FilePickerOpenOptions { AllowMultiple = false });
+        if (result.Count > 0)
+        {
+            string selectedFilePath = result[0].Path.AbsolutePath;
+            string decodedPath = HttpUtility.UrlDecode(selectedFilePath);
 
             UpdateProperty(propertyName, decodedPath);
         }

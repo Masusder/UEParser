@@ -9,6 +9,7 @@ using UEParser.ViewModels;
 using UEParser.Utils;
 using UEParser.Models.KrakenCDN;
 using System.Text.RegularExpressions;
+using UEParser.Parser;
 
 namespace UEParser.Kraken;
 
@@ -186,7 +187,7 @@ public partial class KrakenAPI
         string? customVersion = config.Core.ApiConfig.CustomVersion;
 
         string latestVersion;
-        if (customVersion != null)
+        if (!string.IsNullOrEmpty(customVersion))
         {
             latestVersion = customVersion;
         }
@@ -350,7 +351,7 @@ public partial class KrakenAPI
         string? customVersion = config.Core.ApiConfig.CustomVersion;
 
         string latestVersion;
-        if (customVersion != null)
+        if (!string.IsNullOrEmpty(customVersion))
         {
             latestVersion = customVersion;
         }
@@ -380,10 +381,17 @@ public partial class KrakenAPI
         {
             DynamicContent dynamicContentData = FileUtils.LoadJsonFileWithTypeCheck<DynamicContent>(dynamicContentFilePath);
 
+            int numberOfDownloadedAssets = 0;
             foreach (var (_, downloadStrategy, packagedPath, _, uri) in dynamicContentData.Entries)
             {
                 string extension = Path.GetExtension(uri).TrimStart('.');
                 string modifiedPackagedPath = StringUtils.ModifyPath(packagedPath, extension);
+                string modifiedPackagedPathWithoutExtension = Path.Combine(
+                    Path.GetDirectoryName(modifiedPackagedPath) ?? string.Empty,
+                    Path.GetFileNameWithoutExtension(modifiedPackagedPath)
+                ).TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                .Replace(Path.DirectorySeparatorChar, '/')
+                .Replace(Path.AltDirectorySeparatorChar, '/');
 
                 string assetOutputPath = Path.Combine(GlobalVariables.pathToDynamicAssets, GlobalVariables.versionWithBranch, modifiedPackagedPath.TrimStart('/'));
                 //if (downloadStrategy == "preferRemote")
@@ -394,7 +402,16 @@ public partial class KrakenAPI
                 //{
                 //    assetOutputPath = Path.Combine(GlobalVariables.pathToDynamicAssets, GlobalVariables.versionWithBranch, uri);
                 //}
+                bool fileExistsInPackagedAssets = FilesRegister.DoesFileExist(modifiedPackagedPathWithoutExtension);
 
+#if DEBUG
+                if (fileExistsInPackagedAssets)
+                {
+                    LogsWindowViewModel.Instance.AddLog($"File already exists in packaged assets: {modifiedPackagedPath}", Logger.LogTags.Debug);
+                }
+#endif
+
+                if (fileExistsInPackagedAssets) continue;
                 if (File.Exists(assetOutputPath)) continue;
 
                 Directory.CreateDirectory(Path.GetDirectoryName(assetOutputPath) ?? throw new InvalidOperationException($"Invalid directory path for asset: {assetOutputPath}"));
@@ -405,7 +422,8 @@ public partial class KrakenAPI
                 {
                     byte[] fileBytes = await API.FetchFileBytesAsync(cdnUrl);
                     await File.WriteAllBytesAsync(assetOutputPath, fileBytes);
-                    LogsWindowViewModel.Instance.AddLog($"Successfully downloaded: {uri}", Logger.LogTags.Info);
+                    numberOfDownloadedAssets++;
+                    LogsWindowViewModel.Instance.AddLog($"Successfully downloaded: {modifiedPackagedPath}", Logger.LogTags.Info);
                 }
                 catch (Exception ex)
                 {
@@ -413,7 +431,14 @@ public partial class KrakenAPI
                 }
             }
 
-            LogsWindowViewModel.Instance.AddLog("Successfully downloaded dynamic content.", Logger.LogTags.Success);
+            if (numberOfDownloadedAssets > 0)
+            {
+                LogsWindowViewModel.Instance.AddLog($"Successfully downloaded dynamic content. Total of {numberOfDownloadedAssets} asset(s).", Logger.LogTags.Success);
+            }
+            else
+            {
+                LogsWindowViewModel.Instance.AddLog("Not found any new dynamic assets to download.", Logger.LogTags.Info);
+            }
         }
         else
         {

@@ -42,7 +42,7 @@ public class FilesRegister
 
         if (isBackupVersion)
         {
-            string version = config.Core.VersionData.CompareVersionHeader;
+            string? version = config.Core.VersionData.CompareVersionHeader;
             string branch = config.Core.VersionData.CompareBranch.ToString();
 
             string filesRegisterName = $"Core_{version}_{branch}_FilesRegister.json";
@@ -52,7 +52,7 @@ public class FilesRegister
         }
         else
         {
-            string version = config.Core.VersionData.LatestVersionHeader;
+            string? version = config.Core.VersionData.LatestVersionHeader;
             string branch = config.Core.VersionData.Branch.ToString();
 
             string filesRegisterName = $"Core_{version}_{branch}_FilesRegister.json";
@@ -147,10 +147,22 @@ public class FilesRegister
     }
 
     private static readonly Lazy<Dictionary<string, FileInfo>> _newAssets = new(RetrieveNewAssets);
+    private static readonly Lazy<Dictionary<string, FileInfo>> _modifiedAssets = new(RetrieveModifiedAssets);
 
     public static Dictionary<string, FileInfo> NewAssets => _newAssets.Value;
+    public static Dictionary<string, FileInfo> ModifiedAssets => _modifiedAssets.Value;
 
     public static Dictionary<string, FileInfo> RetrieveNewAssets()
+    {
+        return RetrieveAssets(FindNewAssets);
+    }
+
+    public static Dictionary<string, FileInfo> RetrieveModifiedAssets()
+    {
+        return RetrieveAssets(FindModifiedAssets);
+    }
+
+    public static Dictionary<string, FileInfo> RetrieveAssets(Func<Dictionary<string, FileInfo>, Dictionary<string, FileInfo>, Dictionary<string, FileInfo>> findAssets)
     {
         string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch();
         string compareVersionWithBranch = Helpers.ConstructVersionHeaderWithBranch(true);
@@ -171,7 +183,7 @@ public class FilesRegister
 
             if (filesRegister == null || compareFilesRegister == null) return [];
 
-            return FindNewAssets(filesRegister, compareFilesRegister);
+            return findAssets(filesRegister, compareFilesRegister); // Choose new or modified method
         }
         else
         {
@@ -196,6 +208,24 @@ public class FilesRegister
         return newAssets;
     }
 
+    private static Dictionary<string, FileInfo> FindModifiedAssets(Dictionary<string, FileInfo> filesRegister, Dictionary<string, FileInfo> compareFilesRegister)
+    {
+        var modifiedAssets = new Dictionary<string, FileInfo>();
+
+        foreach (var kvp in filesRegister)
+        {
+            if (compareFilesRegister.TryGetValue(kvp.Key, out FileInfo? comparedFile))
+            {
+                if (comparedFile != null && kvp.Value.Size != comparedFile.Size)
+                {
+                    modifiedAssets[kvp.Key] = kvp.Value;
+                }
+            }
+        }
+
+        return modifiedAssets;
+    }
+
     public static FileInfo? GetFileInfo(string filePath)
     {
         if (fileInfoDictionary.TryGetValue(filePath, out FileInfo? value))
@@ -206,5 +236,10 @@ public class FilesRegister
         {
             return null;
         }
+    }
+
+    public static bool DoesFileExist(string filePath)
+    {
+        return fileInfoDictionary.ContainsKey(filePath); 
     }
 }
