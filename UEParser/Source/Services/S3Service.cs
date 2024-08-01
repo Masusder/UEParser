@@ -7,6 +7,7 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using UEParser.ViewModels;
+using System.Linq;
 
 namespace UEParser.Services;
 
@@ -18,6 +19,18 @@ public class S3Service
     {
         var credentials = new Amazon.Runtime.BasicAWSCredentials(accessKey, secretKey);
         _s3Client = new AmazonS3Client(credentials, RegionEndpoint.GetBySystemName(region));
+    }
+
+    public static S3Service CreateFromConfig()
+    {
+        var config = ConfigurationService.Config;
+        var accessKey = config.Sensitive.S3AccessKey;
+        var secretKey = config.Sensitive.S3SecretKey;
+        var region = config.Sensitive.AWSRegion;
+
+        if (accessKey == null || secretKey == null || region == null) throw new Exception("Access credentials to S3 service are missing.");
+
+        return new S3Service(accessKey, secretKey, region);
     }
 
     public List<string> ListAllObjectsInFolder(string bucketName, string folderKey)

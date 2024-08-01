@@ -39,6 +39,57 @@ public partial class Helpers
         return "0 Bytes";
     }
 
+    public static List<string> ListPathsFromModelsMapping()
+    {
+        string pathToModelsDataDirectory = Path.Combine(GlobalVariables.rootDir, "Output", "ModelsData", GlobalVariables.versionWithBranch);
+
+        List<string> paths = [];
+
+        foreach (string file in Directory.GetFiles(pathToModelsDataDirectory, "*.json", SearchOption.AllDirectories))
+        {
+            string jsonContent = File.ReadAllText(file);
+            JObject jsonObject = JObject.Parse(jsonContent);
+            ExtractPathsFromJObject(jsonObject, paths);
+        }
+
+        static void ExtractPathsFromJObject(JObject jObject, List<string> paths)
+        {
+            foreach (var property in jObject.Properties())
+            {
+                if (property.Name.EndsWith("Path"))
+                {
+                    paths.Add(property.Value.ToString().TrimStart('/'));
+                }
+
+                if (property.Value.Type == JTokenType.Object)
+                {
+                    ExtractPathsFromJObject((JObject)property.Value, paths);
+                }
+                else if (property.Value.Type == JTokenType.Array)
+                {
+                    ExtractPathsFromJArray((JArray)property.Value, paths);
+                }
+            }
+        }
+
+        static void ExtractPathsFromJArray(JArray jArray, List<string> paths)
+        {
+            foreach (var item in jArray)
+            {
+                if (item.Type == JTokenType.Object)
+                {
+                    ExtractPathsFromJObject((JObject)item, paths);
+                }
+                else if (item.Type == JTokenType.Array)
+                {
+                    ExtractPathsFromJArray((JArray)item, paths);
+                }
+            }
+        }
+
+        return paths;
+    }
+
     public static string ConstructVersionHeaderWithBranch(bool switchToCompareVersion = false)
     {
         var config = ConfigurationService.Config;

@@ -60,6 +60,28 @@
                   Command="{Binding ConvertUEModelsCommand}" />
         </StackPanel>
       </Border>
+      <Border Background="#E62d2d2d"
+              CornerRadius="7.5"
+              Padding="10, 7.5"
+              BorderBrush="#1AFFFFFF"
+              BorderThickness="1"
+       >
+        <Border.Effect>
+          <DropShadowEffect
+              Color="Black"
+              Opacity="0.3"
+              BlurRadius="30"/>
+        </Border.Effect>
+        <StackPanel Spacing="7.5">
+          <TextBlock HorizontalAlignment="Center"
+                     Text="Validate uploaded assets by comparing to mappings."
+                     FontSize="16"/>
+          <Button HorizontalAlignment="Center"
+                  Cursor="Hand"
+                  Content="Validate"
+                  Command="{Binding ValidateAssetsCommand}" />
+        </StackPanel>
+      </Border>
     </StackPanel>
   </StackPanel>
 </UserControl>

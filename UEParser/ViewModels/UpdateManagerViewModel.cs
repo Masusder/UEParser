@@ -21,15 +21,151 @@ public class UpdateManagerViewModel : ReactiveObject
 {
     public ICommand UploadParsedDataCommand { get; }
     public ICommand ConvertUEModelsCommand { get; }
+    public ICommand ValidateAssetsCommand { get; }
 
     public UpdateManagerViewModel()
     {
         UploadParsedDataCommand = ReactiveCommand.Create(UploadParsedData);
         ConvertUEModelsCommand = ReactiveCommand.Create(ConvertUEModels);
+        ValidateAssetsCommand = ReactiveCommand.Create(ValidateAssetsInBucket);
     }
 
-    //private const string BlenderPath = @"C:\Program Files\Blender Foundation\Blender 2.92\blender.exe";
-    //private const string UEModelsConverterScriptPath = @"C:\Users\mateu\Downloads\CodeProjects\UParser\UEModelsConverter\UEModelsConverter.py";
+    // Assets validation in the bucket
+    // basically I wanna know if there's any assets that are present in models mappings
+    // but are missing in the S3 bucket or if assets use incorrect path case
+    // which needs to be checked as dbd uses case-insensitive paths while
+    // I need to take into account case-sensitivity
+    public static async Task ValidateAssetsInBucket()
+    {
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+
+        S3Service s3Service = S3Service.CreateFromConfig();
+
+        var config = ConfigurationService.Config;
+        string bucketName = config.Sensitive.S3BucketName;
+
+        LogsWindowViewModel.Instance.AddLog("Loading list of objects in the bucket..", Logger.LogTags.Info);
+
+        await Task.Delay(100);
+
+        var objectKeys = s3Service.ListAllObjectsInFolder(bucketName, "assets");
+
+        LogsWindowViewModel.Instance.AddLog("Loading list of objects in the models mappings..", Logger.LogTags.Info);
+
+        await Task.Delay(100);
+
+        var paths = Helpers.ListPathsFromModelsMapping();
+
+        static List<string> FindMissingPaths(List<string> objectKeys, List<string> paths)
+        {
+            var normalizedObjectKeys = new HashSet<string>(
+                objectKeys
+                    .Where(k => !string.IsNullOrWhiteSpace(k))
+                    .Select(k => k.ToLowerInvariant())
+            );
+
+            var normalizedPaths = paths.Where(p => !string.IsNullOrWhiteSpace(p)).Select(p => p.ToLowerInvariant());
+
+            var missingPathsSet = new HashSet<string>();
+
+            foreach (var path in paths)
+            {
+                if (!string.IsNullOrWhiteSpace(path) && !normalizedObjectKeys.Contains(path.ToLowerInvariant()))
+                {
+                    missingPathsSet.Add(path);
+                }
+            }
+
+            return [.. missingPathsSet];
+        }
+
+        static List<string> GetCorrectlyCasedPaths(List<string> objectKeys, List<string> paths)
+        {
+            var normalizedObjectKeys = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var key in paths.Where(k => !string.IsNullOrWhiteSpace(k)))
+            {
+                var lowerCaseKey = key.ToLowerInvariant();
+                if (!normalizedObjectKeys.ContainsKey(lowerCaseKey))
+                {
+                    normalizedObjectKeys[lowerCaseKey] = key;
+                }
+            }
+
+            var correctlyCasedPaths = new HashSet<string>();
+
+            foreach (var path in objectKeys)
+            {
+                if (!string.IsNullOrWhiteSpace(path) && normalizedObjectKeys.TryGetValue(path.ToLowerInvariant(), out var correctCasePath))
+                {
+                    // Check if the original case differs from the current path
+                    // only then we will know asset needs to be moved to path with correct case
+                    if (!path.Equals(correctCasePath))
+                    {
+                        correctlyCasedPaths.Add(correctCasePath);
+                    }
+                }
+            }
+
+            return [.. correctlyCasedPaths];
+        }
+
+        static void LogPaths(string path, string tag)
+        {
+            string message = string.Empty;
+
+            switch (tag)
+            {
+                case "missing":
+                    message = $"Detected missing asset: {path}";
+                    break;
+                case "wrongCase":
+                    message = $"Asset uses wrong case in its path: {path}";
+                    break;
+                default:
+                    break;
+            }
+
+            LogsWindowViewModel.Instance.AddLog(message, Logger.LogTags.Warning);
+        }
+
+        var missingAssets = FindMissingPaths(objectKeys, paths);
+        var correctlyCasedPaths = GetCorrectlyCasedPaths(objectKeys, paths);
+
+        int missingAssetsAmount = missingAssets.Count;
+        int correctlyCasedPathsAmount = correctlyCasedPaths.Count;
+
+        if (missingAssetsAmount > 0) 
+        {
+            LogsWindowViewModel.Instance.AddLog($"Found total of {missingAssetsAmount} missing assets.", Logger.LogTags.Warning);
+            foreach (var path in missingAssets)
+            {
+                await Task.Delay(50);
+                LogPaths(path, "missing");
+            }
+        }
+        else
+        {
+            LogsWindowViewModel.Instance.AddLog($"Not found missing assets.", Logger.LogTags.Info);
+        }
+
+        if (correctlyCasedPathsAmount > 0)
+        {
+            LogsWindowViewModel.Instance.AddLog($"Found total of {correctlyCasedPathsAmount} assets with incorrect case.", Logger.LogTags.Warning);
+            foreach (var path in correctlyCasedPaths)
+            {
+                LogPaths(path, "wrongCase");
+            }
+        }
+        else
+        {
+            LogsWindowViewModel.Instance.AddLog($"Not found assets that use incorrect case.", Logger.LogTags.Info);
+        }
+
+        LogsWindowViewModel.Instance.AddLog($"Assets validation has been completed.", Logger.LogTags.Success);
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+    }
+
     public static void ConvertUEModels()
     {
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
@@ -37,7 +173,7 @@ public class UpdateManagerViewModel : ReactiveObject
         var config = ConfigurationService.Config;
         string blenderPath = config.Global.BlenderPath;
         string rootDirectory = GlobalVariables.rootDir;
-        string inputDirectory = Path.Combine(GlobalVariables.rootDir, "Input");
+        string inputDirectory = Path.Combine(GlobalVariables.rootDir, "Output", "ExtractedAssets", "Meshes", GlobalVariables.versionWithBranch);
         string inputMappingDirectory = Path.Combine(GlobalVariables.rootDir, "Output", "ModelsData", GlobalVariables.versionWithBranch);
         string outputDirectory = Path.Combine(GlobalVariables.rootDir, "Output", "ConvertedModels", GlobalVariables.versionWithBranch);
 
