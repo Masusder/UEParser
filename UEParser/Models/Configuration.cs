@@ -30,7 +30,18 @@ public class GlobalConfig
 
     public GlobalConfig()
     {
-        BranchRoots = [];
+        var branchRoots = new Dictionary<string, string>()
+        {
+            { "live", "4fabea45-bce0-4461-8950-162659636437" },
+            { "dev", "b114b47d-a3e6-44b7-90eb-cd110b09acc1" },
+            { "ptb", "6d750932-d109-49c7-8e6b-beb67fe327f2" },
+            { "stage", "ef06650f-6108-4441-8677-8bc05a10b801" },
+            { "cert", "81e79fac-5729-424d-aaec-4aecd65c44311" },
+            { "qa", "5908c7cc-2e5a-41fb-a287-181cdd23ba62" },
+            { "uat", "c733d3d0-001c-4113-a297-e0a7aa3aee82" }
+        };
+
+        BranchRoots = branchRoots;
         BlenderPath = "";
         UpdateAPIDuringInitialization = false;
     }
