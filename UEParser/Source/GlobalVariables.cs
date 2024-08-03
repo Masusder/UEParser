@@ -12,6 +12,7 @@ public class GlobalVariables
     public static readonly string pathToDynamicAssets = Path.Combine(rootDir, "Output", "DynamicAssets");
     public static readonly string pathToParsedData = Path.Combine(rootDir, "Output", "ParsedData");
     public static readonly string pathToKrakenApi = Path.Combine(rootDir, "Output", "API");
+    public static readonly string pathToModelsData = Path.Combine(rootDir, "Output", "ModelsData");
     public static readonly string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch(); // Ex. "8.1.0_ptb"
     public static readonly string compareVersionWithBranch = Helpers.ConstructVersionHeaderWithBranch(true);
 

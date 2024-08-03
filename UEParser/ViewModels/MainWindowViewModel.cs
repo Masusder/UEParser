@@ -9,7 +9,7 @@ namespace UEParser.ViewModels;
 public class MainWindowViewModel : INotifyPropertyChanged
 {
     private object _selectedCategory = "Home";
-    private Control _currentPage = new Home();
+    private Control _currentPage = new HomeView();
 
     public object SelectedCategory
     {
@@ -35,7 +35,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
     public MainWindowViewModel()
     {
         // Initialize with Home page
-        CurrentPage = new Home();
+        CurrentPage = new HomeView();
     }
 
     private void SetCurrentPage()
@@ -45,10 +45,10 @@ public class MainWindowViewModel : INotifyPropertyChanged
             switch (nvi?.Tag?.ToString())
             {
                 case "Home":
-                    CurrentPage = new Home();
+                    CurrentPage = new HomeView();
                     break;
                 case "Controllers":
-                    CurrentPage = new ParsingControllers();
+                    CurrentPage = new ParsingControllersView();
                     break;
                 case "WebsiteUpdate":
                     CurrentPage = new UpdateManagerView();
@@ -63,7 +63,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
                     CurrentPage = new AssetsExtractorView();
                     break;
                 default:
-                    CurrentPage = new Home();
+                    CurrentPage = new HomeView();
                     break;
             }
         }
@@ -71,7 +71,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
 
     private static void OpenSettingsWindow()
     {
-        var settingsWindow = new Settings();
+        var settingsWindow = new SettingsView();
         settingsWindow.Show();
     }
 

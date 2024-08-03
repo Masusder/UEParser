@@ -1,7 +1,5 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using UEParser.ViewModels;
 
 namespace UEParser.Views;

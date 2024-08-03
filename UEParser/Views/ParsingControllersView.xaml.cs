@@ -11,10 +11,10 @@ using Avalonia;
 
 namespace UEParser.Views;
 
-public partial class ParsingControllers : UserControl
+public partial class ParsingControllersView : UserControl
 {
 
-    public ParsingControllers()
+    public ParsingControllersView()
     {
         InitializeComponent();
         DataContext = ParsingControllersViewModel.Instance;

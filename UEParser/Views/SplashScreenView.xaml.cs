@@ -1,15 +1,13 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using UEParser.ViewModels;
 
 namespace UEParser.Views;
 
-public partial class UpdateManagerView : UserControl
+public partial class SplashScreenView : UserControl
 {
-    public UpdateManagerView()
+    public SplashScreenView()
     {
         InitializeComponent();
-        DataContext = new UpdateManagerViewModel();
     }
 
     private void InitializeComponent()

@@ -4,10 +4,10 @@ using UEParser.ViewModels;
 
 namespace UEParser.Views;
 
-public partial class RestartApplicationPopup : Window
+public partial class RestartApplicationPopupView : Window
 {
 
-    public RestartApplicationPopup()
+    public RestartApplicationPopupView()
     {
         InitializeComponent();
         DataContext = new RestartApplicationPopupViewModel();

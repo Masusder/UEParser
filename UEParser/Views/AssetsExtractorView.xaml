@@ -15,148 +15,148 @@
     </Style>
   </UserControl.Styles>
   <ScrollViewer>
-  <StackPanel Margin="0,10,0,0" VerticalAlignment="Center" HorizontalAlignment="Center">
-    <TextBlock HorizontalAlignment="Center" FontWeight="700" FontSize="32" Text="Assets Extractors" VerticalAlignment="Center" />
-    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-      <Grid.RowDefinitions>
-        <RowDefinition Height="Auto"/>
-        <RowDefinition Height="Auto"/>
-        <RowDefinition Height="Auto"/>
-        <RowDefinition Height="Auto"/>
-      </Grid.RowDefinitions>
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="Auto"/>
-        <ColumnDefinition Width="Auto"/>
-      </Grid.ColumnDefinitions>
+    <StackPanel Margin="0,10,0,0" VerticalAlignment="Center" HorizontalAlignment="Center">
+      <TextBlock HorizontalAlignment="Center" FontWeight="700" FontSize="32" Text="Assets Extractors" VerticalAlignment="Center" />
+      <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto"/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
 
-      <Border Grid.Row="0" Grid.Column="0" Background="Transparent" BorderBrush="#1AFFFFFF" BorderThickness="3" Padding="20" Margin="10" CornerRadius="8">
-        <StackPanel Orientation="Horizontal" Spacing="7.5">
-          <Grid Width="64" Height="64" Margin="0,0,10,0" HorizontalAlignment="Left">
-            <Border CornerRadius="8" BoxShadow="5 5 10 -5 #CC000000" BorderBrush="#1AFFFFFF" BorderThickness="1" Background="White">
-              <Border.Background>
-                <LinearGradientBrush StartPoint="30%,0%" EndPoint="50%,120%">
-                  <GradientStop Color="#66DA89" Offset="0"/>
-                  <GradientStop Color="#3d3d3d" Offset="1"/>
-                </LinearGradientBrush>
-              </Border.Background>
-              <i:Icon Value="fa-solid fa-code" Width="64" Height="64" FontSize="32" />
-            </Border>
-          </Grid>
-          <StackPanel Orientation="Vertical" MinWidth="225" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <TextBlock FontWeight="Bold">Extract missing data</TextBlock>
-            <TextBlock FontSize="12" Margin="0,5,0,0">Check for and extract missing properties</TextBlock>
-            <TextBlock FontSize="12">
-              data (<Run Foreground="GreenYellow">JSON</Run>).
-            </TextBlock>
+        <Border Grid.Row="0" Grid.Column="0" Background="Transparent" BorderBrush="#1AFFFFFF" BorderThickness="3" Padding="20" Margin="10" CornerRadius="8">
+          <StackPanel Orientation="Horizontal" Spacing="7.5">
+            <Grid Width="64" Height="64" Margin="0,0,10,0" HorizontalAlignment="Left">
+              <Border CornerRadius="8" BoxShadow="5 5 10 -5 #CC000000" BorderBrush="#1AFFFFFF" BorderThickness="1" Background="White">
+                <Border.Background>
+                  <LinearGradientBrush StartPoint="30%,0%" EndPoint="50%,120%">
+                    <GradientStop Color="#66DA89" Offset="0"/>
+                    <GradientStop Color="#3d3d3d" Offset="1"/>
+                  </LinearGradientBrush>
+                </Border.Background>
+                <i:Icon Value="fa-solid fa-code" Width="64" Height="64" FontSize="32" />
+              </Border>
+            </Grid>
+            <StackPanel Orientation="Vertical" MinWidth="225" VerticalAlignment="Center" HorizontalAlignment="Center">
+              <TextBlock FontWeight="Bold">Extract missing data</TextBlock>
+              <TextBlock FontSize="12" Margin="0,5,0,0">Check for and extract missing properties</TextBlock>
+              <TextBlock FontSize="12">
+                data (<Run Foreground="GreenYellow">JSON</Run>).
+              </TextBlock>
+            </StackPanel>
+            <Button PointerExited="OnPointerExit" Background="DodgerBlue" Name="MissingAssetsCheck" Command="{Binding CheckMissingAssetsCommand}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">
+              <i:Icon Value="fa-solid fa-computer-mouse" Width="32" Height="32" FontSize="16" />
+            </Button>
           </StackPanel>
-          <Button PointerExited="OnPointerExit" Background="DodgerBlue" Name="MissingAssetsCheck" Command="{Binding CheckMissingAssetsCommand}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">
-            <i:Icon Value="fa-solid fa-computer-mouse" Width="32" Height="32" FontSize="16" />
-          </Button>
-        </StackPanel>
-      </Border>
+        </Border>
 
-      <Border Grid.Row="0" Grid.Column="1" Background="Transparent" BorderBrush="#1AFFFFFF" BorderThickness="3" Padding="20" Margin="10" CornerRadius="8">
+        <Border Grid.Row="0" Grid.Column="1" Background="Transparent" BorderBrush="#1AFFFFFF" BorderThickness="3" Padding="20" Margin="10" CornerRadius="8">
+          <StackPanel Orientation="Horizontal" Spacing="7.5">
+            <Grid Width="64" Height="64" Margin="0,0,10,0" HorizontalAlignment="Left">
+              <Border CornerRadius="8" BoxShadow="5 5 10 -5 #CC000000" BorderBrush="#1AFFFFFF" BorderThickness="1" Background="White">
+                <Border.Background>
+                  <LinearGradientBrush StartPoint="30%,0%" EndPoint="50%,120%">
+                    <GradientStop Color="#514FC0" Offset="0"/>
+                    <GradientStop Color="#3d3d3d" Offset="1"/>
+                  </LinearGradientBrush>
+                </Border.Background>
+                <i:Icon Value="fa-solid fa-cube" Width="64" Height="64" FontSize="32" />
+              </Border>
+            </Grid>
+            <StackPanel Orientation="Vertical" MinWidth="225" VerticalAlignment="Center" HorizontalAlignment="Center">
+              <TextBlock FontWeight="Bold">Extract meshes</TextBlock>
+              <TextBlock FontSize="12" Margin="0,5,0,0">
+                Extract meshes (<Run Foreground="#514FC0">PSK</Run> format).
+              </TextBlock>
+            </StackPanel>
+            <Button Background="DodgerBlue" Name="ExtractMeshes" Command="{Binding ExtractMeshesCommand}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">
+              <i:Icon Value="fa-solid fa-computer-mouse" Width="32" Height="32" FontSize="16" />
+            </Button>
+          </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="0" Background="Transparent" BorderBrush="#1AFFFFFF" BorderThickness="3" Padding="20" Margin="10" CornerRadius="8">
+          <StackPanel Orientation="Horizontal" Spacing="7.5">
+            <Grid Width="64" Height="64" Margin="0,0,10,0" HorizontalAlignment="Left">
+              <Border CornerRadius="8" BoxShadow="5 5 10 -5 #CC000000" BorderBrush="#1AFFFFFF" BorderThickness="1" Background="White">
+                <Border.Background>
+                  <LinearGradientBrush StartPoint="30%,0%" EndPoint="50%,120%">
+                    <GradientStop Color="#F7CE46" Offset="0"/>
+                    <GradientStop Color="#3d3d3d" Offset="1"/>
+                  </LinearGradientBrush>
+                </Border.Background>
+                <i:Icon Value="fa-solid fa-file-image" Width="64" Height="64" FontSize="32" />
+              </Border>
+            </Grid>
+            <StackPanel Orientation="Vertical" MinWidth="225" VerticalAlignment="Center" HorizontalAlignment="Center">
+              <TextBlock FontWeight="Bold">Extract textures</TextBlock>
+              <TextBlock FontSize="12" Margin="0,5,0,0">
+                Extract textures for 3D models (<Run Foreground="LightSkyBlue">PNG</Run>
+              </TextBlock>
+              <TextBlock FontSize="12">format).</TextBlock>
+            </StackPanel>
+            <Button Background="DodgerBlue" Name="ExtractTextures" Command="{Binding ExtractTexturesCommand}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">
+              <i:Icon Value="fa-solid fa-computer-mouse" Width="32" Height="32" FontSize="16" />
+            </Button>
+          </StackPanel>
+        </Border>
+
+        <Border Grid.Row="1" Grid.Column="1" Background="Transparent" BorderBrush="#1AFFFFFF" BorderThickness="3" Padding="20" Margin="10" CornerRadius="8">
+          <StackPanel Orientation="Horizontal" Spacing="7.5">
+            <Grid Width="64" Height="64" Margin="0,0,10,0" HorizontalAlignment="Left">
+              <Border CornerRadius="8" BoxShadow="5 5 10 -5 #CC000000" BorderBrush="#1AFFFFFF" BorderThickness="1" Background="White">
+                <Border.Background>
+                  <LinearGradientBrush StartPoint="30%,0%" EndPoint="50%,120%">
+                    <GradientStop Color="Dodgerblue" Offset="0"/>
+                    <GradientStop Color="#3d3d3d" Offset="1"/>
+                  </LinearGradientBrush>
+                </Border.Background>
+                <i:Icon Value="fa-solid fa-icons" Width="64" Height="64" FontSize="32" />
+              </Border>
+            </Grid>
+            <StackPanel Orientation="Vertical" MinWidth="225" VerticalAlignment="Center" HorizontalAlignment="Center">
+              <TextBlock FontWeight="Bold">Extract UI</TextBlock>
+              <TextBlock FontSize="12" Margin="0,5,0,0">Extract UI, such as customization/hud</TextBlock>
+              <TextBlock FontSize="12">
+                icons etc. (<Run Foreground="LightSkyBlue">PNG</Run> format).
+              </TextBlock>
+            </StackPanel>
+            <Button Background="DodgerBlue" Name="ExtractUI" Command="{Binding ExtractUICommand}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">
+              <i:Icon Value="fa-solid fa-computer-mouse" Width="32" Height="32" FontSize="16" />
+            </Button>
+          </StackPanel>
+        </Border>
+      </Grid>
+
+      <Border HorizontalAlignment="Center" Background="Transparent" BorderBrush="#1AFFFFFF" BorderThickness="3" Padding="20" Margin="10" CornerRadius="8">
         <StackPanel Orientation="Horizontal" Spacing="7.5">
           <Grid Width="64" Height="64" Margin="0,0,10,0" HorizontalAlignment="Left">
             <Border CornerRadius="8" BoxShadow="5 5 10 -5 #CC000000" BorderBrush="#1AFFFFFF" BorderThickness="1" Background="White">
               <Border.Background>
                 <LinearGradientBrush StartPoint="30%,0%" EndPoint="50%,120%">
-                  <GradientStop Color="#514FC0" Offset="0"/>
+                  <GradientStop Color="Red" Offset="0"/>
                   <GradientStop Color="#3d3d3d" Offset="1"/>
                 </LinearGradientBrush>
               </Border.Background>
-              <i:Icon Value="fa-solid fa-cube" Width="64" Height="64" FontSize="32" />
+              <i:Icon Value="fa-solid fa-clapperboard" Width="64" Height="64" FontSize="32" />
             </Border>
           </Grid>
           <StackPanel Orientation="Vertical" MinWidth="225" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <TextBlock FontWeight="Bold">Extract meshes</TextBlock>
+            <TextBlock FontWeight="Bold">Extract Animations</TextBlock>
             <TextBlock FontSize="12" Margin="0,5,0,0">
-              Extract meshes (<Run Foreground="#514FC0">PSK</Run> format).
+              Extract animations (<Run Foreground="Red">PSA</Run> format).
             </TextBlock>
           </StackPanel>
-          <Button Background="DodgerBlue" Name="ExtractMeshes" Command="{Binding ExtractMeshesCommand}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">
+          <Button Background="DodgerBlue" Name="ExtractAnimations" Command="{Binding ExtractAnimationsCommand}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">
             <i:Icon Value="fa-solid fa-computer-mouse" Width="32" Height="32" FontSize="16" />
           </Button>
         </StackPanel>
       </Border>
-
-      <Border Grid.Row="1" Grid.Column="0" Background="Transparent" BorderBrush="#1AFFFFFF" BorderThickness="3" Padding="20" Margin="10" CornerRadius="8">
-        <StackPanel Orientation="Horizontal" Spacing="7.5">
-          <Grid Width="64" Height="64" Margin="0,0,10,0" HorizontalAlignment="Left">
-            <Border CornerRadius="8" BoxShadow="5 5 10 -5 #CC000000" BorderBrush="#1AFFFFFF" BorderThickness="1" Background="White">
-              <Border.Background>
-                <LinearGradientBrush StartPoint="30%,0%" EndPoint="50%,120%">
-                  <GradientStop Color="#F7CE46" Offset="0"/>
-                  <GradientStop Color="#3d3d3d" Offset="1"/>
-                </LinearGradientBrush>
-              </Border.Background>
-              <i:Icon Value="fa-solid fa-file-image" Width="64" Height="64" FontSize="32" />
-            </Border>
-          </Grid>
-          <StackPanel Orientation="Vertical" MinWidth="225" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <TextBlock FontWeight="Bold">Extract textures</TextBlock>
-            <TextBlock FontSize="12" Margin="0,5,0,0">
-              Extract textures for 3D models (<Run Foreground="LightSkyBlue">PNG</Run>
-            </TextBlock>
-            <TextBlock FontSize="12">format).</TextBlock>
-          </StackPanel>
-          <Button Background="DodgerBlue" Name="ExtractTextures" Command="{Binding ExtractTexturesCommand}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">
-            <i:Icon Value="fa-solid fa-computer-mouse" Width="32" Height="32" FontSize="16" />
-          </Button>
-        </StackPanel>
-      </Border>
-
-      <Border Grid.Row="1" Grid.Column="1" Background="Transparent" BorderBrush="#1AFFFFFF" BorderThickness="3" Padding="20" Margin="10" CornerRadius="8">
-        <StackPanel Orientation="Horizontal" Spacing="7.5">
-          <Grid Width="64" Height="64" Margin="0,0,10,0" HorizontalAlignment="Left">
-            <Border CornerRadius="8" BoxShadow="5 5 10 -5 #CC000000" BorderBrush="#1AFFFFFF" BorderThickness="1" Background="White">
-              <Border.Background>
-                <LinearGradientBrush StartPoint="30%,0%" EndPoint="50%,120%">
-                  <GradientStop Color="Dodgerblue" Offset="0"/>
-                  <GradientStop Color="#3d3d3d" Offset="1"/>
-                </LinearGradientBrush>
-              </Border.Background>
-              <i:Icon Value="fa-solid fa-icons" Width="64" Height="64" FontSize="32" />
-            </Border>
-          </Grid>
-          <StackPanel Orientation="Vertical" MinWidth="225" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <TextBlock FontWeight="Bold">Extract UI</TextBlock>
-            <TextBlock FontSize="12" Margin="0,5,0,0">Extract UI, such as customization/hud</TextBlock>
-            <TextBlock FontSize="12">
-              icons etc. (<Run Foreground="LightSkyBlue">PNG</Run> format).
-            </TextBlock>
-          </StackPanel>
-          <Button Background="DodgerBlue" Name="ExtractUI" Command="{Binding ExtractUICommand}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">
-            <i:Icon Value="fa-solid fa-computer-mouse" Width="32" Height="32" FontSize="16" />
-          </Button>
-        </StackPanel>
-      </Border>
-    </Grid>
-    
-    <Border HorizontalAlignment="Center" Background="Transparent" BorderBrush="#1AFFFFFF" BorderThickness="3" Padding="20" Margin="10" CornerRadius="8">
-      <StackPanel Orientation="Horizontal" Spacing="7.5">
-        <Grid Width="64" Height="64" Margin="0,0,10,0" HorizontalAlignment="Left">
-          <Border CornerRadius="8" BoxShadow="5 5 10 -5 #CC000000" BorderBrush="#1AFFFFFF" BorderThickness="1" Background="White">
-            <Border.Background>
-              <LinearGradientBrush StartPoint="30%,0%" EndPoint="50%,120%">
-                <GradientStop Color="Red" Offset="0"/>
-                <GradientStop Color="#3d3d3d" Offset="1"/>
-              </LinearGradientBrush>
-            </Border.Background>
-            <i:Icon Value="fa-solid fa-clapperboard" Width="64" Height="64" FontSize="32" />
-          </Border>
-        </Grid>
-        <StackPanel Orientation="Vertical" MinWidth="225" VerticalAlignment="Center" HorizontalAlignment="Center">
-          <TextBlock FontWeight="Bold">Extract Animations</TextBlock>
-          <TextBlock FontSize="12" Margin="0,5,0,0">
-            Extract animations (<Run Foreground="Red">PSA</Run> format).
-          </TextBlock>
-        </StackPanel>
-        <Button Background="DodgerBlue" Name="ExtractAnimations" Command="{Binding ExtractAnimationsCommand}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">
-          <i:Icon Value="fa-solid fa-computer-mouse" Width="32" Height="32" FontSize="16" />
-        </Button>
-      </StackPanel>
-    </Border>
-  </StackPanel>
+    </StackPanel>
   </ScrollViewer>
 </UserControl>

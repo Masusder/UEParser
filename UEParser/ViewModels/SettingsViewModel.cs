@@ -125,6 +125,34 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         set => SetProperty(ref _customVersion, value);
     }
 
+    private string? _s3AccessKey;
+    public string? S3AccessKey
+    {
+        get => _s3AccessKey;
+        set => SetProperty(ref _s3AccessKey, value);
+    }
+
+    private string? _s3SecretKey;
+    public string? S3SecretKey
+    {
+        get => _s3SecretKey;
+        set => SetProperty(ref _s3SecretKey, value);
+    }
+
+    private string? _s3BucketName;
+    public string? S3BucketName
+    {
+        get => _s3BucketName;
+        set => SetProperty(ref _s3BucketName, value);
+    }
+
+    private string? _awsRegion;
+    public string? AWSRegion
+    {
+        get => _awsRegion;
+        set => SetProperty(ref _awsRegion, value);
+    }
+
     public ObservableCollection<string> TomesList { get; }
     public ObservableCollection<string> EventTomesList { get; }
 
@@ -156,6 +184,12 @@ public partial class SettingsViewModel : INotifyPropertyChanged
 
         // Booleans
         UpdateApiDuringInitialization = config.Global.UpdateAPIDuringInitialization;
+
+        // Sensitive
+        S3AccessKey = config.Sensitive.S3AccessKey;
+        S3SecretKey = config.Sensitive.S3SecretKey;
+        S3BucketName = config.Sensitive.S3BucketName;
+        AWSRegion = config.Sensitive.AWSRegion;
 
         // Other
         var hashSetTomesList = config.Core.TomesList;
@@ -200,6 +234,12 @@ public partial class SettingsViewModel : INotifyPropertyChanged
             config.Core.VersionData.LatestVersionHeader = SelectedCurrentVersion;
             config.Core.VersionData.CompareVersionHeader = SelectedComparisonVersion;
             config.Core.ApiConfig.CustomVersion = CustomVersion;
+
+            // Sensitive
+            config.Sensitive.S3AccessKey = S3AccessKey;
+            config.Sensitive.S3SecretKey = S3SecretKey;
+            config.Sensitive.S3BucketName = S3BucketName;
+            config.Sensitive.AWSRegion = AWSRegion;
 
             // Booleans
             config.Global.UpdateAPIDuringInitialization = UpdateApiDuringInitialization;
@@ -266,7 +306,7 @@ public partial class SettingsViewModel : INotifyPropertyChanged
     private static async Task<bool> ShowRestartPopup()
     {
         var viewModel = new RestartApplicationPopupViewModel();
-        var view = new RestartApplicationPopup
+        var view = new RestartApplicationPopupView
         {
             DataContext = viewModel
         };
@@ -279,8 +319,6 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         };
 
         view.Show();
-
-        //bool userConfirmedRestart = viewModel.UserConfirmedRestart;
 
         return await tcs.Task;
     }

@@ -1,15 +1,14 @@
 ﻿using Avalonia.Controls;
-using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using UEParser.ViewModels;
 
 namespace UEParser.Views;
 
-public partial class InitializationConfirmPopup : Window
+public partial class InitializationConfirmPopupView : Window
 {
     private readonly InitializationConfirmPopupViewModel _viewModel;
 
-    public InitializationConfirmPopup()
+    public InitializationConfirmPopupView()
     {
         InitializeComponent();
         _viewModel = new InitializationConfirmPopupViewModel();
@@ -21,7 +20,6 @@ public partial class InitializationConfirmPopup : Window
 
     private void HandleClose(bool result)
     {
-        // Close the window with a result
         Close(result);
     }
 

@@ -22,12 +22,14 @@ public class UpdateManagerViewModel : ReactiveObject
     public ICommand UploadParsedDataCommand { get; }
     public ICommand ConvertUEModelsCommand { get; }
     public ICommand ValidateAssetsCommand { get; }
+    public ICommand UploadModelsDataCommand { get; }
 
     public UpdateManagerViewModel()
     {
         UploadParsedDataCommand = ReactiveCommand.Create(UploadParsedData);
         ConvertUEModelsCommand = ReactiveCommand.Create(ConvertUEModels);
         ValidateAssetsCommand = ReactiveCommand.Create(ValidateAssetsInBucket);
+        UploadModelsDataCommand = ReactiveCommand.Create(UploadModelsData);
     }
 
     // Assets validation in the bucket
@@ -39,131 +41,145 @@ public class UpdateManagerViewModel : ReactiveObject
     {
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
 
-        S3Service s3Service = S3Service.CreateFromConfig();
-
-        var config = ConfigurationService.Config;
-        string bucketName = config.Sensitive.S3BucketName;
-
-        LogsWindowViewModel.Instance.AddLog("Loading list of objects in the bucket..", Logger.LogTags.Info);
-
-        await Task.Delay(100);
-
-        var objectKeys = s3Service.ListAllObjectsInFolder(bucketName, "assets");
-
-        LogsWindowViewModel.Instance.AddLog("Loading list of objects in the models mappings..", Logger.LogTags.Info);
-
-        await Task.Delay(100);
-
-        var paths = Helpers.ListPathsFromModelsMapping();
-
-        static List<string> FindMissingPaths(List<string> objectKeys, List<string> paths)
+        try
         {
-            var normalizedObjectKeys = new HashSet<string>(
-                objectKeys
-                    .Where(k => !string.IsNullOrWhiteSpace(k))
-                    .Select(k => k.ToLowerInvariant())
-            );
 
-            var normalizedPaths = paths.Where(p => !string.IsNullOrWhiteSpace(p)).Select(p => p.ToLowerInvariant());
+            S3Service s3Service = S3Service.CreateFromConfig();
 
-            var missingPathsSet = new HashSet<string>();
+            var config = ConfigurationService.Config;
+            string? bucketName = config.Sensitive.S3BucketName;
 
-            foreach (var path in paths)
+            if (string.IsNullOrEmpty(bucketName))
             {
-                if (!string.IsNullOrWhiteSpace(path) && !normalizedObjectKeys.Contains(path.ToLowerInvariant()))
-                {
-                    missingPathsSet.Add(path);
-                }
+                throw new Exception("Bucket name is not set in settings");
             }
 
-            return [.. missingPathsSet];
-        }
+            LogsWindowViewModel.Instance.AddLog("Loading list of objects in the bucket..", Logger.LogTags.Info);
 
-        static List<string> GetCorrectlyCasedPaths(List<string> objectKeys, List<string> paths)
-        {
-            var normalizedObjectKeys = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            await Task.Delay(100);
 
-            foreach (var key in paths.Where(k => !string.IsNullOrWhiteSpace(k)))
+            var objectKeys = s3Service.ListAllObjectsInFolder(bucketName, "assets");
+
+            LogsWindowViewModel.Instance.AddLog("Loading list of objects in the models mappings..", Logger.LogTags.Info);
+
+            await Task.Delay(100);
+
+            var paths = Helpers.ListPathsFromModelsMapping();
+
+            static List<string> FindMissingPaths(List<string> objectKeys, List<string> paths)
             {
-                var lowerCaseKey = key.ToLowerInvariant();
-                if (!normalizedObjectKeys.ContainsKey(lowerCaseKey))
-                {
-                    normalizedObjectKeys[lowerCaseKey] = key;
-                }
-            }
+                var normalizedObjectKeys = new HashSet<string>(
+                    objectKeys
+                        .Where(k => !string.IsNullOrWhiteSpace(k))
+                        .Select(k => k.ToLowerInvariant())
+                );
 
-            var correctlyCasedPaths = new HashSet<string>();
+                var normalizedPaths = paths.Where(p => !string.IsNullOrWhiteSpace(p)).Select(p => p.ToLowerInvariant());
 
-            foreach (var path in objectKeys)
-            {
-                if (!string.IsNullOrWhiteSpace(path) && normalizedObjectKeys.TryGetValue(path.ToLowerInvariant(), out var correctCasePath))
+                var missingPathsSet = new HashSet<string>();
+
+                foreach (var path in paths)
                 {
-                    // Check if the original case differs from the current path
-                    // only then we will know asset needs to be moved to path with correct case
-                    if (!path.Equals(correctCasePath))
+                    if (!string.IsNullOrWhiteSpace(path) && !normalizedObjectKeys.Contains(path.ToLowerInvariant()))
                     {
-                        correctlyCasedPaths.Add(correctCasePath);
+                        missingPathsSet.Add(path);
                     }
                 }
+
+                return [.. missingPathsSet];
             }
 
-            return [.. correctlyCasedPaths];
-        }
-
-        static void LogPaths(string path, string tag)
-        {
-            string message = string.Empty;
-
-            switch (tag)
+            static List<string> GetCorrectlyCasedPaths(List<string> objectKeys, List<string> paths)
             {
-                case "missing":
-                    message = $"Detected missing asset: {path}";
-                    break;
-                case "wrongCase":
-                    message = $"Asset uses wrong case in its path: {path}";
-                    break;
-                default:
-                    break;
+                var normalizedObjectKeys = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+                foreach (var key in paths.Where(k => !string.IsNullOrWhiteSpace(k)))
+                {
+                    var lowerCaseKey = key.ToLowerInvariant();
+                    if (!normalizedObjectKeys.ContainsKey(lowerCaseKey))
+                    {
+                        normalizedObjectKeys[lowerCaseKey] = key;
+                    }
+                }
+
+                var correctlyCasedPaths = new HashSet<string>();
+
+                foreach (var path in objectKeys)
+                {
+                    if (!string.IsNullOrWhiteSpace(path) && normalizedObjectKeys.TryGetValue(path.ToLowerInvariant(), out var correctCasePath))
+                    {
+                        // Check if the original case differs from the current path
+                        // only then we will know asset needs to be moved to path with correct case
+                        if (!path.Equals(correctCasePath))
+                        {
+                            correctlyCasedPaths.Add(correctCasePath);
+                        }
+                    }
+                }
+
+                return [.. correctlyCasedPaths];
             }
 
-            LogsWindowViewModel.Instance.AddLog(message, Logger.LogTags.Warning);
-        }
-
-        var missingAssets = FindMissingPaths(objectKeys, paths);
-        var correctlyCasedPaths = GetCorrectlyCasedPaths(objectKeys, paths);
-
-        int missingAssetsAmount = missingAssets.Count;
-        int correctlyCasedPathsAmount = correctlyCasedPaths.Count;
-
-        if (missingAssetsAmount > 0) 
-        {
-            LogsWindowViewModel.Instance.AddLog($"Found total of {missingAssetsAmount} missing assets.", Logger.LogTags.Warning);
-            foreach (var path in missingAssets)
+            static void LogPaths(string path, string tag)
             {
-                await Task.Delay(50);
-                LogPaths(path, "missing");
-            }
-        }
-        else
-        {
-            LogsWindowViewModel.Instance.AddLog($"Not found missing assets.", Logger.LogTags.Info);
-        }
+                string message = string.Empty;
 
-        if (correctlyCasedPathsAmount > 0)
-        {
-            LogsWindowViewModel.Instance.AddLog($"Found total of {correctlyCasedPathsAmount} assets with incorrect case.", Logger.LogTags.Warning);
-            foreach (var path in correctlyCasedPaths)
+                switch (tag)
+                {
+                    case "missing":
+                        message = $"Detected missing asset: {path}";
+                        break;
+                    case "wrongCase":
+                        message = $"Asset uses wrong case in its path: {path}";
+                        break;
+                    default:
+                        break;
+                }
+
+                LogsWindowViewModel.Instance.AddLog(message, Logger.LogTags.Warning);
+            }
+
+            var missingAssets = FindMissingPaths(objectKeys, paths);
+            var correctlyCasedPaths = GetCorrectlyCasedPaths(objectKeys, paths);
+
+            int missingAssetsAmount = missingAssets.Count;
+            int correctlyCasedPathsAmount = correctlyCasedPaths.Count;
+
+            if (missingAssetsAmount > 0)
             {
-                LogPaths(path, "wrongCase");
+                LogsWindowViewModel.Instance.AddLog($"Found total of {missingAssetsAmount} missing assets.", Logger.LogTags.Warning);
+                foreach (var path in missingAssets)
+                {
+                    await Task.Delay(50);
+                    LogPaths(path, "missing");
+                }
             }
-        }
-        else
-        {
-            LogsWindowViewModel.Instance.AddLog($"Not found assets that use incorrect case.", Logger.LogTags.Info);
-        }
+            else
+            {
+                LogsWindowViewModel.Instance.AddLog($"Not found missing assets.", Logger.LogTags.Info);
+            }
 
-        LogsWindowViewModel.Instance.AddLog($"Assets validation has been completed.", Logger.LogTags.Success);
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            if (correctlyCasedPathsAmount > 0)
+            {
+                LogsWindowViewModel.Instance.AddLog($"Found total of {correctlyCasedPathsAmount} assets with incorrect case.", Logger.LogTags.Warning);
+                foreach (var path in correctlyCasedPaths)
+                {
+                    LogPaths(path, "wrongCase");
+                }
+            }
+            else
+            {
+                LogsWindowViewModel.Instance.AddLog($"Not found assets that use incorrect case.", Logger.LogTags.Info);
+            }
+
+            LogsWindowViewModel.Instance.AddLog($"Assets validation has been completed.", Logger.LogTags.Success);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        }
+        catch (Exception ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog(ex.Message, Logger.LogTags.Error);
+        }
     }
 
     public static void ConvertUEModels()
@@ -216,23 +232,68 @@ public class UpdateManagerViewModel : ReactiveObject
     {
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
 
-        var config = ConfigurationService.Config;
-        var accessKey = config.Sensitive.S3AccessKey;
-        var secretKey = config.Sensitive.S3SecretKey;
-        var region = config.Sensitive.AWSRegion;
-        var bucketName = config.Sensitive.S3BucketName;
+        try
+        {
+            var config = ConfigurationService.Config;
+            var accessKey = config.Sensitive.S3AccessKey;
+            var secretKey = config.Sensitive.S3SecretKey;
+            var region = config.Sensitive.AWSRegion;
+            var bucketName = config.Sensitive.S3BucketName;
 
-        S3Service s3Service = new(accessKey, secretKey, region);
+            if (string.IsNullOrEmpty(accessKey) || string.IsNullOrEmpty(secretKey) ||
+                string.IsNullOrEmpty(region) || string.IsNullOrEmpty(bucketName))
+            {
+                throw new ArgumentNullException("One or more required configuration values are null or empty. Please check S3AccessKey, S3SecretKey, AWSRegion, and S3BucketName.");
+            }
 
-        string pathToParsedData = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch);
+            S3Service s3Service = new(accessKey, secretKey, region);
 
-        ChangeFilesIndentation(pathToParsedData, true);
+            string pathToParsedData = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch);
 
-        await s3Service.UploadDirectoryAsync(bucketName, pathToParsedData, "api/");
+            ChangeFilesIndentation(pathToParsedData, true);
 
-        ChangeFilesIndentation(pathToParsedData, false);
+            await s3Service.UploadDirectoryAsync(bucketName, pathToParsedData, "api/");
 
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            ChangeFilesIndentation(pathToParsedData, false);
+
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        }
+        catch (Exception ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog(ex.Message, Logger.LogTags.Error);
+        }
+    }
+
+    private static async Task UploadModelsData()
+    {
+        try
+        {
+            S3Service s3Service = S3Service.CreateFromConfig();
+
+            var config = ConfigurationService.Config;
+            string? bucketName = config.Sensitive.S3BucketName;
+
+            if (string.IsNullOrEmpty(bucketName))
+            {
+                throw new Exception("Bucket name is not set in settings");
+            }
+
+            string pathToModelsData = Path.Combine(GlobalVariables.pathToModelsData, GlobalVariables.versionWithBranch);
+
+            ChangeFilesIndentation(pathToModelsData, true);
+
+            await s3Service.UploadDirectoryAsync(bucketName, pathToModelsData, "assets/");
+
+            ChangeFilesIndentation(pathToModelsData, false);
+
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        }
+        catch (Exception ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog(ex.Message, Logger.LogTags.Error);
+        }
     }
 
     private static void ChangeFilesIndentation(string directoryPath, bool minify = false)

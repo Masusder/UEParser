@@ -55,14 +55,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AvaloniaXaml Include="Views\ParsingControllers.xaml" />
-    <AvaloniaXaml Include="Views\LogsWindow.xaml" />
-    <AvaloniaXaml Include="Views\Settings.xaml" />
-    <AvaloniaXaml Include="Views\SplashScreen.xaml" />
+    <AvaloniaXaml Include="Views\ParsingControllersView.xaml" />
+    <AvaloniaXaml Include="Views\LogsWindowView.xaml" />
+    <AvaloniaXaml Include="Views\SettingsView.xaml" />
+    <AvaloniaXaml Include="Views\SplashScreenView.xaml" />
     <AvaloniaXaml Include="Views\APIView.xaml" />
-    <AvaloniaXaml Include="Views\RestartApplicationPopup.xaml" />
-    <AvaloniaXaml Include="Views\InitializationConfirmPopup.xaml" />
-    <AvaloniaXaml Include="Views\Home.xaml" />
+    <AvaloniaXaml Include="Views\RestartApplicationPopupView.xaml" />
+    <AvaloniaXaml Include="Views\InitializationConfirmPopupView.xaml" />
+    <AvaloniaXaml Include="Views\HomeView.xaml" />
     <AvaloniaXaml Include="Views\AssetsExtractorView.xaml" />
     <AvaloniaXaml Include="Views\UpdateManagerView.xaml" />
   </ItemGroup>
@@ -74,19 +74,19 @@
     <None Update="Views\AssetsExtractorView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
-    <None Update="Views\Home.xaml">
+    <None Update="Views\HomeView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
-    <None Update="Views\InitializationConfirmPopup.xaml">
+    <None Update="Views\InitializationConfirmPopupView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
-    <None Update="Views\RestartApplicationPopup.xaml">
+    <None Update="Views\RestartApplicationPopupView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
-    <None Update="Views\Settings.xaml">
+    <None Update="Views\SettingsView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
-    <None Update="Views\SplashScreen.xaml">
+    <None Update="Views\SplashScreenView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
     <None Update="Views\UpdateManagerView.xaml">

@@ -1,0 +1,633 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:i="https://github.com/projektanker/icons.avalonia"
+             mc:Ignorable="d"
+             x:Class="UEParser.Views.ParsingControllersView"
+             xmlns:views="clr-namespace:UEParser.Views"
+             xmlns:vm="clr-namespace:UEParser.ViewModels"
+             xmlns:convert="clr-namespace:UEParser.Converters"
+             x:DataType="vm:ParsingControllersViewModel">
+  <UserControl.Resources>
+    <convert:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+  </UserControl.Resources>
+  <UserControl.Styles>
+    <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="CornerRadius"
+              Value="5" />
+      <Setter Property="Background">
+        <Setter.Value>
+          <LinearGradientBrush Opacity="0.75"
+                               StartPoint="-400%,-200%"
+                               EndPoint="50%,100%">
+            <GradientStop Color="DodgerBlue"
+                          Offset="0" />
+            <GradientStop Color="Transparent"
+                          Offset="1" />
+          </LinearGradientBrush>
+        </Setter.Value>
+      </Setter>
+    </Style>
+  </UserControl.Styles>
+  <ScrollViewer>
+    <Grid>
+      <StackPanel Orientation="Vertical"
+                  HorizontalAlignment="Center"
+                  Margin="10"
+                  VerticalAlignment="Center">
+        <TextBlock HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   TextAlignment="Center"
+                   Text="Data Parsers"
+                   FontWeight="700"
+                   FontSize="32"
+                   Foreground="White" />
+        <TextBlock HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   TextAlignment="Center"
+                   Text="The order of operations is crucial! Please ensure you parse in the correct order."
+                   FontWeight="500"
+                   FontSize="14"
+                   Foreground="AntiqueWhite" />
+        <TextBlock HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   TextAlignment="Center"
+                   Text="Some parsers rely on data produced by other parsers (check requirements)."
+                   FontWeight="500"
+                   FontSize="14"
+                   Margin="0,0,0,10"
+                   Foreground="AntiqueWhite" />
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+
+          <Button Name="MainController"
+                  Command="{Binding ParseEverythingCommand}"
+                  IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
+                  Margin="5"
+                  PointerEntered="Button_PointerEnter"
+                  PointerExited="Button_PointerLeave"
+                  MinWidth="110"
+                  MinHeight="110"
+                  Cursor="Hand">
+            <Button.Resources>
+              <ResourceDictionary>
+                <vm:StringResources x:Key="ButtonInfo"
+                                    Title="Everything"
+                                    Description="Parse all of the data in correct order." />
+              </ResourceDictionary>
+            </Button.Resources>
+            <StackPanel Orientation="Vertical">
+              <TextBlock Text="1"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Top"
+                         FontSize="14"
+                         FontWeight="Black"
+                         Foreground="White" />
+              <Image Source="avares://UEParser/Resources/iconHelp_DBDlogo.png"
+                     Width="64"
+                     Height="64" />
+              <TextBlock>
+                Everything
+              </TextBlock>
+            </StackPanel>
+          </Button>
+
+          <Button Name="RiftsController"
+                  Command="{Binding ParseRiftsCommand}"
+                  IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
+                  Cursor="Hand"
+                  PointerEntered="Button_PointerEnter"
+                  PointerExited="Button_PointerLeave"
+                  MinWidth="110"
+                  MinHeight="110"
+                  Margin="5">
+            <Button.Resources>
+              <ResourceDictionary>
+                <vm:StringResources x:Key="ButtonInfo"
+                                    Title="Rifts"
+                                    Description="Parse Rifts data."
+                                    Requirements="Updated API; Configured Event Tomes in settings">
+                </vm:StringResources>
+              </ResourceDictionary>
+            </Button.Resources>
+            <StackPanel Orientation="Vertical">
+              <TextBlock Text="2"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Top"
+                         FontSize="14"
+                         FontWeight="Black"
+                         Foreground="White" />
+              <Image Source="avares://UEParser/Resources/iconHelp_archivesRewards.png"
+                     Width="64"
+                     Height="64" />
+              <TextBlock VerticalAlignment="Center"
+                         HorizontalAlignment="Center">
+                Rifts
+              </TextBlock>
+            </StackPanel>
+          </Button>
+
+          <Button Name="CharactersController"
+                  Command="{Binding ParseCharactersCommand}"
+                  IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
+                  PointerEntered="Button_PointerEnter"
+                  PointerExited="Button_PointerLeave"
+                  Cursor="Hand"
+                  MinWidth="110"
+                  MinHeight="110"
+                  Margin="5">
+            <Button.Resources>
+              <ResourceDictionary>
+                <vm:StringResources x:Key="ButtonInfo"
+                                    Title="Characters"
+                                    Description="Parse Characters data.">
+                </vm:StringResources>
+              </ResourceDictionary>
+            </Button.Resources>
+            <StackPanel Orientation="Vertical">
+              <TextBlock Text="3"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Top"
+                         FontSize="14"
+                         FontWeight="Black"
+                         Foreground="White" />
+              <Image Source="avares://UEParser/Resources/help_levelIcon_survivor.png"
+                     Width="64"
+                     Height="64" />
+              <TextBlock VerticalAlignment="Center"
+                         HorizontalAlignment="Center">Characters</TextBlock>
+            </StackPanel>
+          </Button>
+
+          <Button Name="CosmeticsController"
+                  Command="{Binding ParseCosmeticsCommand}"
+                  IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
+                  PointerEntered="Button_PointerEnter"
+                  PointerExited="Button_PointerLeave"
+                  Cursor="Hand"
+                  MinWidth="110"
+                  MinHeight="110"
+                  Margin="5">
+            <Button.Resources>
+              <ResourceDictionary>
+                <vm:StringResources x:Key="ButtonInfo"
+                                    Title="Cosmetics"
+                                    Description="Parse Cosmetics data and 3D Models."
+                                    Requirements="Updated API; Parsed Rifts">
+                </vm:StringResources>
+              </ResourceDictionary>
+            </Button.Resources>
+            <StackPanel Orientation="Vertical">
+              <TextBlock Text="4"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Top"
+                         FontSize="14"
+                         FontWeight="Black"
+                         Foreground="White" />
+              <Image Source="avares://UEParser/Resources/icon_Store.png"
+                     Width="64"
+                     Height="64" />
+              <TextBlock VerticalAlignment="Center"
+                         HorizontalAlignment="Center">Cosmetics</TextBlock>
+            </StackPanel>
+          </Button>
+
+          <Button Name="PerksController"
+                  Command="{Binding ParsePerksCommand}"
+                  IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
+                  PointerEntered="Button_PointerEnter"
+                  PointerExited="Button_PointerLeave"
+                  Cursor="Hand"
+                  MinWidth="110"
+                  MinHeight="110"
+                  Margin="5">
+            <Button.Resources>
+              <ResourceDictionary>
+                <vm:StringResources x:Key="ButtonInfo"
+                                    Title="Perks"
+                                    Description="Parse Perks data.">
+                </vm:StringResources>
+              </ResourceDictionary>
+            </Button.Resources>
+            <StackPanel Orientation="Vertical">
+              <TextBlock Text="5"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Top"
+                         FontSize="14"
+                         FontWeight="Black"
+                         Foreground="White" />
+              <Image Source="avares://UEParser/Resources/iconHelp_perks.png"
+                     Width="64"
+                     Height="64" />
+              <TextBlock VerticalAlignment="Center"
+                         HorizontalAlignment="Center">Perks</TextBlock>
+            </StackPanel>
+          </Button>
+
+        </StackPanel>
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+
+          <Button Name="CharacterClassesController"
+                  Command="{Binding ParseCharacterClassesCommand}"
+                  IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
+                  PointerEntered="Button_PointerEnter"
+                  PointerExited="Button_PointerLeave"
+                  Cursor="Hand"
+                  MinWidth="110"
+                  MinHeight="110"
+                  Margin="5">
+            <Button.Resources>
+              <ResourceDictionary>
+                <vm:StringResources x:Key="ButtonInfo"
+                                    Title="Character Classes"
+                                    Description="Parse Character Classes data.">
+                </vm:StringResources>
+              </ResourceDictionary>
+            </Button.Resources>
+            <StackPanel Orientation="Vertical">
+              <TextBlock Text="6"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Top"
+                         FontSize="14"
+                         FontWeight="Black"
+                         Foreground="White" />
+              <Image Source="avares://UEParser/Resources/iconClass_Scout.png"
+                     Width="64"
+                     Height="64" />
+              <TextBlock VerticalAlignment="Center"
+                         HorizontalAlignment="Center">Classes</TextBlock>
+            </StackPanel>
+          </Button>
+
+          <Button Name="TomesController"
+                  Command="{Binding ParseTomesCommand}"
+                  IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
+                  PointerEntered="Button_PointerEnter"
+                  PointerExited="Button_PointerLeave"
+                  Cursor="Hand"
+                  MinWidth="110"
+                  MinHeight="110"
+                  Margin="5">
+            <Button.Resources>
+              <ResourceDictionary>
+                <vm:StringResources x:Key="ButtonInfo"
+                                    Title="Tomes"
+                                    Description="Parse Tomes data."
+                                    Requirements="Updated API;Parsed Cosmetics;Parsed Characters;Parsed Perks;Parsed Character Classes;Initialized helper components">
+                </vm:StringResources>
+              </ResourceDictionary>
+            </Button.Resources>
+            <StackPanel Orientation="Vertical">
+              <TextBlock Text="7"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Top"
+                         FontSize="14"
+                         FontWeight="Black"
+                         Foreground="White" />
+              <Image Source="avares://UEParser/Resources/iconHelp_archivesQuests.png"
+                     Width="64"
+                     Height="64" />
+              <TextBlock VerticalAlignment="Center"
+                         HorizontalAlignment="Center">Tomes</TextBlock>
+            </StackPanel>
+          </Button>
+
+          <Button Name="AddonsController"
+                  Command="{Binding ParseAddonsCommand}"
+                  IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
+                  PointerEntered="Button_PointerEnter"
+                  PointerExited="Button_PointerLeave"
+                  Cursor="Hand"
+                  MinWidth="110"
+                  MinHeight="110"
+                  Margin="5">
+            <Button.Resources>
+              <ResourceDictionary>
+                <vm:StringResources x:Key="ButtonInfo"
+                                    Title="Addons"
+                                    Description="Parse Addons data.">
+                </vm:StringResources>
+              </ResourceDictionary>
+            </Button.Resources>
+            <StackPanel Orientation="Vertical">
+              <TextBlock Text="8"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Top"
+                         FontSize="14"
+                         FontWeight="Black"
+                         Foreground="White" />
+              <Image Source="avares://UEParser/Resources/iconHelpLoading_addons.png"
+                     Width="64"
+                     Height="64" />
+              <TextBlock VerticalAlignment="Center"
+                         HorizontalAlignment="Center">Addons</TextBlock>
+            </StackPanel>
+          </Button>
+
+          <Button Name="ItemsController"
+                  Command="{Binding ParseItemsCommand}"
+                  IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
+                  PointerEntered="Button_PointerEnter"
+                  PointerExited="Button_PointerLeave"
+                  Cursor="Hand"
+                  MinWidth="110"
+                  MinHeight="110"
+                  Margin="5">
+            <Button.Resources>
+              <ResourceDictionary>
+                <vm:StringResources x:Key="ButtonInfo"
+                                    Title="Items"
+                                    Description="Parse Items data.">
+                </vm:StringResources>
+              </ResourceDictionary>
+            </Button.Resources>
+            <StackPanel Orientation="Vertical">
+              <TextBlock Text="9"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Top"
+                         FontSize="14"
+                         FontWeight="Black"
+                         Foreground="White" />
+              <Image Source="avares://UEParser/Resources/iconHelpLoading_items.png"
+                     Width="64"
+                     Height="64" />
+              <TextBlock VerticalAlignment="Center"
+                         HorizontalAlignment="Center">Items</TextBlock>
+            </StackPanel>
+          </Button>
+
+          <Button Name="OfferingsController"
+                  Command="{Binding ParseOfferingsCommand}"
+                  IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
+                  PointerEntered="Button_PointerEnter"
+                  PointerExited="Button_PointerLeave"
+                  Cursor="Hand"
+                  MinWidth="110"
+                  MinHeight="110"
+                  Margin="5">
+            <Button.Resources>
+              <ResourceDictionary>
+                <vm:StringResources x:Key="ButtonInfo"
+                                    Title="Offerings"
+                                    Description="Parse Offerings data.">
+                </vm:StringResources>
+              </ResourceDictionary>
+            </Button.Resources>
+            <StackPanel Orientation="Vertical">
+              <TextBlock Text="10"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Top"
+                         FontSize="14"
+                         FontWeight="Black"
+                         Foreground="White" />
+              <Image Source="avares://UEParser/Resources/iconHelp_offerings.png"
+                     Width="64"
+                     Height="64" />
+              <TextBlock VerticalAlignment="Center"
+                         HorizontalAlignment="Center">Offerings</TextBlock>
+            </StackPanel>
+          </Button>
+
+          <Button Name="MapsController"
+                  Command="{Binding ParseMapsCommand}"
+                  IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
+                  PointerEntered="Button_PointerEnter"
+                  PointerExited="Button_PointerLeave"
+                  Cursor="Hand"
+                  MinWidth="110"
+                  MinHeight="110"
+                  Margin="5">
+            <Button.Resources>
+              <ResourceDictionary>
+                <vm:StringResources x:Key="ButtonInfo"
+                                    Title="Maps"
+                                    Description="Parse Maps data.">
+                </vm:StringResources>
+              </ResourceDictionary>
+            </Button.Resources>
+            <StackPanel Orientation="Vertical">
+              <TextBlock Text="11"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Top"
+                         FontSize="14"
+                         FontWeight="Black"
+                         Foreground="White" />
+              <Image Source="avares://UEParser/Resources/iconHelp_procedural.png"
+                     Width="64"
+                     Height="64" />
+              <TextBlock VerticalAlignment="Center"
+                         HorizontalAlignment="Center">Maps</TextBlock>
+            </StackPanel>
+          </Button>
+
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+
+          <Button Name="DLCController"
+                  Command="{Binding ParseDlcsCommand}"
+                  IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
+                  PointerEntered="Button_PointerEnter"
+                  PointerExited="Button_PointerLeave"
+                  Cursor="Hand"
+                  MinWidth="110"
+                  MinHeight="110"
+                  Margin="5">
+            <Button.Resources>
+              <ResourceDictionary>
+                <vm:StringResources x:Key="ButtonInfo"
+                                    Title="DLCs"
+                                    Description="Parse DLCs data.">
+                </vm:StringResources>
+              </ResourceDictionary>
+            </Button.Resources>
+            <StackPanel Orientation="Vertical">
+              <TextBlock Text="12"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Top"
+                         FontSize="14"
+                         FontWeight="Black"
+                         Foreground="White" />
+              <Image Source="avares://UEParser/Resources/DLC.png"
+                     Width="64"
+                     Height="64" />
+              <TextBlock VerticalAlignment="Center"
+                         HorizontalAlignment="Center">DLCs</TextBlock>
+            </StackPanel>
+          </Button>
+
+          <Button Name="JournalsController"
+                  Command="{Binding ParseJournalsCommand}"
+                  IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
+                  PointerEntered="Button_PointerEnter"
+                  PointerExited="Button_PointerLeave"
+                  MinWidth="110"
+                  MinHeight="110"
+                  Cursor="Hand"
+                  Margin="5">
+            <Button.Resources>
+              <ResourceDictionary>
+                <vm:StringResources x:Key="ButtonInfo"
+                                    Title="Journals"
+                                    Description="Parse Journals data."
+                                    Requirements="Parsed Tomes">
+                </vm:StringResources>
+              </ResourceDictionary>
+            </Button.Resources>
+            <StackPanel Orientation="Vertical">
+              <TextBlock Text="13"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Top"
+                         FontSize="14"
+                         FontWeight="Black"
+                         Foreground="White" />
+              <Image Source="avares://UEParser/Resources/iconHelp_note.png"
+                     Width="64"
+                     Height="64" />
+              <TextBlock VerticalAlignment="Center"
+                         HorizontalAlignment="Center">Journals</TextBlock>
+            </StackPanel>
+          </Button>
+
+          <Button Name="SpecialEventsController"
+                  Command="{Binding ParseSpecialEventsCommand}"
+                  IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
+                  PointerEntered="Button_PointerEnter"
+                  PointerExited="Button_PointerLeave"
+                  Cursor="Hand"
+                  MinWidth="110"
+                  MinHeight="110"
+                  Margin="5">
+            <Button.Resources>
+              <ResourceDictionary>
+                <vm:StringResources x:Key="ButtonInfo"
+                                    Title="Special Events"
+                                    Description="Parse Special Events data.">
+                </vm:StringResources>
+              </ResourceDictionary>
+            </Button.Resources>
+            <StackPanel Orientation="Vertical">
+              <TextBlock Text="14"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Top"
+                         FontSize="14"
+                         FontWeight="Black"
+                         Foreground="White" />
+              <Image Source="avares://UEParser/Resources/T_UI_MainMenu_ICON_Spring.png"
+                     Width="64"
+                     Height="64" />
+              <TextBlock VerticalAlignment="Center"
+                         HorizontalAlignment="Center">Special Events</TextBlock>
+            </StackPanel>
+          </Button>
+
+          <Button Name="CollectionsController"
+                  Command="{Binding ParseCollectionsCommand}"
+                  IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
+                  PointerEntered="Button_PointerEnter"
+                  PointerExited="Button_PointerLeave"
+                  Cursor="Hand"
+                  MinWidth="110"
+                  MinHeight="110"
+                  Margin="5">
+            <Button.Resources>
+              <ResourceDictionary>
+                <vm:StringResources x:Key="ButtonInfo"
+                                    Title="Collections"
+                                    Description="Parse Collections data."
+                                    Requirements="Updated Kraken API">
+                </vm:StringResources>
+              </ResourceDictionary>
+            </Button.Resources>
+            <StackPanel Orientation="Vertical">
+              <TextBlock Text="15"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Top"
+                         FontSize="14"
+                         FontWeight="Black"
+                         Foreground="White" />
+              <Image Source="avares://UEParser/Resources/NE_GachaExchangeShop_Icon.png"
+                     Width="64"
+                     Height="64" />
+              <TextBlock VerticalAlignment="Center"
+                         HorizontalAlignment="Center">Collections</TextBlock>
+            </StackPanel>
+          </Button>
+
+          <Button Name="BundlesController"
+                  Command="{Binding ParseBundlesCommand}"
+                  IsEnabled="{Binding IsParsing, Converter={StaticResource InverseBooleanConverter}}"
+                  PointerEntered="Button_PointerEnter"
+                  PointerExited="Button_PointerLeave"
+                  Cursor="Hand"
+                  MinWidth="110"
+                  MinHeight="110"
+                  Margin="5">
+            <Button.Resources>
+              <ResourceDictionary>
+                <vm:StringResources x:Key="ButtonInfo"
+                                    Title="Bundles"
+                                    Description="Parse Bundles data."
+                                    Requirements="Updated Kraken API;Parsed Characters data;Parsed DLCs data">
+                </vm:StringResources>
+              </ResourceDictionary>
+            </Button.Resources>
+            <StackPanel Orientation="Vertical">
+              <TextBlock Text="16"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Top"
+                         FontSize="14"
+                         FontWeight="Black"
+                         Foreground="White" />
+              <Image Source="avares://UEParser/Resources/NE_Gift_giving_icon.png"
+                     Width="64"
+                     Height="64" />
+              <TextBlock VerticalAlignment="Center"
+                         HorizontalAlignment="Center">Bundles</TextBlock>
+            </StackPanel>
+          </Button>
+
+        </StackPanel>
+      </StackPanel>
+      <Popup x:Name="TextPopup"
+             Opacity="0"
+             PlacementMode="Bottom"
+             VerticalOffset="-10">
+        <Popup.RenderTransform>
+          <ScaleTransform />
+        </Popup.RenderTransform>
+        <Border x:Name="TextBorder"
+                BorderBrush="#1AFFFFFF"
+                BorderThickness="1"
+                Background="#F2202020"
+                Opacity="0"
+                CornerRadius="7.5">
+          <TextBlock x:Name="DescriptionText"
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center"
+                     TextAlignment="Center"
+                     Foreground="White"
+                     Padding="15, 7.5, 15, 7.5" />
+          <Border.Transitions>
+            <Transitions>
+              <DoubleTransition Property="Opacity"
+                                Duration="0:0:0.2" />
+            </Transitions>
+          </Border.Transitions>
+        </Border>
+        <Popup.Transitions>
+          <Transitions>
+            <DoubleTransition Property="Opacity"
+                              Duration="0:0:0.2" />
+          </Transitions>
+        </Popup.Transitions>
+      </Popup>
+    </Grid>
+  </ScrollViewer>
+</UserControl>

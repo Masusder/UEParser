@@ -1,6 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        x:Class="UEParser.Views.RestartApplicationPopup"
+        x:Class="UEParser.Views.RestartApplicationPopupView"
         xmlns:vm="clr-namespace:UEParser.ViewModels"
         Title="UEParser - Restart Required"
         Width="400"

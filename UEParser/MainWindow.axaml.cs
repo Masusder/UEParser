@@ -25,7 +25,12 @@ public partial class MainWindow : AppWindow
         Loaded += MainWindow_Loaded;
     }
 
-    private InitializationConfirmPopup? _confirmationPopup;
+    private void InitializeComponent()
+    {
+        AvaloniaXamlLoader.Load(this);
+    }
+
+    private InitializationConfirmPopupView? _confirmationPopup;
 
     private async void MainWindow_Loaded(object? sender, EventArgs e)
     {
@@ -42,7 +47,7 @@ public partial class MainWindow : AppWindow
 
         if (hasVersionChanged)
         {
-            _confirmationPopup = new InitializationConfirmPopup();
+            _confirmationPopup = new InitializationConfirmPopupView();
             var result = await _confirmationPopup.ShowDialog<bool>(this);
             _confirmationPopup = null;
 
@@ -71,7 +76,7 @@ public partial class MainWindow : AppWindow
     {
         public string? AppName { get; }
         public IImage? AppIcon { get; }
-        public object SplashScreenContent => new SplashScreen();
+        public object SplashScreenContent => new SplashScreenView();
         public int MinimumShowTime => 2000;
 
         public Action? InitApp { get; set; }

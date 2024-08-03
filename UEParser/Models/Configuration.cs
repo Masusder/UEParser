@@ -344,10 +344,10 @@ public class NeteaseConfig
 // Sensitive config, such as credentials
 public class SensitiveConfig
 {
-    public string S3AccessKey { get; set; }
-    public string S3SecretKey { get; set; }
-    public string S3BucketName { get; set; }
-    public string AWSRegion { get; set; }
+    public string? S3AccessKey { get; set; }
+    public string? S3SecretKey { get; set; }
+    public string? S3BucketName { get; set; }
+    public string? AWSRegion { get; set; }
 
     public SensitiveConfig()
     {

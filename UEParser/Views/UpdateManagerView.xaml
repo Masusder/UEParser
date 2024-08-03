@@ -3,85 +3,124 @@
              xmlns:vm="clr-namespace:UEParser.ViewModels"
              x:Class="UEParser.Views.UpdateManagerView"
              x:DataType="vm:UpdateManagerViewModel">
-  <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-    <Image Source="avares://UEParser/Resources/AmazonAWS_Icon.png" Width="150" Height="150" >
-      <Image.Effect>
-        <DropShadowDirectionEffect Color="Black" Direction="0" ShadowDepth="0" Opacity="0.5"/>
-      </Image.Effect>
-    </Image>
-    <TextBlock HorizontalAlignment="Center"
-               FontWeight="700"
-               FontSize="32"
-               Text="Update Manager"
-               Margin="0, 15, 0, 15"
-               VerticalAlignment="Center" />
-    <StackPanel Orientation="Horizontal" Spacing="25">
-      <Border Background="#E62d2d2d"
-        CornerRadius="7.5"
-        Padding="10, 7.5"
-        BorderBrush="#1AFFFFFF"
-        BorderThickness="1"
+  <ScrollViewer>
+    <StackPanel Margin="0,25,0,25" VerticalAlignment="Center" HorizontalAlignment="Center">
+      <Image Source="avares://UEParser/Resources/AmazonAWS_Icon.png" Width="150" Height="150" >
+        <Image.Effect>
+          <DropShadowDirectionEffect Color="Black" Direction="0" ShadowDepth="0" Opacity="0.5"/>
+        </Image.Effect>
+      </Image>
+      <TextBlock HorizontalAlignment="Center"
+                 FontWeight="700"
+                 FontSize="32"
+                 Text="Update Manager"
+                 Margin="0, 15, 0, 15"
+                 VerticalAlignment="Center" />
+      <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Spacing="25">
+        <StackPanel Orientation="Horizontal" Spacing="25">
+          <Border Background="#E62d2d2d"
+            CornerRadius="7.5"
+            Padding="10, 7.5"
+            BorderBrush="#1AFFFFFF"
+                  MinWidth="250"
+            BorderThickness="1"
     >
-        <Border.Effect>
-          <DropShadowEffect
-              Color="Black"
-              Opacity="0.3"
-              BlurRadius="30"/>
-        </Border.Effect>
-        <StackPanel Spacing="7.5">
-          <TextBlock HorizontalAlignment="Center"
-                     Text="Upload parsed data to S3 bucket"
-                 FontSize="16"/>
-          <Button HorizontalAlignment="Center"
-                  Cursor="Hand"
-                  Content="Upload"
-                  Command="{Binding UploadParsedDataCommand}" />
-        </StackPanel>
-      </Border>
-      <Border Background="#E62d2d2d"
-        CornerRadius="7.5"
-        Padding="10, 7.5"
-        BorderBrush="#1AFFFFFF"
-        BorderThickness="1"
-       >
-        <Border.Effect>
-          <DropShadowEffect
-              Color="Black"
-              Opacity="0.3"
-              BlurRadius="30"/>
-        </Border.Effect>
-        <StackPanel Spacing="7.5">
-          <TextBlock HorizontalAlignment="Center"
-                     Text="Convert meshes into GLB format."
+            <Border.Effect>
+              <DropShadowEffect
+                  Color="Black"
+                  Opacity="0.3"
+                  BlurRadius="30"/>
+            </Border.Effect>
+            <StackPanel Spacing="7.5">
+              <TextBlock HorizontalAlignment="Center"
+                         TextAlignment="Center"
+                         TextWrapping="Wrap"
+                         Text="Upload parsed data to S3 bucket"
                      FontSize="16"/>
-          <Button HorizontalAlignment="Center"
-                  Cursor="Hand"
-                  Content="Convert"
-                  Command="{Binding ConvertUEModelsCommand}" />
-        </StackPanel>
-      </Border>
-      <Border Background="#E62d2d2d"
-              CornerRadius="7.5"
-              Padding="10, 7.5"
-              BorderBrush="#1AFFFFFF"
-              BorderThickness="1"
+              <Button HorizontalAlignment="Center"
+                      Cursor="Hand"
+                      Content="Upload"
+                      Command="{Binding UploadParsedDataCommand}" />
+            </StackPanel>
+          </Border>
+          <Border Background="#E62d2d2d"
+            CornerRadius="7.5"
+            Padding="10, 7.5"
+            BorderBrush="#1AFFFFFF"
+                  MinWidth="250"
+            BorderThickness="1"
        >
-        <Border.Effect>
-          <DropShadowEffect
-              Color="Black"
-              Opacity="0.3"
-              BlurRadius="30"/>
-        </Border.Effect>
-        <StackPanel Spacing="7.5">
-          <TextBlock HorizontalAlignment="Center"
-                     Text="Validate uploaded assets by comparing to mappings."
-                     FontSize="16"/>
-          <Button HorizontalAlignment="Center"
-                  Cursor="Hand"
-                  Content="Validate"
-                  Command="{Binding ValidateAssetsCommand}" />
+            <Border.Effect>
+              <DropShadowEffect
+                  Color="Black"
+                  Opacity="0.3"
+                  BlurRadius="30"/>
+            </Border.Effect>
+            <StackPanel Spacing="7.5">
+              <TextBlock HorizontalAlignment="Center"
+                         TextAlignment="Center"
+                         TextWrapping="Wrap"
+                         Text="Convert meshes into GLB format."
+                         FontSize="16"/>
+              <Button HorizontalAlignment="Center"
+                      Cursor="Hand"
+                      Content="Convert"
+                      Command="{Binding ConvertUEModelsCommand}" />
+            </StackPanel>
+          </Border>
+          <Border Background="#E62d2d2d"
+                  CornerRadius="7.5"
+                  Padding="10, 7.5"
+                  MinWidth="250"
+                  BorderBrush="#1AFFFFFF"
+                  BorderThickness="1"
+       >
+            <Border.Effect>
+              <DropShadowEffect
+                  Color="Black"
+                  Opacity="0.3"
+                  BlurRadius="30"/>
+            </Border.Effect>
+            <StackPanel Spacing="7.5">
+              <TextBlock HorizontalAlignment="Center"
+                         Text="Validate uploaded assets."
+                         FontSize="16"/>
+              <Button HorizontalAlignment="Center"
+                      Cursor="Hand"
+                      Content="Validate"
+                      Command="{Binding ValidateAssetsCommand}" />
+            </StackPanel>
+          </Border>
         </StackPanel>
-      </Border>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+          <Border Background="#E62d2d2d"
+          CornerRadius="7.5"
+          Padding="10, 7.5"
+          MinWidth="250"
+          BorderBrush="#1AFFFFFF"
+          BorderThickness="1"
+       >
+            <Border.Effect>
+              <DropShadowEffect
+                  Color="Black"
+                  Opacity="0.3"
+                  BlurRadius="30"/>
+            </Border.Effect>
+            <StackPanel Spacing="7.5">
+              <TextBlock HorizontalAlignment="Center"
+                          TextAlignment="Center"
+                         TextWrapping="Wrap"
+                         Text="Upload models data to S3 bucket."
+                         FontSize="16"/>
+              <Button HorizontalAlignment="Center"
+                      Cursor="Hand"
+                      Content="Upload"
+                      Command="{Binding UploadModelsDataCommand}" />
+            </StackPanel>
+          </Border>
+        </StackPanel>
+      </StackPanel>
     </StackPanel>
-  </StackPanel>
+  </ScrollViewer>
 </UserControl>

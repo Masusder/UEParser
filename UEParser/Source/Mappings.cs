@@ -17,7 +17,7 @@ public class Mappings
     {
         
         var config = ConfigurationService.Config;
-        string versionHeader = config.Core.VersionData.LatestVersionHeader;
+        string? versionHeader = config.Core.VersionData.LatestVersionHeader;
         Branch branch = config.Core.VersionData.Branch;
 
         string url;
