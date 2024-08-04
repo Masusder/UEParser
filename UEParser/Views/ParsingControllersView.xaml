@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:i="https://github.com/projektanker/icons.avalonia"
              mc:Ignorable="d"
+             d:DesignWidth="800"
              x:Class="UEParser.Views.ParsingControllersView"
              xmlns:views="clr-namespace:UEParser.Views"
              xmlns:vm="clr-namespace:UEParser.ViewModels"
@@ -31,7 +32,7 @@
     </Style>
   </UserControl.Styles>
   <ScrollViewer>
-    <Grid>
+    <Grid Margin="0,5,0,15">
       <StackPanel Orientation="Vertical"
                   HorizontalAlignment="Center"
                   Margin="10"
@@ -108,7 +109,7 @@
                 <vm:StringResources x:Key="ButtonInfo"
                                     Title="Rifts"
                                     Description="Parse Rifts data."
-                                    Requirements="Updated API; Configured Event Tomes in settings">
+                                    Requirements="Updated Kraken API; Configured Event Tomes in settings">
                 </vm:StringResources>
               </ResourceDictionary>
             </Button.Resources>

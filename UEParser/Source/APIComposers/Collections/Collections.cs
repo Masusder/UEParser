@@ -76,6 +76,8 @@ public class Collections
             JArray cosmeticItems = collection["items"];
             string sortOrder = collection["sortOrder"];
             DateTime updatedDate = collection["updatedDate"];
+            DateTime? limitedAvailabilityStartDate = collection["limitedAvailabilityStartDate"];
+            bool visibleBeforeStartDate = collection?["visibleBeforeStartDate"] ?? false;
             //int flags = collection.Value["Flags"];
 
             Collection model = new()
@@ -89,7 +91,9 @@ public class Collections
                 InclusionVersion = inclusionVersion,
                 Items = cosmeticItems,
                 SortOrder = sortOrder,
-                UpdatedDate = updatedDate
+                UpdatedDate = updatedDate,
+                LimitedAvailabilityStartDate = limitedAvailabilityStartDate,
+                VisibleBeforeStartDate = visibleBeforeStartDate
                 // Flags = flags
             };
 

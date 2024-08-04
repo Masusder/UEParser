@@ -9,6 +9,7 @@ using System;
 using System.Threading.Tasks;
 using UEParser.ViewModels;
 using UEParser.Services;
+using UEParser.Parser;
 
 namespace UEParser.Views;
 
@@ -36,8 +37,15 @@ public partial class LogsWindowView : UserControl
         var viewModel = (LogsWindowViewModel)DataContext;
         viewModel.AddLog("UEParser started.", Logger.LogTags.Info);
         viewModel.AddLog($"Current core build version: {config.Core.BuildVersionNumber}", Logger.LogTags.Info);
-        viewModel.AddLog($"Configured version: {versionWithBranch}", Logger.LogTags.Info);
+        viewModel.AddLog($"Current version: {versionWithBranch}", Logger.LogTags.Info);
         viewModel.AddLog($"Comparison version: {comparisonVersionWithBranch}", Logger.LogTags.Info);
+
+        bool isComparedVersionValid = FilesRegister.DoesComparedRegisterExist();
+
+        if (!isComparedVersionValid && comparisonVersionWithBranch != "---")
+        {
+            viewModel.AddLog("Not found files register for configured comparison version! In order to use provided comparison version you need to initialize app with that version beforehand.", Logger.LogTags.Warning);
+        }
 
         viewModel.PropertyChanged += (sender, e) =>
         {

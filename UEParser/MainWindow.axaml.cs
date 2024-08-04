@@ -1,8 +1,4 @@
-using Avalonia.Controls;
-using Avalonia.Input;
-using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using FluentAvalonia.UI.Controls;
 using UEParser.ViewModels;
 using FluentAvalonia.UI.Windowing;
 using Avalonia.Media;

@@ -6,6 +6,7 @@ using System.Linq;
 using UEParser.Services;
 using UEParser.ViewModels;
 using CUE4Parse.FileProvider.Objects;
+using System.Text.RegularExpressions;
 
 namespace UEParser.Parser;
 
@@ -241,5 +242,52 @@ public class FilesRegister
     public static bool DoesFileExist(string filePath)
     {
         return fileInfoDictionary.ContainsKey(filePath); 
+    }
+
+    public static bool DoesComparedRegisterExist()
+    {
+        string compareVersionWithBranch = Helpers.ConstructVersionHeaderWithBranch(true);
+
+        string compareFilesRegisterName = $"Core_{compareVersionWithBranch}_FilesRegister.json";
+
+        string compareFilesRegisterPath = Path.Combine(filesRegisterDirectoryPath, compareFilesRegisterName);
+
+        if (File.Exists(compareFilesRegisterPath))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static HashSet<string> GrabAvailableComparisonVersions()
+    {
+        string compareFilesRegisterPath = Path.Combine(filesRegisterDirectoryPath);
+
+        string pattern = @"Core_(?<version>.+)_FilesRegister\.json";
+
+        HashSet<string> versions = [];
+
+        string[] files = Directory.GetFiles(compareFilesRegisterPath, "*.json");
+
+        foreach (string file in files)
+        {
+            string fileName = Path.GetFileName(file);
+
+            Match match = Regex.Match(fileName, pattern);
+
+            if (match.Success)
+            {
+                // Extract the version part from the matched file name
+                string version = match.Groups["version"].Value;
+
+                versions.Add(version);
+            }
+        }
+
+        // Reverse the HashSet by converting to list, reversing, and converting back to HashSet
+        versions = new HashSet<string>(versions.Reverse());
+
+        return versions;
     }
 }

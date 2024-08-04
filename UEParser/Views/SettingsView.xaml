@@ -2,11 +2,11 @@
     x:Class="UEParser.Views.SettingsView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:convert="clr-namespace:UEParser.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:i="https://github.com/projektanker/icons.avalonia"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:UEParser.ViewModels"
+    xmlns:convert="clr-namespace:UEParser.Converters"
     Title="UEParser - Settings"
     Width="700"
     Height="600"
@@ -16,6 +16,9 @@
     Icon="/Resources/UEParser.ico"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
+  <Window.Resources>
+    <convert:EmptyToVisibilityConverter x:Key="EmptyToVisibilityConverter" />
+  </Window.Resources>
   <Window.Styles>
 
     <Style Selector="TabControl WrapPanel">
@@ -51,78 +54,64 @@
             </TextBlock>
           </StackPanel>
         </TabItem.Header>
-        <StackPanel
-            HorizontalAlignment="Center"
-            Orientation="Horizontal"
-            Spacing="15">
-
+        <StackPanel Spacing="7.5">
           <StackPanel
-              Margin="10"
               HorizontalAlignment="Center"
-              VerticalAlignment="Center"
-              Orientation="Vertical"
+              Orientation="Horizontal"
               Spacing="15">
 
-            <StackPanel>
-              <TextBlock
-                  Margin="0,0,0,7.5"
-                  HorizontalAlignment="Center"
-                  VerticalAlignment="Center"
-                  FontWeight="600"
-                  Text="Input Current Version" />
-              <TextBox
-                  MaxLength="8"
-                  Text="{Binding SelectedCurrentVersion}"
-                  Watermark="e.x. '8.1.0'" />
+            <StackPanel
+                Margin="10"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Orientation="Vertical"
+                Spacing="15">
+
+              <StackPanel>
+                <TextBlock
+                    Margin="0,0,0,7.5"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontWeight="600"
+                    Text="Input Current Version" />
+                <TextBox
+                    MaxLength="8"
+                    Text="{Binding SelectedCurrentVersion}"
+                    Watermark="e.x. '8.1.0'" />
+              </StackPanel>
+
             </StackPanel>
 
-            <Separator />
+            <Border
+                Width="1"
+                Height="125"
+                Margin="10,0"
+                Background="#323232" />
 
-            <StackPanel>
-              <TextBlock
-                  Margin="0,0,0,7.5"
-                  HorizontalAlignment="Center"
-                  VerticalAlignment="Center"
-                  FontWeight="600"
-                  Text="Select Current Branch" />
-              <ComboBox
-                  HorizontalAlignment="Center"
-                  VerticalAlignment="Center"
-                  ItemsSource="{Binding Branches}"
-                  MaxDropDownHeight="175"
-                  SelectedItem="{Binding SelectedCurrentBranch}" />
-            </StackPanel>
-          </StackPanel>
+            <StackPanel
+                Margin="10"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Orientation="Vertical"
+                Spacing="15">
 
-          <Border
-              Width="1"
-              Height="125"
-              Margin="10,0"
-              Background="#323232" />
+              <StackPanel>
+                <TextBlock
+                    Margin="0,0,0,7.5"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontWeight="600"
+                    Text="Select Current Branch" />
+                <ComboBox
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    ItemsSource="{Binding Branches}"
+                    MaxDropDownHeight="175"
+                    SelectedItem="{Binding SelectedCurrentBranch}" />
+              </StackPanel>
 
-          <StackPanel
-              Margin="10"
-              HorizontalAlignment="Center"
-              VerticalAlignment="Center"
-              Orientation="Vertical"
-              Spacing="15">
 
-            <StackPanel>
-              <TextBlock
-                  Margin="0,0,0,7.5"
-                  HorizontalAlignment="Center"
-                  VerticalAlignment="Center"
-                  FontWeight="600"
-                  Text="Input Comparsion Version" />
-              <TextBox
-                  MaxLength="8"
-                  Text="{Binding SelectedComparisonVersion}"
-                  Watermark="e.x. '7.6.0'" />
-            </StackPanel>
-
-            <Separator />
-
-            <StackPanel>
+              <!--<StackPanel>
               <TextBlock
                   Margin="0,0,0,7.5"
                   HorizontalAlignment="Center"
@@ -135,10 +124,40 @@
                   ItemsSource="{Binding Branches}"
                   MaxDropDownHeight="175"
                   SelectedItem="{Binding SelectedComparisonBranch}" />
+            </StackPanel>-->
             </StackPanel>
-          </StackPanel>
 
+          </StackPanel>
+          <Separator/>
+
+          <StackPanel>
+            <TextBlock
+                Margin="0,0,0,7.5"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontWeight="600"
+                Text="Select Comparsion Version" />
+            <ComboBox
+                HorizontalAlignment="Center"
+                MaxDropDownHeight="175"
+                ItemsSource="{Binding AvailableComparisonVersions}"
+                SelectedItem="{Binding SelectedComparisonVersionWithBranch}" />
+            <TextBlock
+               TextAlignment="Center"
+               Margin="0,10,0,0"
+               TextWrapping="Wrap"
+               Foreground="Orange"
+               IsVisible="{Binding AvailableComparisonVersions.Count, 
+                Converter={StaticResource EmptyToVisibilityConverter}}"
+               HorizontalAlignment="Center"
+               MaxWidth="500"
+               VerticalAlignment="Center" >
+              <Run FontWeight="700">No available comparison versions found.</Run><LineBreak />
+              Once you initialize a game build within the app, the version you initialize with will be available for comparison.
+            </TextBlock>
+          </StackPanel>
         </StackPanel>
+
       </TabItem>
       <TabItem>
         <TabItem.Header>

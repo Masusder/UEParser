@@ -3,30 +3,43 @@
 <img src="https://www.dbd-info.com/images/Logo/DBDInfoLogo.png" align="right" alt="DBDInfo Logo" width="192">
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-![Commit Activity](https://img.shields.io/github/commit-activity/m/Masusder/UEParser..svg)
+![Commit Activity](https://img.shields.io/github/commit-activity/m/Masusder/UEParser.svg)
 ![Last Commit](https://img.shields.io/github/last-commit/Masusder/UEParser.svg)
 
-UEParser is an Avalonia-based application developed as a part of [DBDInfo](https://dbd-info.com/) project. It's designed focusing specifically on Dead by Daylight game.<br/>
-This tool is designed to fully utilize the way Dead by Daylight actually works, with main focus on **automated and bulk retrieval of data from the game assets**, while maintaining organization by build version.
+UEParser is an Avalonia-based application developed as a part of [DBDInfo](https://dbd-info.com/) project. 
+It is specifically designed to work with Dead by Daylight game, mainly focusing on **automated and bulk retrieval of data from the game assets**, while maintaining organization by build version.
 
-This project wouldn't be possible without great team behind [CUE4Parse](https://github.com/FabianFG/CUE4Parse) library.
+This project wouldn't be possible without great team behind [CUE4Parse](https://github.com/FabianFG/CUE4Parse) library.<br/>
+
+------------------------------------------
+
+## Notice
+
+This project is not associated with or endorsed by Behaviour Interactive.
 
 ## Table of Contents
 - [Features](#features)
 - [Screenshots](#screenshots)
 - [Installation](#installation)
+- [License](#license)
 
 ## Features
 
 - Bulk extraction of assets including asset properties, meshes, textures, UI elements, and animations.
 - Parsing of game assets into pre-defined, type-safe schemas suitable for various use cases, such as serving game data through an API.
-- Automated upload of extracted data to cloud storage*.
+- Automated upload of extracted data to cloud storage, and other cloud-related functions..*.
 - Extraction of encrypted game APIs.<br/>
 
-**This is personal feature which allows to serve game's data through network. Just ignore.*
+**This feature allows serving game data over a network. It can be ignored if not needed.*
 
 ## Screenshots
-<img src="https://i.imgur.com/doRx4dQ.png" alt="UEParser Presentation">
+<div align="center"><i>Main window of the UEParser</i></div>
+<br/>
+<img src="/UEParser/Resources/UEParserMainWindow.png" style="border-radius:50%" alt="UEParser Presentation">
+
+<div align="center"><i>Example of what UEParser allows to do - 3D Model served through the cloud</i></div>
+<br/>
+<img src="/UEParser/Resources/UEParserUseCasePresentation.png" alt="3D Model Presentation">
 
 ## Installation
 
@@ -41,3 +54,6 @@ This project wouldn't be possible without great team behind [CUE4Parse](https://
 
    ```sh
    git clone https://github.com/Masusder/UEParser.git
+
+## License
+UEParser is licensed under [Apache License 2.0](https://github.com/Masusder/UEParser/blob/master/LICENSE.txt).

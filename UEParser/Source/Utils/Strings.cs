@@ -397,4 +397,20 @@ public partial class StringUtils
         string restOfChars = input[1..].ToLower();
         return firstChar + restOfChars;
     }
+
+    public static (string version, string branch) SplitVersionAndBranch(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            throw new ArgumentException("Input cannot be null or empty", nameof(input));
+        }
+
+        var parts = input.Split('_');
+        if (parts.Length != 2)
+        {
+            throw new ArgumentException("Input must contain exactly one underscore", nameof(input));
+        }
+
+        return (parts[0], parts[1]);
+    }
 }

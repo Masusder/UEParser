@@ -16,12 +16,14 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Avalonia.Data;
 using System.Collections.ObjectModel;
-using System.Reactive;
+using UEParser.Parser;
 
 namespace UEParser.ViewModels;
 
 public partial class SettingsViewModel : INotifyPropertyChanged
 {
+    public ObservableCollection<string> AvailableComparisonVersions { get; set; }
+
     private string? _pathToGameDirectory;
     public string? PathToGameDirectory
     {
@@ -97,6 +99,13 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         }
     }
 
+    private string? _selectedComparisonVersionWithBranch;
+    public string? SelectedComparisonVersionWithBranch
+    {
+        get => _selectedComparisonVersionWithBranch;
+        set => SetProperty(ref _selectedComparisonVersionWithBranch, value);
+    }
+
     private string? _newTome;
     public string? NewTome
     {
@@ -168,6 +177,9 @@ public partial class SettingsViewModel : INotifyPropertyChanged
     {
         var config = ConfigurationService.Config;
 
+        SelectedComparisonVersionWithBranch = Helpers.ConstructVersionHeaderWithBranch(true);
+        var (version, branch) = Utils.StringUtils.SplitVersionAndBranch(SelectedComparisonVersionWithBranch);
+
         // Paths
         PathToGameDirectory = config.Core.PathToGameDirectory;
         PathToMappings = config.Core.MappingsPath;
@@ -175,11 +187,12 @@ public partial class SettingsViewModel : INotifyPropertyChanged
 
         // Branches
         SelectedCurrentBranch = config.Core.VersionData.Branch;
-        SelectedComparisonBranch = config.Core.VersionData.CompareBranch;
+        SelectedComparisonBranch = (Branch)Enum.Parse(typeof(Branch), branch);
 
         // Versions
         SelectedCurrentVersion = config.Core.VersionData.LatestVersionHeader;
-        SelectedComparisonVersion = config.Core.VersionData.CompareVersionHeader;
+
+        SelectedComparisonVersion = version;
         CustomVersion = config.Core.ApiConfig.CustomVersion;
 
         // Booleans
@@ -203,10 +216,12 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         OpenDirectoryDialogCommand = ReactiveCommand.CreateFromTask<string>(OpenDirectoryDialog);
         OpenFileDialogCommand = ReactiveCommand.CreateFromTask<string>(OpenFileDialog);
 
+        var availableComparisonVersions = FilesRegister.GrabAvailableComparisonVersions();
+        AvailableComparisonVersions = new ObservableCollection<string>(availableComparisonVersions);
+
         var canSave = this.WhenAnyValue(
             x => x.SelectedCurrentVersion,
-            x => x.SelectedComparisonVersion,
-            (currentVersion, comparisonVersion) => IsValidVersion(currentVersion) && IsValidVersion(comparisonVersion)
+            (currentVersion) => IsValidVersion(currentVersion)
         );
 
         SaveSettingsCommand = ReactiveCommand.CreateFromTask(SaveSettings, canSave);
@@ -221,6 +236,8 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         {
             var config = ConfigurationService.Config;
 
+            var (version, branch) = Utils.StringUtils.SplitVersionAndBranch(SelectedComparisonVersionWithBranch!);
+
             // Paths
             config.Core.PathToGameDirectory = PathToGameDirectory ?? "";
             config.Core.MappingsPath = PathToMappings ?? "";
@@ -228,11 +245,11 @@ public partial class SettingsViewModel : INotifyPropertyChanged
 
             // Branches
             config.Core.VersionData.Branch = SelectedCurrentBranch;
-            config.Core.VersionData.CompareBranch = SelectedComparisonBranch;
+            config.Core.VersionData.CompareBranch = (Branch)Enum.Parse(typeof(Branch), branch);
 
             // Versions
             config.Core.VersionData.LatestVersionHeader = SelectedCurrentVersion;
-            config.Core.VersionData.CompareVersionHeader = SelectedComparisonVersion;
+            config.Core.VersionData.CompareVersionHeader = version;
             config.Core.ApiConfig.CustomVersion = CustomVersion;
 
             // Sensitive
