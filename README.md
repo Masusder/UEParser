@@ -56,4 +56,4 @@ This project is not associated with or endorsed by Behaviour Interactive.
    git clone https://github.com/Masusder/UEParser.git
 
 ## License
-UEParser is licensed under [Apache License 2.0](https://github.com/Masusder/UEParser/blob/master/LICENSE.txt).
+UEParser is licensed under [Apache License 2.0](https://github.com/Masusder/UEParser/blob/master/LICENSE.txt), and licenses of third-party libraries used are listed [here](https://github.com/Masusder/UEParser/blob/master/NOTICE).
