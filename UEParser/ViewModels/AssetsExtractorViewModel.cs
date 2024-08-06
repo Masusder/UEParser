@@ -17,6 +17,7 @@ public class AssetsExtractorViewModel
     public ICommand ExtractTexturesCommand { get; }
     public ICommand ExtractUICommand { get; }
     public ICommand ExtractAnimationsCommand { get; }
+    public ICommand ExtractAudioCommand { get; }
 
     public AssetsExtractorViewModel()
     {
@@ -25,6 +26,7 @@ public class AssetsExtractorViewModel
         ExtractTexturesCommand = ReactiveCommand.Create(ExtractTextures);
         ExtractUICommand = ReactiveCommand.Create(ExtractUI);
         ExtractAnimationsCommand = ReactiveCommand.Create(ExtractAnimations);
+        ExtractAudioCommand = ReactiveCommand.Create(ExtractAudio);
     }
 
     private async Task ExtractMeshes()
@@ -71,11 +73,22 @@ public class AssetsExtractorViewModel
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
     }
 
+    private async Task ExtractAudio()
+    {
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+        LogsWindowViewModel.Instance.AddLog("Starting audio extraction..", Logger.LogTags.Info);
+
+        await AssetsManager.ParseAudio();
+
+        LogsWindowViewModel.Instance.AddLog("Finished extracting audio.", Logger.LogTags.Success);
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+    }
+
     private const string packageDataDirectory = "DeadByDaylight/Content/Data";
     private const string packageCharactersDirectory = "DeadByDaylight/Content/Characters";
     private const string packageMeshesDirectory = "DeadByDaylight/Content/Meshes";
     private const string packageEffectsDirectory = "DeadByDaylight/Content/Effects";
-    private const string packagePluginsDirectory = "DeadByDaylight/Plugins/Runtime/Bhvr";
+    private const string packagePluginsDirectory = "DeadByDaylight/Plugins";
     private const string packageLocalizationDirectory = "DeadByDaylight/Content/Localization";
     private async Task CheckMissingAssets()
     {

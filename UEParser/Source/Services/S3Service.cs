@@ -8,6 +8,8 @@ using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using UEParser.ViewModels;
 using System.Linq;
+using Amazon.Runtime.Internal.Util;
+using UEParser.Utils;
 
 namespace UEParser.Services;
 
@@ -127,10 +129,11 @@ public class S3Service
         string formattedBytes = Helpers.FormatBytes(e.TransferredBytes);
         string formattedTotalBytes = Helpers.FormatBytes(e.TotalBytes);
 
-        var logMessage = $"Uploading from directory: {uploadDirectory}\n" +
-                 $"Total number of files to upload: {e.TotalNumberOfFiles} ({formattedTotalBytes} total)\n" +
-                 $"Number of files uploaded: {e.NumberOfFilesUploaded} ({percentage:F2}%)\n" +
-                 $"Bytes uploaded so far: {formattedBytes}";
+        string strippedUploadDirectory = Utils.StringUtils.StripDynamicDirectory(uploadDirectory, GlobalVariables.rootDir);
+        var logMessage = $"Uploading from directory: {strippedUploadDirectory}\n" +
+                 $"     • Total number of files to upload: {e.TotalNumberOfFiles} ({formattedTotalBytes} total)\n" +
+                 $"     • Number of files uploaded: {e.NumberOfFilesUploaded} ({percentage:F2}%)\n" +
+                 $"     • Bytes uploaded so far: {formattedBytes}";
         LogsWindowViewModel.Instance.UpdateLog(logMessage, Logger.LogTags.Info);
     }
 

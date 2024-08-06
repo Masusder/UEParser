@@ -9,6 +9,7 @@ public class GlobalVariables
     public static readonly string rootDir = AppDomain.CurrentDomain.BaseDirectory;
     public static readonly string modelsConverterScriptPath = Path.Combine(rootDir, ".data", "UEModelsConverter.py");
     public static readonly string pathToExtractedAssets = Path.Combine(rootDir, "Dependencies", "ExtractedAssets");
+    public static readonly string pathToExtractedAudio = Path.Combine(rootDir, "Dependencies", "ExtractedAudio");
     public static readonly string pathToDynamicAssets = Path.Combine(rootDir, "Output", "DynamicAssets");
     public static readonly string pathToParsedData = Path.Combine(rootDir, "Output", "ParsedData");
     public static readonly string pathToKrakenApi = Path.Combine(rootDir, "Output", "API");

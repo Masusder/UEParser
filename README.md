@@ -15,7 +15,7 @@ This project wouldn't be possible without great team behind [CUE4Parse](https://
 
 ## Notice
 
-This project is not associated with or endorsed by Behaviour Interactive.
+This project is not associated with or endorsed by Behaviour Interactive. All used assets belong to their respective owners.
 
 ## Table of Contents
 - [Features](#features)

@@ -20,6 +20,8 @@ using UEParser.Services;
 using UEParser.Utils;
 using UEParser.ViewModels;
 using System.Threading.Tasks;
+using System.Reflection.Metadata;
+using Avalonia.Controls;
 
 namespace UEParser.Parser;
 
@@ -117,9 +119,10 @@ public class AssetsManager
     private const string packageCharactersDirectory = "DeadByDaylight/Content/Characters";
     private const string packageMeshesDirectory = "DeadByDaylight/Content/Meshes";
     private const string packageEffectsDirectory = "DeadByDaylight/Content/Effects";
-    private const string packagePluginsDirectory = "DeadByDaylight/Plugins/Runtime/Bhvr";
+    private const string packagePluginsDirectory = "DeadByDaylight/Plugins";
     private const string packageConfigDirectory = "DeadByDaylight/Config";
     private const string packageLocalizationDirectory = "DeadByDaylight/Content/Localization";
+    private const string packageWwiseDirectory = "DeadByDaylight/Content/WwiseAudio";
     public static async Task ParseGameAssets()
     {
         await Task.Run(() =>
@@ -534,6 +537,61 @@ public class AssetsManager
                     LogsWindowViewModel.Instance.AddLog($"Failed parsing UI: {ex}", Logger.LogTags.Error);
                     LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
                 }
+            }
+        });
+    }
+
+    public static async Task ParseAudio()
+    {
+        await Task.Run(() =>
+        {
+            var files = Provider.Files.Values.ToList();
+            int extractedAssetsCount = 0;
+
+            foreach (var file in files)
+            {
+                try
+                {
+                    string pathWithExtension = file.Path;
+                    bool isInWwiseDirectory = pathWithExtension.Contains(packageWwiseDirectory);
+                    if (!isInWwiseDirectory) continue;
+
+                    string extension = file.Extension;
+
+                    string pathWithoutExtension = file.PathWithoutExtension;
+                    string exportPath = Path.Combine(GlobalVariables.pathToExtractedAudio, pathWithoutExtension);
+
+                    switch (extension)
+                    {
+                        case "xml":
+                        case "wem":
+                        case "bnk":
+                            {
+                                if (Provider.TrySaveAsset(pathWithExtension, out var data))
+                                {
+                                    using var stream = new MemoryStream(data) { Position = 0 };
+                                    using var reader = new StreamReader(stream);
+                                    var memoryData = reader.ReadToEnd();
+                                    extractedAssetsCount++;
+                                    FileWriter.SaveMemoryStreamFile(exportPath, memoryData, extension);
+                                }
+
+                                break;
+                            }
+                        default:
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogsWindowViewModel.Instance.AddLog($"Failed parsing audio: {ex}", Logger.LogTags.Error);
+                    LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+                }
+            }
+
+            if (extractedAssetsCount > 0)
+            {
+                LogsWindowViewModel.Instance.AddLog($"Extracted total of {extractedAssetsCount} raw audio assets.", Logger.LogTags.Info);
             }
         });
     }

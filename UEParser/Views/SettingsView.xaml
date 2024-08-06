@@ -474,7 +474,7 @@
                   VerticalAlignment="Center"
                   FontWeight="600"
                   Text="S3 Access Key" />
-              <TextBox MinWidth="200" Text="{Binding S3AccessKey}" />
+              <TextBox MinWidth="200" MaxWidth="300" Text="{Binding S3AccessKey}" />
             </StackPanel>
 
             <Border
@@ -490,7 +490,7 @@
                   VerticalAlignment="Center"
                   FontWeight="600"
                   Text="S3 Secret Key" />
-              <TextBox MinWidth="200" Text="{Binding S3SecretKey}" />
+              <TextBox MinWidth="200" MaxWidth="300" Text="{Binding S3SecretKey}" />
             </StackPanel>
           </StackPanel>
 
@@ -507,7 +507,7 @@
                   VerticalAlignment="Center"
                   FontWeight="600"
                   Text="S3 Bucket Name" />
-              <TextBox MinWidth="200" Text="{Binding S3BucketName}" />
+              <TextBox MinWidth="200" MaxWidth="300" Text="{Binding S3BucketName}" />
             </StackPanel>
 
             <Border
@@ -523,7 +523,7 @@
                   VerticalAlignment="Center"
                   FontWeight="600"
                   Text="AWS Region" />
-              <TextBox MinWidth="200" Text="{Binding AWSRegion}" />
+              <TextBox MinWidth="200" MaxWidth="300" Text="{Binding AWSRegion}" />
             </StackPanel>
           </StackPanel>
 
