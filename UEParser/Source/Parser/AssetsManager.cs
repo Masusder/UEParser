@@ -22,6 +22,8 @@ using UEParser.ViewModels;
 using System.Threading.Tasks;
 using System.Reflection.Metadata;
 using Avalonia.Controls;
+using CUE4Parse.UE4.Wwise;
+using UEParser.Parser.Wwise;
 
 namespace UEParser.Parser;
 
@@ -75,6 +77,10 @@ public class AssetsManager
 
                 var oodleDirectory = Path.Combine(GlobalVariables.rootDir, ".data");
                 var oodlePath = Path.Combine(oodleDirectory, OodleHelper.OODLE_DLL_NAME);
+
+                var mappingsPath = config.Core.MappingsPath;
+
+                if (!File.Exists(mappingsPath)) throw new Exception("Not found build mappings. You need to provide path to them in settings.");
 
                 Directory.CreateDirectory(oodleDirectory);
 
@@ -156,6 +162,7 @@ public class AssetsManager
                         bool isInPluginsDirectory = pathWithExtension.Contains(packagePluginsDirectory);
                         bool isInConfigDirectory = pathWithExtension.Contains(packageConfigDirectory);
                         bool isInLocalizationDirectory = pathWithExtension.Contains(packageLocalizationDirectory);
+                        bool isInWwiseDirectory = pathWithExtension.Contains(packageWwiseDirectory);
 
                         bool fileDataChanged = UpdateFileInfoIfNeeded(pathWithoutExtension, extension, size);
 
@@ -168,7 +175,8 @@ public class AssetsManager
                             !isInEffectsDirectory &&
                             !isInPluginsDirectory &&
                             !isInConfigDirectory &&
-                            !isInLocalizationDirectory)
+                            !isInLocalizationDirectory &&
+                            !isInWwiseDirectory)
                         {
                             continue;
                         }
@@ -213,14 +221,26 @@ public class AssetsManager
                             case "uplugin":
                             case "uproject":
                             case "ini":
+                            case "json":
+                            case "xml":
                                 {
                                     if (Provider.TrySaveAsset(pathWithExtension, out byte[] data))
                                     {
                                         using var stream = new MemoryStream(data) { Position = 0 };
                                         using var reader = new StreamReader(stream);
-                                        var iniData = reader.ReadToEnd();
-                                        FileWriter.SaveMemoryStreamFile(exportPath, iniData, extension);
+                                        var memoryData = reader.ReadToEnd();
+                                        FileWriter.SaveMemoryStreamFile(exportPath, memoryData, extension);
                                     }
+                                    break;
+                                }
+                            case "wem":
+                            case "bnk":
+                                {
+                                    if (Provider.TrySaveAsset(pathWithExtension, out var data))
+                                    {
+                                        FileWriter.SaveBinaryStreamFile(exportPath, data, extension);
+                                    }
+
                                     break;
                                 }
                             default:
@@ -543,58 +563,99 @@ public class AssetsManager
 
     public static async Task ParseAudio()
     {
-        await Task.Run(() =>
+        LogsWindowViewModel.Instance.AddLog("Audio extraction is highly intensive process, which may take even up to an hour, depending whether audio registry is available (audio registry is created whenever you extract audio)..", Logger.LogTags.Info);
+        await Task.Run(async () =>
         {
-            var files = Provider.Files.Values.ToList();
-            int extractedAssetsCount = 0;
+            LogsWindowViewModel.Instance.AddLog("Moving compressed audio into temporary folder.", Logger.LogTags.Info);
 
-            foreach (var file in files)
-            {
-                try
-                {
-                    string pathWithExtension = file.Path;
-                    bool isInWwiseDirectory = pathWithExtension.Contains(packageWwiseDirectory);
-                    if (!isInWwiseDirectory) continue;
+            WwiseFileHandler.MoveCompressedAudio();
 
-                    string extension = file.Extension;
+            LogsWindowViewModel.Instance.AddLog("Unpacking audio banks.", Logger.LogTags.Info);
 
-                    string pathWithoutExtension = file.PathWithoutExtension;
-                    string exportPath = Path.Combine(GlobalVariables.pathToExtractedAudio, pathWithoutExtension);
+            await WwiseFileHandler.UnpackAudioBanks();
 
-                    switch (extension)
-                    {
-                        case "xml":
-                        case "wem":
-                        case "bnk":
-                            {
-                                if (Provider.TrySaveAsset(pathWithExtension, out var data))
-                                {
-                                    using var stream = new MemoryStream(data) { Position = 0 };
-                                    using var reader = new StreamReader(stream);
-                                    var memoryData = reader.ReadToEnd();
-                                    extractedAssetsCount++;
-                                    FileWriter.SaveMemoryStreamFile(exportPath, memoryData, extension);
-                                }
+            LogsWindowViewModel.Instance.AddLog("Structuring compressed audio.", Logger.LogTags.Info);
 
-                                break;
-                            }
-                        default:
-                            break;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    LogsWindowViewModel.Instance.AddLog($"Failed parsing audio: {ex}", Logger.LogTags.Error);
-                    LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
-                }
-            }
+            WwiseFileHandler.StructureAudio();
 
-            if (extractedAssetsCount > 0)
-            {
-                LogsWindowViewModel.Instance.AddLog($"Extracted total of {extractedAssetsCount} raw audio assets.", Logger.LogTags.Info);
-            }
+            LogsWindowViewModel.Instance.AddLog("Populating audio registry.", Logger.LogTags.Info);
+
+            WwiseRegister.PopulateAudioRegister();
+            WwiseRegister.SaveAudioInfoDictionary();
+
+            LogsWindowViewModel.Instance.AddLog("Converting compressed audio into OGG format.", Logger.LogTags.Info);
+
+            WwiseFileHandler.ConvertToOggAndMove();
+
+            LogsWindowViewModel.Instance.AddLog("Deleting temporary audio folder.", Logger.LogTags.Info);
+
+            WwiseFileHandler.CleanExtractedAudioDir();
         });
     }
+
+    //public static async Task ParseAudio()
+    //{
+    //    await Task.Run(() =>
+    //    {
+    //        var files = Provider.Files.Values.ToList();
+    //        int extractedAssetsCount = 0;
+
+    //        foreach (var file in files)
+    //        {
+    //            try
+    //            {
+    //                string pathWithExtension = file.Path;
+    //                bool isInWwiseDirectory = pathWithExtension.Contains(packageWwiseDirectory);
+    //                if (!isInWwiseDirectory) continue;
+
+    //                string extension = file.Extension;
+
+    //                string pathWithoutExtension = file.PathWithoutExtension;
+    //                string exportPath = Path.Combine(GlobalVariables.pathToExtractedAudio, pathWithoutExtension);
+
+    //                switch (extension)
+    //                {
+    //                    case "xml":
+    //                        {
+    //                            if (Provider.TrySaveAsset(pathWithExtension, out var data))
+    //                            {
+    //                                using var stream = new MemoryStream(data) { Position = 0 };
+    //                                using var reader = new StreamReader(stream);
+    //                                var memoryData = reader.ReadToEnd();
+    //                                extractedAssetsCount++;
+    //                                FileWriter.SaveMemoryStreamFile(exportPath, memoryData, extension);
+    //                            }
+
+    //                            break;
+    //                        }
+    //                    case "wem":
+    //                    case "bnk":
+    //                        {
+    //                            if (Provider.TrySaveAsset(pathWithExtension, out var data))
+    //                            {
+    //                                extractedAssetsCount++;
+    //                                FileWriter.SaveBinaryStreamFile(exportPath, data, extension);
+    //                            }
+
+    //                            break;
+    //                        }
+    //                    default:
+    //                        break;
+    //                }
+    //            }
+    //            catch (Exception ex)
+    //            {
+    //                LogsWindowViewModel.Instance.AddLog($"Failed parsing audio: {ex}", Logger.LogTags.Error);
+    //                LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+    //            }
+    //        }
+
+    //        if (extractedAssetsCount > 0)
+    //        {
+    //            LogsWindowViewModel.Instance.AddLog($"Extracted total of {extractedAssetsCount} raw audio assets.", Logger.LogTags.Info);
+    //        }
+    //    });
+    //}
 
     public static async Task ParseMissingAssets(List<string> missingAssetsList)
     {
@@ -654,6 +715,8 @@ public class AssetsManager
                         case "uplugin":
                         case "uproject":
                         case "ini":
+                        case "json":
+                        case "xml":
                             {
                                 if (Provider.TrySaveAsset(pathWithExtension, out byte[] data))
                                 {
@@ -662,6 +725,16 @@ public class AssetsManager
                                     var memoryData = reader.ReadToEnd();
                                     FileWriter.SaveMemoryStreamFile(exportPath, memoryData, extension);
                                 }
+                                break;
+                            }
+                        case "wem":
+                        case "bnk":
+                            {
+                                if (Provider.TrySaveAsset(pathWithExtension, out var data))
+                                {
+                                    FileWriter.SaveBinaryStreamFile(exportPath, data, extension);
+                                }
+
                                 break;
                             }
                         default:
@@ -715,8 +788,9 @@ public class AssetsManager
         {
             string relativePath = StringUtils.GetRelativePathWithoutExtension(file, outputRootDirectory);
 
-            // Check if the relativePath includes "Data", as I only want to cleanup datatables
-            if (!relativePath.Contains("Data", StringComparison.OrdinalIgnoreCase))
+            // Check if the relativePath includes "Data" or is in Wwise dir, as I only want to cleanup datatables and audio
+            if (!relativePath.Contains("Data", StringComparison.OrdinalIgnoreCase) ||
+                !relativePath.Contains(packageWwiseDirectory, StringComparison.OrdinalIgnoreCase))
             {
                 continue;
             }

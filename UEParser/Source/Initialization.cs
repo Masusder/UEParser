@@ -94,11 +94,14 @@ public class Initialize
         Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Mappings"));
         Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Dependencies", "FilesRegister"));
         Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAssets"));
+        Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAudio"));
         Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output"));
+        Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output", "Logs"));
         Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output", "API"));
         Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output", "ExtractedAssets"));
         Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData"));
         Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output", "ModelsData"));
+        Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output", "DynamicAssets"));
     }
 
     private static bool ReadVersion(string savedVersion)

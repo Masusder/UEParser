@@ -46,10 +46,13 @@
               </Border>
             </Grid>
             <StackPanel Orientation="Vertical" MinWidth="225" VerticalAlignment="Center" HorizontalAlignment="Center">
-              <TextBlock FontWeight="Bold">Extract missing data</TextBlock>
-              <TextBlock FontSize="12" Margin="0,5,0,0">Check for and extract missing properties</TextBlock>
+              <TextBlock FontWeight="Bold">Extract missing raw data</TextBlock>
+              <TextBlock FontSize="12" Margin="0,5,0,0">Check for and extract missing raw data</TextBlock>
               <TextBlock FontSize="12">
-                data (<Run Foreground="GreenYellow" FontWeight="700">JSON</Run>).
+                (<Run Foreground="GreenYellow" FontWeight="700">JSON</Run>, 
+                <Run Foreground="LawnGreen" FontWeight="700">XML</Run>, 
+                <Run Foreground="Aqua" FontWeight="700">WEM</Run> and
+                <Run Foreground="Gold" FontWeight="700">BNK</Run> formats).
               </TextBlock>
             </StackPanel>
             <Button PointerExited="OnPointerExit" Background="DodgerBlue" Name="MissingAssetsCheck" Command="{Binding CheckMissingAssetsCommand}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">

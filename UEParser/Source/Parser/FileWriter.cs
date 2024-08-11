@@ -185,4 +185,17 @@ public class FileWriter
 
         File.WriteAllText(exportPathWithExtension, exportData);
     }
+
+    public static void SaveBinaryStreamFile(string exportPath, byte[] exportData, string extension)
+    {
+        string exportPathWithExtension = Path.ChangeExtension(exportPath, $".{extension}");
+
+        var directoryPath = Path.GetDirectoryName(exportPathWithExtension);
+        if (directoryPath != null)
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+
+        File.WriteAllBytes(exportPathWithExtension, exportData);
+    }
 }

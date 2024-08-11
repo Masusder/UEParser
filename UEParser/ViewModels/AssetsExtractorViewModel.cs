@@ -31,57 +31,97 @@ public class AssetsExtractorViewModel
 
     private async Task ExtractMeshes()
     {
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
-        LogsWindowViewModel.Instance.AddLog("Starting meshes extraction..", Logger.LogTags.Info);
+        try
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+            LogsWindowViewModel.Instance.AddLog("Starting meshes extraction..", Logger.LogTags.Info);
 
-        await AssetsManager.ParseMeshes();
+            await AssetsManager.ParseMeshes();
 
-        LogsWindowViewModel.Instance.AddLog("Finished extracting meshes.", Logger.LogTags.Success);
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            LogsWindowViewModel.Instance.AddLog("Finished extracting meshes.", Logger.LogTags.Success);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        }
+        catch (Exception ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
     }
 
     private async Task ExtractTextures()
     {
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
-        LogsWindowViewModel.Instance.AddLog("Starting textures extraction..", Logger.LogTags.Info);
+        try
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+            LogsWindowViewModel.Instance.AddLog("Starting textures extraction..", Logger.LogTags.Info);
 
-        await AssetsManager.ParseTextures();
+            await AssetsManager.ParseTextures();
 
-        LogsWindowViewModel.Instance.AddLog("Finished extracting textures.", Logger.LogTags.Success);
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            LogsWindowViewModel.Instance.AddLog("Finished extracting textures.", Logger.LogTags.Success);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        }
+        catch (Exception ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
     }
 
     private async Task ExtractUI()
     {
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
-        LogsWindowViewModel.Instance.AddLog("Starting UI extraction..", Logger.LogTags.Info);
+        try
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+            LogsWindowViewModel.Instance.AddLog("Starting UI extraction..", Logger.LogTags.Info);
 
-        await AssetsManager.ParseUI();
+            await AssetsManager.ParseUI();
 
-        LogsWindowViewModel.Instance.AddLog("Finished extracting UI.", Logger.LogTags.Success);
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            LogsWindowViewModel.Instance.AddLog("Finished extracting UI.", Logger.LogTags.Success);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        }
+        catch (Exception ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
     }
 
     private async Task ExtractAnimations()
     {
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
-        LogsWindowViewModel.Instance.AddLog("Starting animations extraction..", Logger.LogTags.Info);
+        try
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+            LogsWindowViewModel.Instance.AddLog("Starting animations extraction..", Logger.LogTags.Info);
 
-        await AssetsManager.ParseAnimations();
+            await AssetsManager.ParseAnimations();
 
-        LogsWindowViewModel.Instance.AddLog("Finished extracting animations.", Logger.LogTags.Success);
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            LogsWindowViewModel.Instance.AddLog("Finished extracting animations.", Logger.LogTags.Success);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        }
+        catch (Exception ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
     }
 
     private async Task ExtractAudio()
     {
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
-        LogsWindowViewModel.Instance.AddLog("Starting audio extraction..", Logger.LogTags.Info);
+        try
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+            LogsWindowViewModel.Instance.AddLog("Starting audio extraction..", Logger.LogTags.Info);
 
-        await AssetsManager.ParseAudio();
+            await AssetsManager.ParseAudio();
 
-        LogsWindowViewModel.Instance.AddLog("Finished extracting audio.", Logger.LogTags.Success);
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            LogsWindowViewModel.Instance.AddLog("Finished extracting audio.", Logger.LogTags.Success);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        }
+        catch (Exception ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
     }
 
     private const string packageDataDirectory = "DeadByDaylight/Content/Data";
@@ -90,6 +130,7 @@ public class AssetsExtractorViewModel
     private const string packageEffectsDirectory = "DeadByDaylight/Content/Effects";
     private const string packagePluginsDirectory = "DeadByDaylight/Plugins";
     private const string packageLocalizationDirectory = "DeadByDaylight/Content/Localization";
+    private const string packageWwiseDirectory = "DeadByDaylight/Content/WwiseAudio";
     private async Task CheckMissingAssets()
     {
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
@@ -105,7 +146,8 @@ public class AssetsExtractorViewModel
             packageMeshesDirectory,
             packageEffectsDirectory,
             packagePluginsDirectory,
-            packageLocalizationDirectory
+            packageLocalizationDirectory,
+            packageWwiseDirectory
         };
 
         List<string> missingAssetsList = [];
@@ -116,9 +158,15 @@ public class AssetsExtractorViewModel
                 // Check if file.Key starts with any of the specified directories
                 if (directoriesToMatch.Any(dir => file.Key.StartsWith(dir, StringComparison.OrdinalIgnoreCase)))
                 {
-                    string localFilePath = Path.Combine(pathToExtractedAssets, file.Key + ".json");
+                    string extension = file.Value.Extension;
 
-                    if (!File.Exists(localFilePath) && file.Value.Extension == "uasset")
+                    string[] acceptedExtensions = ["uasset", "wem", "xml", "bnk", "json"];
+                    if (!acceptedExtensions.Contains(extension)) continue;
+
+                    string insertExtension = extension == "uasset" ? ".json" : '.' + extension;
+                    string localFilePath = Path.Combine(pathToExtractedAssets, file.Key + insertExtension);
+
+                    if (!File.Exists(localFilePath))
                     {
                         missingAssetsList.Add(file.Key);
                     }

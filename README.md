@@ -20,15 +20,18 @@ This project is not associated with or endorsed by Behaviour Interactive. All us
 ## Table of Contents
 - [Features](#features)
 - [Screenshots](#screenshots)
+- [Usage](#usage)
 - [Installation](#installation)
 - [License](#license)
 
 ## Features
 
-- Bulk extraction of assets including asset properties, meshes, textures, UI elements, and animations.
+- Bulk extraction of assets including asset properties, meshes, textures, UI elements, animations, and audio.
 - Parsing of game assets into pre-defined, type-safe schemas suitable for various use cases, such as serving game data through an API.
 - Automated upload of extracted data to cloud storage, and other cloud-related functions..*.
 - Extraction of encrypted game APIs.<br/>
+
+*..and more in the future*
 
 **This feature allows serving game data over a network. It can be ignored if not needed.*
 
@@ -40,6 +43,19 @@ This project is not associated with or endorsed by Behaviour Interactive. All us
 <div align="center"><i>Example of what UEParser allows to do - 3D Model served through the cloud</i></div>
 <br/>
 <img src="/UEParser/Resources/UEParserUseCasePresentation.png" alt="3D Model Presentation">
+
+## Usage
+To use the app, you can either compile it yourself or download the latest release.
+(Note: when compiling yourself you might need to move some dependencies (such as .dlls) into root directory of the app manually)
+
+Before using UEParser, you must configure some essential settings, with the most important ones being:
+- **Current Version** - Version you see during start-up of the game, it always should be that exact version!
+- **Comparison Version** - If you've previously initialized the app with a specific game build, this option will be available. It's crucial to configure this setting if it's accessible, as it allows the app to compare changes between builds. Without it, the app will process all assets, which might be unnecessary.
+- **Branch** - Current branch of the game (**Live**, **PTB**, QA, Dev, UAT or Stage).
+- **Path to Game Directory** - The root directory where Dead by Daylight is installed.
+- **Mappings** - Mappings should be downloaded dynamically (during build initialization), but in case that fails you need to provide them manually. They are essential for parsing to work.
+
+Once these settings are configured, you can initialize the app to match the current game build. This step is vital for the app to function correctly. If this is your first time initializing, please note that the process may take a significant amount of time.
 
 ## Installation
 
