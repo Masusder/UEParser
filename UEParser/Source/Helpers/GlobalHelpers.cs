@@ -231,7 +231,7 @@ public partial class Helpers
                 object? nestedValue = GetNestedValue(currentObject, splitKeys);
                 if (nestedValue == null) continue;
 
-                if (entry.Value.Count > 0 && nestedValue.GetType() == typeof(JArray))
+                if (nestedValue.GetType() == typeof(JArray))
                 {
                     JArray localizedStrings = [];
 
@@ -451,6 +451,11 @@ public partial class Helpers
                                 obj = nestedJObject[key];
                                 break;
                             }
+                        }
+                        else if (jProperty.Value is JArray nestedArray && jProperty.Name == key)
+                        {
+                            obj = nestedArray;
+                            break;
                         }
                         else if (jProperty.Value is JValue jValue && jProperty.Name == key)
                         {

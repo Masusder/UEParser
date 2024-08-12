@@ -118,10 +118,15 @@ public class Cosmetics
 
                             }
                         ],
-                        ["CollectionName"] = collectionName
                     };
 
-                   LocalizationData.TryAdd(cosmeticId, localizationModel);
+                    // Add "CollectionName" only if collectionName is not null or empty
+                    if (collectionName != null && collectionName.Count > 0)
+                    {
+                        localizationModel["CollectionName"] = collectionName;
+                    }
+
+                    LocalizationData.TryAdd(cosmeticId, localizationModel);
 
                     Outfit model = new()
                     {
@@ -264,15 +269,20 @@ public class Cosmetics
                     ],
                     ["Description"] =
                     [
-                        new() 
+                        new()
                         {
                             Key = descriptionKey,
                             SourceString = CosmeticUtils.ParseCosmeticDescription(item.Value, "SourceString"),
                         }
                     ],
-                    ["CollectionName"] = collectionName,
                     ["SearchTags"] = searchTags
                 };
+
+                // Add "CollectionName" only if collectionName is not null or empty
+                if (collectionName != null && collectionName.Count > 0)
+                {
+                    localizationModel["CollectionName"] = collectionName;
+                }
 
                 LocalizationData.TryAdd(cosmeticId, localizationModel);
 

@@ -19,6 +19,19 @@ public partial class WwiseFileHandler
     private static readonly string temporaryDirectory = Path.Combine(GlobalVariables.pathToExtractedAudio, "WwiseTemporary");
     private static readonly string wwiseStructured = Path.Combine(GlobalVariables.pathToExtractedAudio, "WwiseStructured");
 
+    public static bool DoesSoundBankExist()
+    {
+        string soundsBankNameJson = "SoundbanksInfo.json";
+        string[] filePathsJson = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive(soundsBankNameJson);
+
+        if (filePathsJson.Length > 0)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     public static void MoveCompressedAudio()
     {
         string pathToExtractedWwiseDirectory = Path.Combine(GlobalVariables.pathToExtractedAssets, "DeadByDaylight", "Content", "WwiseAudio", "Windows");

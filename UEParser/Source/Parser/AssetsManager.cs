@@ -269,16 +269,19 @@ public class AssetsManager
         {
             var files = Provider.Files.Values.ToList();
             var newAssets = FilesRegister.NewAssets;
+            var modifiedAssets = FilesRegister.ModifiedAssets;
             int extractedAssetsCount = 0;
 
-            LogsWindowViewModel.Instance.AddLog($"Detected total of {newAssets.Count} modified assets.", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Detected total of {newAssets.Count} new assets.", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Detected total of {modifiedAssets.Count} modified assets.", Logger.LogTags.Info);
 
             foreach (var file in files)
             {
                 try
                 {
                     string pathWithoutExtension = file.PathWithoutExtension;
-                    if (!newAssets.ContainsKey(pathWithoutExtension)) continue;
+                    //if (!newAssets.ContainsKey(pathWithoutExtension)) continue;
+                    if (!newAssets.ContainsKey(pathWithoutExtension) && !modifiedAssets.ContainsKey(pathWithoutExtension)) continue;
 
                     if (GlobalVariables.fatalCrashAssets.Contains(pathWithoutExtension)) continue;
 
@@ -301,8 +304,6 @@ public class AssetsManager
                             {
                                 var allExports = Provider.LoadAllObjects(pathWithExtension);
 
-                                extractedAssetsCount++;
-
                                 foreach (var asset in allExports)
                                 {
                                     switch (asset)
@@ -317,7 +318,7 @@ public class AssetsManager
                                                     Directory.CreateDirectory(directoryPath);
                                                 }
 
-                                                FileWriter.SaveMeshes(asset, pathWithoutExtension, outputPath);
+                                                FileWriter.SaveMeshes(asset, pathWithoutExtension, outputPath, ref extractedAssetsCount);
                                                 break;
                                             }
                                         default:
@@ -566,6 +567,13 @@ public class AssetsManager
         LogsWindowViewModel.Instance.AddLog("Audio extraction is highly intensive process, which may take even up to an hour, depending whether audio registry is available (audio registry is created whenever you extract audio)..", Logger.LogTags.Info);
         await Task.Run(async () =>
         {
+            bool soundBankExists = WwiseFileHandler.DoesSoundBankExist();
+
+            if (!soundBankExists)
+            {
+                throw new Exception("Not found sounds bank in extracted assets.");
+            }
+
             LogsWindowViewModel.Instance.AddLog("Moving compressed audio into temporary folder.", Logger.LogTags.Info);
 
             WwiseFileHandler.MoveCompressedAudio();
@@ -789,7 +797,7 @@ public class AssetsManager
             string relativePath = StringUtils.GetRelativePathWithoutExtension(file, outputRootDirectory);
 
             // Check if the relativePath includes "Data" or is in Wwise dir, as I only want to cleanup datatables and audio
-            if (!relativePath.Contains("Data", StringComparison.OrdinalIgnoreCase) ||
+            if (!relativePath.Contains("Data", StringComparison.OrdinalIgnoreCase) &&
                 !relativePath.Contains(packageWwiseDirectory, StringComparison.OrdinalIgnoreCase))
             {
                 continue;

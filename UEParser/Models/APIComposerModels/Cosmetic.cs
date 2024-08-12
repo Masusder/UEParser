@@ -182,7 +182,7 @@ public class CustomzatiomItem
     /// <summary>
     /// Name of collection cosmetic is associated to.
     /// </summary>
-    public required object CollectionName { get; set; }
+    public required string CollectionName { get; set; }
 
     /// <summary>
     /// Inclusion version of the cosmetic.

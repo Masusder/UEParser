@@ -73,7 +73,7 @@ public class FileWriter
         }
     }
 
-    public static void SaveMeshes(UObject asset, string packagePath, string outputPath)
+    public static void SaveMeshes(UObject asset, string packagePath, string outputPath, ref int extractedAssetsCount)
     {
         var exportOptions = new ExporterOptions
         {
@@ -100,6 +100,7 @@ public class FileWriter
 
         if (success)
         {
+            extractedAssetsCount++;
             File.Move(savedFilePath, outputPath);
             LogsWindowViewModel.Instance.AddLog($"Exported mesh: {packagePath}", Logger.LogTags.Info);
         }
