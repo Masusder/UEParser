@@ -72,6 +72,7 @@ public class Bundles
                 float discount = item["metaData"]["discount"];
 
                 bool isConsumable = item["consumable"];
+                bool purchasable = item["purchasable"];
 
                 //JObject specialPackTitle = item["metaData"]["specialPackTitle"];
 
@@ -81,11 +82,18 @@ public class Bundles
                 List<ConsumptionRewards> consumptionRewards = BundleUtils.ParseConsumptionRewards((JArray)item["consumptionReward"]);
                 JArray segmentationTags = item["metaData"]["segmentationTags"];
 
-                string imagePath = item["metaData"]["imagePath"];
+                string? imagePath = item["metaData"]["imagePath"]; // They sometimes don't include image, but why???
+
+                bool bundleContainsCharacterReward = consumptionRewards.Any(r => r.GameSpecificData.Type == "Character");
+
+                if (!bundleContainsCharacterReward)
+                {
+                    isLicensedBundle = false;
+                }
 
                 bool isChapterBundle = false;
                 string[] dlcsToIgnore = ["80suitcase", "bloodstainedSack", "headCase"];
-                if ((dlcId != null && !dlcsToIgnore.Contains(dlcId)) || isLicensedBundle)
+                if ((dlcId != null && !dlcsToIgnore.Contains(dlcId)) && bundleContainsCharacterReward || isLicensedBundle)
                 {
                     isChapterBundle = true;
                 }
@@ -124,6 +132,7 @@ public class Bundles
                     StartDate = startDate,
                     EndDate = endDate,
                     SortOrder = sortOrder,
+                    Purchasable = purchasable,
                     IsChapterBundle = isChapterBundle,
                     IsLicensedBundle = isLicensedBundle,
                     MinNumberOfUnownedForPurchase = minNumberOfUnownedForPurchase,

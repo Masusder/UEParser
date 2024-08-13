@@ -16,6 +16,11 @@
   </UserControl.Styles>
   <ScrollViewer>
     <StackPanel Margin="0,15,0,15" VerticalAlignment="Center" HorizontalAlignment="Center">
+      <i:Icon Value="fa-solid fa-file-export" Foreground="YellowGreen" Width="79" Height="79" FontSize="64" >
+        <i:Icon.Effect>
+          <DropShadowDirectionEffect Color="Black" Direction="0" ShadowDepth="0" Opacity="0.5"/>
+        </i:Icon.Effect>
+      </i:Icon>
       <TextBlock HorizontalAlignment="Center" FontWeight="700" FontSize="32" Text="Assets Extractors" VerticalAlignment="Center" />
       <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
         <Grid.RowDefinitions>

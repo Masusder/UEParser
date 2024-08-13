@@ -131,9 +131,9 @@ public class S3Service
 
         string strippedUploadDirectory = Utils.StringUtils.StripDynamicDirectory(uploadDirectory, GlobalVariables.rootDir);
         var logMessage = $"Uploading from directory: {strippedUploadDirectory}\n" +
-                 $"     • Total number of files to upload: {e.TotalNumberOfFiles} ({formattedTotalBytes} total)\n" +
-                 $"     • Number of files uploaded: {e.NumberOfFilesUploaded} ({percentage:F2}%)\n" +
-                 $"     • Bytes uploaded so far: {formattedBytes}";
+                 $"• Total number of files to upload: {e.TotalNumberOfFiles} ({formattedTotalBytes} total)\n" +
+                 $"• Number of files uploaded: {e.NumberOfFilesUploaded} ({percentage:F2}%)\n" +
+                 $"• Bytes uploaded so far: {formattedBytes}";
         LogsWindowViewModel.Instance.UpdateLog(logMessage, Logger.LogTags.Info);
     }
 

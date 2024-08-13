@@ -37,6 +37,11 @@
                   HorizontalAlignment="Center"
                   Margin="10"
                   VerticalAlignment="Center">
+        <i:Icon Value="fa-solid fa-microchip" Foreground="DodgerBlue" Width="79" Height="79" FontSize="64" >
+          <i:Icon.Effect>
+            <DropShadowDirectionEffect Color="Black" Direction="0" ShadowDepth="0" Opacity="0.5"/>
+          </i:Icon.Effect>
+        </i:Icon>
         <TextBlock HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    TextAlignment="Center"

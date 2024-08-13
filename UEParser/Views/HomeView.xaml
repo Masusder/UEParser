@@ -9,8 +9,8 @@
   <StackPanel VerticalAlignment="Center">
     <Border HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            Width="225"
-            Height="225"
+            Width="196"
+            Height="196"
             BorderBrush="Transparent"
             BorderThickness="0">
       <Border.Effect>
@@ -22,7 +22,7 @@
       <Image Source="avares://UEParser/Resources/DBDInfoLogo.png"
              HorizontalAlignment="Center"
              VerticalAlignment="Center"
-             Width="256"/>
+             Width="196"/>
     </Border>
     <TextBlock Text="Welcome to UEParser"
                FontWeight="700"

@@ -4,13 +4,12 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO;
-
 using UEParser.Models;
 using UEParser.Utils;
 
 namespace UEParser.APIComposers;
 
-// This class should be reworked, but at least it works
+// This class is shit and should be reworked, but at least it works (kinda)
 public class ModelData
 {
     public static void CreateModelData(string modelDataPath, string cosmeticId, int characterIndex, string cosmeticType, dynamic accessoriesData, dynamic materialsMap, dynamic texturesMap)
@@ -495,6 +494,11 @@ public class ModelData
         dynamic skeletonBlueprintData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAssets" + pathToGameBlueprint));
         string? gameSkeletonPath = FindCharacterMeshPath(skeletonBlueprintData);
 
+        // These manual overrides should be resolved but I couldn't find any good solution
+        // BHVR often sets skeletons to wrong cosmetic ID and only reason it works in-game
+        // is because only one cosmetic piece needs to be set right in terms of linked cosmetics
+        // ...
+
         // Give Ripley skeleton manually as she doesnt have skeleton
         if (characterIndex == 38)
         {
@@ -536,6 +540,12 @@ public class ModelData
         if (characterIndex == 41)
         {
             gameSkeletonPath = "DeadByDaylight/Plugins/Runtime/Bhvr/DBDCharacters/S42/Content/ArtAssets/Models/S42_DSkeleton_REF.glb";
+        }
+
+        string[] rainOverride = ["S39_Head009", "S39_Torso009", "S39_Legs009"];
+        if (rainOverride.Contains(cosmeticId))
+        {
+            gameSkeletonPath = "DeadByDaylight/Content/Characters/Campers/S39/Models/S39_009_DSkeleton_Menu_REF.glb";
         }
 
         string skeletonPathWithoutAssets = StringUtils.ModifyPath(gameSkeletonPath, "glb", false, characterIndex);

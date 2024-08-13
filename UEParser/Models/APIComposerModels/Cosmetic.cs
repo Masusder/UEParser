@@ -47,6 +47,11 @@ public class Outfit
     public required string InclusionVersion { get; set; }
 
     /// <summary>
+    /// Identifier used to alter the menu music.
+    /// </summary>
+    public required string CustomizedAudioStateCollection { get; set; }
+
+    /// <summary>
     /// Type of the cosmetic.
     /// </summary>
     public required string Type { get; set; }
@@ -224,13 +229,24 @@ public class CustomzatiomItem
     /// '-1' means no character is associated.
     /// (both server and client sided)
     /// </summary>
-    public int Character { get; set; }
+    public required int Character { get; set; }
 
     /// <summary>
     /// Indicates whether cosmetic is available for purchase.
     /// (server-sided)
     /// </summary>
-    public bool Purchasable { get; set; }
+    public required bool Purchasable { get; set; }
+
+    /// <summary>
+    /// Indicates whether cosmetic is available in the store.
+    /// Might be unreliable, purchasable property should always be a priority.
+    /// </summary>
+    public required bool IsInStore { get; set; }
+
+    /// <summary>
+    /// Indicates whether user is entitled to given cosmetic by default.
+    /// </summary>
+    public required bool IsEntitledByDefault { get; set; }
 
     /// <summary>
     /// Rarity of the cosmetic.

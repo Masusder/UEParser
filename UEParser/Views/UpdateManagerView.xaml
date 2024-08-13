@@ -5,7 +5,7 @@
              x:DataType="vm:UpdateManagerViewModel">
   <ScrollViewer>
     <StackPanel Margin="0,25,0,25" VerticalAlignment="Center" HorizontalAlignment="Center">
-      <Image Source="avares://UEParser/Resources/AmazonAWS_Icon.png" Width="150" Height="150" >
+      <Image Source="avares://UEParser/Resources/AmazonAWS_Icon.png" Width="129" Height="128" >
         <Image.Effect>
           <DropShadowDirectionEffect Color="Black" Direction="0" ShadowDepth="0" Opacity="0.5"/>
         </Image.Effect>

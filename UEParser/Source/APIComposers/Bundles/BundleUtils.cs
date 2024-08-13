@@ -75,8 +75,10 @@ public class BundleUtils
         return consumptionRewardsList;
     }
 
-    public static string TransformImagePath_SpecialPacks(string input)
+    public static string? TransformImagePath_SpecialPacks(string input)
     {
+        if (input == null) return null;
+
         // Define the regex pattern to match both formats
         string pattern = @"/Game/UI/UMGAssets/Icons/Banners/BundleBanners/(SpecialPack|ChapterBundles)/([^./]+)\.\w+";
 

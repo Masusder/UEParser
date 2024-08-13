@@ -98,6 +98,8 @@ public class Cosmetics
 
                     DateTime? limitedTimeEndDate = CosmeticUtils.GrabLimitedTimeEndDate(catalogData, matchingIndex);
 
+                    string customizedAudioStateCollection = item.Value["CustomizedAudioStateCollection"];
+
                     Dictionary<string, List<LocalizationEntry>> localizationModel = new()
                     {
                         ["CosmeticName"] =
@@ -145,6 +147,7 @@ public class Cosmetics
                         Rarity = rarity,
                         OutfitItems = cosmeticPieces,
                         InclusionVersion = inclusionVersion,
+                        CustomizedAudioStateCollection = customizedAudioStateCollection,
                         IsDiscounted = false,
                         DiscountPercentage = discountPercentage,
                         Prices = prices
@@ -168,7 +171,6 @@ public class Cosmetics
         "Default_Badge",
         "Default_Banner"
     ];
-
     private static Dictionary<string, object> ParseCustomizationItems(Dictionary<string, object> parsedCosmeticsDB)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("CustomizationItemDB.json");
@@ -257,6 +259,9 @@ public class Cosmetics
 
                 string descriptionKey = CosmeticUtils.ParseCosmeticDescription(item.Value, "Key");
 
+                bool isInStore = item.Value["IsInStore"];
+                bool isEntitledByDefault = item.Value["IsEntitledByDefault"];
+
                 Dictionary<string, List<LocalizationEntry>> localizationModel = new()
                 {
                     ["CosmeticName"] =
@@ -304,6 +309,8 @@ public class Cosmetics
                     Rarity = rarity,
                     Prefix = prefix,
                     Purchasable = purchasable,
+                    IsInStore = isInStore,
+                    IsEntitledByDefault = isEntitledByDefault,
                     ReleaseDate = releaseDate,
                     LimitedTimeEndDate = limitedTimeEndDate,
                     Prices = prices

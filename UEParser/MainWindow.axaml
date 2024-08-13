@@ -50,16 +50,16 @@
           <TextBlock Grid.Column="1" Text="Data Parser" VerticalAlignment="Center"/>
         </StackPanel>
       </ui:NavigationViewItem>
-      <ui:NavigationViewItem Content="Website Update" Cursor="Hand" Tag="WebsiteUpdate">
-        <StackPanel Orientation="Horizontal">
-          <i:Icon Value="fa-solid fa-upload" Width="32" Height="32" FontSize="16" Margin="-12,0,10,0"/>
-          <TextBlock Text="Website Update" VerticalAlignment="Center"/>
-        </StackPanel>
-      </ui:NavigationViewItem>
       <ui:NavigationViewItem Content="API" Cursor="Hand" Tag="API">
         <StackPanel Orientation="Horizontal">
           <i:Icon Value="fa-solid fa-cloud-arrow-down" Width="32" Height="32" FontSize="16" Margin="-12,0,10,0"/>
           <TextBlock Text="API" VerticalAlignment="Center"/>
+        </StackPanel>
+      </ui:NavigationViewItem>
+      <ui:NavigationViewItem Content="Website Update" Cursor="Hand" Tag="WebsiteUpdate">
+        <StackPanel Orientation="Horizontal">
+          <i:Icon Value="fa-solid fa-upload" Width="32" Height="32" FontSize="16" Margin="-12,0,10,0"/>
+          <TextBlock Text="Website Update" VerticalAlignment="Center"/>
         </StackPanel>
       </ui:NavigationViewItem>
       <!--<ui:NavigationViewItem Content="Netease" Cursor="Hand" Tag="Netease">

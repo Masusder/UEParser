@@ -22,8 +22,9 @@ public class Bundle
 
     /// <summary>
     /// Path to the image representing the bundle.
+    /// Sometimes it's not set by devs for some reason..
     /// </summary>
-    public required string ImagePath { get; set; }
+    public required string? ImagePath { get; set; }
 
     /// <summary>
     /// Date when the bundle becomes available.
@@ -44,6 +45,11 @@ public class Bundle
     /// Minimum number of unowned items required for purchase.
     /// </summary>
     public required int MinNumberOfUnownedForPurchase { get; set; }
+
+    /// <summary>
+    /// Indicates whether bundle is available for purchase.
+    /// </summary>
+    public required bool Purchasable { get; set; }
 
     /// <summary>
     /// Indicates if the bundle is related to a chapter.
@@ -90,16 +96,10 @@ public class Bundle
 
     /// <summary>
     /// Segmentation tags associated with the bundle.
-    /// Tags are checked on the server-side 
-    /// to filter if for example user shouldn't be allowed to see that bundle
-    /// Tags are not displayed to the user.
+    /// Tags are checked on the server-side to filter if for example user shouldn't be allowed to see that bundle.
+    /// These tags are not displayed to the user.
     /// </summary>
     public JArray? SegmentationTags { get; set; }
-
-    /// <summary>
-    /// Indicates if the bundle can be purchased.
-    /// </summary>
-    public bool Purchasable { get; set; }
 }
 
 /// <summary>
