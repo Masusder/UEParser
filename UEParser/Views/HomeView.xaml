@@ -9,8 +9,8 @@
   <StackPanel VerticalAlignment="Center">
     <Border HorizontalAlignment="Center"
             VerticalAlignment="Center"
-            Width="196"
-            Height="196"
+            Width="175"
+            Height="175"
             BorderBrush="Transparent"
             BorderThickness="0">
       <Border.Effect>

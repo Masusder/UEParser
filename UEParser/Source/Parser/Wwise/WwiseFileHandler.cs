@@ -11,6 +11,8 @@ using UEParser.ViewModels;
 using System.Text.RegularExpressions;
 using Amazon.Runtime.Internal.Util;
 using UEParser.Utils;
+using UEParser.Models;
+using System.Threading;
 
 namespace UEParser.Parser.Wwise;
 
@@ -19,18 +21,50 @@ public partial class WwiseFileHandler
     private static readonly string temporaryDirectory = Path.Combine(GlobalVariables.pathToExtractedAudio, "WwiseTemporary");
     private static readonly string wwiseStructured = Path.Combine(GlobalVariables.pathToExtractedAudio, "WwiseStructured");
 
-    public static bool DoesSoundBankExist()
+    public static (string filePath, string dataType) FindSoundBank()
     {
-        string soundsBankNameJson = "SoundbanksInfo.json";
-        string[] filePathsJson = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive(soundsBankNameJson);
+        string soundsBankName = "SoundbanksInfo";
 
-        if (filePathsJson.Length > 0)
+        string[] filePathsJson = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive(soundsBankName + ".json");
+        string[] filePathsXml = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive(soundsBankName + ".xml");
+
+        if (filePathsJson.Length == 0)
         {
-            return true;
-        }
+            LogsWindowViewModel.Instance.AddLog("Sound bank wasn't found in JSON format, which is prefered.. searching for alternatives..", Logger.LogTags.Warning);
 
-        return false;
+            if (filePathsXml.Length == 1)
+            {
+                string soundBankPath = filePathsXml[0];
+                string dataType = "xml";
+
+                return (soundBankPath, dataType); 
+            }
+            else
+            {
+                throw new Exception("Failed to find any Sound Banks.");
+            }
+        }
+        else
+        {
+            var soundBankPath = filePathsJson[0];
+            string dataType = "json";
+
+            return (soundBankPath, dataType);
+        }
     }
+
+    //public static bool DoesSoundBankExist()
+    //{
+    //    string soundsBankNameJson = "SoundbanksInfo.json";
+    //    string[] filePathsJson = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive(soundsBankNameJson);
+
+    //    if (filePathsJson.Length > 0)
+    //    {
+    //        return true;
+    //    }
+
+    //    return false;
+    //}
 
     public static void MoveCompressedAudio()
     {
@@ -102,6 +136,8 @@ public partial class WwiseFileHandler
         int failedAudioConversionCount = 0;
         Parallel.ForEach(wemFiles, audioPath =>
         {
+            if (!audioToParse.Contains(audioPath)) return;
+
             string relativePath = Utils.StringUtils.StripDynamicDirectory(audioPath, wwiseStructured);
             string tempOggPath = Path.ChangeExtension(audioPath, ".ogg");
 
@@ -120,7 +156,8 @@ public partial class WwiseFileHandler
             }
             else
             {
-                failedAudioConversionCount++;
+                Interlocked.Increment(ref failedAudioConversionCount); // Thread-safe increment of failedAudioConversionCount
+                //failedAudioConversionCount++;
             }
         });
 

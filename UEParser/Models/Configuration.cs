@@ -152,6 +152,7 @@ public class KrakenApiConfig
         // Gotta Catch ’Em All
         S3AccessKeys = new()
         {
+            // V1 encryption algorithm didn't require dynamic access keys
             // Start of V2 encryption algorithm
             { "4.6.0", "uRqLnp6p9WUrTJ6nNXlv7z9VZRjbXvRFKEcF/spEn9k=" },
             { "4.7.0", "DJ1LTHLgxRNq7v7fsyG3AQONlsdN49gJ+oY9UuVCSzQ=" },
@@ -309,6 +310,7 @@ public class KrakenApiConfig
             { "8.1.0_ptb", "EnYFfS63mcoBvBBMCV6VVgkEGtVlReqa8n4bw5M4qgQ=" },
             { "8.1.0_qa", "NOqDNLSGuu/6uZ2ezNiV6Sr42gfJkS46riDX3UfEoDI=" },
             { "8.1.0_stage", "kUxPy+fwYWStoAtJHmxlL9NWNyktBr6qbeRiwup0vEg=" },
+            { "8.2.0_ptb", "HKOuAKvGgM//E3YRC7hO9DEOxK98E32fZ9ZYidJ+PBE=" },
             // End of V3 encryption algorithm
             // Start of test builds? Couldn't figure decryption
             { "9999.17.0", "pGJJqK8oYVFKVSZwynOFAGAYniIZd/ycyFBZc8L7HJk=" },

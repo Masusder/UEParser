@@ -567,12 +567,12 @@ public class AssetsManager
         LogsWindowViewModel.Instance.AddLog("Audio extraction is highly intensive process, which may take even up to an hour, depending whether audio registry is available (audio registry is created whenever you extract audio)..", Logger.LogTags.Info);
         await Task.Run(async () =>
         {
-            bool soundBankExists = WwiseFileHandler.DoesSoundBankExist();
+            //bool soundBankExists = WwiseFileHandler.DoesSoundBankExist();
 
-            if (!soundBankExists)
-            {
-                throw new Exception("Not found sounds bank in extracted assets.");
-            }
+            //if (!soundBankExists)
+            //{
+            //    throw new Exception("Not found sounds bank in extracted assets.");
+            //}
 
             LogsWindowViewModel.Instance.AddLog("Moving compressed audio into temporary folder.", Logger.LogTags.Info);
 

@@ -11,6 +11,8 @@ using UEParser.Utils;
 using UEParser.ViewModels;
 using System.Text.RegularExpressions;
 using System.Collections.Concurrent;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace UEParser.Parser.Wwise;
 
@@ -23,9 +25,9 @@ public partial class WwiseRegister
     private static readonly string filesRegisterDirectoryPath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "FilesRegister");
     private static readonly string PathToAudioRegister;
 
-    private const string soundsBankNameJson = "SoundbanksInfo.json";
+    //private const string soundsBankName = "SoundbanksInfo";
 
-    public static SoundBanksInfoRoot SoundBanksData { get; private set; }
+    //public static SoundBanksInfoRoot SoundBanksData { get; private set; }
     public static Dictionary<string, string> SoundBankDictionary { get; private set; }
 
     private class AudioInfo(string id, string hash, long size)
@@ -37,7 +39,7 @@ public partial class WwiseRegister
 
     static WwiseRegister()
     {
-        SoundBanksData = LoadSoundsBank();
+        //SoundBanksData = LoadSoundsBank();
         PathToAudioRegister = ConstructPathToAudioRegister();
         SoundBankDictionary = PopulateSoundBankDictionary();
     }
@@ -53,20 +55,51 @@ public partial class WwiseRegister
     private static partial Regex WemFileHashRegex();
     public static Dictionary<string, string> PopulateSoundBankDictionary()
     {
-        var soundBanksList = SoundBanksData.SoundBanksInfo.SoundBanks;
+        var (soundBankData, dataType) = LoadSoundsBank();
+        //var soundBanksList = SoundBanksData.SoundBanksInfo.SoundBanks;
 
         Dictionary<string, string> kvp = [];
-        foreach (var soundBank in soundBanksList) 
-        { 
-            var media = soundBank?.Media;
 
-            if (media == null) continue;
-
-            foreach (var mediaFile in media)
+        if (dataType == "json")
+        {
+            var soundBanksDataJson = (SoundBanksInfoRoot)soundBankData;
+            var soundBanksList = soundBanksDataJson.SoundBanksInfo.SoundBanks;
+            foreach (var soundBank in soundBanksList)
             {
-                string id = mediaFile.Id;
-                string path = mediaFile.CachePath;
-                string pathWithoutHash = WemFileHashRegex().Replace(path, ".wem");
+                var media = soundBank?.Media;
+
+                if (media == null) continue;
+
+                foreach (var mediaFile in media)
+                {
+                    string id = mediaFile.Id;
+                    string path = mediaFile.CachePath;
+                    string pathWithoutHash = WemFileHashRegex().Replace(path, ".wem");
+                    kvp[id] = pathWithoutHash;
+                }
+            }
+        }
+        else if (dataType == "xml")
+        {
+            var soundBanksDataXml = (XmlDocument)soundBankData;
+            XmlNodeList? files = soundBanksDataXml.SelectNodes("//File");
+
+            if (files == null)
+            {
+                return kvp;
+            }
+
+            foreach (XmlNode file in files)
+            {
+                string? id = file.Attributes?["Id"]?.Value;
+                string? path = file["Path"]?.InnerText;
+
+                if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(path)) continue;
+
+                string pathWithoutHash = WemFileHashRegex().Replace(path, ".wem")
+                    .Replace(Path.DirectorySeparatorChar, '/')
+                    .Replace(Path.AltDirectorySeparatorChar, '/');
+
                 kvp[id] = pathWithoutHash;
             }
         }
@@ -74,21 +107,22 @@ public partial class WwiseRegister
         return kvp;
     }
 
-    private static SoundBanksInfoRoot LoadSoundsBank()
+    private static (object, string) LoadSoundsBank()
     {
-        string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive(soundsBankNameJson);
+        var (filePath, dataType) = WwiseFileHandler.FindSoundBank();
 
-        if (filePaths.Length == 0) throw new Exception("Failed to find Sounds Bank.");
-
-        if (filePaths.Length > 1)
+        switch (dataType)
         {
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
-            LogsWindowViewModel.Instance.AddLog("Found more than one Sounds Bank, only one was expected.", Logger.LogTags.Warning);
+            case "json":
+                var data = FileUtils.LoadJsonFileWithTypeCheck<SoundBanksInfoRoot>(filePath);
+                return (data, dataType);
+            case "xml":
+                var xmlDocument = new XmlDocument();
+                xmlDocument.Load(filePath);
+                return (xmlDocument, dataType);
+            default:
+                throw new Exception("Invalid Sound Bank format.");
         }
-
-        var soundBankPath = filePaths[0];
-        var data = FileUtils.LoadJsonFileWithTypeCheck<SoundBanksInfoRoot>(soundBankPath);
-        return data;
     }
 
     // Single thread method
