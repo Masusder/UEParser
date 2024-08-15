@@ -20,9 +20,6 @@ using UEParser.Services;
 using UEParser.Utils;
 using UEParser.ViewModels;
 using System.Threading.Tasks;
-using System.Reflection.Metadata;
-using Avalonia.Controls;
-using CUE4Parse.UE4.Wwise;
 using UEParser.Parser.Wwise;
 
 namespace UEParser.Parser;
@@ -109,7 +106,7 @@ public class AssetsManager
             }
             else
             {
-                LogsWindowViewModel.Instance.AddLog("Not found path to game directory in 'config.json'.", Logger.LogTags.Error);
+                LogsWindowViewModel.Instance.AddLog("Not found path to game directory set in settings.", Logger.LogTags.Error);
                 LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
                 return;
             }
@@ -341,7 +338,7 @@ public class AssetsManager
 
             if (extractedAssetsCount > 0)
             {
-                LogsWindowViewModel.Instance.AddLog($"Extracted total of {extractedAssetsCount} meshes.", Logger.LogTags.Info);
+                LogsWindowViewModel.Instance.AddLog($"Extracted total of {extractedAssetsCount} mesh(es).", Logger.LogTags.Info);
             }
         });
     }
@@ -352,13 +349,19 @@ public class AssetsManager
         {
             var files = Provider.Files.Values.ToList();
             var newAssets = FilesRegister.NewAssets;
+            var modifiedAssets = FilesRegister.ModifiedAssets;
+            int extractedAssetsCount = 0;
+
+            LogsWindowViewModel.Instance.AddLog($"Detected total of {newAssets.Count} new assets.", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Detected total of {modifiedAssets.Count} modified assets.", Logger.LogTags.Info);
 
             foreach (var file in files)
             {
                 try
                 {
                     string pathWithoutExtension = file.PathWithoutExtension;
-                    if (!newAssets.ContainsKey(pathWithoutExtension)) continue;
+                    if (!newAssets.ContainsKey(pathWithoutExtension) && !modifiedAssets.ContainsKey(pathWithoutExtension)) continue;
+                    //if (!newAssets.ContainsKey(pathWithoutExtension)) continue;
 
                     if (GlobalVariables.fatalCrashAssets.Contains(pathWithoutExtension)) continue;
 
@@ -396,7 +399,7 @@ public class AssetsManager
                                                     Directory.CreateDirectory(directoryPath);
                                                 }
 
-                                                FileWriter.SaveAnimations(asset, pathWithoutExtension, outputPath);
+                                                FileWriter.SaveAnimations(asset, pathWithoutExtension, outputPath, ref extractedAssetsCount);
                                                 break;
                                             }
                                         default:
@@ -416,6 +419,11 @@ public class AssetsManager
                     LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
                 }
             }
+
+            if (extractedAssetsCount > 0)
+            {
+                LogsWindowViewModel.Instance.AddLog($"Extracted total of {extractedAssetsCount} animation(s).", Logger.LogTags.Info);
+            }
         });
     }
 
@@ -425,13 +433,19 @@ public class AssetsManager
         {
             var files = Provider.Files.Values.ToList();
             var newAssets = FilesRegister.NewAssets;
+            var modifiedAssets = FilesRegister.ModifiedAssets;
+            int extractedAssetsCount = 0;
+
+            LogsWindowViewModel.Instance.AddLog($"Detected total of {newAssets.Count} new assets.", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Detected total of {modifiedAssets.Count} modified assets.", Logger.LogTags.Info);
 
             foreach (var file in files)
             {
                 try
                 {
                     string pathWithoutExtension = file.PathWithoutExtension;
-                    if (!newAssets.ContainsKey(pathWithoutExtension)) continue;
+                    if (!newAssets.ContainsKey(pathWithoutExtension) && !modifiedAssets.ContainsKey(pathWithoutExtension)) continue;
+                    //if (!newAssets.ContainsKey(pathWithoutExtension)) continue;
 
                     if (GlobalVariables.fatalCrashAssets.Contains(pathWithoutExtension)) continue;
 
@@ -462,7 +476,7 @@ public class AssetsManager
                                     {
                                         case UTexture texture:
                                             {
-                                                FileWriter.SavePngFile(outputPath, pathWithoutExtension, texture);
+                                                FileWriter.SavePngFile(outputPath, pathWithoutExtension, texture, ref extractedAssetsCount);
                                                 break;
                                             }
                                         default:
@@ -482,6 +496,11 @@ public class AssetsManager
                     LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
                 }
             }
+
+            if (extractedAssetsCount > 0)
+            {
+                LogsWindowViewModel.Instance.AddLog($"Extracted total of {extractedAssetsCount} texture(s).", Logger.LogTags.Info);
+            }
         });
     }
 
@@ -492,6 +511,10 @@ public class AssetsManager
             var files = Provider.Files.Values.ToList();
             var newAssets = FilesRegister.NewAssets;
             var modifiedAssets = FilesRegister.ModifiedAssets;
+            int extractedAssetsCount = 0;
+
+            LogsWindowViewModel.Instance.AddLog($"Detected total of {newAssets.Count} new assets.", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Detected total of {modifiedAssets.Count} modified assets.", Logger.LogTags.Info);
 
             foreach (var file in files)
             {
@@ -539,7 +562,7 @@ public class AssetsManager
                                                 string packagePathDirectory = Path.GetDirectoryName(pathWithoutExtension)!;
                                                 string packagePathWithExportName = Path.Combine(packagePathDirectory, texture.Name);
 
-                                                FileWriter.SavePngFile(finalOutputPath, packagePathWithExportName, texture);
+                                                FileWriter.SavePngFile(finalOutputPath, packagePathWithExportName, texture, ref extractedAssetsCount);
                                                 break;
                                             }
                                         default:
@@ -558,6 +581,11 @@ public class AssetsManager
                     LogsWindowViewModel.Instance.AddLog($"Failed parsing UI: {ex}", Logger.LogTags.Error);
                     LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
                 }
+            }
+
+            if (extractedAssetsCount > 0)
+            {
+                LogsWindowViewModel.Instance.AddLog($"Extracted total of {extractedAssetsCount} UI asset(s).", Logger.LogTags.Info);
             }
         });
     }

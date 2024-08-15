@@ -109,7 +109,7 @@ public class FileWriter
         Directory.Delete(tempOutputDirectory, true);
     }
 
-    public static void SaveAnimations(UObject asset, string packagePath, string outputPath)
+    public static void SaveAnimations(UObject asset, string packagePath, string outputPath, ref int extractedAssetsCount)
     {
         var exportOptions = new ExporterOptions
         {
@@ -136,6 +136,7 @@ public class FileWriter
 
         if (success)
         {
+            extractedAssetsCount++;
             File.Move(savedFilePath, outputPath);
             LogsWindowViewModel.Instance.AddLog($"Exported animation: {packagePath}", Logger.LogTags.Info);
         }
@@ -144,7 +145,7 @@ public class FileWriter
         Directory.Delete(tempOutputDirectory, true);
     }
 
-    public static void SavePngFile(string outputPath, string packagePath, UTexture texture)
+    public static void SavePngFile(string outputPath, string packagePath, UTexture texture, ref int extractedAssetsCount)
     {
         try
         {
@@ -161,6 +162,7 @@ public class FileWriter
                 using var fileStream = new FileStream(outputPath, FileMode.Create, FileAccess.Write, FileShare.Read);
                 // Now, we have exclusive access to the file and can proceed with writing to it
                 img.Encode(SKEncodedImageFormat.Png, 100).SaveTo(fileStream);
+                extractedAssetsCount++;
                 LogsWindowViewModel.Instance.AddLog($"Exported texture: {packagePath}", Logger.LogTags.Info);
             }
             else
