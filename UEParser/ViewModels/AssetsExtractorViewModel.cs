@@ -7,11 +7,15 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using UEParser.Services;
 
 namespace UEParser.ViewModels;
 
 public class AssetsExtractorViewModel
 {
+    public static bool IsComparisonVersionAvailable =>
+        !string.IsNullOrEmpty(ConfigurationService.Config.Core.VersionData.CompareVersionHeader);
+
     public ICommand CheckMissingAssetsCommand { get; }
     public ICommand ExtractMeshesCommand { get; }
     public ICommand ExtractTexturesCommand { get; }

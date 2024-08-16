@@ -270,6 +270,8 @@ public class FilesRegister
 
         string[] files = Directory.GetFiles(compareFilesRegisterPath, "*.json");
 
+        string currentVersion = Helpers.ConstructVersionHeaderWithBranch();
+
         foreach (string file in files)
         {
             string fileName = Path.GetFileName(file);
@@ -280,6 +282,8 @@ public class FilesRegister
             {
                 // Extract the version part from the matched file name
                 string version = match.Groups["version"].Value;
+
+                if (version == currentVersion) continue;
 
                 versions.Add(version);
             }
