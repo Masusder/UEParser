@@ -28,6 +28,8 @@ public class GlobalVariables
     public static readonly string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch(); // Ex. "8.1.0_ptb"
     public static readonly string compareVersionWithBranch = Helpers.ConstructVersionHeaderWithBranch(true);
 
+    public static readonly string dbdinfoBaseUrl = "https://dbd-info.com/";
+
     // List of assets that cause fatal crash of the app and cannot be parsed!
     public static readonly List<string> fatalCrashAssets = [
         "DeadByDaylight/Content/Effects/Niagara/NiagaraParticleSystem/Snowman/NS_Snowman_Destroy_Hit_Smoke",

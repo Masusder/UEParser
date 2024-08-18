@@ -49,6 +49,7 @@
     <AvaloniaXaml Include="Views\HomeView.xaml" />
     <AvaloniaXaml Include="Views\AssetsExtractorView.xaml" />
     <AvaloniaXaml Include="Views\UpdateManagerView.xaml" />
+    <AvaloniaXaml Include="Views\DownloadRegisterView.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -56,6 +57,9 @@
       <Generator>MSBuild:Compile</Generator>
     </None>
     <None Update="Views\AssetsExtractorView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="Views\DownloadRegisterView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
     <None Update="Views\HomeView.xaml">

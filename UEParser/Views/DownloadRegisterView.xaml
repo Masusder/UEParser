@@ -1,0 +1,59 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="UEParser.Views.DownloadRegisterView"
+        xmlns:vm="clr-namespace:UEParser.ViewModels"
+        xmlns:convert="clr-namespace:UEParser.Converters"
+        Title="UEParser - Download Registers"
+        Width="400"
+        Height="250"
+        WindowStartupLocation="CenterOwner"
+        Icon="/Resources/UEParser.ico"
+        x:DataType="vm:DownloadRegisterViewModel">
+  <Window.Resources>
+    <convert:RegistersVisibilityConverter x:Key="RegistersVisibilityConverter" />
+  </Window.Resources>
+  <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+    <TextBlock Text="Select Registers:" FontWeight="Bold" FontSize="16" HorizontalAlignment="Center"/>
+    <TextBlock Text="(hold `ctrl` to select multiple)" FontSize="14" Foreground="AntiqueWhite" HorizontalAlignment="Center"/>
+    <Grid Margin="10">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+      <ProgressBar Grid.Row="0" Grid.Column="0" IsIndeterminate="{Binding IsFetchingRegisters}" IsVisible="{Binding IsFetchingRegisters}"/>
+      <ListBox
+        Grid.Row="1"
+        Grid.Column="0"
+        ItemsSource="{Binding Registers}"
+        SelectedItems="{Binding SelectedRegisters}"
+        SelectionMode="Multiple"
+        HorizontalAlignment="Center">
+        <ListBox.ItemsPanel>
+          <ItemsPanelTemplate>
+            <WrapPanel Orientation="Horizontal" />
+          </ItemsPanelTemplate>
+        </ListBox.ItemsPanel>
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <Border Margin="5">
+              <TextBlock Text="{Binding}" />
+            </Border>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+      <TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center">
+        <TextBlock.IsVisible>
+          <MultiBinding Converter="{StaticResource RegistersVisibilityConverter}">
+            <Binding Path="Registers.Count" />
+            <Binding Path="IsFetchingRegisters" />
+          </MultiBinding>
+        </TextBlock.IsVisible>
+        Not found any registers available for download.
+      </TextBlock>
+    </Grid>
+    <Button Content="Download Selected Registers" Cursor="Hand" Command="{Binding DownloadSelectedRegistersCommand}" IsEnabled="{Binding CanDownloadSelectedRegisters}" HorizontalAlignment="Center"/>
+  </StackPanel>
+</Window>

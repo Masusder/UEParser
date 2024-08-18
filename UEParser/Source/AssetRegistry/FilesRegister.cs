@@ -188,12 +188,6 @@ public class FilesRegister
             var (assets, _) = RegistryManager.ReadFromUnifiedFile(filesRegisterPath);
             var (compareAssets, _) = RegistryManager.ReadFromUnifiedFile(compareFilesRegisterPath);
 
-            //string filesRegisterJson = File.ReadAllText(filesRegisterPath);
-            //string compareFilesRegisterJson = File.ReadAllText(compareFilesRegisterPath);
-
-            //var filesRegister = JsonConvert.DeserializeObject<Dictionary<string, FileInfo>>(filesRegisterJson);
-            //var compareFilesRegister = JsonConvert.DeserializeObject<Dictionary<string, FileInfo>>(compareFilesRegisterJson);
-
             if (assets == null || compareAssets == null) return [];
 
             return findAssets(assets, compareAssets); // Choose new or modified method
