@@ -20,6 +20,8 @@ using UEParser.Services;
 using UEParser.Utils;
 using UEParser.ViewModels;
 using System.Threading.Tasks;
+using UEParser.AssetRegistry;
+using UEParser.AssetRegistry.Wwise;
 using UEParser.Parser.Wwise;
 
 namespace UEParser.Parser;
@@ -592,7 +594,7 @@ public class AssetsManager
 
     public static async Task ParseAudio()
     {
-        LogsWindowViewModel.Instance.AddLog("Audio extraction is highly intensive process, which may take even up to an hour, depending whether audio registry is available (audio registry is created whenever you extract audio)..", Logger.LogTags.Info);
+        LogsWindowViewModel.Instance.AddLog("Audio extraction is highly intensive process, which may take even up to an hour, depending whether audio registry is available..", Logger.LogTags.Info);
         await Task.Run(async () =>
         {
             //bool soundBankExists = WwiseFileHandler.DoesSoundBankExist();

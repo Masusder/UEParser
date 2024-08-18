@@ -7,8 +7,9 @@ using UEParser.Services;
 using UEParser.ViewModels;
 using CUE4Parse.FileProvider.Objects;
 using System.Text.RegularExpressions;
+using UEParser.AssetRegistry.Wwise;
 
-namespace UEParser.Parser;
+namespace UEParser.AssetRegistry;
 
 public class FilesRegister
 {
@@ -46,7 +47,7 @@ public class FilesRegister
             string? version = config.Core.VersionData.CompareVersionHeader;
             string branch = config.Core.VersionData.CompareBranch.ToString();
 
-            string filesRegisterName = $"Core_{version}_{branch}_FilesRegister.json";
+            string filesRegisterName = $"Core_{version}_{branch}_FilesRegister.uinfo";
             string path = Path.Combine(filesRegisterDirectoryPath, filesRegisterName);
 
             return path;
@@ -56,7 +57,7 @@ public class FilesRegister
             string? version = config.Core.VersionData.LatestVersionHeader;
             string branch = config.Core.VersionData.Branch.ToString();
 
-            string filesRegisterName = $"Core_{version}_{branch}_FilesRegister.json";
+            string filesRegisterName = $"Core_{version}_{branch}_FilesRegister.uinfo";
             string path = Path.Combine(filesRegisterDirectoryPath, filesRegisterName);
 
             return path;
@@ -82,9 +83,9 @@ public class FilesRegister
 
     public static void SaveFileInfoDictionary()
     {
-        string json = JsonConvert.SerializeObject(fileInfoDictionary);
+        var (_, audio) = RegistryManager.ReadFromUnifiedFile(pathToFileRegister);
+        RegistryManager.WriteToUnifiedFile(pathToFileRegister, fileInfoDictionary, audio);
 
-        File.WriteAllText(pathToFileRegister, json);
         LogsWindowViewModel.Instance.AddLog("Saved files register.", Logger.LogTags.Info);
     }
 
@@ -127,25 +128,33 @@ public class FilesRegister
                 {
                     isLoaded = true;
 
+                    // Check for .uinfo file first
                     if (File.Exists(pathToFileRegister))
                     {
-                        string json = File.ReadAllText(pathToFileRegister);
-                        fileInfoDictionary = JsonConvert.DeserializeObject<Dictionary<string, FileInfo>>(json) ?? [];
+                        var (assets, audio) = RegistryManager.ReadFromUnifiedFile(pathToFileRegister);
+                        fileInfoDictionary = assets;
+#if DEBUG
+                        LogsWindowViewModel.Instance.AddLog("Loaded files registry from .uinfo file.", Logger.LogTags.Debug);
+#endif
                     }
                     else
                     {
-                        string pathToBackupFileRegister = FilesRegisterPathConstructor(true);
-                        if (File.Exists(pathToBackupFileRegister))
+                        string backupUinfoFilePath = FilesRegisterPathConstructor(true);
+                        if (File.Exists(backupUinfoFilePath))
                         {
-                            string jsonBackup = File.ReadAllText(pathToBackupFileRegister);
-                            fileInfoDictionary = JsonConvert.DeserializeObject<Dictionary<string, FileInfo>>(jsonBackup) ?? [];
-                            File.WriteAllText(pathToFileRegister, jsonBackup);
+                            var (assets, audio) = RegistryManager.ReadFromUnifiedFile(backupUinfoFilePath);
+                            fileInfoDictionary = assets;
+#if DEBUG
+                            LogsWindowViewModel.Instance.AddLog("Loaded files registry from backup .uinfo file.", Logger.LogTags.Debug);
+#endif
+                            RegistryManager.WriteToUnifiedFile(backupUinfoFilePath, assets, audio);
                         }
                     }
                 }
             }
         }
     }
+
 
     private static readonly Lazy<Dictionary<string, FileInfo>> _newAssets = new(RetrieveNewAssets);
     private static readonly Lazy<Dictionary<string, FileInfo>> _modifiedAssets = new(RetrieveModifiedAssets);
@@ -168,23 +177,26 @@ public class FilesRegister
         string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch();
         string compareVersionWithBranch = Helpers.ConstructVersionHeaderWithBranch(true);
 
-        string filesRegisterName = $"Core_{versionWithBranch}_FilesRegister.json";
-        string compareFilesRegisterName = $"Core_{compareVersionWithBranch}_FilesRegister.json";
+        string filesRegisterName = $"Core_{versionWithBranch}_FilesRegister.uinfo";
+        string compareFilesRegisterName = $"Core_{compareVersionWithBranch}_FilesRegister.uinfo";
 
         string filesRegisterPath = Path.Combine(filesRegisterDirectoryPath, filesRegisterName);
         string compareFilesRegisterPath = Path.Combine(filesRegisterDirectoryPath, compareFilesRegisterName);
 
         if (File.Exists(filesRegisterPath) && File.Exists(compareFilesRegisterPath))
         {
-            string filesRegisterJson = File.ReadAllText(filesRegisterPath);
-            string compareFilesRegisterJson = File.ReadAllText(compareFilesRegisterPath);
+            var (assets, _) = RegistryManager.ReadFromUnifiedFile(filesRegisterPath);
+            var (compareAssets, _) = RegistryManager.ReadFromUnifiedFile(compareFilesRegisterPath);
 
-            var filesRegister = JsonConvert.DeserializeObject<Dictionary<string, FileInfo>>(filesRegisterJson);
-            var compareFilesRegister = JsonConvert.DeserializeObject<Dictionary<string, FileInfo>>(compareFilesRegisterJson);
+            //string filesRegisterJson = File.ReadAllText(filesRegisterPath);
+            //string compareFilesRegisterJson = File.ReadAllText(compareFilesRegisterPath);
 
-            if (filesRegister == null || compareFilesRegister == null) return [];
+            //var filesRegister = JsonConvert.DeserializeObject<Dictionary<string, FileInfo>>(filesRegisterJson);
+            //var compareFilesRegister = JsonConvert.DeserializeObject<Dictionary<string, FileInfo>>(compareFilesRegisterJson);
 
-            return findAssets(filesRegister, compareFilesRegister); // Choose new or modified method
+            if (assets == null || compareAssets == null) return [];
+
+            return findAssets(assets, compareAssets); // Choose new or modified method
         }
         else
         {
@@ -248,7 +260,7 @@ public class FilesRegister
     {
         string compareVersionWithBranch = Helpers.ConstructVersionHeaderWithBranch(true);
 
-        string compareFilesRegisterName = $"Core_{compareVersionWithBranch}_FilesRegister.json";
+        string compareFilesRegisterName = $"Core_{compareVersionWithBranch}_FilesRegister.uinfo";
 
         string compareFilesRegisterPath = Path.Combine(filesRegisterDirectoryPath, compareFilesRegisterName);
 
@@ -264,11 +276,11 @@ public class FilesRegister
     {
         string compareFilesRegisterPath = Path.Combine(filesRegisterDirectoryPath);
 
-        string pattern = @"Core_(?<version>.+)_FilesRegister\.json";
+        string pattern = @"Core_(?<version>.+)_FilesRegister\.uinfo";
 
         HashSet<string> versions = [];
 
-        string[] files = Directory.GetFiles(compareFilesRegisterPath, "*.json");
+        string[] files = Directory.GetFiles(compareFilesRegisterPath, "*.uinfo");
 
         string currentVersion = Helpers.ConstructVersionHeaderWithBranch();
 

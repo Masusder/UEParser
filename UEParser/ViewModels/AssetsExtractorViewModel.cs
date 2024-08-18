@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using UEParser.Services;
+using UEParser.AssetRegistry;
 
 namespace UEParser.ViewModels;
 

@@ -197,7 +197,7 @@
             <StackPanel Orientation="Vertical" MinWidth="225" VerticalAlignment="Center" HorizontalAlignment="Center">
               <TextBlock FontWeight="Bold">Extract Audio</TextBlock>
               <TextBlock FontSize="12" Margin="0,5,0,0">
-                Extract audio with proper files structure <LineBreak/>(<Run Foreground="AliceBlue" FontWeight="700">OGG</Run> format).
+                Extract audio with proper files structure <LineBreak/> and create audio registry (<Run Foreground="AliceBlue" FontWeight="700">OGG</Run> format).
               </TextBlock>
             </StackPanel>
             <Button Background="DodgerBlue" Name="ExtractAudio" Command="{Binding ExtractAudioCommand}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">

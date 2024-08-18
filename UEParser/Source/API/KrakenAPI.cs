@@ -9,7 +9,7 @@ using UEParser.ViewModels;
 using UEParser.Utils;
 using UEParser.Models.KrakenCDN;
 using System.Text.RegularExpressions;
-using UEParser.Parser;
+using UEParser.AssetRegistry;
 
 namespace UEParser.Kraken;
 
@@ -385,7 +385,7 @@ public partial class KrakenAPI
             foreach (var (_, downloadStrategy, packagedPath, _, uri) in dynamicContentData.Entries)
             {
                 string extension = Path.GetExtension(uri).TrimStart('.');
-                string modifiedPackagedPath = StringUtils.ModifyPath(packagedPath, extension);
+                string modifiedPackagedPath = StringUtils.ModifyPath(packagedPath, extension).TrimStart('/');
                 string modifiedPackagedPathWithoutExtension = Path.Combine(
                     Path.GetDirectoryName(modifiedPackagedPath) ?? string.Empty,
                     Path.GetFileNameWithoutExtension(modifiedPackagedPath)
@@ -393,7 +393,7 @@ public partial class KrakenAPI
                 .Replace(Path.DirectorySeparatorChar, '/')
                 .Replace(Path.AltDirectorySeparatorChar, '/');
 
-                string assetOutputPath = Path.Combine(GlobalVariables.pathToDynamicAssets, GlobalVariables.versionWithBranch, modifiedPackagedPath.TrimStart('/'));
+                string assetOutputPath = Path.Combine(GlobalVariables.pathToDynamicAssets, GlobalVariables.versionWithBranch, modifiedPackagedPath);
                 //if (downloadStrategy == "preferRemote")
                 //{
                 //    assetOutputPath = Path.Combine(GlobalVariables.pathToDynamicAssets, GlobalVariables.versionWithBranch, modifiedPackagedPath);

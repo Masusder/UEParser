@@ -16,7 +16,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Avalonia.Data;
 using System.Collections.ObjectModel;
-using UEParser.Parser;
+using UEParser.AssetRegistry;
 
 namespace UEParser.ViewModels;
 

@@ -50,7 +50,7 @@ To use the app, you can either compile it yourself or download the latest releas
 
 Before using UEParser, you must configure some essential settings, with the most important ones being:
 - **Current Version** - Version you see during start-up of the game, it always should be that exact version!
-- **Comparison Version** - If you've previously initialized the app with a specific game build, this option will be available. It's crucial to configure this setting if it's accessible, as it allows the app to compare changes between builds. Without it, the app will process all assets, which might be unnecessary.
+- **Comparison Version** - If you've previously initialized the app with a specific game build, this option will be available. It's crucial to configure this setting if it's accessible, as it allows the app to compare changes between builds. Without it, you won't be able to use some of the extractors.
 - **Branch** - Current branch of the game (**Live**, **PTB**, QA, Dev, UAT or Stage).
 - **Path to Game Directory** - The root directory where Dead by Daylight is installed.
 - **Mappings** - Mappings should be downloaded dynamically (during build initialization), but in case that fails you need to provide them manually. They are essential for parsing to work.

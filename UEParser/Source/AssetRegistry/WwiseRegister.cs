@@ -6,15 +6,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
-using UEParser.Models;
-using UEParser.Utils;
-using UEParser.ViewModels;
 using System.Text.RegularExpressions;
 using System.Collections.Concurrent;
 using System.Xml;
 using System.Xml.Linq;
+using UEParser.Models;
+using UEParser.Utils;
+using UEParser.ViewModels;
+using UEParser.Parser.Wwise;
 
-namespace UEParser.Parser.Wwise;
+namespace UEParser.AssetRegistry.Wwise;
 
 public partial class WwiseRegister
 {
@@ -25,12 +26,9 @@ public partial class WwiseRegister
     private static readonly string filesRegisterDirectoryPath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "FilesRegister");
     private static readonly string PathToAudioRegister;
 
-    //private const string soundsBankName = "SoundbanksInfo";
-
-    //public static SoundBanksInfoRoot SoundBanksData { get; private set; }
     public static Dictionary<string, string> SoundBankDictionary { get; private set; }
 
-    private class AudioInfo(string id, string hash, long size)
+    public class AudioInfo(string id, string hash, long size)
     {
         public string Id { get; set; } = id;
         public string Hash { get; set; } = hash;
@@ -39,7 +37,6 @@ public partial class WwiseRegister
 
     static WwiseRegister()
     {
-        //SoundBanksData = LoadSoundsBank();
         PathToAudioRegister = ConstructPathToAudioRegister();
         SoundBankDictionary = PopulateSoundBankDictionary();
     }
@@ -47,7 +44,7 @@ public partial class WwiseRegister
     private static string ConstructPathToAudioRegister(bool isComparisonVersion=false)
     {
         string versionWithBranch = isComparisonVersion ? GlobalVariables.compareVersionWithBranch : GlobalVariables.versionWithBranch;
-        string audioRegisterName = $"Core_{versionWithBranch}_AudioRegister.json";
+        string audioRegisterName = $"Core_{versionWithBranch}_FilesRegister.uinfo";
         return Path.Combine(filesRegisterDirectoryPath, audioRegisterName);
     }
 
@@ -56,7 +53,6 @@ public partial class WwiseRegister
     public static Dictionary<string, string> PopulateSoundBankDictionary()
     {
         var (soundBankData, dataType) = LoadSoundsBank();
-        //var soundBanksList = SoundBanksData.SoundBanksInfo.SoundBanks;
 
         Dictionary<string, string> kvp = [];
 
@@ -157,8 +153,13 @@ public partial class WwiseRegister
 
         if (File.Exists(pathToCompareAudioRegister))
         {
-            string json = File.ReadAllText(pathToCompareAudioRegister);
-            return JsonConvert.DeserializeObject<ConcurrentDictionary<string, AudioInfo>>(json) ?? [];
+            var (_, audio) = RegistryManager.ReadFromUnifiedFile(pathToCompareAudioRegister);
+
+#if DEBUG
+            LogsWindowViewModel.Instance.AddLog("Loaded audio registry from .uinfo file.", Logger.LogTags.Debug);
+#endif
+            ConcurrentDictionary<string, AudioInfo> concurrentAudio = new(audio);
+            return concurrentAudio;
         }
         else
         {
@@ -259,9 +260,9 @@ public partial class WwiseRegister
 
     public static void SaveAudioInfoDictionary()
     {
-        string json = JsonConvert.SerializeObject(AudioInfoDictionary);
+        var (assets, _) = RegistryManager.ReadFromUnifiedFile(PathToAudioRegister);
+        RegistryManager.WriteToUnifiedFile(PathToAudioRegister, assets, AudioInfoDictionary);
 
-        File.WriteAllText(PathToAudioRegister, json);
         LogsWindowViewModel.Instance.AddLog("Saved audio register.", Logger.LogTags.Info);
     }
 }

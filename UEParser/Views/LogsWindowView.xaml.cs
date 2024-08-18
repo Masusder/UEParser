@@ -9,7 +9,7 @@ using System;
 using System.Threading.Tasks;
 using UEParser.ViewModels;
 using UEParser.Services;
-using UEParser.Parser;
+using UEParser.AssetRegistry;
 
 namespace UEParser.Views;
 
@@ -23,6 +23,7 @@ public partial class LogsWindowView : UserControl
         var config = ConfigurationService.Config;
         string versionWithBranch = GlobalVariables.versionWithBranch;
         string comparisonVersionWithBranch = GlobalVariables.compareVersionWithBranch;
+        string buildVersionNumber = string.IsNullOrEmpty(config.Core.BuildVersionNumber) ? "---" : config.Core.BuildVersionNumber;
 
         if (string.IsNullOrEmpty(versionWithBranch) || versionWithBranch.StartsWith('_'))
         {
@@ -36,7 +37,7 @@ public partial class LogsWindowView : UserControl
 
         var viewModel = (LogsWindowViewModel)DataContext;
         viewModel.AddLog("UEParser started.", Logger.LogTags.Info);
-        viewModel.AddLog($"Current core build version: {config.Core.BuildVersionNumber}", Logger.LogTags.Info);
+        viewModel.AddLog($"Current core build version: {buildVersionNumber}", Logger.LogTags.Info);
         viewModel.AddLog($"Current version: {versionWithBranch}", Logger.LogTags.Info);
         viewModel.AddLog($"Comparison version: {comparisonVersionWithBranch}", Logger.LogTags.Info);
 

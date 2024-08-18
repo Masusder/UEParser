@@ -13,6 +13,7 @@ using Amazon.Runtime.Internal.Util;
 using UEParser.Utils;
 using UEParser.Models;
 using System.Threading;
+using UEParser.AssetRegistry.Wwise;
 
 namespace UEParser.Parser.Wwise;
 
