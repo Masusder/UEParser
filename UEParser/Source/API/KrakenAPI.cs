@@ -92,16 +92,6 @@ public partial class KrakenAPI
             {
                 LogsWindowViewModel.Instance.AddLog($"Detected new version: '{latestVersion}'.", Logger.LogTags.Info);
 
-                //await FetchCdnContent();
-                //await FetchDynamicCdnContent(CDNOutputDirName.Tomes);
-                //await FetchDynamicCdnContent(CDNOutputDirName.Rifts);
-
-                //LogsWindowViewModel.Instance.AddLog("Creating game characters helper table from retrieved API.", Logger.LogTags.Info);
-                //Helpers.CreateCharacterTable();
-
-                //await ConfigurationService.SaveConfiguration();
-
-                //LogsWindowViewModel.Instance.AddLog("Successfully retrieved Kraken API.", Logger.LogTags.Success);
                 await RetrieveData();
             }
             else

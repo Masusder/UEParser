@@ -18,7 +18,7 @@ partial class S3AccessKeys
         string iniFile = Path.Combine(GlobalVariables.rootDir, "Dependencies/ExtractedAssets/DeadByDaylight/Config/DefaultGame.ini");
         if (!File.Exists(iniFile))
         {
-            LogsWindowViewModel.Instance.AddLog("Not found ini file that contains S3 Access Keys", Logger.LogTags.Error);
+            LogsWindowViewModel.Instance.AddLog("Not found ini file that contains S3 Access Keys.", Logger.LogTags.Error);
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
             return;
         }

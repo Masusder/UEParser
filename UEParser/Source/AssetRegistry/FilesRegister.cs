@@ -83,8 +83,8 @@ public class FilesRegister
 
     public static void SaveFileInfoDictionary()
     {
-        var (_, audio) = RegistryManager.ReadFromUnifiedFile(pathToFileRegister);
-        RegistryManager.WriteToUnifiedFile(pathToFileRegister, fileInfoDictionary, audio);
+        var (_, audio) = RegistryManager.ReadFromUInfoFile(pathToFileRegister);
+        RegistryManager.WriteToUInfoFile(pathToFileRegister, fileInfoDictionary, audio);
 
         LogsWindowViewModel.Instance.AddLog("Saved files register.", Logger.LogTags.Info);
     }
@@ -131,7 +131,7 @@ public class FilesRegister
                     // Check for .uinfo file first
                     if (File.Exists(pathToFileRegister))
                     {
-                        var (assets, audio) = RegistryManager.ReadFromUnifiedFile(pathToFileRegister);
+                        var (assets, audio) = RegistryManager.ReadFromUInfoFile(pathToFileRegister);
                         fileInfoDictionary = assets;
 #if DEBUG
                         LogsWindowViewModel.Instance.AddLog("Loaded files registry from .uinfo file.", Logger.LogTags.Debug);
@@ -142,12 +142,12 @@ public class FilesRegister
                         string backupUinfoFilePath = FilesRegisterPathConstructor(true);
                         if (File.Exists(backupUinfoFilePath))
                         {
-                            var (assets, audio) = RegistryManager.ReadFromUnifiedFile(backupUinfoFilePath);
+                            var (assets, audio) = RegistryManager.ReadFromUInfoFile(backupUinfoFilePath);
                             fileInfoDictionary = assets;
 #if DEBUG
                             LogsWindowViewModel.Instance.AddLog("Loaded files registry from backup .uinfo file.", Logger.LogTags.Debug);
 #endif
-                            RegistryManager.WriteToUnifiedFile(backupUinfoFilePath, assets, audio);
+                            RegistryManager.WriteToUInfoFile(backupUinfoFilePath, assets, audio);
                         }
                     }
                 }
@@ -185,8 +185,8 @@ public class FilesRegister
 
         if (File.Exists(filesRegisterPath) && File.Exists(compareFilesRegisterPath))
         {
-            var (assets, _) = RegistryManager.ReadFromUnifiedFile(filesRegisterPath);
-            var (compareAssets, _) = RegistryManager.ReadFromUnifiedFile(compareFilesRegisterPath);
+            var (assets, _) = RegistryManager.ReadFromUInfoFile(filesRegisterPath);
+            var (compareAssets, _) = RegistryManager.ReadFromUInfoFile(compareFilesRegisterPath);
 
             if (assets == null || compareAssets == null) return [];
 

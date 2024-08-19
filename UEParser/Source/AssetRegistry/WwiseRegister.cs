@@ -153,7 +153,7 @@ public partial class WwiseRegister
 
         if (File.Exists(pathToCompareAudioRegister))
         {
-            var (_, audio) = RegistryManager.ReadFromUnifiedFile(pathToCompareAudioRegister);
+            var (_, audio) = RegistryManager.ReadFromUInfoFile(pathToCompareAudioRegister);
 
 #if DEBUG
             LogsWindowViewModel.Instance.AddLog("Loaded audio registry from .uinfo file.", Logger.LogTags.Debug);
@@ -260,8 +260,8 @@ public partial class WwiseRegister
 
     public static void SaveAudioInfoDictionary()
     {
-        var (assets, _) = RegistryManager.ReadFromUnifiedFile(PathToAudioRegister);
-        RegistryManager.WriteToUnifiedFile(PathToAudioRegister, assets, AudioInfoDictionary);
+        var (assets, _) = RegistryManager.ReadFromUInfoFile(PathToAudioRegister);
+        RegistryManager.WriteToUInfoFile(PathToAudioRegister, assets, AudioInfoDictionary);
 
         LogsWindowViewModel.Instance.AddLog("Saved audio register.", Logger.LogTags.Info);
     }

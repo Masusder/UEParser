@@ -7,9 +7,6 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using UEParser.ViewModels;
-using System.Linq;
-using Amazon.Runtime.Internal.Util;
-using UEParser.Utils;
 
 namespace UEParser.Services;
 

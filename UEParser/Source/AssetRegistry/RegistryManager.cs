@@ -11,7 +11,7 @@ namespace UEParser.AssetRegistry;
 
 public class RegistryManager
 {
-    public static void WriteToUnifiedFile(string filePath, Dictionary<string, FilesRegister.FileInfo> assets, ConcurrentDictionary<string, WwiseRegister.AudioInfo> audio)
+    public static void WriteToUInfoFile(string filePath, Dictionary<string, FilesRegister.FileInfo> assets, ConcurrentDictionary<string, WwiseRegister.AudioInfo> audio)
     {
         using var fileStream = new FileStream(filePath, FileMode.Create);
         using var compressionStream = new GZipStream(fileStream, CompressionLevel.Optimal);
@@ -38,7 +38,7 @@ public class RegistryManager
         }
     }
 
-    public static (Dictionary<string, FilesRegister.FileInfo> assets, ConcurrentDictionary<string, WwiseRegister.AudioInfo> audio) ReadFromUnifiedFile(string filePath)
+    public static (Dictionary<string, FilesRegister.FileInfo> assets, ConcurrentDictionary<string, WwiseRegister.AudioInfo> audio) ReadFromUInfoFile(string filePath)
     {
         var assets = new Dictionary<string, FilesRegister.FileInfo>();
         var audio = new ConcurrentDictionary<string, WwiseRegister.AudioInfo>();

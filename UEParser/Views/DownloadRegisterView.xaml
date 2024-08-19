@@ -27,6 +27,8 @@
       <ListBox
         Grid.Row="1"
         Grid.Column="0"
+        MaxHeight="120"
+        MinWidth="300"
         ItemsSource="{Binding Registers}"
         SelectedItems="{Binding SelectedRegisters}"
         SelectionMode="Multiple"
@@ -54,6 +56,6 @@
         Not found any registers available for download.
       </TextBlock>
     </Grid>
-    <Button Content="Download Selected Registers" Cursor="Hand" Command="{Binding DownloadSelectedRegistersCommand}" IsEnabled="{Binding CanDownloadSelectedRegisters}" HorizontalAlignment="Center"/>
+    <Button Content="Download Selected Registers" Margin="0,5,0,0" Cursor="Hand" Command="{Binding DownloadSelectedRegistersCommand}" IsEnabled="{Binding CanDownloadSelectedRegisters}" HorizontalAlignment="Center"/>
   </StackPanel>
 </Window>
