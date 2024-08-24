@@ -143,11 +143,32 @@ public class KrakenApiConfig
             { "dynamicContent", "/dynamicContent/DynamicContent.json" },
             { "archiveRewardData", "/archiveRewardData/content.json" },
             { "collections", "/collections.json" },
-            { "specialEventsLoadingText", "/loadingText/specialEventsLoadingText_en.json" }
+            { "specialEventsLoadingText", "/loadingText/specialEventsLoadingText_en.json" },
+
+            // These endpoints can be potentially added to the config, if you want to retrieve them from Kraken API
+            // Commented out as app doesn't need these endpoints for anything
+
+            //{ "cinematics", "/cinematics.json" },
+            //{ "bloodwebGenerationRules", "/bloodwebGenerationRules.json" },
+            //{ "bonusPointEventsContent", "/bonusPointEventsContent.json" },
+            //{ "contentSchedule", "/contentSchedule.json" },
+            //{ "coreRituals", "/coreRituals.json" },
+            //{ "emblemTunable", "/emblemTunable.json" },
+            //{ "featureLocks", "/featureLocks.json" },
+            //{ "gameConfigs", "/GameConfigs.json" },
+            //{ "gameConfigsDS", "/GameConfigsDS.json" },
+            //{ "featuredPageContent", "/featuredPageContent.json" },
+            //{ "itemsKillswitch", "/itemsKillswitch.json" },
+            //{ "prestige", "/prestige/prestige.json" },
+            //{ "randomRewards", "/randomRewards.json" },
+            //{ "ranksThresholds", "/ranksThresholds.json" },
+            //{ "experimentalFeatures", "/experimentalFeatures/experimentalFeatures.json" }
         };
         ApiEndpoints = new()
         {
-            { "contentVersion", "/utils/contentVersion/version" }
+            { "contentVersion", "/utils/contentVersion/version" },
+            { "loginWithSteamTokenBody", "/auth/provider/steam/loginWithTokenBody" },
+            { "getPlayerFullProfileState", "/players/me/states/FullProfile/binary" }
         };
         // Gotta Catch ’Em All
         S3AccessKeys = new()
@@ -361,6 +382,8 @@ public class SensitiveConfig
     public string? S3SecretKey { get; set; }
     public string? S3BucketName { get; set; }
     public string? AWSRegion { get; set; }
+    public string? SteamUsername { get; set; }
+    public string? SteamPassword { get; set; }
 
     public SensitiveConfig()
     {
@@ -368,6 +391,8 @@ public class SensitiveConfig
         S3SecretKey = "";
         S3BucketName = "";
         AWSRegion = "";
+        SteamUsername = "";
+        SteamPassword = "";
     }
 }
 

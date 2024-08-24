@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using UEParser.ViewModels;
 
-namespace UEParser;
+namespace UEParser.Network.Steam;
 
 public class SteamAPI
 {

@@ -5,7 +5,7 @@ using System;
 using UEParser.Parser;
 using UEParser.Services;
 using UEParser.ViewModels;
-using UEParser.Kraken;
+using UEParser.Network.Kraken;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using System.Text;

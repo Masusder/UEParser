@@ -7,6 +7,7 @@ using UEParser.Models;
 using UEParser.Services;
 using System.IO;
 using UEParser.ViewModels;
+using UEParser.Network;
 
 namespace UEParser;
 

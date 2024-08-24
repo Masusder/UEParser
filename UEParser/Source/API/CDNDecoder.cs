@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using UEParser.Services;
 using UEParser.ViewModels;
 
-namespace UEParser.Kraken;
+namespace UEParser.Network.Kraken;
 
 // Special thanks to Archengius for help
 // This is V3 decryption algorithm with combination of V1 algorithm

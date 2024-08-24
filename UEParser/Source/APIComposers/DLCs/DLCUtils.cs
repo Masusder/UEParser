@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System;
 using UEParser.Models;
 using UEParser.Utils;
+using UEParser.Network.Steam;
 
 namespace UEParser.APIComposers;
 

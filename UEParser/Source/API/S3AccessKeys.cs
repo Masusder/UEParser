@@ -9,7 +9,7 @@ using UEParser.Services;
 using UEParser.ViewModels;
 using System.Threading.Tasks;
 
-namespace UEParser.Kraken;
+namespace UEParser.Network.Kraken;
 
 partial class S3AccessKeys
 {

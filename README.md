@@ -5,6 +5,7 @@
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 ![Commit Activity](https://img.shields.io/github/commit-activity/m/Masusder/UEParser.svg)
 ![Last Commit](https://img.shields.io/github/last-commit/Masusder/UEParser.svg)
+[![Discord](https://discordapp.com/api/guilds/637265123144237061/widget.png?style=shield)](https://discord.gg/dbdleaks)
 
 UEParser is an Avalonia-based application developed as a part of [DBDInfo](https://dbd-info.com/) project. 
 It is specifically designed to work with Dead by Daylight game, mainly focusing on **automated and bulk retrieval of data from the game assets**, while maintaining organization by build version.

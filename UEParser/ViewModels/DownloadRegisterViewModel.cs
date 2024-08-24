@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using UEParser.AssetRegistry;
+using UEParser.Network;
 
 namespace UEParser.ViewModels;
 

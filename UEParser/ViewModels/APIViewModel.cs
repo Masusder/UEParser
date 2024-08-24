@@ -2,9 +2,10 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
-using UEParser.Kraken;
 using System.Threading.Tasks;
 using System;
+using UEParser.Network.Kraken;
+using UEParser.Network.Kraken.API;
 
 namespace UEParser.ViewModels;
 
@@ -27,12 +28,30 @@ public class APIViewModel
 
     public ICommand FetchAPICommand { get; }
     public ICommand DownloadDynamicAssetsCommand { get; }
+    public ICommand SteamLoginCommand { get; }
 
     public APIViewModel()
     {
         FetchAPICommand = ReactiveCommand.Create(FetchData);
         DownloadDynamicAssetsCommand = ReactiveCommand.Create(DownloadDynamicAssets);
+        SteamLoginCommand = ReactiveCommand.Create(SteamLogin);
         ConstructFullVersion();
+    }
+
+    private async Task SteamLogin()
+    {
+        try
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+            await KrakenService.RetrieveKrakenApiAuthenticated();
+            //await KrakenAPI.AuthenticateWithDbd();
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        }
+        catch (Exception ex)
+        {
+            LogsWindowViewModel.Instance.AddLog(ex.Message, Logger.LogTags.Error);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+        }
     }
 
     private async Task FetchData()
@@ -40,7 +59,7 @@ public class APIViewModel
         try
         {
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
-            await KrakenAPI.UpdateKrakenApi();
+            await KrakenService.UpdateKrakenApi();
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
         catch (Exception ex)
@@ -55,7 +74,7 @@ public class APIViewModel
         try
         {
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
-            await KrakenAPI.DownloadDynamicContent();
+            await KrakenService.DownloadDynamicContent();
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
         catch (Exception ex)

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System;
 using UEParser.Services;
-using UEParser.Kraken;
+using UEParser.Network.Kraken;
 using UEParser.Views;
 
 namespace UEParser;
@@ -38,7 +38,7 @@ public partial class MainWindow : AppWindow
         if (updateAPIDuringInitialization)
         {
             LogsWindowViewModel.Instance.AddLog("You have set up the application to check for Kraken API updates during initialization.", Logger.LogTags.Info);
-            await KrakenAPI.UpdateKrakenApi();
+            await KrakenService.UpdateKrakenApi();
         }
 
         if (hasVersionChanged)

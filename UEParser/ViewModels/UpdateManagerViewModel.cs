@@ -190,50 +190,58 @@ public class UpdateManagerViewModel : ReactiveObject
 
         await Task.Run(() =>
         {
-            var config = ConfigurationService.Config;
-            string blenderPath = config.Global.BlenderPath;
-            string rootDirectory = GlobalVariables.rootDir;
-            string inputDirectory = Path.Combine(GlobalVariables.rootDir, "Output", "ExtractedAssets", "Meshes", GlobalVariables.versionWithBranch);
-            string inputMappingDirectory = Path.Combine(GlobalVariables.rootDir, "Output", "ModelsData", GlobalVariables.versionWithBranch);
-            string outputDirectory = Path.Combine(GlobalVariables.rootDir, "Output", "ConvertedModels", GlobalVariables.versionWithBranch);
-
-            string command = ($"-b -P \"{GlobalVariables.modelsConverterScriptPath}\" " +
-                            $"-- --root_directory \"{rootDirectory}\" " +
-                            $"--input_directory \"{inputDirectory + '\\'}\" " +
-                            $"--input_mapping_directory \"{inputMappingDirectory + '\\'}\" " +
-                            $"--output_directory \"{outputDirectory + '\\'}\"")
-                            .Replace(Path.DirectorySeparatorChar, '/')
-                            .Replace(Path.AltDirectorySeparatorChar, '/');
-
-            ProcessStartInfo processInfo = new()
+            try
             {
-                FileName = blenderPath,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                Arguments = command
-            };
+                var config = ConfigurationService.Config;
+                string blenderPath = config.Global.BlenderPath;
+                string rootDirectory = GlobalVariables.rootDir;
+                string inputDirectory = Path.Combine(GlobalVariables.rootDir, "Output", "ExtractedAssets", "Meshes", GlobalVariables.versionWithBranch);
+                string inputMappingDirectory = Path.Combine(GlobalVariables.rootDir, "Output", "ModelsData", GlobalVariables.versionWithBranch);
+                string outputDirectory = Path.Combine(GlobalVariables.rootDir, "Output", "ConvertedModels", GlobalVariables.versionWithBranch);
 
-            using Process? process = Process.Start(processInfo);
+                string command = ($"-b -P \"{GlobalVariables.modelsConverterScriptPath}\" " +
+                                $"-- --root_directory \"{rootDirectory}\" " +
+                                $"--input_directory \"{inputDirectory + '\\'}\" " +
+                                $"--input_mapping_directory \"{inputMappingDirectory + '\\'}\" " +
+                                $"--output_directory \"{outputDirectory + '\\'}\"")
+                                .Replace(Path.DirectorySeparatorChar, '/')
+                                .Replace(Path.AltDirectorySeparatorChar, '/');
 
-            string? output = process?.StandardOutput.ReadToEnd();
-            string? error = process?.StandardError.ReadToEnd();
+                ProcessStartInfo processInfo = new()
+                {
+                    FileName = blenderPath,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    Arguments = command
+                };
 
-            process?.WaitForExit();
+                using Process? process = Process.Start(processInfo);
 
-            string cleanOutput = string.Join(Environment.NewLine,
-                output?.Replace("Info: Deleted 0 object(s)", "")
-                       .Split(new[] { Environment.NewLine }, StringSplitOptions.None)
-                       .Select(line => line.Trim())
-                       .Where(line => !string.IsNullOrEmpty(line))
-                ?? []);
+                string? output = process?.StandardOutput.ReadToEnd();
+                string? error = process?.StandardError.ReadToEnd();
 
-            LogsWindowViewModel.Instance.AddLog(cleanOutput ?? "", Logger.LogTags.Info);
+                process?.WaitForExit();
 
-            if (!string.IsNullOrEmpty(error))
+                string cleanOutput = string.Join(Environment.NewLine,
+                    output?.Replace("Info: Deleted 0 object(s)", "")
+                           .Split(new[] { Environment.NewLine }, StringSplitOptions.None)
+                           .Select(line => line.Trim())
+                           .Where(line => !string.IsNullOrEmpty(line))
+                    ?? []);
+
+                LogsWindowViewModel.Instance.AddLog(cleanOutput ?? "", Logger.LogTags.Info);
+
+                if (!string.IsNullOrEmpty(error))
+                {
+                    LogsWindowViewModel.Instance.AddLog(error, Logger.LogTags.Error);
+                }
+            }
+            catch (Exception ex)
             {
-                LogsWindowViewModel.Instance.AddLog(error, Logger.LogTags.Error);
+                LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+                LogsWindowViewModel.Instance.AddLog(ex.Message, Logger.LogTags.Error);
             }
         });
 

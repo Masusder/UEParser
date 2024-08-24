@@ -158,7 +158,7 @@
               <Run FontWeight="700">No available comparison versions found.</Run><LineBreak />
               Once you initialize a game build within the app, the version you initialize with will be available for comparison.
             </TextBlock>
-            <StackPanel Spacing="7.5">
+            <StackPanel Spacing="7.5" IsVisible="{Binding IsCurrentVersionConfigured}">
               <TextBlock
                 TextAlignment="Center"
                 Margin="0,25,0,0"

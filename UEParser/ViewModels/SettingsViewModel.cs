@@ -83,6 +83,8 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         }
     }
 
+    public bool IsCurrentVersionConfigured => !string.IsNullOrEmpty(SelectedCurrentVersion);
+
     private string? _selectedComparisonVersion;
     public string? SelectedComparisonVersion
     {
