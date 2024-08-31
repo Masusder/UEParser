@@ -52,6 +52,30 @@ public class FileWriter
         }
     }
 
+    public static void SaveApiResponseToFile(string data, string fileName)
+    {
+        if (data == null)
+            throw new ArgumentNullException(nameof(data), "Data to save cannot be null.");
+
+        if (string.IsNullOrWhiteSpace(fileName))
+            throw new ArgumentException("File name cannot be null or empty.", nameof(fileName));
+
+        string baseDirectory = Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "API");
+
+        if (!Directory.Exists(baseDirectory))
+        {
+            Directory.CreateDirectory(baseDirectory);
+        }
+
+        string fullPath = Path.Combine(baseDirectory, fileName);
+
+        // Make sure saved file is indented
+        var jsonObject = JsonConvert.DeserializeObject(data);
+        string indentedJson = JsonConvert.SerializeObject(jsonObject, Formatting.Indented);
+
+        File.WriteAllText(fullPath, indentedJson);
+    }
+
     public static void SaveJsonFile(string exportPath, string data)
     {
         try
@@ -65,7 +89,6 @@ public class FileWriter
             }
 
             File.WriteAllText(exportPathWithExtension, data);
-
         }
         catch (Exception ex)
         {

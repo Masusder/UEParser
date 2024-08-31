@@ -4,8 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Threading.Tasks;
 using System;
-using UEParser.Network.Kraken;
-using UEParser.Network.Kraken.API;
+using UEParser.Services;
 
 namespace UEParser.ViewModels;
 

@@ -7,22 +7,45 @@ using System.Threading.Tasks;
 using UEParser.Models;
 using UEParser.Services;
 using UEParser.ViewModels;
+using UEParser.Network;
 using UEParser.Network.Kraken.CDN;
 using UEParser.Network.Kraken.API;
 using System.IO;
 using UEParser.AssetRegistry;
 using UEParser.Models.KrakenCDN;
 using UEParser.Utils;
-using UEParser.Network.Steam;
 
-namespace UEParser.Network.Kraken;
+namespace UEParser.Services;
 
 public class KrakenService
 {
     public static async Task RetrieveKrakenApiAuthenticated()
     {
-        await KrakenAPI.AuthenticateWithDbd();
+        NetAPI.LoadAndValidateCookies();
+        bool isCookieNotExpired = NetAPI.IsAnyCookieNotExpired();
+
+        if (!isCookieNotExpired)
+        {
+            await KrakenAPI.AuthenticateWithDbd();
+        }
+        else
+        {
+#if DEBUG
+            LogsWindowViewModel.Instance.AddLog("Using locally stored auth session token.", Logger.LogTags.Debug);
+#endif
+        }
+
         await KrakenAPI.GetPlayerFullProfileState();
+        await KrakenAPI.GetCharacterData();
+
+        Dictionary<string, string> krakenEndpoints = new()
+        {
+            { "inventory", "Player's Inventory"},
+            { "storyStatus", "Stories Status" },
+            { "config", "Config" }
+        };
+
+        await KrakenAPI.BulkGetKrakenEndpoints(krakenEndpoints);
     }
 
     public static async Task UpdateKrakenApi()
@@ -43,7 +66,7 @@ public class KrakenService
 
         string versionContentUrl = KrakenAPI.ConstructApiUrl("contentVersion", queryParams);
 
-        Network.API.ApiResponse response = await Network.API.FetchUrl(versionContentUrl);
+        NetAPI.ApiResponse response = await NetAPI.FetchUrl(versionContentUrl);
 
         var responseData = JsonConvert.DeserializeObject<KrakenAPI.KrakenVersionData>(response.Data);
 
@@ -68,7 +91,7 @@ public class KrakenService
             if (responseData.AvailableVersions.Count == 0)
             {
                 versionContentUrl = versionContentUrl[..^2];
-                Network.API.ApiResponse desperateRequest = await Network.API.FetchUrl(versionContentUrl);
+                NetAPI.ApiResponse desperateRequest = await NetAPI.FetchUrl(versionContentUrl);
 
                 if (!desperateRequest.Success) throw new Exception($"Failed to fetch latest Kraken version: {desperateRequest.ErrorMessage}");
                 responseData = JsonConvert.DeserializeObject<KrakenAPI.KrakenVersionData>(desperateRequest.Data);
@@ -132,7 +155,7 @@ public class KrakenService
 
     public static async Task DownloadDynamicContent()
     {
-        string dynamicContentFilePath = Path.Combine(GlobalVariables.rootDir, "Output", "API", GlobalVariables.versionWithBranch, "dynamicContent.json");
+        string dynamicContentFilePath = Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "dynamicContent.json");
 
         if (File.Exists(dynamicContentFilePath))
         {
@@ -177,7 +200,7 @@ public class KrakenService
 
                 try
                 {
-                    byte[] fileBytes = await Network.API.FetchFileBytesAsync(cdnUrl);
+                    byte[] fileBytes = await NetAPI.FetchFileBytesAsync(cdnUrl);
                     await File.WriteAllBytesAsync(assetOutputPath, fileBytes);
                     numberOfDownloadedAssets++;
                     LogsWindowViewModel.Instance.AddLog($"Successfully downloaded: {modifiedPackagedPath}", Logger.LogTags.Info);

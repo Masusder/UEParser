@@ -164,6 +164,20 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         set => SetProperty(ref _awsRegion, value);
     }
 
+    private string? _steamUsername;
+    public string? SteamUsername
+    {
+        get => _steamUsername;
+        set => SetProperty(ref _steamUsername, value);
+    }
+
+    private string? _steamPassword;
+    public string? SteamPassword
+    {
+        get => _steamPassword;
+        set => SetProperty(ref _steamPassword, value);
+    }
+
     public ObservableCollection<string> TomesList { get; }
     public ObservableCollection<string> EventTomesList { get; }
 
@@ -182,29 +196,38 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         SelectedComparisonVersionWithBranch = Helpers.ConstructVersionHeaderWithBranch(true);
         var (version, branch) = Utils.StringUtils.SplitVersionAndBranch(SelectedComparisonVersionWithBranch);
 
-        // Paths
+        #region PATHS
         PathToGameDirectory = config.Core.PathToGameDirectory;
         PathToMappings = config.Core.MappingsPath;
         BlenderPath = config.Global.BlenderPath;
+        #endregion
 
-        // Branches
+        #region BRANCHES
         SelectedCurrentBranch = config.Core.VersionData.Branch;
         SelectedComparisonBranch = (Branch)Enum.Parse(typeof(Branch), branch);
+        #endregion
 
-        // Versions
+        #region VERSIONS
         SelectedCurrentVersion = config.Core.VersionData.LatestVersionHeader;
-
         SelectedComparisonVersion = version;
         CustomVersion = config.Core.ApiConfig.CustomVersion;
+        #endregion
 
-        // Booleans
+        #region BOOLEANS
         UpdateApiDuringInitialization = config.Global.UpdateAPIDuringInitialization;
+        #endregion
 
-        // Sensitive
+        #region SENSITIVE
+        // AWS
         S3AccessKey = config.Sensitive.S3AccessKey;
         S3SecretKey = config.Sensitive.S3SecretKey;
         S3BucketName = config.Sensitive.S3BucketName;
         AWSRegion = config.Sensitive.AWSRegion;
+
+        // Steam
+        SteamUsername = config.Sensitive.SteamUsername;
+        SteamPassword = config.Sensitive.SteamPassword;
+        #endregion
 
         // Other
         var hashSetTomesList = config.Core.TomesList;
@@ -259,6 +282,8 @@ public partial class SettingsViewModel : INotifyPropertyChanged
             config.Sensitive.S3SecretKey = S3SecretKey;
             config.Sensitive.S3BucketName = S3BucketName;
             config.Sensitive.AWSRegion = AWSRegion;
+            config.Sensitive.SteamUsername = SteamUsername;
+            config.Sensitive.SteamPassword = SteamPassword;
 
             // Booleans
             config.Global.UpdateAPIDuringInitialization = UpdateApiDuringInitialization;

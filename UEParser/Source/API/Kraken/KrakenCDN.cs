@@ -44,7 +44,7 @@ public partial class KrakenCDN
 
         string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch();
 
-        string outputDir = Path.Combine(GlobalVariables.rootDir, "Output", "API", versionWithBranch);
+        string outputDir = Path.Combine(GlobalVariables.pathToKraken, versionWithBranch, "CDN");
         Directory.CreateDirectory(outputDir);
 
         string branch = config.Core.VersionData.Branch.ToString();
@@ -57,7 +57,7 @@ public partial class KrakenCDN
 
             string outputPath = Path.Combine(outputDir, cdnEndpoint + ".json");
             string url = ConstructCdnUrl(cdnEndpoints[cdnEndpoint]);
-            Network.API.ApiResponse response = await Network.API.FetchUrl(url);
+            NetAPI.ApiResponse response = await NetAPI.FetchUrl(url);
 
             LogsWindowViewModel.Instance.AddLog($"Decrypting CDN: '{cdnEndpoint}'.", Logger.LogTags.Info);
 
@@ -81,7 +81,7 @@ public partial class KrakenCDN
         string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch();
 
         string outputDirNameString = outputDirName.ToString();
-        string outputDir = Path.Combine(GlobalVariables.rootDir, "Output", "API", versionWithBranch, outputDirNameString);
+        string outputDir = Path.Combine(GlobalVariables.pathToKraken, versionWithBranch, "CDN", outputDirNameString);
         Directory.CreateDirectory(outputDir);
 
         string branch = config.Core.VersionData.Branch.ToString();
@@ -108,7 +108,7 @@ public partial class KrakenCDN
 
                 LogsWindowViewModel.Instance.AddLog($"Fetching CDN: '{outputDirNameString} {tomeId}'", Logger.LogTags.Info);
 
-                Network.API.ApiResponse response = await Network.API.FetchUrl(url);
+                NetAPI.ApiResponse response = await NetAPI.FetchUrl(url);
 
                 LogsWindowViewModel.Instance.AddLog($"Decrypting CDN: '{outputDirNameString} {tomeId}'.", Logger.LogTags.Info);
 
@@ -135,7 +135,7 @@ public partial class KrakenCDN
 
                 LogsWindowViewModel.Instance.AddLog($"Fetching CDN: '{outputDirNameString} {tomeId}'", Logger.LogTags.Info);
 
-                Network.API.ApiResponse response = await Network.API.FetchUrl(url);
+                NetAPI.ApiResponse response = await NetAPI.FetchUrl(url);
 
                 LogsWindowViewModel.Instance.AddLog($"Decrypting CDN: '{outputDirNameString} {tomeId}'.", Logger.LogTags.Info);
 

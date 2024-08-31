@@ -143,37 +143,8 @@ public class Characters
             Dictionary<string, Character> localizedCharactersDB = JsonConvert.DeserializeObject<Dictionary<string, Character>>(objectString) ?? [];
 
             Helpers.LocalizeDB(localizedCharactersDB, localizationData, languageKeys, langKey);
-            //foreach (var item in localizedCharactersDB)
-            //{
-            //    string characterIndex = item.Key;
-            //    var localizationDataEntry = localizationData[characterIndex];
 
-            //    foreach (var entry in localizationDataEntry)
-            //    {
-            //        try
-            //        {
-            //            string localizedString;
-            //            if (languageKeys.TryGetValue(entry.Value.Key, out string? langValue))
-            //            {
-            //                localizedString = langValue;
-            //            }
-            //            else
-            //            {
-            //                LogsWindowViewModel.Instance.AddLog($"Missing localization string -> Property: '{entry.Key}', LangKey: '{langKey}', RowId: '{characterIndex}', FallbackString: '{entry.Value.SourceString}'", Logger.LogTags.Warning);
-            //                localizedString = entry.Value.SourceString;
-            //            }
-
-            //            var propertyInfo = typeof(Character).GetProperty(entry.Key);
-            //            propertyInfo?.SetValue(item.Value, localizedString);
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            LogsWindowViewModel.Instance.AddLog($"Missing localization string -> Property: '{entry.Key}', LangKey: '{langKey}', RowId: '{characterIndex}', FallbackString: '{entry.Value.SourceString}' <- {ex}", Logger.LogTags.Warning);
-            //        }
-            //    }
-            //}
-
-            string outputPath = Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, langKey, "Characters.json");
+            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Characters.json");
 
             FileWriter.SaveParsedDB(localizedCharactersDB, outputPath, "Characters");
         }

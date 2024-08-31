@@ -215,6 +215,7 @@ public partial class WwiseFileHandler
     }
 
     // Only call this after sound banks have been unpacked
+    // Deprecated with 8.2.0_live update, new solution needs to be found
     public static void StructureAudio()
     {
         var soundBankDictionary = WwiseRegister.SoundBankDictionary;

@@ -255,8 +255,10 @@ public class AssetsManager
             }
 
             // Clean up the fileInfoDictionary
-            DeleteUnusedFiles();
             FilesRegister.CleanUpFileInfoDictionary(files);
+
+            // Deletion of unused files needs to invoked after fileInfoDictionary cleanup!
+            DeleteUnusedFiles();
             FilesRegister.SaveFileInfoDictionary();
             LogsWindowViewModel.Instance.AddLog("Finished exporting game assets.", Logger.LogTags.Info);
         });
@@ -625,9 +627,9 @@ public class AssetsManager
 
             WwiseFileHandler.ConvertToOggAndMove();
 
-            LogsWindowViewModel.Instance.AddLog("Deleting temporary audio folder.", Logger.LogTags.Info);
+            //LogsWindowViewModel.Instance.AddLog("Deleting temporary audio folder.", Logger.LogTags.Info);
 
-            WwiseFileHandler.CleanExtractedAudioDir();
+            //WwiseFileHandler.CleanExtractedAudioDir();
         });
     }
 
@@ -786,8 +788,10 @@ public class AssetsManager
                 }
             }
 
-            DeleteUnusedFiles();
             FilesRegister.CleanUpFileInfoDictionary(files);
+
+            // Deletion of unused files needs to invoked after fileInfoDictionary cleanup!
+            DeleteUnusedFiles();
             FilesRegister.SaveFileInfoDictionary();
         });
     }

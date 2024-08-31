@@ -5,6 +5,7 @@ using System.IO;
 using UEParser.Models;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace UEParser.Utils;
 
@@ -233,9 +234,18 @@ public partial class StringUtils
         return fullPath;
     }
 
+    // This isn't a solution, but we have to do this:
+    // Content inside of Plugins is mounted to the main content directory during runtime
+    // if we wanna preserve original files structure we have to somehow determine what is inside of plugins and whats not
+    // that's what this fix is for
+    // In case this fix becomes too much of a hassle to maintain just mount plugins content to the main content directory..
     private static bool IsInDBDCharactersDir(int characterIndex)
     {
-        List<int> charactersSet = [268435464, 41, 42, 268435469, 268435466, 268435465];
+        List<int> killersSet = [268435461, 268435462, 268435464, 268435465, 268435466, 268435469, 268435470, 268435491];
+        List<int> survivorsSet = [41, 42, 43];
+
+        List<int> charactersSet = [.. killersSet, .. survivorsSet];
+
         return charactersSet.Contains(characterIndex);
     }
 
@@ -274,12 +284,12 @@ public partial class StringUtils
             if (isInDBDCharacters)
             {
                 modifiedPath = modifiedPath.TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-                modifiedPath = Path.Combine("/DeadByDaylight/Plugins/Runtime/Bhvr/DBDCharacters", modifiedPath);
+                modifiedPath = Path.Combine("/DeadByDaylight/Plugins/DBDCharacters", modifiedPath);
             }
             else
             {
                 modifiedPath = modifiedPath.TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-                modifiedPath = Path.Combine("/DeadByDaylight/Plugins/Runtime/Bhvr/DLC", modifiedPath);
+                modifiedPath = Path.Combine("/DeadByDaylight/Plugins/Runtime/Bhvr/DBDCharacters", modifiedPath);
             }
         }
         else

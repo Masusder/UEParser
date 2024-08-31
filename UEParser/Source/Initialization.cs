@@ -59,22 +59,38 @@ public class Initialize
     {
         var config = ConfigurationService.Config;
         string gameDirectoryPath = config.Core.PathToGameDirectory;
+        string? configuredCurrentVersion = config.Core.VersionData.LatestVersionHeader;
         string buildVersion = "";
+
+        if (string.IsNullOrEmpty(configuredCurrentVersion))
+        {
+            LogsWindowViewModel.Instance.AddLog("Current Version isn't configured in settings.", Logger.LogTags.Error);
+        }
 
         bool hasVersionChanged = false;
         if (!string.IsNullOrEmpty(gameDirectoryPath) && Directory.Exists(gameDirectoryPath))
         {
-            string[] buildVersionPath = Directory.GetFiles(gameDirectoryPath, "DeadByDaylightVersionNumber.txt", SearchOption.AllDirectories);
-            if (buildVersionPath.Length != 0)
-            {
-                buildVersion = File.ReadAllText(buildVersionPath[0]);
+            bool isGameDirectoryPathCorrect = IsGameDirectoryPathCorrect(gameDirectoryPath);
 
-                // Check if build version number has changed
-                hasVersionChanged = ReadVersion(buildVersion);
+            if (isGameDirectoryPathCorrect)
+            {
+                string[] buildVersionPath = Directory.GetFiles(gameDirectoryPath, "DeadByDaylightVersionNumber.txt", SearchOption.AllDirectories);
+                if (buildVersionPath.Length != 0)
+                {
+                    buildVersion = File.ReadAllText(buildVersionPath[0]);
+
+                    // Check if build version number has changed
+                    hasVersionChanged = ReadVersion(buildVersion);
+                }
+                else
+                {
+                    LogsWindowViewModel.Instance.AddLog("Not found Version Number. Check if path to the game directory is set correctly in settings.", Logger.LogTags.Error);
+                    LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+                }
             }
             else
             {
-                LogsWindowViewModel.Instance.AddLog("Not found Version Number. Check if path to the game directory is set correctly in 'config.json'.", Logger.LogTags.Error);
+                LogsWindowViewModel.Instance.AddLog("Path to game directory isn't correct. Make sure you configured root of game directory.", Logger.LogTags.Error);
                 LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
             }
         }
@@ -87,6 +103,20 @@ public class Initialize
         return (hasVersionChanged, buildVersion);
     }
 
+    private static bool IsGameDirectoryPathCorrect(string gameDirectoryPath)
+    {
+        const string packagePathToPaks = "DeadByDaylight/Content/Paks";
+
+        string paksMountingRoot = Path.Combine(gameDirectoryPath, packagePathToPaks);
+
+        if (!Directory.Exists(paksMountingRoot))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     private static void CreateDefaultDirectories()
     {
         Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents"));
@@ -97,7 +127,7 @@ public class Initialize
         Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAudio"));
         Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output"));
         Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output", "Logs"));
-        Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output", "API"));
+        Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output", "Kraken"));
         Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output", "ExtractedAssets"));
         Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData"));
         Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output", "ModelsData"));

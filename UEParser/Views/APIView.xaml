@@ -16,7 +16,7 @@
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
       <Button Content="Fetch API" Command="{Binding FetchAPICommand}" Cursor="Hand" FontWeight="500" HorizontalAlignment="Center" VerticalAlignment="Center" />
       <Button Content="Download Dynamic Assets" Command="{Binding DownloadDynamicAssetsCommand}" Cursor="Hand" FontWeight="500" HorizontalAlignment="Center" VerticalAlignment="Center" />
-      <!--<Button Content="Steam Auth" Command="{Binding SteamLoginCommand}" Cursor="Hand" FontWeight="500" HorizontalAlignment="Center" VerticalAlignment="Center" />-->
+      <Button Content="Steam Auth" Command="{Binding SteamLoginCommand}" Cursor="Hand" FontWeight="500" HorizontalAlignment="Center" VerticalAlignment="Center" />
     </StackPanel>
   </StackPanel>
 </UserControl>

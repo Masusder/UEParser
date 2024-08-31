@@ -132,7 +132,7 @@ public class Offerings
 
             Helpers.LocalizeDB(localizedOfferingsDB, LocalizationData, languageKeys, langKey);
 
-            string outputPath = Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, langKey, "Offerings.json");
+            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Offerings.json");
 
             FileWriter.SaveParsedDB(localizedOfferingsDB, outputPath, "Offerings");
         }

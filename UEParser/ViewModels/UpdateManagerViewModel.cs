@@ -290,6 +290,8 @@ public class UpdateManagerViewModel : ReactiveObject
 
     private static async Task UploadModelsData()
     {
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+
         await Task.Run(async () =>
         {
             try

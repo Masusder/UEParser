@@ -17,7 +17,7 @@ namespace UEParser.APIComposers;
 public class Collections
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
-    private static readonly dynamic CollectionsData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.pathToKrakenApi, GlobalVariables.versionWithBranch, "collections.json")) ?? throw new Exception("Failed to load collections data.");
+    private static readonly dynamic CollectionsData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "collections.json")) ?? throw new Exception("Failed to load collections data.");
 
     public static async Task InitializeCollectionsDB()
     {
@@ -125,7 +125,7 @@ public class Collections
             //Helpers.LocalizeDB(localizedCollectionsDB, LocalizationData, languageKeys, langKey);
             CollectionUtils.PopulateLocalizationFromApi(localizedCollectionsDB, langKey, collectionsDictionary, CollectionsData);
 
-            string outputPath = Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, langKey, "Collections.json");
+            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Collections.json");
 
             FileWriter.SaveParsedDB(localizedCollectionsDB, outputPath, "Collections");
         }

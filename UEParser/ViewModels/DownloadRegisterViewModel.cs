@@ -73,7 +73,7 @@ public class DownloadRegisterViewModel : ReactiveObject
 
             try
             {
-                byte[] fileBytes = await API.FetchFileBytesAsync(downloadUrl);
+                byte[] fileBytes = await NetAPI.FetchFileBytesAsync(downloadUrl);
 
                 File.WriteAllBytes(Path.Combine(GlobalVariables.rootDir, "Dependencies", "FilesRegister", registerName), fileBytes);
                 LogsWindowViewModel.Instance.AddLog($"Downloaded file registry for {register} version.", Logger.LogTags.Success);
@@ -130,7 +130,7 @@ public class DownloadRegisterViewModel : ReactiveObject
     {
         // Get available registries manifest from DBDInfo API
         string manifestUrl = GlobalVariables.dbdinfoBaseUrl + "api/file-register-manifest";
-        var response = await API.FetchUrl(manifestUrl);
+        var response = await NetAPI.FetchUrl(manifestUrl);
 
         if (!response.Success)
         {

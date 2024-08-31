@@ -66,7 +66,7 @@ public class Journals
                             string directoryPath = string.Join("/", pathComponents, assetsIndex, pathComponents.Length - assetsIndex - 1);
                             string fileName = Path.GetFileNameWithoutExtension(pathComponents[^1]);
 
-                            // construct the desired output path
+                            // Construct the desired output path
                             rewardImageOutputPath = $"/images/{directoryPath}/{fileName}.png";
                         }
 
@@ -165,7 +165,7 @@ public class Journals
 
             JournalUtils.PopulateTomeNames(localizedJournalsDB, langKey);
 
-            string outputPath = Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, langKey, "Journals.json");
+            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Journals.json");
 
             FileWriter.SaveParsedDB(localizedJournalsDB, outputPath, "Journals");
         }

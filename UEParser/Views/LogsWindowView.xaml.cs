@@ -85,7 +85,8 @@ public partial class LogsWindowView : UserControl
                 var run = new Run
                 {
                     Text = segment.Text,
-                    Foreground = segment.Color
+                    Foreground = segment.Color,
+                    FontFamily = segment.FontFamily
                 };
                 logTextBlock?.Inlines?.Add(run);
             }
@@ -113,10 +114,7 @@ public partial class LogsWindowView : UserControl
         var scrollViewer = this.FindControl<ScrollViewer>("LogScrollViewer");
         if (scrollViewer != null)
         {
-            if (scrollViewer.Offset.Y + scrollViewer.Viewport.Height >= scrollViewer.Extent.Height)
-            {
-                SmoothScrollToOffset(scrollViewer, new Vector(0, 0), TimeSpan.FromSeconds(0.5));
-            }
+            SmoothScrollToOffset(scrollViewer, new Vector(0, 0), TimeSpan.FromSeconds(0.5));
         }
     }
 

@@ -1,17 +1,19 @@
 ﻿using Newtonsoft.Json;
-using ProtoBuf.Meta;
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace UEParser.Network;
 
-public class API
+public class NetAPI
 {
+    private static readonly string cookieFilePath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "cookies.json");
     private static readonly CookieContainer cookieContainer = new();
     private static readonly HttpClientHandler handler = new()
     {
@@ -92,8 +94,8 @@ public class API
                     var cookies = ParseCookies(cookieHeader, url);
                     foreach (var cookie in cookies)
                     {
-                        // Add cookie to the container
-                        cookieContainer.Add(new Uri(url), cookie);
+                        // Add cookie to the container and save cookies locally
+                        SetCookie(new Uri(url), cookie);
                     }
                 }
             }
@@ -108,41 +110,162 @@ public class API
         }
     }
 
-    private static List<Cookie> ParseCookies(string cookieHeader, string baseUrl)
+    private static List<Cookie> ParseCookies(string setCookieHeader, string baseUrl)
     {
         var cookies = new List<Cookie>();
-        var cookieParts = cookieHeader.Split(';');
+        var cookieParts = setCookieHeader.Split([';'], StringSplitOptions.RemoveEmptyEntries);
 
-        // Extract name and value from each cookie part
-        foreach (var part in cookieParts)
+        if (cookieParts.Length == 0) return cookies;
+
+        var cookieKeyValue = cookieParts[0].Split(['='], 2);
+        if (cookieKeyValue.Length != 2) return cookies; // Skip invalid cookies
+
+        var cookieName = cookieKeyValue[0].Trim();
+        var cookieValue = cookieKeyValue[1].Trim();
+
+        var cookie = new Cookie(cookieName, cookieValue)
         {
-            var kvp = part.Split('=');
-            if (kvp.Length == 2)
+            Domain = new Uri(baseUrl).Host,
+            Path = "/"
+        };
+
+        // Process additional attributes
+        for (int i = 1; i < cookieParts.Length; i++)
+        {
+            var attribute = cookieParts[i].Trim();
+            if (string.IsNullOrEmpty(attribute)) continue;
+
+            var attributeParts = attribute.Split(['='], 2);
+            var attributeName = attributeParts[0].Trim().ToLower();
+
+            switch (attributeName)
             {
-                var name = kvp[0].Trim();
-                var value = kvp[1].Trim();
-
-                // Create a new Cookie object
-                var cookie = new Cookie(name, value)
-                {
-                    Domain = new Uri(baseUrl).Host, // Set the domain to the base URL's domain
-                    Path = "/" // Set the path to root or a specific path if needed
-                };
-
-                cookies.Add(cookie);
+                case "domain":
+                    if (attributeParts.Length > 1)
+                    {
+                        cookie.Domain = attributeParts[1].Trim();
+                    }
+                    break;
+                case "path":
+                    if (attributeParts.Length > 1)
+                    {
+                        cookie.Path = attributeParts[1].Trim();
+                    }
+                    break;
+                case "expires":
+                    if (attributeParts.Length > 1 && DateTime.TryParse(attributeParts[1].Trim(), out var expires))
+                    {
+                        cookie.Expires = expires;
+                    }
+                    break;
+                //case "secure":
+                //    cookie.Secure = true;
+                //    break;
+                //case "httponly":
+                //    cookie.HttpOnly = true;
+                //    break;
             }
         }
 
+        cookies.Add(cookie);
         return cookies;
     }
+
 
     public static void SetCookie(Uri baseUrl, Cookie cookie)
     {
         cookieContainer.Add(baseUrl, cookie);
+        SaveCookies();
+    }
+
+    private static void SaveCookies()
+    {
+        var cookieList = new List<SerializableCookie>();
+        var allDomains = cookieContainer.GetAllCookies().Select(c => c.Domain).Distinct();
+
+        foreach (var domain in allDomains)
+        {
+            Uri domainUri = new($"https://{domain}/"); // I assume domain is always secure
+
+            foreach (Cookie cookie in cookieContainer.GetCookies(domainUri))
+            {
+                // Check if the cookie is already in the list
+                if (!cookieList.Any(c => c.Name == cookie.Name && c.Domain == cookie.Domain && c.Path == cookie.Path))
+                {
+                    cookieList.Add(new SerializableCookie(cookie));
+                }
+            }
+        }
+
+        File.WriteAllText(cookieFilePath, JsonConvert.SerializeObject(cookieList));
+    }
+
+    public static void LoadAndValidateCookies()
+    {
+        if (File.Exists(cookieFilePath))
+        {
+            var cookieData = File.ReadAllText(cookieFilePath);
+            var cookieList = JsonConvert.DeserializeObject<List<SerializableCookie>>(cookieData);
+
+            if (cookieList != null)
+            {
+                foreach (var serializableCookie in cookieList)
+                {
+                    // Check if the cookie is expired
+                    if (serializableCookie.Expires > DateTime.Now)
+                    { 
+                        var uri = new Uri($"https://{serializableCookie.Domain}"); // I assume domain is always secure
+                        cookieContainer.Add(uri, serializableCookie.ToCookie());
+                    }
+                }
+            }
+        }
+    }
+
+
+    public static bool IsAnyCookieNotExpired()
+    {
+        var allCookies = cookieContainer.GetAllCookies();
+
+        // Check if at least one cookie is not expired
+        return allCookies.Cast<Cookie>().Any(cookie => !cookie.Expired);
     }
 
     public static CookieCollection GetCookies(Uri baseUrl)
     {
         return cookieContainer.GetCookies(baseUrl);
     }
+
+    private class SerializableCookie
+    {
+        public string Name { get; set; }
+        public string Value { get; set; }
+        public string Domain { get; set; }
+        public string Path { get; set; }
+        public DateTime Expires { get; set; }
+
+        // Parameterless constructor for deserialization
+#pragma warning disable CS8618 
+        public SerializableCookie() { }
+#pragma warning restore CS8618
+
+        // Constructor to initialize from a Cookie object
+        public SerializableCookie(Cookie cookie)
+        {
+            Name = cookie.Name;
+            Value = cookie.Value;
+            Domain = cookie.Domain;
+            Path = cookie.Path;
+            Expires = cookie.Expires;
+        }
+
+        public Cookie ToCookie()
+        {
+            return new Cookie(Name, Value, Path, Domain)
+            {
+                Expires = Expires,
+            };
+        }
+    }
+
 }

@@ -130,7 +130,7 @@ public class DLCs
 
             await DLCUtils.PopulateSteamAPIData(localizedDlcsDB, langKey);
 
-            string outputPath = Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, langKey, "DLC.json");
+            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "DLC.json");
 
             FileWriter.SaveParsedDB(localizedDlcsDB, outputPath, "DLC");
         }

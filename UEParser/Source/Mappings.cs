@@ -42,7 +42,7 @@ public class Mappings
 
         try
         {
-            byte[] fileBytes = await API.FetchFileBytesAsync(url);
+            byte[] fileBytes = await NetAPI.FetchFileBytesAsync(url);
 
             await File.WriteAllBytesAsync(mappingsOutputPath, fileBytes);
 

@@ -142,7 +142,7 @@ public class Addons
 
             Helpers.LocalizeDB(localizedAddonsDB, LocalizationData, languageKeys, langKey);
 
-            string outputPath = Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, langKey, "Addons.json");
+            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Addons.json");
 
             FileWriter.SaveParsedDB(localizedAddonsDB, outputPath, "Addons");
         }

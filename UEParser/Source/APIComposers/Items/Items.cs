@@ -167,7 +167,7 @@ public class Items
 
             Helpers.LocalizeDB(localizedItemsDB, LocalizationData, languageKeys, langKey);
 
-            string outputPath = Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, langKey, "Items.json");
+            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Items.json");
 
             FileWriter.SaveParsedDB(localizedItemsDB, outputPath, "Items");
         }

@@ -8,6 +8,9 @@ using UEParser.Services;
 using UEParser.ViewModels;
 using System.Text.RegularExpressions;
 using UEParser.Network.Steam;
+using UEParser.Models;
+using System.Text.Json.Nodes;
+using UEParser.Parser;
 
 namespace UEParser.Network.Kraken.API;
 
@@ -79,14 +82,14 @@ public partial class KrakenAPI
             await steamAuthenticator.AuthenticateAsync();
 
             // Access the stored auth ticket
-            AppAuthTicket? authTicket = steamAuthenticator.AuthTicket;
+            var authTicket = steamAuthenticator.AuthTicket;
+            
             if (authTicket != null)
             {
-                string authTicketString = ByteSessionTokenToString(authTicket.Ticket);
+                string authTicketString = ByteSessionTokenToString(authTicket);
 #if DEBUG
                 LogsWindowViewModel.Instance.AddLog($"Stored Auth Ticket: {authTicketString}", Logger.LogTags.Debug);
 #endif
-
                 string dbdLoginUrl = ConstructApiUrl("loginWithSteamTokenBody");
 
                 var config = ConfigurationService.Config;
@@ -104,40 +107,26 @@ public partial class KrakenAPI
                     { "x-kraken-client-provider", "steam" }
                 };
 
-                // Define optional payload
                 var loginPayload = new
                 {
                     token = authTicketString
                 };
 
-                Network.API.ApiResponse response = await Network.API.PostRequest(dbdLoginUrl, headers, loginPayload);
+                NetAPI.ApiResponse response = await NetAPI.PostRequest(dbdLoginUrl, headers, loginPayload);
 
                 if (!response.Success)
                 {
-                    throw new Exception("Failed to authenticate with DBD.");
+                    throw new Exception("Failed to authenticate with Dead by Daylight.");
                 }
                 else
                 {
-                    LogsWindowViewModel.Instance.AddLog("Succesfully authenticated with DBD.", Logger.LogTags.Success);
+                    LogsWindowViewModel.Instance.AddLog("Succesfully authenticated with Dead by Daylight.", Logger.LogTags.Success);
                 }
-
-                // Extract and set the krakenSession cookie if present
-                //var responseCookies = Network.API.GetCookies(new Uri(dbdLoginUrl));
-                //var krakenSessionCookie = responseCookies["krakenSession"];
-
-                //if (krakenSessionCookie != null)
-                //{
-                //    Network.API.SetCookie(new Uri(dbdLoginUrl), new Cookie("krakenSession", krakenSessionCookie.Value));
-                //}
-                //else
-                //{
-                //    LogsWindowViewModel.Instance.AddLog("Not found Kraken sesssion cookie.", Logger.LogTags.Error);
-                //}
             }
-            //else
-            //{
-            //    LogsWindowViewModel.Instance.AddLog("Auth Ticket not available.", Logger.LogTags.Warning);
-            //}
+            else
+            {
+                LogsWindowViewModel.Instance.AddLog("Auth Ticket not available.", Logger.LogTags.Error);
+            }
         });
     }
 
@@ -168,28 +157,87 @@ public partial class KrakenAPI
         {
             string fullProfileUrl = ConstructApiUrl("getPlayerFullProfileState");
 
-            LogsWindowViewModel.Instance.AddLog($"Fetching Full Profile.", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Fetching Full Profile..", Logger.LogTags.Info);
 
-            Network.API.ApiResponse response = await Network.API.FetchUrl(fullProfileUrl);
+            NetAPI.ApiResponse response = await NetAPI.FetchUrl(fullProfileUrl);
 
             if (response.Success)
             {
-                LogsWindowViewModel.Instance.AddLog($"Decrypting Full Profile.", Logger.LogTags.Info);
+                // Unlike other requests, Full Profile response needs to be decoded
+                LogsWindowViewModel.Instance.AddLog($"Decrypting Full Profile..", Logger.LogTags.Info);
 
                 string branch = config.Core.VersionData.Branch.ToString();
 
                 string decodedData = DbdDecryption.DecryptCDN(response.Data, branch);
 
-                LogsWindowViewModel.Instance.AddLog($"Saving Full Profile.", Logger.LogTags.Info);
+                LogsWindowViewModel.Instance.AddLog($"Saving Full Profile..", Logger.LogTags.Info);
 
-                string outputPath = Path.Combine(GlobalVariables.pathToKrakenApi, "fullProfile.json");
-
-                File.WriteAllText(outputPath, decodedData);
+                FileWriter.SaveApiResponseToFile(decodedData, "fullProfile.json");
+            }
+            else
+            {
+                LogsWindowViewModel.Instance.AddLog($"Failed to fetch Full Profile.", Logger.LogTags.Error);
             }
         }
         catch (Exception ex)
         {
             throw new Exception($"Failed to fetch player's Full Profile state: {ex.Message}", ex);
+        }
+    }
+
+    private class CharacterDataPayload
+    {
+        [JsonProperty("ownedCharacters")]
+        public List<string> OwnedCharacters { get; set; } = [];
+    }
+
+    public static async Task GetCharacterData()
+    {
+        try
+        {
+            string characterDataUrl = ConstructApiUrl("dbdCharacterDataGetAll");
+
+            LogsWindowViewModel.Instance.AddLog($"Fetching and saving Characters Data..", Logger.LogTags.Info);
+
+            CharacterDataPayload payload = new(); // Empty owned characters payload retrieves all characters
+
+            NetAPI.ApiResponse response = await NetAPI.PostRequest(characterDataUrl, null, payload);
+
+            if (response.Success)
+            {
+                FileWriter.SaveApiResponseToFile(response.Data, "charactersData.json");
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Failed to fetch player's Character Data: {ex.Message}", ex);
+        }
+    }
+
+    public static async Task BulkGetKrakenEndpoints(Dictionary<string, string> endpoints)
+    {
+        foreach (var endpoint in endpoints)
+        {
+            await GetKrakenEndpoint(endpoint.Key, endpoint.Value);
+        }
+    }
+
+    // Method for fetching general GET requests that don't need special treatment
+    public static async Task GetKrakenEndpoint(string endpoint, string endpointPrettyName)
+    {
+        string url = ConstructApiUrl(endpoint);
+
+        try
+        {
+            LogsWindowViewModel.Instance.AddLog($"Fetching and saving {endpointPrettyName}..", Logger.LogTags.Info);
+
+            NetAPI.ApiResponse response = await NetAPI.FetchUrl(url);
+
+            FileWriter.SaveApiResponseToFile(response.Data, endpoint + ".json");
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Failed to fetch {endpointPrettyName}: {ex.Message}", ex);
         }
     }
 }

@@ -114,7 +114,7 @@ public partial class Helpers
     public static void CreateCharacterTable()
     {
         string versionWithBranch = ConstructVersionHeaderWithBranch();
-        string catalogPath = Path.Combine(GlobalVariables.rootDir, "Output", "API", versionWithBranch, "catalog.json");
+        string catalogPath = Path.Combine(GlobalVariables.pathToKraken, versionWithBranch, "CDN", "catalog.json");
         string outputPath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "characterIds.json");
         string catalog = File.ReadAllText(catalogPath);
         List<Dictionary<string, dynamic>>? catalogJson = JsonConvert.DeserializeObject<List<Dictionary<string, dynamic>>>(catalog);

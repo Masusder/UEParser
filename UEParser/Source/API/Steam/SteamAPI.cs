@@ -51,7 +51,7 @@ public class SteamAPI
                     try
                     {
                         await Task.Delay(300); // Try to avoid rate-limit
-                        API.ApiResponse response = await API.FetchUrl(apiUrl);
+                        NetAPI.ApiResponse response = await NetAPI.FetchUrl(apiUrl);
                         if (string.IsNullOrEmpty(response.Data))
                         {
                             throw new HttpRequestException("Response data is null or empty.");

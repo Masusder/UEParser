@@ -136,7 +136,7 @@ public class Perks
             Helpers.LocalizeDB(localizedPerksDB, localizationData, languageKeys, langKey);
             PerkUtils.FormatDescriptionTunables(localizedPerksDB, langKey);
 
-            string outputPath = Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, langKey, "Perks.json");
+            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Perks.json");
 
             FileWriter.SaveParsedDB(localizedPerksDB, outputPath, "Perks");
         }

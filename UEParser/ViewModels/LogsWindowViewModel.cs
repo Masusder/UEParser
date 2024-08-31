@@ -152,11 +152,15 @@ public partial class LogsWindowViewModel : ReactiveObject
         // Marshal the UI update to the UI thread
         Dispatcher.UIThread.Post(() =>
         {
-            // Parse the log entry
-            LogEntry logEntry = ParseLogEntry(logMessage, tag);
+            var lines = logMessage.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            foreach (var line in lines)
+            {
+                // Parse each line of the log entry separately
+                LogEntry logEntry = ParseLogEntry(line, tag);
 
-            // Update the UI
-            LogEntries.Add(logEntry);
+                // Update the UI
+                LogEntries.Add(logEntry);
+            }
 
             // Truncate the log entries if they exceed the maximum limit
             if (LogEntries.Count > MaxLogEntries)
@@ -215,12 +219,29 @@ public partial class LogsWindowViewModel : ReactiveObject
             string matchedText = match.Groups[1].Value; // Get text inside []
             if (!string.IsNullOrEmpty(matchedText)) // Ensure text isn't empty
             {
-                logEntry.Segments.Add(new LogSegment { Text = $"[{matchedText}]", Color = new SolidColorBrush(Colors.AntiqueWhite) });
+                logEntry.Segments.Add(new LogSegment
+                {
+                    Text = $"[{matchedText}]",
+                    Color = new SolidColorBrush(Colors.AntiqueWhite)
+                });
             }
         }
-        logEntry.Segments.Add(new LogSegment { Text = cleanedLogMessage, Color = new SolidColorBrush(Colors.White) });
+
+        logEntry.Segments.Add(new LogSegment
+        {
+            Text = cleanedLogMessage,
+            Color = new SolidColorBrush(Colors.White),
+            FontFamily = IsQrCodeSegment(cleanedLogMessage) ? new FontFamily("Courier New") : new FontFamily("Arial") // Generated QR code needs Courier New font
+        });
 
         return logEntry;
+    }
+
+    // Helper method to determine if a text segment is part of the QR code
+    private static bool IsQrCodeSegment(string text)
+    {
+        // You can refine this check based on your QR code's structure or use other markers.
+        return text.Contains('█') || text.Contains('▄') || text.Contains('▀');
     }
 
     private static Color GetTagColor(Logger.LogTags tag)
@@ -261,4 +282,5 @@ public class LogSegment
 {
     public required string Text { get; set; }
     public required SolidColorBrush Color { get; set; }
+    public FontFamily FontFamily { get; set; } = new FontFamily("Arial"); // Default font
 }

@@ -145,7 +145,7 @@ public class KrakenApiConfig
             { "collections", "/collections.json" },
             { "specialEventsLoadingText", "/loadingText/specialEventsLoadingText_en.json" },
 
-            // These endpoints can be potentially added to the config, if you want to retrieve them from Kraken API
+            // These endpoints can be potentially added to the config, if you want to retrieve them from Kraken CDN
             // Commented out as app doesn't need these endpoints for anything
 
             //{ "cinematics", "/cinematics.json" },
@@ -168,7 +168,11 @@ public class KrakenApiConfig
         {
             { "contentVersion", "/utils/contentVersion/version" },
             { "loginWithSteamTokenBody", "/auth/provider/steam/loginWithTokenBody" },
-            { "getPlayerFullProfileState", "/players/me/states/FullProfile/binary" }
+            { "getPlayerFullProfileState", "/players/me/states/FullProfile/binary" },
+            { "inventory", "/inventories" },
+            { "dbdCharacterDataGetAll", "/dbd-character-data/get-all" },
+            { "storyStatus", "/archives/stories/get/story-status" },
+            { "config", "/config" }
         };
         // Gotta Catch ’Em All
         S3AccessKeys = new()

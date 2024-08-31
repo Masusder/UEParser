@@ -15,8 +15,8 @@ namespace UEParser.APIComposers;
 public class Cosmetics
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
-    private static readonly dynamic catalogData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.rootDir, "Output", "API", GlobalVariables.versionWithBranch, "catalog.json")) ?? throw new Exception("Failed to load catalog data.");
-    private static readonly Dictionary<string, Rift> riftData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Rift>>(Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, "en", "Rifts.json"));
+    private static readonly dynamic catalogData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "catalog.json")) ?? throw new Exception("Failed to load catalog data.");
+    private static readonly Dictionary<string, Rift> riftData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Rift>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, "en", "Rifts.json")) ?? throw new Exception("Failed to load rifts data.");
     private static readonly Dictionary<string, int> catalogDictionary = CosmeticUtils.CreateCatalogDictionary(catalogData);
 
     public static async Task InitializeCosmeticsDB()
@@ -449,7 +449,7 @@ public class Cosmetics
 
             CosmeticUtils.AddAmountToCurrencyPacks(localizedCosmeticsDB);
 
-            string outputPath = Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, langKey, "Cosmetics.json");
+            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Cosmetics.json");
 
             FileWriter.SaveParsedDB(localizedCosmeticsDB, outputPath, "Cosmetics");
         }

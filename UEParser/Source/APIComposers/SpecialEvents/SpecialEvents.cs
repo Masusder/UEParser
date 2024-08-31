@@ -124,7 +124,7 @@ public class SpecialEvents
 
             Helpers.LocalizeDB(localizedSpecialEventsDB, LocalizationData, languageKeys, langKey);
 
-            string outputPath = Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, langKey, "SpecialEvents.json");
+            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "SpecialEvents.json");
 
             FileWriter.SaveParsedDB(localizedSpecialEventsDB, outputPath, "SpecialEvents");
         }

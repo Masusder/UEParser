@@ -112,7 +112,7 @@ public class CharacterClasses
 
             Helpers.LocalizeDB(localizedCharacterClassesDB, LocalizationData, languageKeys, langKey);
 
-            string outputPath = Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, langKey, "CharacterClasses.json");
+            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "CharacterClasses.json");
 
             FileWriter.SaveParsedDB(localizedCharacterClassesDB, outputPath, "CharacterClasses");
         }

@@ -485,6 +485,38 @@
                   HorizontalAlignment="Center"
                   VerticalAlignment="Center"
                   FontWeight="600"
+                  Text="Steam Username" />
+              <TextBox MinWidth="200" MaxWidth="300" Text="{Binding SteamUsername}" />
+            </StackPanel>
+
+            <Border
+                Width="1"
+                Height="100"
+                Margin="10,0"
+                Background="#323232" />
+
+            <StackPanel Margin="0,10,0,10">
+              <TextBlock
+                  Margin="0,0,0,7.5"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  FontWeight="600"
+                  Text="Steam Password" />
+              <TextBox MinWidth="200" MaxWidth="300" Text="{Binding SteamPassword}" />
+            </StackPanel>
+          </StackPanel>
+          <Separator />
+
+          <StackPanel
+              HorizontalAlignment="Center"
+              Orientation="Horizontal"
+              Spacing="15">
+            <StackPanel Margin="0,10,0,10">
+              <TextBlock
+                  Margin="0,0,0,7.5"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center"
+                  FontWeight="600"
                   Text="S3 Access Key" />
               <TextBox MinWidth="200" MaxWidth="300" Text="{Binding S3AccessKey}" />
             </StackPanel>

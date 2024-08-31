@@ -30,17 +30,11 @@ public partial class Helpers
     private static Dictionary<string, CharacterData> TraverseCharacterDescriptionDB()
     {
         string[] filePaths = FindFilePathsInExtractedAssetsCaseInsensitive("CharacterDescriptionDB.json");
-        //Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAssets", "DeadByDaylight"), "CharacterDescriptionDB.json", SearchOption.AllDirectories);
+
         var characters = new Dictionary<string, CharacterData>();
 
         foreach (string filePath in filePaths)
         {
-            bool isInDBDCharacters = false;
-            if (filePath.Contains("DBDCharacters"))
-            {
-                isInDBDCharacters = true;
-            }
-
             string jsonString = File.ReadAllText(filePath);
             List<Dictionary<string, dynamic>>? items = JsonConvert.DeserializeObject<List<Dictionary<string, dynamic>>>(jsonString);
             if (items?[0]?["Rows"] != null)
@@ -48,6 +42,12 @@ public partial class Helpers
                 foreach (var item in items[0]["Rows"])
                 {
                     string characterIndex = item.Name;
+
+                    bool isInDBDCharacters = false;
+                    if (filePath.Contains("DBDCharacters") && int.Parse(characterIndex) != 268435492)
+                    {
+                        isInDBDCharacters = true;
+                    }
 
                     string gameBlueprintPathRaw = item.Value["GamePawn"]["AssetPathName"];
                     string gameBlueprintPath = StringUtils.ModifyPath(gameBlueprintPathRaw, "json", isInDBDCharacters, int.Parse(characterIndex));
@@ -70,7 +70,7 @@ public partial class Helpers
     private static Dictionary<string, CosmeticData> TraverseCharacterDescriptionOverrideDB()
     {
         string[] filePaths = FindFilePathsInExtractedAssetsCaseInsensitive("CharacterDescriptionOverrideDB.json");
-        //Directory.GetFiles(Path.Combine(Constants.ROOT_DIR, "Dependencies", "ExtractedAssets", "DeadByDaylight", "Content", "Data"), "CharacterDescriptionOverrideDB.json", SearchOption.AllDirectories);
+        
         var cosmetics = new Dictionary<string, CosmeticData>();
 
         foreach (string filePath in filePaths)

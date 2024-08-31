@@ -15,7 +15,7 @@ namespace UEParser.APIComposers;
 
 public class Rifts
 {
-    private static readonly dynamic? archiveRewardData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.rootDir, "Output", "API", GlobalVariables.versionWithBranch, "archiveRewardData.json"));
+    private static readonly dynamic? archiveRewardData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "archiveRewardData.json"));
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
 
     public static async Task InitializeRiftsDB()
@@ -59,7 +59,7 @@ public class Rifts
                 bool exists = eventTomesArray?.Any(x => x == riftId) ?? true;
                 if (!exists)
                 {
-                    string pathToRiftFile = Path.Combine(GlobalVariables.rootDir, "Output", "API", GlobalVariables.versionWithBranch, "Rifts", $"{riftId}.json");
+                    string pathToRiftFile = Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "Rifts", $"{riftId}.json");
                     if (!File.Exists(pathToRiftFile))
                     {
                         LogsWindowViewModel.Instance.AddLog($"Not found Rift data for '{riftId}'. Make sure to update API first or add any missing event tomes to config.", Logger.LogTags.Error);
@@ -67,7 +67,7 @@ public class Rifts
                         continue;
                     }
 
-                    var riftData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.rootDir, "Output", "API", GlobalVariables.versionWithBranch, "Rifts", $"{riftId}.json"));
+                    var riftData = FileUtils.LoadDynamicJson(pathToRiftFile);
 
                     string riftIdTitleCase = StringUtils.TomeToTitleCase(riftId);
 
@@ -121,7 +121,7 @@ public class Rifts
 
             Helpers.LocalizeDB(localizedRiftsDB, LocalizationData, languageKeys, langKey);
 
-            string outputPath = Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, langKey, "Rifts.json");
+            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Rifts.json");
 
             FileWriter.SaveParsedDB(localizedRiftsDB, outputPath, "Rifts");
         }

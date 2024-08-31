@@ -15,7 +15,7 @@ namespace UEParser.APIComposers;
 // Works but is outdated, should be reworked
 public class Tomes
 {
-    private static readonly Dictionary<string, object> CosmeticsData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, object>>(Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, "en", "Cosmetics.json"));
+    private static readonly Dictionary<string, object> CosmeticsData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, object>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, "en", "Cosmetics.json"));
     private static readonly Dictionary<string, object> QuestNodeDatabase = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, object>>(Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "questNodeDatabase.json"));
     private static readonly Dictionary<string, object> QuestObjectiveDatabase = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, object>>(Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "questObjectiveDatabase.json"));
     private static readonly Dictionary<string, int> CharacterIds = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, int>>(Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "characterIds.json"));
@@ -65,7 +65,7 @@ public class Tomes
                 string tomeId = item.Name;
                 string tomeIdTitleCase = StringUtils.TomeToTitleCase(tomeId);
 
-                string pathToTomeFile = Path.Combine(GlobalVariables.rootDir, "Output", "API", GlobalVariables.versionWithBranch, "Tomes", $"{tomeIdTitleCase}.json");
+                string pathToTomeFile = Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "Tomes", $"{tomeIdTitleCase}.json");
                 if (!File.Exists(pathToTomeFile))
                 {
                     LogsWindowViewModel.Instance.AddLog("Not found Tome data. Make sure to update API first.", Logger.LogTags.Error);
@@ -357,7 +357,7 @@ public class Tomes
 
             TomeUtils.FormatDescriptionParameters(localizedTomesDB, CharacterIds, charactersData, perksData, HTMLTagConverters, characterClassesData);
 
-            string outputPath = Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData", GlobalVariables.versionWithBranch, langKey, "Tomes.json");
+            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Tomes.json");
 
             FileWriter.SaveParsedDB(localizedTomesDB, outputPath, "Tomes");
         }
