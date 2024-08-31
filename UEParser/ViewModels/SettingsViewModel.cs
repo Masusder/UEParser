@@ -79,6 +79,7 @@ public partial class SettingsViewModel : INotifyPropertyChanged
                 {
                     throw new DataValidationException("Invalid version");
                 }
+                UpdateAvailableComparisonVersions(); // Update list when the current version changes
             }
         }
     }
@@ -193,6 +194,8 @@ public partial class SettingsViewModel : INotifyPropertyChanged
     {
         var config = ConfigurationService.Config;
 
+        var currentVersionWithBranch = Helpers.ConstructVersionHeaderWithBranch();
+
         SelectedComparisonVersionWithBranch = Helpers.ConstructVersionHeaderWithBranch(true);
         var (version, branch) = Utils.StringUtils.SplitVersionAndBranch(SelectedComparisonVersionWithBranch);
 
@@ -241,17 +244,35 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         OpenDirectoryDialogCommand = ReactiveCommand.CreateFromTask<string>(OpenDirectoryDialog);
         OpenFileDialogCommand = ReactiveCommand.CreateFromTask<string>(OpenFileDialog);
 
-        var availableComparisonVersions = FilesRegister.GrabAvailableComparisonVersions();
+        var availableComparisonVersions = FilesRegister.GrabAvailableComparisonVersions(currentVersionWithBranch);
         AvailableComparisonVersions = new ObservableCollection<string>(availableComparisonVersions);
 
         var canSave = this.WhenAnyValue(
             x => x.SelectedCurrentVersion,
-            (currentVersion) => IsValidVersion(currentVersion)
+            IsValidVersion
         );
 
         SaveSettingsCommand = ReactiveCommand.CreateFromTask(SaveSettings, canSave);
         RemoveTomeCommand = ReactiveCommand.Create<string>(RemoveTome);
         RemoveEventTomeCommand = ReactiveCommand.Create<string>(RemoveEventTome);
+    }
+
+    private void UpdateAvailableComparisonVersions()
+    {
+        var currentVersionWithBranch = $"{SelectedCurrentVersion}_{SelectedCurrentBranch}";
+        var availableVersions = FilesRegister.GrabAvailableComparisonVersions(currentVersionWithBranch);
+
+        if (AvailableComparisonVersions == null) return;
+
+        AvailableComparisonVersions.Remove(currentVersionWithBranch);
+
+        foreach (var version in availableVersions)
+        {
+            if (!AvailableComparisonVersions.Contains(version))
+            {
+                AvailableComparisonVersions.Add(version);
+            }
+        }
     }
 
     private async Task SaveSettings()

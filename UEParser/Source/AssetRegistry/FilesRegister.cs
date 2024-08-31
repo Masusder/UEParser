@@ -266,7 +266,7 @@ public class FilesRegister
         return false;
     }
 
-    public static HashSet<string> GrabAvailableComparisonVersions()
+    public static HashSet<string> GrabAvailableComparisonVersions(string? currentVersion)
     {
         string compareFilesRegisterPath = Path.Combine(filesRegisterDirectoryPath);
 
@@ -275,8 +275,6 @@ public class FilesRegister
         HashSet<string> versions = [];
 
         string[] files = Directory.GetFiles(compareFilesRegisterPath, "*.uinfo");
-
-        string currentVersion = Helpers.ConstructVersionHeaderWithBranch();
 
         foreach (string file in files)
         {

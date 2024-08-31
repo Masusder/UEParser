@@ -109,12 +109,12 @@ public class DownloadRegisterViewModel : ReactiveObject
             var registers = await FetchAvailableRegisters();
             Registers?.Clear();
 
-            var localFileRegistersList = FilesRegister.GrabAvailableComparisonVersions();
-            string curentVersion = Helpers.ConstructVersionHeaderWithBranch();
+            string currentVersion = Helpers.ConstructVersionHeaderWithBranch();
+            var localFileRegistersList = FilesRegister.GrabAvailableComparisonVersions(currentVersion);
 
             foreach (var register in registers)
             {
-                if (!localFileRegistersList.Contains(register) && register != curentVersion)
+                if (!localFileRegistersList.Contains(register) && register != currentVersion)
                 {
                     Registers?.Add(register);
                 }

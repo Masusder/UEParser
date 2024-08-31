@@ -231,7 +231,7 @@ public partial class LogsWindowViewModel : ReactiveObject
         {
             Text = cleanedLogMessage,
             Color = new SolidColorBrush(Colors.White),
-            FontFamily = IsQrCodeSegment(cleanedLogMessage) ? new FontFamily("Courier New") : new FontFamily("Arial") // Generated QR code needs Courier New font
+            FontFamily = IsQrCodeSegment(cleanedLogMessage) ? new FontFamily("Courier New") : new FontFamily("Segoe UI Variable") // Generated QR code needs Courier New font
         });
 
         return logEntry;
@@ -264,13 +264,6 @@ public partial class LogsWindowViewModel : ReactiveObject
         }
 #pragma warning restore IDE0066
     }
-
-    //public event PropertyChangedEventHandler? PropertyChanged;
-
-    //protected virtual void OnPropertyChanged(string propertyName)
-    //{
-    //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    //}
 }
 
 public class LogEntry
@@ -282,5 +275,5 @@ public class LogSegment
 {
     public required string Text { get; set; }
     public required SolidColorBrush Color { get; set; }
-    public FontFamily FontFamily { get; set; } = new FontFamily("Arial"); // Default font
+    public FontFamily FontFamily { get; set; } = new FontFamily("Segoe UI Variable"); // Default font
 }
