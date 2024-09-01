@@ -240,7 +240,6 @@ public partial class LogsWindowViewModel : ReactiveObject
     // Helper method to determine if a text segment is part of the QR code
     private static bool IsQrCodeSegment(string text)
     {
-        // You can refine this check based on your QR code's structure or use other markers.
         return text.Contains('█') || text.Contains('▄') || text.Contains('▀');
     }
 

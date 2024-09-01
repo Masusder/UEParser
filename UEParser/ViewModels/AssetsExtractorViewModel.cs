@@ -165,7 +165,7 @@ public class AssetsExtractorViewModel
                 {
                     string extension = file.Value.Extension;
 
-                    string[] acceptedExtensions = ["uasset", "wem", "xml", "bnk", "json"];
+                    string[] acceptedExtensions = ["uasset", "wem", "xml", "bnk", "json", "bin"];
                     if (!acceptedExtensions.Contains(extension)) continue;
 
                     string insertExtension = extension == "uasset" ? ".json" : '.' + extension;

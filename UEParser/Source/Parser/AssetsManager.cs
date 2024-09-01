@@ -23,6 +23,7 @@ using System.Threading.Tasks;
 using UEParser.AssetRegistry;
 using UEParser.AssetRegistry.Wwise;
 using UEParser.Parser.Wwise;
+using CUE4Parse.UE4.AssetRegistry;
 
 namespace UEParser.Parser;
 
@@ -128,6 +129,7 @@ public class AssetsManager
     private const string packageConfigDirectory = "DeadByDaylight/Config";
     private const string packageLocalizationDirectory = "DeadByDaylight/Content/Localization";
     private const string packageWwiseDirectory = "DeadByDaylight/Content/WwiseAudio";
+    private const string packageAssetsRegistryFile = "DeadByDaylight/AssetRegistry.bin";
     public static async Task ParseGameAssets()
     {
         await Task.Run(() =>
@@ -162,6 +164,7 @@ public class AssetsManager
                         bool isInConfigDirectory = pathWithExtension.Contains(packageConfigDirectory);
                         bool isInLocalizationDirectory = pathWithExtension.Contains(packageLocalizationDirectory);
                         bool isInWwiseDirectory = pathWithExtension.Contains(packageWwiseDirectory);
+                        bool isAssetsRegistry = pathWithExtension.Contains(packageAssetsRegistryFile);
 
                         bool fileDataChanged = UpdateFileInfoIfNeeded(pathWithoutExtension, extension, size);
 
@@ -175,7 +178,8 @@ public class AssetsManager
                             !isInPluginsDirectory &&
                             !isInConfigDirectory &&
                             !isInLocalizationDirectory &&
-                            !isInWwiseDirectory)
+                            !isInWwiseDirectory &&
+                            !isAssetsRegistry)
                         {
                             continue;
                         }
@@ -196,12 +200,25 @@ public class AssetsManager
 
                                     break;
                                 }
+                            case "bin":
+                                {
+                                    if (Provider.TryCreateReader(pathWithExtension, out var archive))
+                                    {
+                                        var registry = new FAssetRegistryState(archive);
+                                        string exportData = JsonConvert.SerializeObject(registry, Formatting.Indented);
+
+                                        FileWriter.SaveJsonFile(exportPath, exportData);
+                                    }
+
+                                    break;
+                                }
                             case "locmeta":
                                 {
                                     if (Provider.TryCreateReader(pathWithExtension, out FArchive archive))
                                     {
                                         var metadata = new FTextLocalizationMetaDataResource(archive);
                                         string exportData = JsonConvert.SerializeObject(metadata, Formatting.Indented);
+
                                         FileWriter.SaveJsonFile(exportPath, exportData);
                                     }
 
@@ -213,6 +230,7 @@ public class AssetsManager
                                     {
                                         var locres = new FTextLocalizationResource(archive);
                                         string exportData = JsonConvert.SerializeObject(locres, Formatting.Indented);
+
                                         FileWriter.SaveJsonFile(exportPath, exportData);
                                     }
                                     break;
@@ -228,6 +246,7 @@ public class AssetsManager
                                         using var stream = new MemoryStream(data) { Position = 0 };
                                         using var reader = new StreamReader(stream);
                                         var memoryData = reader.ReadToEnd();
+
                                         FileWriter.SaveMemoryStreamFile(exportPath, memoryData, extension);
                                     }
                                     break;
@@ -597,35 +616,48 @@ public class AssetsManager
     public static async Task ParseAudio()
     {
         LogsWindowViewModel.Instance.AddLog("Audio extraction is highly intensive process, which may take even up to an hour, depending whether audio registry is available..", Logger.LogTags.Info);
-        await Task.Run(async () =>
+        await Task.Run(() =>
         {
-            //bool soundBankExists = WwiseFileHandler.DoesSoundBankExist();
+            //LogsWindowViewModel.Instance.AddLog("Moving compressed audio into temporary folder..", Logger.LogTags.Info);
 
-            //if (!soundBankExists)
-            //{
-            //    throw new Exception("Not found sounds bank in extracted assets.");
-            //}
+            //WwiseFileHandler.MoveCompressedAudio();
 
-            LogsWindowViewModel.Instance.AddLog("Moving compressed audio into temporary folder.", Logger.LogTags.Info);
+            //LogsWindowViewModel.Instance.AddLog("Generating txtp files from compiled audio..", Logger.LogTags.Info);
 
-            WwiseFileHandler.MoveCompressedAudio();
+            //WwiseFileHandler.GenerateTxtp();
 
-            LogsWindowViewModel.Instance.AddLog("Unpacking audio banks.", Logger.LogTags.Info);
+            //LogsWindowViewModel.Instance.AddLog("Collecting associated audio event IDs..", Logger.LogTags.Info);
 
-            await WwiseFileHandler.UnpackAudioBanks();
+            //var associatedAudioEventIds = WwiseFileHandler.GrabAudioEventIds();
 
-            LogsWindowViewModel.Instance.AddLog("Structuring compressed audio.", Logger.LogTags.Info);
+            //LogsWindowViewModel.Instance.AddLog("Collecting Wwise data from preallocated buffers..", Logger.LogTags.Info);
 
-            WwiseFileHandler.StructureAudio();
+            //var audioEventsLinkage = WwiseFileHandler.ConstructAudioEventsLinkage();
 
-            LogsWindowViewModel.Instance.AddLog("Populating audio registry.", Logger.LogTags.Info);
+            //LogsWindowViewModel.Instance.AddLog("Reversing audio structure..", Logger.LogTags.Info);
 
-            WwiseRegister.PopulateAudioRegister();
-            WwiseRegister.SaveAudioInfoDictionary();
+            //WwiseFileHandler.ReverseAudioStructure(associatedAudioEventIds, audioEventsLinkage);
 
-            LogsWindowViewModel.Instance.AddLog("Converting compressed audio into OGG format.", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog("Converting audio to WAV audio format.", Logger.LogTags.Info);
 
-            WwiseFileHandler.ConvertToOggAndMove();
+            WwiseFileHandler.ConvertTxtpToWav();
+
+            //LogsWindowViewModel.Instance.AddLog("Unpacking audio banks.", Logger.LogTags.Info);
+
+            //await WwiseFileHandler.UnpackAudioBanks();
+
+            //LogsWindowViewModel.Instance.AddLog("Structuring compressed audio.", Logger.LogTags.Info);
+
+            //WwiseFileHandler.StructureAudio();
+
+            //LogsWindowViewModel.Instance.AddLog("Populating audio registry.", Logger.LogTags.Info);
+
+            //WwiseRegister.PopulateAudioRegister();
+            //WwiseRegister.SaveAudioInfoDictionary();
+
+            //LogsWindowViewModel.Instance.AddLog("Converting compressed audio into OGG format.", Logger.LogTags.Info);
+
+            //WwiseFileHandler.ConvertToOggAndMove();
 
             //LogsWindowViewModel.Instance.AddLog("Deleting temporary audio folder.", Logger.LogTags.Info);
 
@@ -731,12 +763,25 @@ public class AssetsManager
 
                                 break;
                             }
+                        case "bin":
+                            {
+                                if (Provider.TryCreateReader(pathWithExtension, out var archive))
+                                {
+                                    var registry = new FAssetRegistryState(archive);
+                                    string exportData = JsonConvert.SerializeObject(registry, Formatting.Indented);
+
+                                    FileWriter.SaveJsonFile(exportPath, exportData);
+                                }
+
+                                break;
+                            }
                         case "locmeta":
                             {
                                 if (Provider.TryCreateReader(pathWithExtension, out FArchive archive))
                                 {
                                     var metadata = new FTextLocalizationMetaDataResource(archive);
                                     string exportData = JsonConvert.SerializeObject(metadata, Formatting.Indented);
+
                                     FileWriter.SaveJsonFile(exportPath, exportData);
                                 }
 
@@ -748,6 +793,7 @@ public class AssetsManager
                                 {
                                     var locres = new FTextLocalizationResource(archive);
                                     string exportData = JsonConvert.SerializeObject(locres, Formatting.Indented);
+
                                     FileWriter.SaveJsonFile(exportPath, exportData);
                                 }
                                 break;
@@ -763,6 +809,7 @@ public class AssetsManager
                                     using var stream = new MemoryStream(data) { Position = 0 };
                                     using var reader = new StreamReader(stream);
                                     var memoryData = reader.ReadToEnd();
+
                                     FileWriter.SaveMemoryStreamFile(exportPath, memoryData, extension);
                                 }
                                 break;

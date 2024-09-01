@@ -26,7 +26,7 @@ public partial class WwiseRegister
     private static readonly string filesRegisterDirectoryPath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "FilesRegister");
     private static readonly string PathToAudioRegister;
 
-    public static Dictionary<string, string> SoundBankDictionary { get; private set; }
+    //public static Dictionary<string, string> SoundBankDictionary { get; private set; }
 
     public class AudioInfo(string id, string hash, long size)
     {
@@ -38,7 +38,7 @@ public partial class WwiseRegister
     static WwiseRegister()
     {
         PathToAudioRegister = ConstructPathToAudioRegister();
-        SoundBankDictionary = PopulateSoundBankDictionary();
+        //SoundBankDictionary = PopulateSoundBankDictionary();
     }
 
     private static string ConstructPathToAudioRegister(bool isComparisonVersion=false)
@@ -48,78 +48,78 @@ public partial class WwiseRegister
         return Path.Combine(filesRegisterDirectoryPath, audioRegisterName);
     }
 
-    [GeneratedRegex("_[0-9A-F]+\\.wem$")]
-    private static partial Regex WemFileHashRegex();
-    public static Dictionary<string, string> PopulateSoundBankDictionary()
-    {
-        var (soundBankData, dataType) = LoadSoundsBank();
+    //[GeneratedRegex("_[0-9A-F]+\\.wem$")]
+    //private static partial Regex WemFileHashRegex();
+    //public static Dictionary<string, string> PopulateSoundBankDictionary()
+    //{
+    //    var (soundBankData, dataType) = LoadSoundsBank();
 
-        Dictionary<string, string> kvp = [];
+    //    Dictionary<string, string> kvp = [];
 
-        if (dataType == "json")
-        {
-            var soundBanksDataJson = (SoundBanksInfoRoot)soundBankData;
-            var soundBanksList = soundBanksDataJson.SoundBanksInfo.SoundBanks;
-            foreach (var soundBank in soundBanksList)
-            {
-                var media = soundBank?.Media;
+    //    if (dataType == "json")
+    //    {
+    //        var soundBanksDataJson = (SoundBanksInfoRoot)soundBankData;
+    //        var soundBanksList = soundBanksDataJson.SoundBanksInfo.SoundBanks;
+    //        foreach (var soundBank in soundBanksList)
+    //        {
+    //            var media = soundBank?.Media;
 
-                if (media == null) continue;
+    //            if (media == null) continue;
 
-                foreach (var mediaFile in media)
-                {
-                    string id = mediaFile.Id;
-                    string path = mediaFile.CachePath;
-                    string pathWithoutHash = WemFileHashRegex().Replace(path, ".wem");
-                    kvp[id] = pathWithoutHash;
-                }
-            }
-        }
-        else if (dataType == "xml")
-        {
-            var soundBanksDataXml = (XmlDocument)soundBankData;
-            XmlNodeList? files = soundBanksDataXml.SelectNodes("//File");
+    //            foreach (var mediaFile in media)
+    //            {
+    //                string id = mediaFile.Id;
+    //                string path = mediaFile.CachePath;
+    //                string pathWithoutHash = WemFileHashRegex().Replace(path, ".wem");
+    //                kvp[id] = pathWithoutHash;
+    //            }
+    //        }
+    //    }
+    //    else if (dataType == "xml")
+    //    {
+    //        var soundBanksDataXml = (XmlDocument)soundBankData;
+    //        XmlNodeList? files = soundBanksDataXml.SelectNodes("//File");
 
-            if (files == null)
-            {
-                return kvp;
-            }
+    //        if (files == null)
+    //        {
+    //            return kvp;
+    //        }
 
-            foreach (XmlNode file in files)
-            {
-                string? id = file.Attributes?["Id"]?.Value;
-                string? path = file["Path"]?.InnerText;
+    //        foreach (XmlNode file in files)
+    //        {
+    //            string? id = file.Attributes?["Id"]?.Value;
+    //            string? path = file["Path"]?.InnerText;
 
-                if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(path)) continue;
+    //            if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(path)) continue;
 
-                string pathWithoutHash = WemFileHashRegex().Replace(path, ".wem")
-                    .Replace(Path.DirectorySeparatorChar, '/')
-                    .Replace(Path.AltDirectorySeparatorChar, '/');
+    //            string pathWithoutHash = WemFileHashRegex().Replace(path, ".wem")
+    //                .Replace(Path.DirectorySeparatorChar, '/')
+    //                .Replace(Path.AltDirectorySeparatorChar, '/');
 
-                kvp[id] = pathWithoutHash;
-            }
-        }
+    //            kvp[id] = pathWithoutHash;
+    //        }
+    //    }
 
-        return kvp;
-    }
+    //    return kvp;
+    //}
 
-    private static (object, string) LoadSoundsBank()
-    {
-        var (filePath, dataType) = WwiseFileHandler.FindSoundBank();
+    //private static (object, string) LoadSoundsBank()
+    //{
+    //    var (filePath, dataType) = WwiseFileHandler.FindSoundBank();
 
-        switch (dataType)
-        {
-            case "json":
-                var data = FileUtils.LoadJsonFileWithTypeCheck<SoundBanksInfoRoot>(filePath);
-                return (data, dataType);
-            case "xml":
-                var xmlDocument = new XmlDocument();
-                xmlDocument.Load(filePath);
-                return (xmlDocument, dataType);
-            default:
-                throw new Exception("Invalid Sound Bank format.");
-        }
-    }
+    //    switch (dataType)
+    //    {
+    //        case "json":
+    //            var data = FileUtils.LoadJsonFileWithTypeCheck<SoundBanksInfoRoot>(filePath);
+    //            return (data, dataType);
+    //        case "xml":
+    //            var xmlDocument = new XmlDocument();
+    //            xmlDocument.Load(filePath);
+    //            return (xmlDocument, dataType);
+    //        default:
+    //            throw new Exception("Invalid Sound Bank format.");
+    //    }
+    //}
 
     // Single thread method
     //public static void UpdateAudioRegister(string id, string path, string hash, long size)
@@ -206,48 +206,48 @@ public partial class WwiseRegister
         return audioToParse;
     }
 
-    public static void PopulateAudioRegister()
-    {
-        string pathToStructuredWwise = GlobalVariables.pathToStructuredWwise;
+    //public static void PopulateAudioRegister()
+    //{
+    //    string pathToStructuredWwise = GlobalVariables.pathToStructuredWwise;
 
-        if (!Directory.Exists(pathToStructuredWwise))
-        {
-            LogsWindowViewModel.Instance.AddLog("Failed to construct Audio Register, extracted Wwise data does not exist.", Logger.LogTags.Error);
-            return;
-        }
+    //    if (!Directory.Exists(pathToStructuredWwise))
+    //    {
+    //        LogsWindowViewModel.Instance.AddLog("Failed to construct Audio Register, extracted Wwise data does not exist.", Logger.LogTags.Error);
+    //        return;
+    //    }
 
-        string[] wemFiles = Directory.GetFiles(pathToStructuredWwise, "*.wem", SearchOption.AllDirectories);
+    //    string[] wemFiles = Directory.GetFiles(pathToStructuredWwise, "*.wem", SearchOption.AllDirectories);
 
-        var reversedSoundBankDictionary = SoundBankDictionary
-            .GroupBy(kvp => kvp.Value)
-            .ToDictionary(group => group.Key, group => group.First().Key);
+    //    var reversedSoundBankDictionary = SoundBankDictionary
+    //        .GroupBy(kvp => kvp.Value)
+    //        .ToDictionary(group => group.Key, group => group.First().Key);
 
-        //foreach (var wemFilePath in wemFiles)
-        //{
-        //    string relativeWemFilePath = StringUtils.StripDynamicDirectory(wemFilePath, pathToStructuredWwise);
+    //    //foreach (var wemFilePath in wemFiles)
+    //    //{
+    //    //    string relativeWemFilePath = StringUtils.StripDynamicDirectory(wemFilePath, pathToStructuredWwise);
 
-        //    string id = reversedSoundBankDictionary[relativeWemFilePath.Replace(Path.DirectorySeparatorChar, '/').Replace(Path.AltDirectorySeparatorChar, '/')];
-        //    string hash = CalculateFileHash(wemFilePath);
-        //    long size = new FileInfo(wemFilePath).Length;
+    //    //    string id = reversedSoundBankDictionary[relativeWemFilePath.Replace(Path.DirectorySeparatorChar, '/').Replace(Path.AltDirectorySeparatorChar, '/')];
+    //    //    string hash = CalculateFileHash(wemFilePath);
+    //    //    long size = new FileInfo(wemFilePath).Length;
 
-        //    UpdateAudioRegister(id, relativeWemFilePath, hash, size);
-        //}
+    //    //    UpdateAudioRegister(id, relativeWemFilePath, hash, size);
+    //    //}
 
-        Parallel.ForEach(wemFiles, wemFilePath =>
-        {
-            string relativeWemFilePath = StringUtils.StripDynamicDirectory(wemFilePath, pathToStructuredWwise)
-                .Replace(Path.DirectorySeparatorChar, '/')
-                .Replace(Path.AltDirectorySeparatorChar, '/');
+    //    Parallel.ForEach(wemFiles, wemFilePath =>
+    //    {
+    //        string relativeWemFilePath = StringUtils.StripDynamicDirectory(wemFilePath, pathToStructuredWwise)
+    //            .Replace(Path.DirectorySeparatorChar, '/')
+    //            .Replace(Path.AltDirectorySeparatorChar, '/');
 
-            if (reversedSoundBankDictionary.TryGetValue(relativeWemFilePath, out string? id))
-            {
-                string hash = CalculateFileHash(wemFilePath);
-                long size = new FileInfo(wemFilePath).Length;
+    //        if (reversedSoundBankDictionary.TryGetValue(relativeWemFilePath, out string? id))
+    //        {
+    //            string hash = CalculateFileHash(wemFilePath);
+    //            long size = new FileInfo(wemFilePath).Length;
 
-                UpdateAudioRegister(id, relativeWemFilePath, hash, size);
-            }
-        });
-    }
+    //            UpdateAudioRegister(id, relativeWemFilePath, hash, size);
+    //        }
+    //    });
+    //}
 
     private static string CalculateFileHash(string filePath)
     {

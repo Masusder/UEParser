@@ -13,9 +13,11 @@ public class GlobalVariables
     // Binaries/Scripts paths
     public static readonly string bnkExtractorPath = Path.Combine(rootDir, ".data", "bnk-extract.exe");
     public static readonly string modelsConverterScriptPath = Path.Combine(rootDir, ".data", "UEModelsConverter.py");
-    public static readonly string revorbPath = Path.Combine(rootDir, ".data", "revorb.exe");
-    public static readonly string ww2oggPath = Path.Combine(rootDir, ".data", "ww2ogg.exe");
-    public static readonly string packedCodebooksPath = Path.Combine(rootDir, ".data", "packed_codebooks_aoTuV_603.bin");
+    //public static readonly string revorbPath = Path.Combine(rootDir, ".data", "revorb.exe");
+    //public static readonly string ww2oggPath = Path.Combine(rootDir, ".data", "ww2ogg.exe");
+    //public static readonly string packedCodebooksPath = Path.Combine(rootDir, ".data", "packed_codebooks_aoTuV_603.bin");
+    public static readonly string wwiserPath = Path.Combine(rootDir, ".data", "wwiser.pyz");
+    public static readonly string vgmStreamCliPath = Path.Combine(rootDir, ".data", "VgmStream", "vgmstream-cli.exe");
     #endregion
 
     #region DIRECTORIES PATHS
