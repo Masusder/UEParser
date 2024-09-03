@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using UEParser.Models;
 using UEParser.Parser;
@@ -22,11 +20,11 @@ public class Offerings
         {
             Dictionary<string, Offering> parsedOfferingsDB = [];
 
-            LogsWindowViewModel.Instance.AddLog($"[Offerings] Starting parsing process..", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Offerings);
 
             ParseOfferings(parsedOfferingsDB);
 
-            LogsWindowViewModel.Instance.AddLog($"[Offerings] Parsed total of {parsedOfferingsDB.Count} items.", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedOfferingsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Offerings);
 
             ParseLocalizationAndSave(parsedOfferingsDB);
         });
@@ -39,7 +37,7 @@ public class Offerings
         foreach (string filePath in filePaths)
         {
             string packagePath = StringUtils.StripExtractedAssetsDir(filePath);
-            LogsWindowViewModel.Instance.AddLog($"[Offerings] Processing: {packagePath}", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Processing: {packagePath}", Logger.LogTags.Info, Logger.ELogExtraTag.Offerings);
 
             var assetItems = FileUtils.LoadDynamicJson(filePath);
 
@@ -114,7 +112,7 @@ public class Offerings
 
     private static void ParseLocalizationAndSave(Dictionary<string, Offering> parsedOfferingsDB)
     {
-        LogsWindowViewModel.Instance.AddLog($"[Offerings] Starting localization process..", Logger.LogTags.Info);
+        LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Offerings);
 
         string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
 

@@ -616,118 +616,50 @@ public class AssetsManager
     public static async Task ParseAudio()
     {
         LogsWindowViewModel.Instance.AddLog("Audio extraction is highly intensive process, which may take even up to an hour, depending whether audio registry is available..", Logger.LogTags.Info);
-        await Task.Run(() =>
+        await Task.Run(async () =>
         {
-            //LogsWindowViewModel.Instance.AddLog("Moving compressed audio into temporary folder..", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog("Moving compressed audio into temporary folder..", Logger.LogTags.Info);
 
-            //WwiseFileHandler.MoveCompressedAudio();
+            WwiseFileHandler.MoveCompressedAudio();
 
-            //LogsWindowViewModel.Instance.AddLog("Generating txtp files from compiled audio..", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog("Unpacking audio banks..", Logger.LogTags.Info);
 
-            //WwiseFileHandler.GenerateTxtp();
+            await WwiseFileHandler.UnpackAudioBanks();
 
-            //LogsWindowViewModel.Instance.AddLog("Collecting associated audio event IDs..", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog("Generating txtp files from compiled audio..", Logger.LogTags.Info);
 
-            //var associatedAudioEventIds = WwiseFileHandler.GrabAudioEventIds();
+            WwiseFileHandler.GenerateTxtp();
 
-            //LogsWindowViewModel.Instance.AddLog("Collecting Wwise data from preallocated buffers..", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog("Collecting associated audio event IDs..", Logger.LogTags.Info);
 
-            //var audioEventsLinkage = WwiseFileHandler.ConstructAudioEventsLinkage();
+            var associatedAudioEventIds = WwiseFileHandler.GrabAudioEventIds();
 
-            //LogsWindowViewModel.Instance.AddLog("Reversing audio structure..", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog("Collecting Wwise data from preallocated buffers..", Logger.LogTags.Info);
 
-            //WwiseFileHandler.ReverseAudioStructure(associatedAudioEventIds, audioEventsLinkage);
+            var audioEventsLinkage = WwiseFileHandler.ConstructAudioEventsLinkage();
 
-            LogsWindowViewModel.Instance.AddLog("Converting audio to WAV audio format.", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog("Populating audio registry..", Logger.LogTags.Info);
+
+            WwiseRegister.PopulateAudioRegister();
+            WwiseRegister.SaveAudioInfoDictionary();
+
+            LogsWindowViewModel.Instance.AddLog("Converting audio to WAV audio format..", Logger.LogTags.Info);
 
             WwiseFileHandler.ConvertTxtpToWav();
 
-            //LogsWindowViewModel.Instance.AddLog("Unpacking audio banks.", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog("Reversing audio structure..", Logger.LogTags.Info);
 
-            //await WwiseFileHandler.UnpackAudioBanks();
+            WwiseFileHandler.ReverseAudioStructure(associatedAudioEventIds, audioEventsLinkage);
 
-            //LogsWindowViewModel.Instance.AddLog("Structuring compressed audio.", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog("Moving converted audio into output directory..", Logger.LogTags.Info);
 
-            //WwiseFileHandler.StructureAudio();
+            WwiseFileHandler.MoveAudioToOutput();
 
-            //LogsWindowViewModel.Instance.AddLog("Populating audio registry.", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog("Deleting temporary audio folder..", Logger.LogTags.Info);
 
-            //WwiseRegister.PopulateAudioRegister();
-            //WwiseRegister.SaveAudioInfoDictionary();
-
-            //LogsWindowViewModel.Instance.AddLog("Converting compressed audio into OGG format.", Logger.LogTags.Info);
-
-            //WwiseFileHandler.ConvertToOggAndMove();
-
-            //LogsWindowViewModel.Instance.AddLog("Deleting temporary audio folder.", Logger.LogTags.Info);
-
-            //WwiseFileHandler.CleanExtractedAudioDir();
+            WwiseFileHandler.CleanExtractedAudioDir();
         });
     }
-
-    //public static async Task ParseAudio()
-    //{
-    //    await Task.Run(() =>
-    //    {
-    //        var files = Provider.Files.Values.ToList();
-    //        int extractedAssetsCount = 0;
-
-    //        foreach (var file in files)
-    //        {
-    //            try
-    //            {
-    //                string pathWithExtension = file.Path;
-    //                bool isInWwiseDirectory = pathWithExtension.Contains(packageWwiseDirectory);
-    //                if (!isInWwiseDirectory) continue;
-
-    //                string extension = file.Extension;
-
-    //                string pathWithoutExtension = file.PathWithoutExtension;
-    //                string exportPath = Path.Combine(GlobalVariables.pathToExtractedAudio, pathWithoutExtension);
-
-    //                switch (extension)
-    //                {
-    //                    case "xml":
-    //                        {
-    //                            if (Provider.TrySaveAsset(pathWithExtension, out var data))
-    //                            {
-    //                                using var stream = new MemoryStream(data) { Position = 0 };
-    //                                using var reader = new StreamReader(stream);
-    //                                var memoryData = reader.ReadToEnd();
-    //                                extractedAssetsCount++;
-    //                                FileWriter.SaveMemoryStreamFile(exportPath, memoryData, extension);
-    //                            }
-
-    //                            break;
-    //                        }
-    //                    case "wem":
-    //                    case "bnk":
-    //                        {
-    //                            if (Provider.TrySaveAsset(pathWithExtension, out var data))
-    //                            {
-    //                                extractedAssetsCount++;
-    //                                FileWriter.SaveBinaryStreamFile(exportPath, data, extension);
-    //                            }
-
-    //                            break;
-    //                        }
-    //                    default:
-    //                        break;
-    //                }
-    //            }
-    //            catch (Exception ex)
-    //            {
-    //                LogsWindowViewModel.Instance.AddLog($"Failed parsing audio: {ex}", Logger.LogTags.Error);
-    //                LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
-    //            }
-    //        }
-
-    //        if (extractedAssetsCount > 0)
-    //        {
-    //            LogsWindowViewModel.Instance.AddLog($"Extracted total of {extractedAssetsCount} raw audio assets.", Logger.LogTags.Info);
-    //        }
-    //    });
-    //}
 
     public static async Task ParseMissingAssets(List<string> missingAssetsList)
     {

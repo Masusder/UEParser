@@ -147,7 +147,7 @@ public partial class LogsWindowViewModel : ReactiveObject
         });
     }
 
-    public void AddLog(string logMessage, Logger.LogTags tag)
+    public void AddLog(string logMessage, Logger.LogTags tag, Logger.ELogExtraTag extraTag = Logger.ELogExtraTag.None)
     {
         // Marshal the UI update to the UI thread
         Dispatcher.UIThread.Post(() =>
@@ -156,7 +156,7 @@ public partial class LogsWindowViewModel : ReactiveObject
             foreach (var line in lines)
             {
                 // Parse each line of the log entry separately
-                LogEntry logEntry = ParseLogEntry(line, tag);
+                LogEntry logEntry = ParseLogEntry(line, tag, extraTag);
 
                 // Update the UI
                 LogEntries.Add(logEntry);
@@ -175,7 +175,7 @@ public partial class LogsWindowViewModel : ReactiveObject
         Task.Run(() => Logger.SaveLog(logMessage, tag));
     }
 
-    public void UpdateLog(string logMessage, Logger.LogTags tag)
+    public void UpdateLog(string logMessage, Logger.LogTags tag, Logger.ELogExtraTag extraTag = Logger.ELogExtraTag.None)
     {
         Dispatcher.UIThread.Post(() =>
         {
@@ -183,7 +183,7 @@ public partial class LogsWindowViewModel : ReactiveObject
             if (existingLogEntry != null)
             {
                 existingLogEntry.Segments.Clear();
-                foreach (var segment in ParseLogEntry(logMessage, tag).Segments)
+                foreach (var segment in ParseLogEntry(logMessage, tag, extraTag).Segments)
                 {
                     existingLogEntry.Segments.Add(segment);
                 }
@@ -196,7 +196,7 @@ public partial class LogsWindowViewModel : ReactiveObject
         });
     }
 
-    private static LogEntry ParseLogEntry(string logMessage, Logger.LogTags tag)
+    private static LogEntry ParseLogEntry(string logMessage, Logger.LogTags tag, Logger.ELogExtraTag extraTag)
     {
         var logEntry = new LogEntry();
 
@@ -204,34 +204,44 @@ public partial class LogsWindowViewModel : ReactiveObject
         Color tagColor = GetTagColor(tag);
 
         // Regular expression pattern to match text inside []
-        string pattern = @"\[(.*?)\]";
+        //string pattern = @"\[(.*?)\]";
 
         // Find all matches of the pattern
-        MatchCollection matches = Regex.Matches(logMessage, pattern);
+        //MatchCollection matches = Regex.Matches(logMessage, pattern);
 
         // Remove the matched segments from the logMessage
-        string cleanedLogMessage = Regex.Replace(logMessage, pattern, "");
+        //string cleanedLogMessage = Regex.Replace(logMessage, pattern, "");
 
         logEntry.Segments.Add(new LogSegment { Text = stringTag, Color = new SolidColorBrush(tagColor) });
-        // Iterate through matches and add them as separate segments
-        foreach (Match match in matches)
+
+        // Extra tag, mainly for parsing controllers
+        if (extraTag != Logger.ELogExtraTag.None)
         {
-            string matchedText = match.Groups[1].Value; // Get text inside []
-            if (!string.IsNullOrEmpty(matchedText)) // Ensure text isn't empty
+            logEntry.Segments.Add(new LogSegment
             {
-                logEntry.Segments.Add(new LogSegment
-                {
-                    Text = $"[{matchedText}]",
-                    Color = new SolidColorBrush(Colors.AntiqueWhite)
-                });
-            }
+                Text = $"[{extraTag}] ",
+                Color = new SolidColorBrush(Colors.AntiqueWhite)
+            });
         }
+        // Iterate through matches and add them as separate segments
+        //foreach (Match match in matches)
+        //{
+        //    string matchedText = match.Groups[1].Value; // Get text inside []
+        //    if (!string.IsNullOrEmpty(matchedText)) // Ensure text isn't empty
+        //    {
+        //        logEntry.Segments.Add(new LogSegment
+        //        {
+        //            Text = $"[{matchedText}]",
+        //            Color = new SolidColorBrush(Colors.AntiqueWhite)
+        //        });
+        //    }
+        //}
 
         logEntry.Segments.Add(new LogSegment
         {
-            Text = cleanedLogMessage,
+            Text = logMessage,
             Color = new SolidColorBrush(Colors.White),
-            FontFamily = IsQrCodeSegment(cleanedLogMessage) ? new FontFamily("Courier New") : new FontFamily("Segoe UI Variable") // Generated QR code needs Courier New font
+            FontFamily = IsQrCodeSegment(logMessage) ? new FontFamily("Courier New") : new FontFamily("Segoe UI Variable") // Generated QR code needs Courier New font
         });
 
         return logEntry;

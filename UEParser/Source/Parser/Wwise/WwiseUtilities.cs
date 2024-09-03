@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace UEParser.Parser.Wwise;
@@ -21,13 +19,13 @@ public class WwiseUtilities
 
         foreach (var command in commands)
         {
-            tasks.Add(Task.Run(() => ExecuteCommand(command.Argument, command.PathToExe)));
+            tasks.Add(Task.Run(() => ExecuteCommand(command.Argument, command.PathToExe, GlobalVariables.rootDir)));
         }
 
         await Task.WhenAll(tasks);
     }
 
-    public static void ExecuteCommand(string command, string exe)
+    public static void ExecuteCommand(string command, string exe, string workingDirectory)
     {
         try
         {
@@ -35,6 +33,7 @@ public class WwiseUtilities
             {
                 FileName = exe,
                 Arguments = command,
+                WorkingDirectory = workingDirectory,
                 UseShellExecute = false,
                 CreateNoWindow = true
             };

@@ -21,11 +21,11 @@ internal class Maps
         {
             Dictionary<string, Map> parsedMapsDB = [];
 
-            LogsWindowViewModel.Instance.AddLog($"[Maps] Starting parsing process..", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Maps);
 
             ParseMaps(parsedMapsDB);
 
-            LogsWindowViewModel.Instance.AddLog($"[Maps] Parsed total of {parsedMapsDB.Count} items.", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedMapsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Maps);
 
             ParseLocalizationAndSave(parsedMapsDB);
         });
@@ -41,7 +41,7 @@ internal class Maps
         foreach (string filePath in filePaths)
         {
             string packagePath = StringUtils.StripExtractedAssetsDir(filePath);
-            LogsWindowViewModel.Instance.AddLog($"[Maps] Processing: {packagePath}", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Processing: {packagePath}", Logger.LogTags.Info, Logger.ELogExtraTag.Maps);
 
             var assetItems = FileUtils.LoadDynamicJson(filePath);
 
@@ -106,7 +106,7 @@ internal class Maps
 
     private static void ParseLocalizationAndSave(Dictionary<string, Map> parsedMapsDB)
     {
-        LogsWindowViewModel.Instance.AddLog($"[Maps] Starting localization process..", Logger.LogTags.Info);
+        LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Maps);
 
         string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
 

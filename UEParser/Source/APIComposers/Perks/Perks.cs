@@ -22,11 +22,11 @@ public class Perks
         {
             Dictionary<string, Perk> parsedPerksDB = [];
 
-            LogsWindowViewModel.Instance.AddLog($"[Perks] Starting parsing process..", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Perks);
 
             ParsePerks(parsedPerksDB);
 
-            LogsWindowViewModel.Instance.AddLog($"[Perks] Parsed total of {parsedPerksDB.Count} items.", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedPerksDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Perks);
 
             ParseLocalizationAndSave(parsedPerksDB);
         });
@@ -39,7 +39,7 @@ public class Perks
         foreach (string filePath in filePaths)
         {
             string packagePath = StringUtils.StripExtractedAssetsDir(filePath);
-            LogsWindowViewModel.Instance.AddLog($"[Perks] Processing: {packagePath}", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Processing: {packagePath}", Logger.LogTags.Info, Logger.ELogExtraTag.Perks);
 
             var assetItems = FileUtils.LoadDynamicJson(filePath);
             if ((assetItems?[0]?["Rows"]) == null)
@@ -118,7 +118,7 @@ public class Perks
 
     private static void ParseLocalizationAndSave(Dictionary<string, Perk> parsedPerksDB)
     {
-        LogsWindowViewModel.Instance.AddLog($"[Perks] Starting localization process..", Logger.LogTags.Info);
+        LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Perks);
 
         string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
 

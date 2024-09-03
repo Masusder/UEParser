@@ -2,17 +2,13 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using System.Diagnostics;
-using System.Xml;
 using UEParser.ViewModels;
 using System.Text.RegularExpressions;
 using UEParser.Utils;
-using UEParser.Models;
 using System.Threading;
 using Newtonsoft.Json.Linq;
+using UEParser.AssetRegistry.Wwise;
 
 namespace UEParser.Parser.Wwise;
 
@@ -22,54 +18,9 @@ public partial class WwiseFileHandler
     private static readonly string wwiseStructured = Path.Combine(GlobalVariables.pathToExtractedAudio, "WwiseStructured");
     private static readonly string pathToUEAssetsRegistry = Path.Combine(GlobalVariables.pathToExtractedAssets, "DeadByDaylight", "AssetRegistry.json");
 
-    //public static (string filePath, string dataType) FindSoundBank()
-    //{
-    //    string soundsBankName = "SoundbanksInfo";
-
-    //    string[] filePathsJson = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive(soundsBankName + ".json");
-    //    string[] filePathsXml = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive(soundsBankName + ".xml");
-
-    //    if (filePathsJson.Length == 0)
-    //    {
-    //        LogsWindowViewModel.Instance.AddLog("Sound bank wasn't found in JSON format, which is prefered.. searching for alternatives..", Logger.LogTags.Warning);
-
-    //        if (filePathsXml.Length == 1)
-    //        {
-    //            string soundBankPath = filePathsXml[0];
-    //            string dataType = "xml";
-
-    //            return (soundBankPath, dataType); 
-    //        }
-    //        else
-    //        {
-    //            throw new Exception("Failed to find any Sound Banks.");
-    //        }
-    //    }
-    //    else
-    //    {
-    //        var soundBankPath = filePathsJson[0];
-    //        string dataType = "json";
-
-    //        return (soundBankPath, dataType);
-    //    }
-    //}
-
-    //public static bool DoesSoundBankExist()
-    //{
-    //    string soundsBankNameJson = "SoundbanksInfo.json";
-    //    string[] filePathsJson = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive(soundsBankNameJson);
-
-    //    if (filePathsJson.Length > 0)
-    //    {
-    //        return true;
-    //    }
-
-    //    return false;
-    //}
-
     public static void MoveCompressedAudio()
     {
-        string pathToExtractedWwiseDirectory = Path.Combine(GlobalVariables.pathToExtractedAssets, "DeadByDaylight", "Content", "WwiseAudio");
+        string pathToExtractedWwiseDirectory = Path.Combine(GlobalVariables.pathToExtractedAssets, "DeadByDaylight", "Content", "WwiseAudio", "Cooked");
 
         string[] fileExtensions = [
             "*.bnk",
@@ -86,12 +37,32 @@ public partial class WwiseFileHandler
         {
             try
             {
-                string fileName = Path.GetFileName(filePath);
-                string destFilePath = Path.Combine(temporaryDirectory, fileName);
+                string originalFilePath = StringUtils.StripDynamicDirectory(filePath, pathToExtractedWwiseDirectory);
 
-                if (File.Exists(destFilePath)) continue;
+                string extension = Path.GetExtension(originalFilePath);
 
-                File.Copy(filePath, destFilePath, overwrite: true);
+                // We need all wems to be in one folder as wwiser is gonna grab wems from specific folder we set
+                if (extension == ".wem")
+                {
+                    string fileName = Path.GetFileName(filePath);
+
+                    string destFilePath = Path.Combine(temporaryDirectory, fileName);
+
+                    if (File.Exists(destFilePath)) continue;
+
+                    File.Copy(filePath, destFilePath, overwrite: true);
+                }
+                else
+                {
+                    // Preserve banks original structure as bank names aren't unique
+                    string destFilePath = Path.Combine(temporaryDirectory, originalFilePath);
+
+                    Directory.CreateDirectory(Path.GetDirectoryName(destFilePath)!);
+
+                    if (File.Exists(destFilePath)) continue;
+
+                    File.Copy(filePath, destFilePath, overwrite: true);
+                }
             }
             catch (Exception ex)
             {
@@ -114,18 +85,61 @@ public partial class WwiseFileHandler
     public static void GenerateTxtp()
     {
         string bnkFilesDirectory = Path.Combine(temporaryDirectory, "*.bnk");
+        string bnkFilesSubDirectories = Path.Combine(temporaryDirectory, "**", "*.bnk"); // Wwiser fails to find banks recursively (even with -f option in arguments) for some reason, so search inside subfolders too
 
         ProvideWwnamesFile(); // Neccessary for reversing audio names
 
-        string arguments = $"\"{GlobalVariables.wwiserPath}\" \"{bnkFilesDirectory}\" -g -go \"{temporaryDirectory}\"";
+        string arguments = $"\"{GlobalVariables.wwiserPath}\" \"{bnkFilesDirectory}\" \"{bnkFilesSubDirectories}\" -g --txtp-wemdir \"{temporaryDirectory}\"";
+
+        if (!IsPythonInstalled()) throw new Exception("Python is not installed or not accessible from the command line, which is required for audio extraction to work.");
 
         // Generate txtp files with reversed names that we will use to convert to playable audio
-        WwiseUtilities.ExecuteCommand(arguments, "python");
+        WwiseUtilities.ExecuteCommand(arguments, "python", temporaryDirectory);
+    }
+
+    // We need to check if Python is installed in order for user to be able to decompile audio
+    private static bool IsPythonInstalled()
+    {
+        try
+        {
+            // Get the system's PATH environment variable
+            var path = Environment.GetEnvironmentVariable("PATH");
+
+            if (path == null)
+                return false;
+
+            // Split the PATH into individual directories
+            var pathDirs = path.Split(Path.PathSeparator);
+
+            // Check each directory for the presence of the Python executable
+            foreach (var dir in pathDirs)
+            {
+                try
+                {
+                    // Check for both 'python.exe' (Windows) and 'python' (Unix-based)
+                    if (File.Exists(Path.Combine(dir, "python.exe")) || File.Exists(Path.Combine(dir, "python")))
+                    {
+                        return true;
+                    }
+                }
+                catch
+                {
+                    // Ignore any exceptions due to inaccessible directories and continue
+                    continue;
+                }
+            }
+
+            return false;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     [GeneratedRegex(@"CAkEvent\[\d+\] (\d+)")]
     private static partial Regex CAkEventRegex();
-    // Returns audio event ids associated with audio
+    // Returns audio event ids associated with the audio
     public static Dictionary<string, long> GrabAudioEventIds()
     {
         string[] txtpFiles = Directory.GetFiles(temporaryDirectory, "*.txtp", SearchOption.AllDirectories);
@@ -159,7 +173,7 @@ public partial class WwiseFileHandler
         public required string WwiseName { get; set; }
         public required string WwiseGuid { get; set; }
     }
-
+    // Returns audio events data
     public static Dictionary<long, AudioEventsLinkageData> ConstructAudioEventsLinkage()
     {
         dynamic assetsRegistryData = FileUtils.LoadDynamicJson(pathToUEAssetsRegistry);
@@ -173,9 +187,9 @@ public partial class WwiseFileHandler
             // We only want to map audio events
             if (assetClass != "AkAudioEvent") continue;
 
-            // In case package path is null this mapping won't be useful anyway
             string? packagePath = assetData["PackagePath"].ToString();
 
+            // In case package path is null this mapping won't be useful anyway
             if (packagePath == null) continue;
 
             var tagsAndValues = assetData["TagsAndValues"];
@@ -183,12 +197,13 @@ public partial class WwiseFileHandler
             if (tagsAndValues.TryGetValue("WwiseShortId", out JToken wwiseIdToken))
             {
                 string wwiseId = wwiseIdToken.ToString(); 
-                if (int.TryParse(wwiseId, out int wwiseIdInt))
+                if (long.TryParse(wwiseId, out long wwiseIdInt))
                 {
                     long adjustedWwiseId = wwiseIdInt;
 
-                    // If audio event id is negative we need to add maxium integer value and use that instead
+                    // If audio event id is negative we need to add double maxium integer value and use that instead
                     // For some reason ids overflow to negativity in assets registry and don't match to compiled audio event ids
+                    // In some cases adjusted value is also off by 2
                     if (wwiseIdInt < 0)
                     {
                         adjustedWwiseId = wwiseIdInt + 2L * int.MaxValue;
@@ -216,188 +231,158 @@ public partial class WwiseFileHandler
     {
         foreach (var audioEvent in associatedAudioEventIds)
         {
-            if (audioEventsLinkage.TryGetValue(audioEvent.Value, out AudioEventsLinkageData? audioEventData))
+            bool matchFound = false;
+            // We need to try twice, sometimes value is off by 2, hence why we need to subtract 2
+            for (int attempt = 0; attempt < 2; attempt++)
             {
-                string reversedFileName = Path.GetFileName(audioEvent.Key);
+                long audioEventValue = audioEvent.Value;
+                if (attempt == 1)
+                {
+                    audioEventValue -= 2;
+                }
 
-                string combinedPath = Path.Combine(wwiseStructured, audioEventData.PackagePath.TrimStart('/'), reversedFileName);
+                if (audioEventsLinkage.TryGetValue(audioEventValue, out AudioEventsLinkageData? audioEventData))
+                {
+                    matchFound = true;
+                    string reversedFileName = Path.GetFileName(audioEvent.Key);
 
-                string finalPath = combinedPath.Replace("\\Game/", "/DeadByDaylight/");
+                    string combinedPath = Path.Combine(wwiseStructured, audioEventData.PackagePath.TrimStart('/'), Path.ChangeExtension(reversedFileName, ".wav"));
 
-                // TODO: create audio registry here
+                    string finalPath = combinedPath.Replace("\\Game/", "/DeadByDaylight/");
 
-                Directory.CreateDirectory(Path.GetDirectoryName(finalPath) ?? string.Empty);
+                    Directory.CreateDirectory(Path.GetDirectoryName(finalPath) ?? string.Empty);
 
-                File.Move(audioEvent.Key, finalPath);
-            };
-        }
-    }
+                    if (File.Exists(Path.ChangeExtension(audioEvent.Key, ".wav")))
+                    {
+                        File.Move(Path.ChangeExtension(audioEvent.Key, ".wav"), finalPath, overwrite: true);
+                    }
 
-    // Generated txtp file contains relative path to audio banks
-    // which won't match after we reverse audio structure
-    private static void ConvertTxtpRelativePathsToAbsolute()
-    {
-        string[] txtpFiles = Directory.GetFiles(wwiseStructured, "*.txtp", SearchOption.AllDirectories);
-
-        foreach (var txtpFilePath in txtpFiles)
-        {
-            string content = File.ReadAllText(txtpFilePath);
-
-            string pattern = @"(?<=\s|^)(\.\./)+[\w/.\-]+(?=\s|$)";
-
-            var matches = Regex.Matches(content, pattern);
-
-            foreach (Match match in matches)
-            {
-                string relativePath = match.Value;
-                string absolutePath = ConvertRelativePathToAbsolute(temporaryDirectory, relativePath);
-
-                // Replace the relative path in the content with the absolute path
-                content = content.Replace(relativePath, absolutePath);
+                    break; // Exit the loop after successfully handling the file
+                }
             }
 
-            // Write the updated content back to the .txtp file
-            File.WriteAllText(txtpFilePath, content);
+            if (!matchFound)
+            {
+                LogsWindowViewModel.Instance.AddLog($"Failed to find audio event linkage data for: {audioEvent.Key}", Logger.LogTags.Info);
+            }
         }
     }
 
-    private static string ConvertRelativePathToAbsolute(string baseDirectory, string relativePath)
-    {
-        try
-        {
-            relativePath = relativePath.Replace('/', Path.DirectorySeparatorChar);
-
-            string fileName = Path.GetFileName(relativePath);
-
-            string fullPath = Path.Combine(baseDirectory, fileName);
-
-            return Path.GetFullPath(fullPath);
-        }
-        catch
-        {
-            return relativePath; // Return the original path in case of error
-        }
-    }
-
-    //public static void ConvertTxtpToWav()
-    //{
-    //    // Get all .txtp files in the directory and its subdirectories
-    //    var txtpFiles = Directory.GetFiles(wwiseStructured, "*.txtp", SearchOption.AllDirectories);
-
-    //    ConvertTxtpRelativePathsToAbsolute();
-
-    //    foreach (var filePath in txtpFiles)
-    //    {
-    //        // Construct the output .wav file path
-    //        string outputFilePath = Path.ChangeExtension(filePath, ".wav");
-
-    //        // Prepare the arguments for the vgmstream-cli command
-    //        string arguments = $"-i -o \"{outputFilePath}\" \"{filePath}\"";
-
-    //        // Convert txtp files to wav audio format
-    //        WwiseUtilities.ExecuteCommand(arguments, GlobalVariables.vgmStreamCliPath);
-
-    //        // If the command was successful, delete the .txtp file
-    //        if (File.Exists(outputFilePath))
-    //        {
-    //            try
-    //            {
-    //                File.Delete(filePath);
-    //            }
-    //            catch (Exception ex)
-    //            {
-    //                LogsWindowViewModel.Instance.AddLog($"Failed to delete {filePath}: {ex.Message}", Logger.LogTags.Warning);
-    //            }
-    //        }
-    //        else
-    //        {
-    //            LogsWindowViewModel.Instance.AddLog($"Conversion failed or .wav file was not created for: {filePath}", Logger.LogTags.Warning);
-    //        }
-    //    }
-    //}
-
+    private static readonly string[] suppressedTxtpFiles = [
+        "AudioEvent_Masquerade_Charge_Loop [2766023450=3146088667] {m}.txtp",
+        "AudioEvent_Masquerade_Charge_Loop [2766023450=Idle] {m}.txtp",
+        "AudioEvent_K23_Comet_Status_Start_InGame [567149230=2930662992] {r} {m}.txtp",
+        "AudioEvent_K23_Comet_Status_Start_Menu [567149230=2930662992] {r} {m}.txtp",
+        "AudioEvent_K28_BODY_Default_BlackSmoke_Lp_Start {m}.txtp",
+        "AudioEvent_K28_Menu_Status_Start [2095043200=1597592862] {r} {m}.txtp",
+        "AudioEvent_K28_Menu_Status_Start [2095043200=2631872382] {r} {m}.txtp",
+        "AudioEvent_K28_Menu_Status_Start [2095043200=2648649944] {r} {m}.txtp",
+        "AudioEvent_K28_Menu_Status_Start [2095043200=3229799049] {r} {m}.txtp",
+        "AudioEvent_K28_Menu_Status_Start [2095043200=632232018] {r} {m}.txtp",
+        "AudioEvent_K28_Menu_Status_Start [2095043200=786316536] {r} {m}.txtp",
+        "AudioEvent_K28_OBJ_Remnant_Spawn {m}.txtp",
+        "AudioEvent_K28_PWR_Teleport_ChargeStart {s}=(4268632856=3102261578) {r} {m}.txtp",
+        "AudioEvent_K28_PWR_Teleport_ChargeStart {s}=(4268632856=932695537) {r} {m}.txtp",
+        "AudioEvent_K28_PWR_Teleport_ChargeStart {s}=- {r} {m}.txtp",
+        "AudioEvent_K28_Status_Start {r} {m}.txtp",
+        "ARC_TOME20_HOA_01_ENTRY {l=en}.txtp",
+        "ARC_TOME20_HOA_02_ENTRY {l=en}.txtp",
+        "ARC_TOME20_HOA_03_ENTRY {l=en}.txtp",
+        "ARC_TOME20_HOA_05_ENTRY {l=en}.txtp",
+        "ARC_TOME20_HOA_06_ENTRY {l=en}.txtp",
+        "ARC_TOME20_HOA_08_ENTRY {l=en}.txtp",
+        "ARC_TOME20_HOA_09_ENTRY {l=en}.txtp",
+        "ARC_TOME20_SPIRIT_02_ENTRY {l=en}.txtp",
+        "ARC_TOME20_SPIRIT_03_ENTRY {l=en}.txtp",
+        "ARC_TOME20_SPIRIT_04_ENTRY {l=en}.txtp",
+        "ARC_TOME20_SPIRIT_05_ENTRY {l=en}.txtp",
+        "ARC_TOME20_SPIRIT_07_ENTRY {l=en}.txtp",
+        "ARC_TOME20_SPIRIT_08_ENTRY {l=en}.txtp",
+        "ARC_TOME20_SPIRIT_09_ENTRY {l=en}.txtp",
+        "ARC_TOME20_YUI_02_ENTRY {l=en}.txtp",
+        "ARC_TOME20_YUI_03_ENTRY {l=en}.txtp",
+        "ARC_TOME20_YUI_04_ENTRY {l=en}.txtp",
+        "ARC_TOME20_YUI_05_ENTRY {l=en}.txtp",
+        "ARC_TOME20_YUI_07_ENTRY {l=en}.txtp",
+        "ARC_TOME20_YUI_08_ENTRY {l=en}.txtp",
+        "ARC_TOME20_YUI_09_ENTRY {l=en}.txtp"
+    ];
     public static void ConvertTxtpToWav()
     {
         // Get all .txtp files in the directory and its subdirectories
-        var txtpFiles = Directory.GetFiles(wwiseStructured, "*.txtp", SearchOption.AllDirectories);
+        var txtpFiles = Directory.GetFiles(temporaryDirectory, "*.txtp", SearchOption.AllDirectories);
 
-        ConvertTxtpRelativePathsToAbsolute();
+        var audioToParse = WwiseRegister.RetrieveAudioToParse(txtpFiles);
 
+        int conversionCount = 0;
         // Convert txtp files to wav audio format
-        foreach (var filePath in txtpFiles)
+        Parallel.ForEach(txtpFiles, new ParallelOptions { MaxDegreeOfParallelism = 4 }, filePath =>
         {
-            // TODO: only convert files that are new/modified by reading audio registry
-
-            // Generate a temporary short name
-            string tempFilePath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".txtp");
+            if (!audioToParse.Contains(filePath)) return; // We only want to convert new/modified audio
 
             try
             {
-                // Copy the original file to the temporary path
-                // Some reversed names are too long for conversion to work
-                File.Copy(filePath, tempFilePath, overwrite: true);
-
                 // Construct the output .wav file path
-                string outputFilePath = Path.ChangeExtension(tempFilePath, ".wav");
+                string outputFilePath = Path.ChangeExtension(filePath, ".wav");
+                if (File.Exists(outputFilePath)) return;
 
                 // Prepare the arguments for the vgmstream-cli command
-                string arguments = $"-i -o \"{outputFilePath}\" \"{tempFilePath}\"";
+                string arguments = $"-i -o \"{outputFilePath}\" \"{filePath}\"";
 
                 // Convert txtp files to wav audio format
-                WwiseUtilities.ExecuteCommand(arguments, GlobalVariables.vgmStreamCliPath);
+                WwiseUtilities.ExecuteCommand(arguments, GlobalVariables.vgmStreamCliPath, GlobalVariables.rootDir);
 
-                // If the command was successful, delete the .txtp file
-                if (File.Exists(outputFilePath))
+                string txtpFileName = Path.GetFileName(filePath);
+
+                // Some warnings for specific txtp files are suppressed since I don't know how to fix them :c
+                if (!File.Exists(outputFilePath) && !suppressedTxtpFiles.Contains(txtpFileName))
                 {
-                    // Move the .wav file to the original location
-                    File.Move(outputFilePath, Path.ChangeExtension(filePath, ".wav"));
-                    File.Delete(tempFilePath);
-                    File.Delete(filePath);
+                    LogsWindowViewModel.Instance.AddLog($"Conversion failed for: {filePath.Replace(Path.Combine(temporaryDirectory, "txtp"), "").TrimStart(Path.AltDirectorySeparatorChar).TrimStart(Path.PathSeparator)}", Logger.LogTags.Warning);
                 }
                 else
                 {
-                    LogsWindowViewModel.Instance.AddLog($"Conversion failed or .wav file was not created for: {filePath}", Logger.LogTags.Warning);
-                    File.Delete(tempFilePath);
+                    Interlocked.Increment(ref conversionCount);
                 }
             }
             catch (Exception ex)
             {
-                LogsWindowViewModel.Instance.AddLog($"Error processing file {filePath.Replace(wwiseStructured, "").TrimStart(Path.AltDirectorySeparatorChar).TrimStart(Path.PathSeparator)}: {ex.Message}", Logger.LogTags.Warning);
-
-                // Clean up temporary files if any exception occurs
-                if (File.Exists(tempFilePath))
-                {
-                    File.Delete(tempFilePath);
-                }
+                LogsWindowViewModel.Instance.AddLog($"Error processing file {filePath.Replace(Path.Combine(temporaryDirectory, "txtp"), "").TrimStart(Path.AltDirectorySeparatorChar).TrimStart(Path.PathSeparator)}: {ex.Message}", Logger.LogTags.Warning);
             }
+        });
+
+        if (conversionCount > 0)
+        {
+            LogsWindowViewModel.Instance.AddLog($"Converted total of {conversionCount} audio files.", Logger.LogTags.Info);
         }
     }
 
-    //public static async Task UnpackAudioBanks()
-    //{
-    //    string[] bnkFiles = Directory.GetFiles(temporaryDirectory, "*.bnk", SearchOption.AllDirectories);
+    public static async Task UnpackAudioBanks()
+    {
+        string[] bnkFiles = Directory.GetFiles(temporaryDirectory, "*.bnk", SearchOption.AllDirectories);
 
-    //    if (bnkFiles.Length == 0)
-    //    {
-    //        return;
-    //    }
+        if (bnkFiles.Length == 0)
+        {
+            return;
+        }
 
-    //    List<WwiseUtilities.CommandModel> commands = [];
-    //    foreach (var bnkFilePath in bnkFiles)
-    //    {
-    //        string command = $"--audio {bnkFilePath} --output {temporaryDirectory} --wems-only";
+        List<WwiseUtilities.CommandModel> commands = [];
+        foreach (var bnkFilePath in bnkFiles)
+        {
+            string command = $"--audio {bnkFilePath} --output {temporaryDirectory} --wems-only";
 
-    //        WwiseUtilities.CommandModel model = new()
-    //        {
-    //            Argument = command,
-    //            PathToExe = GlobalVariables.bnkExtractorPath
+            WwiseUtilities.CommandModel model = new()
+            {
+                Argument = command,
+                PathToExe = GlobalVariables.bnkExtractorPath
 
-    //        };
-    //        commands.Add(model);
-    //    }
+            };
+            commands.Add(model);
+        }
 
-    //    await WwiseUtilities.ExecuteCommandsAsync(commands);
-    //}
+        await WwiseUtilities.ExecuteCommandsAsync(commands);
+    }
+
+    // We use WAV format now, but in case I will need OGG I will leave this method for a reference
 
     //public static void ConvertToOggAndMove()
     //{
@@ -443,30 +428,28 @@ public partial class WwiseFileHandler
     //    MoveAudioToOutput();
     //}
 
-    private static void MoveAudioToOutput()
+    public static void MoveAudioToOutput()
     {
-        LogsWindowViewModel.Instance.AddLog("Moving converted audio into output.", Logger.LogTags.Info);
-
-        string[] oggFiles = Directory.GetFiles(wwiseStructured, "*.ogg", SearchOption.AllDirectories);
-        foreach (var tempOggPath in oggFiles)
+        string[] wavFiles = Directory.GetFiles(wwiseStructured, "*.wav", SearchOption.AllDirectories);
+        foreach (var tempWavPath in wavFiles)
         {
             try
             {
-                string relativePath = Utils.StringUtils.StripDynamicDirectory(tempOggPath, wwiseStructured);
-                string finalOggPath = Path.Combine(GlobalVariables.rootDir, "Output", "ExtractedAssets", "Audio", GlobalVariables.versionWithBranch, relativePath);
+                string relativePath = StringUtils.StripDynamicDirectory(tempWavPath, wwiseStructured);
+                string finalWavPath = Path.Combine(GlobalVariables.rootDir, "Output", "ExtractedAssets", "Audio", GlobalVariables.versionWithBranch, relativePath);
 
-                Directory.CreateDirectory(Path.GetDirectoryName(finalOggPath)!);
+                Directory.CreateDirectory(Path.GetDirectoryName(finalWavPath)!);
 
-                if (!File.Exists(tempOggPath))
+                if (!File.Exists(tempWavPath))
                 {
                     continue;
                 }
 
-                File.Copy(tempOggPath, finalOggPath, overwrite: true);
+                File.Move(tempWavPath, finalWavPath, overwrite: true);
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error copying file {tempOggPath} to target directory: {ex.Message}");
+                throw new Exception($"Error moving file {tempWavPath} to target directory: {ex.Message}");
             }
         }
     }
@@ -486,48 +469,4 @@ public partial class WwiseFileHandler
             }
         }
     }
-
-    // Only call this after sound banks have been unpacked
-    // Deprecated with 8.2.0_live update, new solution needs to be found
-    //public static void StructureAudio()
-    //{
-    //    var soundBankDictionary = WwiseRegister.SoundBankDictionary;
-
-    //    string[] wemFiles = Directory.GetFiles(temporaryDirectory, "*.wem", SearchOption.AllDirectories);
-
-    //    static void MoveFile(string wemFilePath, string structuredOutputPath)
-    //    {
-    //        try
-    //        {
-    //            File.Move(wemFilePath, structuredOutputPath, true);
-    //        }
-    //        catch (Exception ex)
-    //        {
-    //            throw new Exception($"Error moving file {wemFilePath} to {structuredOutputPath}: {ex.Message}");
-    //        }
-    //    }
-
-    //    foreach (var wemFilePath in wemFiles)
-    //    {
-    //        string id = Path.GetFileNameWithoutExtension(wemFilePath);
-
-    //        string? structuredPath = soundBankDictionary[id];
-
-    //        if (string.IsNullOrEmpty(structuredPath))
-    //        {
-    //            string structuredOutputPath = Path.Combine(wwiseStructured, "Unknown");
-    //            Directory.CreateDirectory(Path.GetDirectoryName(structuredOutputPath)!);
-
-    //            MoveFile(wemFilePath, structuredOutputPath);
-    //        }
-    //        else
-    //        {
-    //            string structuredOutputPath = Path.Combine(wwiseStructured, structuredPath);
-
-    //            Directory.CreateDirectory(Path.GetDirectoryName(structuredOutputPath)!);
-
-    //            MoveFile(wemFilePath, structuredOutputPath);
-    //        }
-    //    }
-    //}
 }

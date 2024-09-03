@@ -24,11 +24,11 @@ public class Rifts
         {
             Dictionary<string, Rift> parsedRiftsDB = [];
 
-            LogsWindowViewModel.Instance.AddLog($"[Rifts] Starting parsing process..", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Rifts);
 
             parsedRiftsDB = ParseRifts(parsedRiftsDB);
 
-            LogsWindowViewModel.Instance.AddLog($"[Rifts] Parsed total of {parsedRiftsDB.Count} items.", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedRiftsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Rifts);
 
             ParseLocalizationAndSave(parsedRiftsDB);
         });
@@ -44,7 +44,7 @@ public class Rifts
         foreach (string filePath in filePaths)
         {
             string packagePath = StringUtils.StripExtractedAssetsDir(filePath);
-            LogsWindowViewModel.Instance.AddLog($"[Rifts] Processing: {packagePath}", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Processing: {packagePath}", Logger.LogTags.Info, Logger.ELogExtraTag.Rifts);
 
             var assetItems = FileUtils.LoadDynamicJson(filePath);
 
@@ -103,7 +103,7 @@ public class Rifts
 
     private static void ParseLocalizationAndSave(Dictionary<string, Rift> parsedRiftsDB)
     {
-        LogsWindowViewModel.Instance.AddLog($"[Rifts] Starting localization process..", Logger.LogTags.Info);
+        LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Rifts);
 
         string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
 

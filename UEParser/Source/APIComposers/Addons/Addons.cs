@@ -2,12 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using UEParser.Models;
 using UEParser.Parser;
 using UEParser.ViewModels;
 using UEParser.Utils;
-using FluentAvalonia.Core;
 
 namespace UEParser.APIComposers;
 
@@ -21,11 +21,11 @@ public class Addons
         {
             Dictionary<string, Addon> parsedAddonsDB = [];
 
-            LogsWindowViewModel.Instance.AddLog($"[Addons] Starting parsing process..", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Addons);
 
             ParseAddons(parsedAddonsDB);
 
-            LogsWindowViewModel.Instance.AddLog($"[Addons] Parsed total of {parsedAddonsDB.Count} items.", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedAddonsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Addons);
 
             ParseLocalizationAndSave(parsedAddonsDB);
         });
@@ -124,7 +124,7 @@ public class Addons
 
     private static void ParseLocalizationAndSave(Dictionary<string, Addon> parsedAddonsDB)
     {
-        LogsWindowViewModel.Instance.AddLog($"[Addons] Starting localization process..", Logger.LogTags.Info);
+        LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Addons);
 
         string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
 
@@ -144,7 +144,7 @@ public class Addons
 
             string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Addons.json");
 
-            FileWriter.SaveParsedDB(localizedAddonsDB, outputPath, "Addons");
+            FileWriter.SaveParsedDB(localizedAddonsDB, outputPath, Logger.ELogExtraTag.Addons);
         }
     }
 }

@@ -25,11 +25,11 @@ public class Collections
         {
             Dictionary<string, Collection> parsedCollectionsDB = [];
 
-            LogsWindowViewModel.Instance.AddLog($"[Collections] Starting parsing process..", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Collections);
 
             ParseCollections(parsedCollectionsDB);
 
-            LogsWindowViewModel.Instance.AddLog($"[Collections] Parsed total of {parsedCollectionsDB.Count} items.", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedCollectionsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Collections);
 
             ParseLocalizationAndSave(parsedCollectionsDB);
         });
@@ -44,7 +44,7 @@ public class Collections
         {
             string collectionId = collection["collectionId"];
 
-            LogsWindowViewModel.Instance.AddLog($"[Collections] Processing: {collectionId}", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Processing: {collectionId}", Logger.LogTags.Info, Logger.ELogExtraTag.Collections);
 
             //JObject collectionTitle = collection["collectionTitle"];
             //JObject collectionSubtitle = collection["collectionSubtitle"];
@@ -104,7 +104,7 @@ public class Collections
 
     private static void ParseLocalizationAndSave(Dictionary<string, Collection> parsedCollectionsDB)
     {
-        LogsWindowViewModel.Instance.AddLog($"[Collections] Starting localization process..", Logger.LogTags.Info);
+        LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Collections);
 
         string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
 

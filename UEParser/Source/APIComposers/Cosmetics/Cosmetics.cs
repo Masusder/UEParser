@@ -25,14 +25,14 @@ public class Cosmetics
         {
             Dictionary<string, object> parsedCosmeticsDB = [];
 
-            LogsWindowViewModel.Instance.AddLog("[Cosmetics] Starting parsing process..", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog("Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Cosmetics);
 
             parsedCosmeticsDB = ParseOutfits(parsedCosmeticsDB);
             parsedCosmeticsDB = ParseCustomizationItems(parsedCosmeticsDB);
             parsedCosmeticsDB = AssignRiftData(parsedCosmeticsDB);
             parsedCosmeticsDB = AppendStaticCurrencies(parsedCosmeticsDB);
 
-            LogsWindowViewModel.Instance.AddLog($"[Cosmetics] Parsed total of {parsedCosmeticsDB.Count} items.", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedCosmeticsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Cosmetics);
 
             ParseLocalizationAndSave(parsedCosmeticsDB);
         });
@@ -51,7 +51,7 @@ public class Cosmetics
         foreach (string filePath in filePaths)
         {
             string packagePath = StringUtils.StripExtractedAssetsDir(filePath);
-            LogsWindowViewModel.Instance.AddLog($"[Cosmetics] Processing: {packagePath}", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Processing: {packagePath}", Logger.LogTags.Info, Logger.ELogExtraTag.Cosmetics);
 
             var assetItems = FileUtils.LoadDynamicJson(filePath);
             if ((assetItems?[0]?["Rows"]) == null)
@@ -178,7 +178,7 @@ public class Cosmetics
         foreach (string filePath in filePaths)
         {
             string packagePath = StringUtils.StripExtractedAssetsDir(filePath);
-            LogsWindowViewModel.Instance.AddLog($"[Cosmetics] Processing: {packagePath}", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Processing: {packagePath}", Logger.LogTags.Info, Logger.ELogExtraTag.Cosmetics);
 
             var assetItems = FileUtils.LoadDynamicJson(filePath);
             if ((assetItems?[0]?["Rows"]) == null)
@@ -430,7 +430,7 @@ public class Cosmetics
 
     private static void ParseLocalizationAndSave(Dictionary<string, object> parsedCosmeticsDB)
     {
-        LogsWindowViewModel.Instance.AddLog($"[Cosmetics] Starting localization process..", Logger.LogTags.Info);
+        LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Cosmetics);
 
         string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
 

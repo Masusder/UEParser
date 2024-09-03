@@ -21,6 +21,26 @@ public class Logger
         Debug
     }
 
+    public enum ELogExtraTag
+    {
+        None,
+        Addons,
+        Bundles,
+        CharacterClasses,
+        Characters,
+        Collections,
+        Cosmetics,
+        DLC,
+        Items,
+        Journals,
+        Maps,
+        Offerings,
+        Perks,
+        Rifts,
+        SpecialEvents,
+        Tomes
+    }
+
     static Logger()
     {
         // Generate log file path with current date and time

@@ -23,11 +23,11 @@ public class Items
         {
             Dictionary<string, Item> parsedItemsDB = [];
 
-            LogsWindowViewModel.Instance.AddLog($"[Items] Starting parsing process..", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Items);
 
             ParseItems(parsedItemsDB);
 
-            LogsWindowViewModel.Instance.AddLog($"[Items] Parsed total of {parsedItemsDB.Count} items.", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedItemsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Items);
 
             ParseLocalizationAndSave(parsedItemsDB);
         });
@@ -48,7 +48,7 @@ public class Items
         foreach (string filePath in filePaths)
         {
             string packagePath = StringUtils.StripExtractedAssetsDir(filePath);
-            LogsWindowViewModel.Instance.AddLog($"[Items] Processing: {packagePath}", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Processing: {packagePath}", Logger.LogTags.Info, Logger.ELogExtraTag.Items);
 
             var assetItems = FileUtils.LoadDynamicJson(filePath);
 
@@ -149,7 +149,7 @@ public class Items
 
     private static void ParseLocalizationAndSave(Dictionary<string, Item> parsedItemsDB)
     {
-        LogsWindowViewModel.Instance.AddLog($"[Items] Starting localization process..", Logger.LogTags.Info);
+        LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Items);
 
         string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
 

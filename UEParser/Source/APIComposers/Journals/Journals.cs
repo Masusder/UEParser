@@ -20,11 +20,11 @@ public class Journals
         {
             Dictionary<string, Journal> parsedJournalsDB = [];
 
-            LogsWindowViewModel.Instance.AddLog($"[Journals] Starting parsing process..", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Journals);
 
             ParseJournals(parsedJournalsDB);
 
-            LogsWindowViewModel.Instance.AddLog($"[Journals] Parsed total of {parsedJournalsDB.Count} items.", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedJournalsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Journals);
 
             ParseLocalizationAndSave(parsedJournalsDB);
         });
@@ -37,7 +37,7 @@ public class Journals
         foreach (string filePath in filePaths)
         {
             string packagePath = StringUtils.StripExtractedAssetsDir(filePath);
-            LogsWindowViewModel.Instance.AddLog($"[Journals] Processing: {packagePath}", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Processing: {packagePath}", Logger.LogTags.Info, Logger.ELogExtraTag.Journals);
 
             var assetItems = FileUtils.LoadDynamicJson(filePath);
 
@@ -145,7 +145,7 @@ public class Journals
 
     private static void ParseLocalizationAndSave(Dictionary<string, Journal> parsedJournalsDB)
     {
-        LogsWindowViewModel.Instance.AddLog($"[Journals] Starting localization process..", Logger.LogTags.Info);
+        LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Journals);
 
         string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
 

@@ -28,7 +28,8 @@ public class GlobalVariables
     public static readonly string pathToParsedData = Path.Combine(rootDir, "Output", "ParsedData");
     public static readonly string pathToKraken = Path.Combine(rootDir, "Output", "Kraken");
     public static readonly string pathToModelsData = Path.Combine(rootDir, "Output", "ModelsData");
-    public static readonly string pathToStructuredWwise = Path.Combine(rootDir, pathToExtractedAudio, "WwiseStructured");
+    public static readonly string pathToStructuredWwise = Path.Combine(pathToExtractedAudio, "WwiseStructured");
+    public static readonly string pathToTemporaryWwise = Path.Combine(pathToExtractedAudio, "WwiseTemporary");
     #endregion
 
     #region OTHER

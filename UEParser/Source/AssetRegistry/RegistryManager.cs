@@ -32,7 +32,7 @@ public class RegistryManager
         foreach (var entry in audio)
         {
             WriteString(writer, entry.Key);
-            WriteString(writer, entry.Value.Id);
+            //WriteString(writer, entry.Value.Id);
             WriteString(writer, entry.Value.Hash);
             writer.Write(entry.Value.Size);
         }
@@ -46,7 +46,7 @@ public class RegistryManager
         if (!File.Exists(filePath))
         {
 #if DEBUG
-            LogsWindowViewModel.Instance.AddLog("Couldn't read files registry, file doesn't exist", Logger.LogTags.Debug);
+            LogsWindowViewModel.Instance.AddLog("Couldn't read files registry, file doesn't exist.", Logger.LogTags.Debug);
 #endif
             return (assets, audio);
         }
@@ -86,11 +86,11 @@ public class RegistryManager
                     int audioCount = reader.ReadInt32();
                     for (int i = 0; i < audioCount; i++)
                     {
-                        string path = ReadString(reader);
+                        string fileName = ReadString(reader);
                         string id = ReadString(reader);
                         string hash = ReadString(reader);
                         long size = reader.ReadInt64();
-                        audio[path] = new WwiseRegister.AudioInfo(id, hash, size);
+                        audio[fileName] = new WwiseRegister.AudioInfo(hash, size);
                     }
                     break;
 

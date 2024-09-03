@@ -23,11 +23,11 @@ public class SpecialEvents
         {
             Dictionary<string, SpecialEvent> parsedSpecialEventsDB = [];
 
-            LogsWindowViewModel.Instance.AddLog($"[SpecialEvents] Starting parsing process..", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.SpecialEvents);
 
             ParseSpecialEvents(parsedSpecialEventsDB);
 
-            LogsWindowViewModel.Instance.AddLog($"[SpecialEvents] Parsed total of {parsedSpecialEventsDB.Count} items.", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedSpecialEventsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.SpecialEvents);
 
             ParseLocalizationAndSave(parsedSpecialEventsDB);
         });
@@ -49,7 +49,7 @@ public class SpecialEvents
             if (filePath.Contains(@"DeadByDaylight\Content\Data\Events\Bacon\SpecialEventsDB.json")) continue;
 
             string packagePath = StringUtils.StripExtractedAssetsDir(filePath);
-            LogsWindowViewModel.Instance.AddLog($"[SpecialEvents] Processing: {packagePath}", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Processing: {packagePath}", Logger.LogTags.Info, Logger.ELogExtraTag.SpecialEvents);
 
             var assetItems = FileUtils.LoadDynamicJson(filePath);
 
@@ -106,7 +106,7 @@ public class SpecialEvents
 
     private static void ParseLocalizationAndSave(Dictionary<string, SpecialEvent> parsedSpecialEventsDB)
     {
-        LogsWindowViewModel.Instance.AddLog($"[SpecialEvents] Starting localization process..", Logger.LogTags.Info);
+        LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.SpecialEvents);
 
         string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
 

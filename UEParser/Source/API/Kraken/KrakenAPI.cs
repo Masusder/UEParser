@@ -176,7 +176,7 @@ public partial class KrakenAPI
             }
             else
             {
-                LogsWindowViewModel.Instance.AddLog($"Failed to fetch Full Profile.", Logger.LogTags.Error);
+                throw new Exception($"API request failed - {response.ErrorMessage}");
             }
         }
         catch (Exception ex)
@@ -207,10 +207,14 @@ public partial class KrakenAPI
             {
                 FileWriter.SaveApiResponseToFile(response.Data, "charactersData.json");
             }
+            else
+            {
+                throw new Exception($"API request failed - {response.ErrorMessage}");
+            }
         }
         catch (Exception ex)
         {
-            throw new Exception($"Failed to fetch player's Character Data: {ex.Message}", ex);
+            throw new Exception($"An error occurred while fetching character data: {ex.Message}", ex);
         }
     }
 
@@ -233,7 +237,14 @@ public partial class KrakenAPI
 
             NetAPI.ApiResponse response = await NetAPI.FetchUrl(url);
 
-            FileWriter.SaveApiResponseToFile(response.Data, endpoint + ".json");
+            if (response.Success)
+            {
+                FileWriter.SaveApiResponseToFile(response.Data, endpoint + ".json");
+            }
+            else
+            {
+                throw new Exception($"API request failed - {response.ErrorMessage}");
+            }
         }
         catch (Exception ex)
         {

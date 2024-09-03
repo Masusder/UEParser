@@ -27,11 +27,11 @@ public class Bundles
         {
             Dictionary<string, Bundle> parsedBundlesDB = [];
 
-            LogsWindowViewModel.Instance.AddLog($"[Bundles] Starting parsing process..", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Bundles);
 
             ParseBundles(parsedBundlesDB);
 
-            LogsWindowViewModel.Instance.AddLog($"[Bundles] Parsed total of {parsedBundlesDB.Count} items.", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedBundlesDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Bundles);
 
             ParseLocalizationAndSave(parsedBundlesDB);
         });
@@ -152,7 +152,7 @@ public class Bundles
 
     private static void ParseLocalizationAndSave(Dictionary<string, Bundle> parsedBundlesDB)
     {
-        LogsWindowViewModel.Instance.AddLog($"[Bundles] Starting localization process..", Logger.LogTags.Info);
+        LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Bundles);
 
         string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
 

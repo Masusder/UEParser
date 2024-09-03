@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using SteamKit2;
 using UEParser.ViewModels;
-using UEParser.Services;
 using SteamKit2.Authentication;
 using QRCoder;
 
@@ -62,7 +61,7 @@ public class SteamAuthenticator
         // Steam will periodically refresh the challenge url, this callback allows you to draw a new qr code
         authSession.ChallengeURLChanged = () =>
         {
-            LogsWindowViewModel.Instance.AddLog("Steam has refreshed the challenge url", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog("Steam has refreshed the challenge url.", Logger.LogTags.Info);
 
             DrawQRCode(authSession);
         };
@@ -74,7 +73,7 @@ public class SteamAuthenticator
         // This response is later used to logon to Steam after connecting
         var pollResponse = await authSession.PollingWaitForResultAsync();
 
-        LogsWindowViewModel.Instance.AddLog($"Logging in as '{pollResponse.AccountName}'...", Logger.LogTags.Info);
+        LogsWindowViewModel.Instance.AddLog($"Logging in as '{pollResponse.AccountName}'..", Logger.LogTags.Info);
 
         // Logon to Steam with the access token we have received
         steamUser.LogOn(new SteamUser.LogOnDetails
@@ -140,9 +139,9 @@ public class SteamAuthenticator
         using var qrGenerator = new QRCodeGenerator();
         var qrCodeData = qrGenerator.CreateQrCode(authSession.ChallengeURL, QRCodeGenerator.ECCLevel.L);
         using var qrCode = new AsciiQRCode(qrCodeData);
-        var qrCodeAsAsciiArt = qrCode.GetGraphic(1, drawQuietZones: true);
+        var qrCodeAsAsciiArt = qrCode.GetGraphic(1, drawQuietZones: false);
 
         LogsWindowViewModel.Instance.AddLog("Use the Steam Mobile App to sign in via QR code:", Logger.LogTags.Info);
-        LogsWindowViewModel.Instance.AddLog(qrCodeAsAsciiArt, Logger.LogTags.Info);
+        LogsWindowViewModel.Instance.AddLog("\n" + qrCodeAsAsciiArt, Logger.LogTags.Info);
     }
 }
