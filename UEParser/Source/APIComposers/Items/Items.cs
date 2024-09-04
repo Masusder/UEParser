@@ -169,7 +169,7 @@ public class Items
 
             string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Items.json");
 
-            FileWriter.SaveParsedDB(localizedItemsDB, outputPath, "Items");
+            FileWriter.SaveParsedDB(localizedItemsDB, outputPath, Logger.ELogExtraTag.Items);
         }
     }
 }

@@ -42,7 +42,9 @@ public class KrakenService
         {
             { "inventory", "Player's Inventory"},
             { "storyStatus", "Stories Status" },
-            { "config", "Config" }
+            { "config", "Config" },
+            { "currencies", "Currencies" },
+            { "getSpecialPacks", "Special Packs" }
         };
 
         await KrakenAPI.BulkGetKrakenEndpoints(krakenEndpoints);

@@ -167,7 +167,7 @@ public class Journals
 
             string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Journals.json");
 
-            FileWriter.SaveParsedDB(localizedJournalsDB, outputPath, "Journals");
+            FileWriter.SaveParsedDB(localizedJournalsDB, outputPath, Logger.ELogExtraTag.Journals);
         }
     }
 }

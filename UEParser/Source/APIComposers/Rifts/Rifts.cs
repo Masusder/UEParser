@@ -123,7 +123,7 @@ public class Rifts
 
             string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Rifts.json");
 
-            FileWriter.SaveParsedDB(localizedRiftsDB, outputPath, "Rifts");
+            FileWriter.SaveParsedDB(localizedRiftsDB, outputPath, Logger.ELogExtraTag.Rifts);
         }
     }
 }

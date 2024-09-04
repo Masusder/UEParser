@@ -132,7 +132,7 @@ public class DLCs
 
             string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "DLC.json");
 
-            FileWriter.SaveParsedDB(localizedDlcsDB, outputPath, "DLC");
+            FileWriter.SaveParsedDB(localizedDlcsDB, outputPath, Logger.ELogExtraTag.DLC);
         }
     }
 }

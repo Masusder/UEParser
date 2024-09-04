@@ -126,7 +126,7 @@ internal class Maps
 
             string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Maps.json");
 
-            FileWriter.SaveParsedDB(localizedMapsDB, outputPath, "Maps");
+            FileWriter.SaveParsedDB(localizedMapsDB, outputPath, Logger.ELogExtraTag.Maps);
         }
     }
 }

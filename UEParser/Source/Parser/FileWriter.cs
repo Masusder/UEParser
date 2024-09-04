@@ -20,7 +20,7 @@ namespace UEParser.Parser;
 
 public class FileWriter
 {
-    public static void SaveParsedDB<T>(Dictionary<string, T> data, string path, string tag)
+    public static void SaveParsedDB<T>(Dictionary<string, T> data, string path, Logger.ELogExtraTag extraTag)
     {
         try
         {
@@ -44,11 +44,11 @@ public class FileWriter
 
             string strippedPath = StringUtils.StripRootDir(path);
 
-            LogsWindowViewModel.Instance.AddLog($"[{tag}] Database saved to: {strippedPath}", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Database saved to: {strippedPath}", Logger.LogTags.Info, extraTag);
         }
         catch (Exception ex)
         {
-            LogsWindowViewModel.Instance.AddLog($"Error saving '{tag}' database: {ex}", Logger.LogTags.Error);
+            LogsWindowViewModel.Instance.AddLog($"Error saving '{extraTag}' database: {ex}", Logger.LogTags.Error);
         }
     }
 

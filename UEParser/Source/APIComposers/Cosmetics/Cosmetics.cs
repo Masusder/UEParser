@@ -451,7 +451,7 @@ public class Cosmetics
 
             string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Cosmetics.json");
 
-            FileWriter.SaveParsedDB(localizedCosmeticsDB, outputPath, "Cosmetics");
+            FileWriter.SaveParsedDB(localizedCosmeticsDB, outputPath, Logger.ELogExtraTag.Cosmetics);
         }
     }
 }

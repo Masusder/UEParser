@@ -126,7 +126,7 @@ public class SpecialEvents
 
             string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "SpecialEvents.json");
 
-            FileWriter.SaveParsedDB(localizedSpecialEventsDB, outputPath, "SpecialEvents");
+            FileWriter.SaveParsedDB(localizedSpecialEventsDB, outputPath, Logger.ELogExtraTag.SpecialEvents);
         }
     }
 }

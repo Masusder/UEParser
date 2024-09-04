@@ -332,7 +332,7 @@ public partial class SettingsViewModel : INotifyPropertyChanged
     {
         if (!string.IsNullOrWhiteSpace(NewEventTome) && !EventTomesList.Contains(NewEventTome))
         {
-            TomesList.Add(NewEventTome);
+            EventTomesList.Add(NewEventTome);
             NewEventTome = string.Empty;
         }
     }

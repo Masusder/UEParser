@@ -54,7 +54,7 @@ public class Bundles
             {
                 string bundleId = item["id"];
 
-                LogsWindowViewModel.Instance.AddLog($"[Bundles] Processing: {bundleId}", Logger.LogTags.Info);
+                LogsWindowViewModel.Instance.AddLog($"Processing: {bundleId}", Logger.LogTags.Info, Logger.ELogExtraTag.Bundles);
 
                 bool isLicensedBundle = false;
                 if (bundleId.StartsWith("Licensor"))
@@ -176,7 +176,7 @@ public class Bundles
 
             string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Bundles.json");
 
-            FileWriter.SaveParsedDB(localizedBundlesDB, outputPath, "Bundles");
+            FileWriter.SaveParsedDB(localizedBundlesDB, outputPath, Logger.ELogExtraTag.Bundles);
         }
     }
 }

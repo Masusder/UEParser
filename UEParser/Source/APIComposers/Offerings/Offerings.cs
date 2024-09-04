@@ -132,7 +132,7 @@ public class Offerings
 
             string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Offerings.json");
 
-            FileWriter.SaveParsedDB(localizedOfferingsDB, outputPath, "Offerings");
+            FileWriter.SaveParsedDB(localizedOfferingsDB, outputPath, Logger.ELogExtraTag.Offerings);
         }
     }
 }

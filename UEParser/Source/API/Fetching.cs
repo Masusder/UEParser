@@ -15,18 +15,23 @@ public class NetAPI
 {
     private static readonly string cookieFilePath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "cookies.json");
     private static readonly CookieContainer cookieContainer = new();
-    private static readonly HttpClientHandler handler = new()
+    private static HttpClientHandler handler = new()
     {
         CookieContainer = cookieContainer
     };
 
-    private static readonly HttpClient client = new(handler);
+    private static HttpClient client = CreateHttpClient();
 
     public class ApiResponse(bool success, string data, string errorMessage)
     {
         public bool Success { get; } = success;
         public string Data { get; } = data;
         public string? ErrorMessage { get; } = errorMessage;
+    }
+
+    private static HttpClient CreateHttpClient()
+    {
+        return new HttpClient(handler);
     }
 
     public static async Task<ApiResponse> FetchUrl(string url)
@@ -171,11 +176,15 @@ public class NetAPI
         return cookies;
     }
 
-
     public static void SetCookie(Uri baseUrl, Cookie cookie)
     {
-        cookieContainer.Add(baseUrl, cookie);
+        Uri domainUri = new($"https://{baseUrl.Host}");
+        cookieContainer.Add(domainUri, cookie);
         SaveCookies();
+
+        // Recreate the HttpClient to ensure it uses the loaded cookies
+        handler = new HttpClientHandler { CookieContainer = cookieContainer };
+        client = CreateHttpClient();
     }
 
     private static void SaveCookies()
@@ -185,7 +194,7 @@ public class NetAPI
 
         foreach (var domain in allDomains)
         {
-            Uri domainUri = new($"https://{domain}/"); // I assume domain is always secure
+            Uri domainUri = new($"https://{domain}"); // I assume domain is always secure
 
             foreach (Cookie cookie in cookieContainer.GetCookies(domainUri))
             {
@@ -221,7 +230,6 @@ public class NetAPI
             }
         }
     }
-
 
     public static bool IsAnyCookieNotExpired()
     {

@@ -138,7 +138,7 @@ public class Perks
 
             string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Perks.json");
 
-            FileWriter.SaveParsedDB(localizedPerksDB, outputPath, "Perks");
+            FileWriter.SaveParsedDB(localizedPerksDB, outputPath, Logger.ELogExtraTag.Perks);
         }
     }
 }

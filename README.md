@@ -30,7 +30,9 @@ This project is not associated with or endorsed by Behaviour Interactive. All us
 - Bulk extraction of assets including asset properties, meshes, textures, UI elements, animations, and audio.
 - Parsing of game assets into pre-defined, type-safe schemas suitable for various use cases, such as serving game data through an API.
 - Automated upload of extracted data to cloud storage, and other cloud-related functions..*.
-- Extraction of encrypted game APIs.<br/>
+- Extraction of encrypted game's CDN (Content Delivery Network).
+- Download dynamic assets.
+- Retrieval of user data.<br/>
 
 *..and more in the future*
 
@@ -47,7 +49,7 @@ This project is not associated with or endorsed by Behaviour Interactive. All us
 
 ## Usage
 To use the app, you can either compile it yourself or download the latest release.
-(Note: when compiling yourself you might need to move some dependencies (such as .dlls) into root directory of the app manually)
+(Note: when compiling yourself you might need to move some dependencies (such as .dlls) into root directory of the app manually, most of which can be found in Resources folder)
 
 Before using UEParser, you must configure some essential settings, with the most important ones being:
 - **Current Version** - Version you see during start-up of the game, it always should be that exact version!

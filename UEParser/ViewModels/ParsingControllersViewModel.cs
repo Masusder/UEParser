@@ -69,6 +69,7 @@ public class ParsingControllersViewModel : ReactiveObject
         await ParseCharacters();
         await ParseCosmetics();
         await ParsePerks();
+        await ParseCharacterClasses();
         await ParseTomes();
         await ParseAddons();
         await ParseItems();

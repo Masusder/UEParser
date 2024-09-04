@@ -358,7 +358,7 @@
                   Spacing="12.5">
                 <TextBox
                     Width="200"
-                    MaxLength="8"
+                    MaxLength="32"
                     Text="{Binding NewTome}"
                     Watermark="Enter new tome" />
                 <Button
@@ -409,7 +409,7 @@
                   Spacing="12.5">
                 <TextBox
                     Width="200"
-                    MaxLength="8"
+                    MaxLength="32"
                     Text="{Binding NewEventTome}"
                     Watermark="Enter new event tome" />
                 <Button

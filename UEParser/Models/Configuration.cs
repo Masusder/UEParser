@@ -77,7 +77,8 @@ public class CoreConfig
         {
             "Halloween2021", "Halloween2022", "Anniversary2022", "Anniversary2023",
             "Winter2022", "Summer2023", "Halloween2023", "Winter2023",
-            "DreadByDaylightZodiac", "Spring2024", "ChocolateBoxV1", "Anniversary2024", "CalamariV1"
+            "DreadByDaylightZodiac", "Spring2024", "ChocolateBoxV1", "Anniversary2024", "CalamariV1",
+            "FireflyV1"
         };
 
         TomesList = defaultTomes;
@@ -162,7 +163,9 @@ public class KrakenApiConfig
             //{ "prestige", "/prestige/prestige.json" },
             //{ "randomRewards", "/randomRewards.json" },
             //{ "ranksThresholds", "/ranksThresholds.json" },
-            //{ "experimentalFeatures", "/experimentalFeatures/experimentalFeatures.json" }
+            //{ "experimentalFeatures", "/experimentalFeatures/experimentalFeatures.json" },
+            //{ "onboarding", "/onboarding/onboarding.json" },
+            //{ "recommendations", "recommendations.json" }
         };
         ApiEndpoints = new()
         {
@@ -172,7 +175,9 @@ public class KrakenApiConfig
             { "inventory", "/inventories" },
             { "dbdCharacterDataGetAll", "/dbd-character-data/get-all" },
             { "storyStatus", "/archives/stories/get/story-status" },
-            { "config", "/config" }
+            { "config", "/config" },
+            { "currencies", "/wallet/currencies" },
+            { "getSpecialPacks", "/extensions/store/getSpecialPacks" }
         };
         // Gotta Catch ’Em All
         S3AccessKeys = new()

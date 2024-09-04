@@ -127,7 +127,7 @@ public class Collections
 
             string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Collections.json");
 
-            FileWriter.SaveParsedDB(localizedCollectionsDB, outputPath, "Collections");
+            FileWriter.SaveParsedDB(localizedCollectionsDB, outputPath, Logger.ELogExtraTag.Collections);
         }
     }
 }

@@ -114,7 +114,7 @@ public class CharacterClasses
 
             string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "CharacterClasses.json");
 
-            FileWriter.SaveParsedDB(localizedCharacterClassesDB, outputPath, "CharacterClasses");
+            FileWriter.SaveParsedDB(localizedCharacterClassesDB, outputPath, Logger.ELogExtraTag.CharacterClasses);
         }
     }
 }

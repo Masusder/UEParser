@@ -359,7 +359,7 @@ public class Tomes
 
             string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Tomes.json");
 
-            FileWriter.SaveParsedDB(localizedTomesDB, outputPath, "Tomes");
+            FileWriter.SaveParsedDB(localizedTomesDB, outputPath, Logger.ELogExtraTag.Tomes);
         }
     }
 }

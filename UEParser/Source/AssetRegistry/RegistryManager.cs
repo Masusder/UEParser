@@ -87,7 +87,7 @@ public class RegistryManager
                     for (int i = 0; i < audioCount; i++)
                     {
                         string fileName = ReadString(reader);
-                        string id = ReadString(reader);
+                        //string id = ReadString(reader);
                         string hash = ReadString(reader);
                         long size = reader.ReadInt64();
                         audio[fileName] = new WwiseRegister.AudioInfo(hash, size);
