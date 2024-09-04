@@ -475,7 +475,7 @@
               Text="Under no circumstances should you share these settings with anyone!" />
           <Separator />
 
-          <StackPanel
+          <!--<StackPanel
               HorizontalAlignment="Center"
               Orientation="Horizontal"
               Spacing="15">
@@ -505,7 +505,7 @@
               <TextBox MinWidth="200" MaxWidth="300" Text="{Binding SteamPassword}" />
             </StackPanel>
           </StackPanel>
-          <Separator />
+          <Separator />-->
 
           <StackPanel
               HorizontalAlignment="Center"
