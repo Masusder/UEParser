@@ -124,6 +124,9 @@ public class Bundles
                     }
                 }
 
+                JObject? imageCompositionObject = item["metaData"]["imageComposition"];
+                var imageComposition = BundleUtils.ParseImageComposition(imageCompositionObject);
+
                 Bundle model = new()
                 {
                     Id = bundleId,
@@ -138,6 +141,7 @@ public class Bundles
                     MinNumberOfUnownedForPurchase = minNumberOfUnownedForPurchase,
                     DlcId = dlcId,
                     FullPrice = fullPrices,
+                    ImageComposition = imageComposition,
                     Discount = discount,
                     ConsumptionRewards = consumptionRewards,
                     Consumable = isConsumable,

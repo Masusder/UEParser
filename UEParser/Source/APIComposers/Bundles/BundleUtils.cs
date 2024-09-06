@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UEParser.Models;
+using UEParser.Utils;
 
 namespace UEParser.APIComposers;
 
@@ -32,6 +33,28 @@ public class BundleUtils
         }
 
         return fullPrices;
+    }
+
+    public static ImageComposition? ParseImageComposition(JObject? imageCompositionObject)
+    {
+        if (imageCompositionObject == null) return null;
+
+        int maxItemCount = imageCompositionObject.Value<int>("maxItemCount");
+        bool overrideDefaults = imageCompositionObject.Value<bool>("overrideDefaults");
+        string? typeRaw = imageCompositionObject.Value<string>("type");
+
+        if (typeRaw == null) return null;
+
+        string type = StringUtils.DoubleDotsSplit(typeRaw);
+
+        ImageComposition imageComposition = new()
+        {
+            MaxItemCount = maxItemCount,
+            OverrideDefaults = overrideDefaults,
+            Type = type
+        };
+        
+        return imageComposition;
     }
 
     public static List<ConsumptionRewards> ParseConsumptionRewards(JArray consumptionRewardArray)

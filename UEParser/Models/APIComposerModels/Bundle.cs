@@ -75,6 +75,11 @@ public class Bundle
     public required List<FullPrice> FullPrice { get; set; }
 
     /// <summary>
+    /// If present, image representing the bundle is auto-generated using <see cref="ConsumptionRewards"/> items.
+    /// </summary>
+    public ImageComposition? ImageComposition { get; set; }
+
+    /// <summary>
     /// Discount applied to the bundle.
     /// </summary>
     public required float Discount { get; set; }
@@ -100,6 +105,24 @@ public class Bundle
     /// These tags are not displayed to the user.
     /// </summary>
     public JArray? SegmentationTags { get; set; }
+}
+
+public class ImageComposition
+{
+    /// <summary>
+    /// Maximum number of items in the composed image.
+    /// </summary>
+    public required int MaxItemCount { get; set; }
+
+    /// <summary>
+    /// Indicates whether we should override default image path.
+    /// </summary>
+    public required bool OverrideDefaults { get; set; }
+
+    /// <summary>
+    /// Type of the composed image.
+    /// </summary>
+    public required string Type { get; set; }
 }
 
 /// <summary>

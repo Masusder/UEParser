@@ -90,6 +90,7 @@ public class UpdateManagerViewModel : ReactiveObject
                     return [.. missingPathsSet];
                 }
 
+                // TODO: something is off and needs to be fixed
                 static List<string> GetCorrectlyCasedPaths(List<string> objectKeys, List<string> paths)
                 {
                     var normalizedObjectKeys = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -111,7 +112,7 @@ public class UpdateManagerViewModel : ReactiveObject
                         {
                             // Check if the original case differs from the current path
                             // only then we will know asset needs to be moved to path with correct case
-                            if (!path.Equals(correctCasePath))
+                            if (!path.Equals(correctCasePath, StringComparison.Ordinal))
                             {
                                 correctlyCasedPaths.Add(correctCasePath);
                             }
