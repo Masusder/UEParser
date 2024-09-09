@@ -89,7 +89,7 @@ public partial class WwiseFileHandler
 
         ProvideWwnamesFile(); // Neccessary for reversing audio names
 
-        string arguments = $"\"{GlobalVariables.wwiserPath}\" \"{bnkFilesDirectory}\" \"{bnkFilesSubDirectories}\" -g --txtp-wemdir \"{temporaryDirectory}\"";
+        string arguments = $"\"{GlobalVariables.wwiserPath}\" \"{bnkFilesDirectory}\" \"{bnkFilesSubDirectories}\" -g --txtp-wemdir \"{temporaryDirectory}\" --txtp-lang en fr jp";
 
         if (!IsPythonInstalled()) throw new Exception("Python is not installed or not accessible from the command line, which is required for audio extraction to work.");
 

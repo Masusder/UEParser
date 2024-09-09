@@ -614,7 +614,6 @@ public class AssetsManager
     }
 
     // TODO: add collection of unused audio
-    // TODO2: handle other languages somehow?
     public static async Task ParseAudio()
     {
         LogsWindowViewModel.Instance.AddLog("Audio extraction is highly intensive process, which may take even up to an hour, depending whether audio registry is available..", Logger.LogTags.Info);
