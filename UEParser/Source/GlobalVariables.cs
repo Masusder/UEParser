@@ -44,6 +44,7 @@ public class GlobalVariables
     public static readonly List<string> fatalCrashAssets = [
         "DeadByDaylight/Content/Effects/Niagara/NiagaraParticleSystem/Snowman/NS_Snowman_Destroy_Hit_Smoke",
         "DeadByDaylight/Content/Effects/Niagara/NiagaraParticleSystem/Halloween2023/VoidTile/NS_VoidTile_Halloween2023_Pillar",
-        "DeadByDaylight/Content/Effects/Niagara/NiagaraParticleSystem/Slasher/K35/Mori/NS_K35_Mori_BloodMistDissolve"
+        "DeadByDaylight/Content/Effects/Niagara/NiagaraParticleSystem/Slasher/K35/Mori/NS_K35_Mori_BloodMistDissolve",
+        "DeadByDaylight/Plugins/Runtime/Bhvr/DBDCharacters/K37/Content/Blueprints/Abilities/FormSwitchingAbility/BP_K37FormSwitchingAbility" // This one doesn't cause a crash, but the parsing fails, let's keep it here to prevent errors
     ];
 }

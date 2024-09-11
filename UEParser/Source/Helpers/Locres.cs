@@ -47,6 +47,11 @@ public partial class Helpers
             // Split directory path to search for language key
             string[] directoryPathSplit = directoryItem.Split(Path.DirectorySeparatorChar);
 
+            if (!File.Exists(locresDefinitionPath))
+            {
+                throw new FileNotFoundException("Locres definition was not found.");
+            }
+
             // Read available language keys
             dynamic? locresDefintion = JsonConvert.DeserializeObject(File.ReadAllText(locresDefinitionPath));
 

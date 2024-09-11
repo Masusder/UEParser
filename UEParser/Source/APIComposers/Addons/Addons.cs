@@ -52,7 +52,7 @@ public class Addons
         foreach (string filePath in filePaths)
         {
             string packagePath = StringUtils.StripExtractedAssetsDir(filePath);
-            LogsWindowViewModel.Instance.AddLog($"[Addons] Processing: {packagePath}", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Processing: {packagePath}", Logger.LogTags.Info, Logger.ELogExtraTag.Addons);
 
             var assetItems = FileUtils.LoadDynamicJson(filePath);
 
