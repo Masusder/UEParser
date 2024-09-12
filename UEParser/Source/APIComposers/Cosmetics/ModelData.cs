@@ -513,11 +513,13 @@ public class ModelData
         }
 
         // Set Queen Xenomorph animation manually as it uses different animation with the same skeleton as default Xenomorph
+        // (I don't allow multiple animations in the same skeleton [like it works in-game], that's why it needs to be resolved manually)
         string[] queenXenomorphOverride = ["K33_Head007", "K33_Body007", "K33_W007"];
         if (queenXenomorphOverride.Contains(cosmeticId))
         {
             gameSkeletonPath = "DeadByDaylight/Content/Characters/Slashers/K33/Models/K33_DSkeleton_REF_QueenXenomorph.glb";
         }
+
         // Set Cybil Bennett animation manually
         string[] cybilOverride = ["S22_Head008", "S22_Torso008", "S22_Legs008"];
         if (cybilOverride.Contains(cosmeticId))
@@ -546,6 +548,12 @@ public class ModelData
         if (rainOverride.Contains(cosmeticId))
         {
             gameSkeletonPath = "DeadByDaylight/Content/Characters/Campers/S39/Models/S39_009_DSkeleton_Menu_REF.glb";
+        }
+
+        // Give Alucard's legs skeleton manually, they set it to S40_Legs006 instead of S44_Legs006..
+        if (cosmeticId == "S44_Legs006")
+        {
+            gameSkeletonPath = "DeadByDaylight/Plugins/DBDCharacters/S44/Content/ArtAssets/Models/S44_006_DSkeleton_REF.glb";
         }
 
         string skeletonPathWithoutAssets = StringUtils.ModifyPath(gameSkeletonPath, "glb", false, characterIndex);
