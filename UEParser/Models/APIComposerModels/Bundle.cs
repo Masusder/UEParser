@@ -22,7 +22,7 @@ public class Bundle
 
     /// <summary>
     /// Path to the image representing the bundle.
-    /// Sometimes it's not set by devs for some reason..
+    /// Can be overridden with <see cref="ImageComposition"/>.
     /// </summary>
     public required string? ImagePath { get; set; }
 
