@@ -1,15 +1,12 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using System;
 using System.Linq;
 using UEParser.Services;
 using UEParser.ViewModels;
-using System.Text.RegularExpressions;
 using UEParser.Network.Steam;
-using UEParser.Models;
-using System.Text.Json.Nodes;
 using UEParser.Parser;
 
 namespace UEParser.Network.Kraken.API;

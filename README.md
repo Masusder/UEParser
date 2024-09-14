@@ -49,7 +49,7 @@ This project is not associated with or endorsed by Behaviour Interactive. All us
 
 ## Usage
 To use the app, you can either compile it yourself or download the latest release.
-(Note: when compiling yourself you might need to move some dependencies (such as .dlls) into root directory of the app manually, most of which can be found in Resources folder)
+(Note: when compiling yourself you might need to move some dependencies (such as .dlls) into folder named ".data" and place it into root directory of the app manually, most of which can be found in Resources folder)
 
 Before using UEParser, you must configure some essential settings, with the most important ones being:
 - **Current Version** - Version you see during start-up of the game, it always should be that exact version!

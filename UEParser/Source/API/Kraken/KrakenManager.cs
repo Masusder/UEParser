@@ -1,23 +1,19 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using UEParser.Models;
-using UEParser.Services;
+using System.IO;
 using UEParser.ViewModels;
-using UEParser.Network;
 using UEParser.Network.Kraken.CDN;
 using UEParser.Network.Kraken.API;
-using System.IO;
 using UEParser.AssetRegistry;
 using UEParser.Models.KrakenCDN;
 using UEParser.Utils;
+using UEParser.Services;
 
-namespace UEParser.Services;
+namespace UEParser.Network.Kraken;
 
-public class KrakenService
+public class KrakenManager
 {
     public static async Task RetrieveKrakenApiAuthenticated()
     {

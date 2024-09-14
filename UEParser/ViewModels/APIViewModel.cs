@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Threading.Tasks;
 using System;
-using UEParser.Services;
+using UEParser.Network.Kraken;
 
 namespace UEParser.ViewModels;
 
@@ -42,8 +42,9 @@ public class APIViewModel
         try
         {
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
-            await KrakenService.RetrieveKrakenApiAuthenticated();
-            //await KrakenAPI.AuthenticateWithDbd();
+
+            await KrakenManager.RetrieveKrakenApiAuthenticated();
+
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
         catch (Exception ex)
@@ -58,7 +59,9 @@ public class APIViewModel
         try
         {
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
-            await KrakenService.UpdateKrakenApi();
+
+            await KrakenManager.UpdateKrakenApi();
+
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
         catch (Exception ex)
@@ -73,7 +76,9 @@ public class APIViewModel
         try
         {
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
-            await KrakenService.DownloadDynamicContent();
+
+            await KrakenManager.DownloadDynamicContent();
+
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
         catch (Exception ex)

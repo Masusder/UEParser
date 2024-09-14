@@ -38,7 +38,7 @@ public partial class MainWindow : AppWindow
         if (updateAPIDuringInitialization)
         {
             LogsWindowViewModel.Instance.AddLog("You have set up the application to check for Kraken API updates during initialization.", Logger.LogTags.Info);
-            await KrakenService.UpdateKrakenApi();
+            await KrakenManager.UpdateKrakenApi();
         }
 
         if (hasVersionChanged)
