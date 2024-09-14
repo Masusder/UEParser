@@ -164,6 +164,7 @@ public class Initialize
         var config = ConfigurationService.Config;
 
         config.Core.BuildVersionNumber = newBuildVersion;
+        config.Global.FirstInitializationCompleted = true;
 
         await ConfigurationService.SaveConfiguration();
     }

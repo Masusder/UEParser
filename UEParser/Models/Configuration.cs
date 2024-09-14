@@ -27,6 +27,7 @@ public class GlobalConfig
     public Dictionary<string, string> BranchRoots { get; set; }
     public string BlenderPath { get; set; }
     public bool UpdateAPIDuringInitialization { get; set; }
+    public bool FirstInitializationCompleted { get; set; }
 
     public GlobalConfig()
     {
@@ -44,6 +45,7 @@ public class GlobalConfig
         BranchRoots = branchRoots;
         BlenderPath = "";
         UpdateAPIDuringInitialization = false;
+        FirstInitializationCompleted = false;
     }
 }
 
@@ -158,7 +160,6 @@ public class KrakenApiConfig
             //{ "featureLocks", "/featureLocks.json" },
             //{ "gameConfigs", "/GameConfigs.json" },
             //{ "gameConfigsDS", "/GameConfigsDS.json" },
-            //{ "featuredPageContent", "/featuredPageContent.json" },
             //{ "itemsKillswitch", "/itemsKillswitch.json" },
             //{ "prestige", "/prestige/prestige.json" },
             //{ "randomRewards", "/randomRewards.json" },
@@ -341,6 +342,10 @@ public class KrakenApiConfig
             { "8.1.0_qa", "NOqDNLSGuu/6uZ2ezNiV6Sr42gfJkS46riDX3UfEoDI=" },
             { "8.1.0_stage", "kUxPy+fwYWStoAtJHmxlL9NWNyktBr6qbeRiwup0vEg=" },
             { "8.2.0_ptb", "HKOuAKvGgM//E3YRC7hO9DEOxK98E32fZ9ZYidJ+PBE=" },
+            { "8.2.0_cert", "cOOEIRTqKv2J0jM2w29TMPrn/2olhWxWm1Dbix4lEaY="},
+            { "8.2.0_live", "cz9ERAjJXR02FXy7ZaIKVhY2ipFRbQLyRS1m7qYFROQ="},
+            { "8.2.0_qa", "MI/v9ZnD+elB8MRSogpqxHAK2Dm5+6H7tmq/aIuSWfg="},
+            { "8.2.0_stage", "FqG9KybdtZqOE113LF3P4AyOW+p0zaHUA1tZkFkJB7o="},
             // End of V3 encryption algorithm
             // Start of test builds? Couldn't figure decryption
             { "9999.17.0", "pGJJqK8oYVFKVSZwynOFAGAYniIZd/ycyFBZc8L7HJk=" },
@@ -428,7 +433,7 @@ public class NeteaseApiConfig
             { "event", "/event.json" },
             { "specialEventsContent", "/specialEventsContent.json" }
         };
-        ApiEndpoints = new() 
+        ApiEndpoints = new()
         {
             { "contentVersion", "/utils/contentVersion/version" }
         };

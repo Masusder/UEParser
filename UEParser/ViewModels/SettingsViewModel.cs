@@ -84,7 +84,15 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         }
     }
 
+    public static bool FirstInitializationCompleted => ConfigurationService.Config.Global.FirstInitializationCompleted;
     public bool IsCurrentVersionConfigured => !string.IsNullOrEmpty(SelectedCurrentVersion);
+
+    // I only want to allow download of register when current version is configured
+    // and user initialized build at least once
+    public bool CanDownloadRegisters
+    {
+        get { return IsCurrentVersionConfigured && FirstInitializationCompleted; }
+    }
 
     private string? _selectedComparisonVersion;
     public string? SelectedComparisonVersion
@@ -270,7 +278,8 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         {
             if (!AvailableComparisonVersions.Contains(version))
             {
-                AvailableComparisonVersions.Add(version);
+                // I wanna add it to the beginning of the list, as it is displayed in the UI
+                AvailableComparisonVersions.Insert(0, version);
             }
         }
     }
