@@ -55,23 +55,33 @@ public class Logger
 
     public static void OnProcessExit(object? sender, EventArgs e)
     {
-        SaveLog("UEParser exit. Logging finished.", LogTags.Exit);
+        SaveLog("UEParser exit. Logging finished.", LogTags.Exit, ELogExtraTag.None);
     }
 
     public static void OnCancelKeyPress(object? sender, ConsoleCancelEventArgs e)
     {
-        SaveLog("UEParser terminated. Logging finished.", LogTags.Exit);
+        SaveLog("UEParser terminated. Logging finished.", LogTags.Exit, ELogExtraTag.None);
     }
 
-    public static void SaveLog(string logMessage, LogTags logTag)
+    public static void SaveLog(string logMessage, LogTags logTag, ELogExtraTag extraTag)
     {
         try
         {
             if (logFilePath != null)
             {
+
                 // Append the log message to the log file
                 using StreamWriter writer = File.AppendText(logFilePath);
-                writer.WriteLine($"[{DateTime.Now}] [{logTag}] {logMessage}");
+
+                string formattedLogMessage = $"[{DateTime.Now}] [{logTag}]";
+
+                if (extraTag != ELogExtraTag.None)
+                {
+                    formattedLogMessage += $" [{extraTag}]";
+                }
+
+                formattedLogMessage += $" {logMessage}";
+                writer.WriteLine(formattedLogMessage);
             }
         }
         catch 

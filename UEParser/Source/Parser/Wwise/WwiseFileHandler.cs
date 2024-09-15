@@ -337,7 +337,7 @@ public partial class WwiseFileHandler
                 // Some warnings for specific txtp files are suppressed since I don't know how to fix them :c
                 if (!File.Exists(outputFilePath) && !suppressedTxtpFiles.Contains(txtpFileName))
                 {
-                    LogsWindowViewModel.Instance.AddLog($"Conversion failed for: {filePath.Replace(Path.Combine(temporaryDirectory, "txtp"), "").TrimStart(Path.AltDirectorySeparatorChar).TrimStart(Path.PathSeparator)}", Logger.LogTags.Warning);
+                    LogsWindowViewModel.Instance.AddLog($"Conversion failed for: {filePath.Replace(Path.Combine(temporaryDirectory, "txtp"), "").TrimStart(Path.AltDirectorySeparatorChar).TrimStart(Path.PathSeparator).TrimStart(Path.DirectorySeparatorChar)}", Logger.LogTags.Warning);
                 }
                 else
                 {

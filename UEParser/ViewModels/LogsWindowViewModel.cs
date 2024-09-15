@@ -8,7 +8,6 @@ using System.Windows.Input;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Linq;
 
 namespace UEParser.ViewModels;
@@ -172,7 +171,7 @@ public partial class LogsWindowViewModel : ReactiveObject
         });
 
         // Save the log to file on a background thread
-        Task.Run(() => Logger.SaveLog(logMessage, tag));
+        Task.Run(() => Logger.SaveLog(logMessage, tag, extraTag));
     }
 
     public void UpdateLog(string logMessage, Logger.LogTags tag, Logger.ELogExtraTag extraTag = Logger.ELogExtraTag.None)

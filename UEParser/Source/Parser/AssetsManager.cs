@@ -783,7 +783,7 @@ public class AssetsManager
 
         if (fileDataChanged)
         {
-            Logger.SaveLog($"Asset size changed: {packagePath}", Logger.LogTags.Info);
+            Logger.SaveLog($"Asset size changed: {packagePath}", Logger.LogTags.Info, Logger.ELogExtraTag.None);
             //LogsWindowViewModel.Instance.AddLog($"Asset size changed: {packagePath}", Logger.LogTags.Info);
             FilesRegister.UpdateFileInfo(packagePath, size, extension);
         }

@@ -92,7 +92,7 @@ public class FileWriter
         }
         catch (Exception ex)
         {
-            Logger.SaveLog($"Error saving JSON file: {ex}", Logger.LogTags.Error);
+            Logger.SaveLog($"Error saving JSON file: {ex}", Logger.LogTags.Error, Logger.ELogExtraTag.None);
         }
     }
 
