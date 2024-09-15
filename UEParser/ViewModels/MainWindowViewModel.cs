@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Avalonia.Controls;
 using FluentAvalonia.UI.Controls;
@@ -10,15 +11,24 @@ public class MainWindowViewModel : INotifyPropertyChanged
 {
     private object _selectedCategory = "Home";
     private Control _currentPage = new HomeView();
+    private SettingsView? _settingsWindow;
 
     public object SelectedCategory
     {
         get => _selectedCategory;
         set
         {
-            _selectedCategory = value;
-            OnPropertyChanged();
-            SetCurrentPage();
+            if (value is NavigationViewItem nvi && nvi.Tag?.ToString() == "Settings")
+            {
+                // Handle Settings separately and don't allow multiple Setting views to be open
+                OpenSettingsWindow();
+            }
+            else
+            {
+                _selectedCategory = value;
+                OnPropertyChanged();
+                SetCurrentPage();
+            }
         }
     }
 
@@ -42,37 +52,35 @@ public class MainWindowViewModel : INotifyPropertyChanged
     {
         if (SelectedCategory is NavigationViewItem nvi)
         {
-            switch (nvi?.Tag?.ToString())
+            CurrentPage = (nvi?.Tag?.ToString()) switch
             {
-                case "Home":
-                    CurrentPage = new HomeView();
-                    break;
-                case "Controllers":
-                    CurrentPage = new ParsingControllersView();
-                    break;
-                case "WebsiteUpdate":
-                    CurrentPage = new UpdateManagerView();
-                    break;
-                case "Settings":
-                    OpenSettingsWindow();
-                    break;
-                case "API":
-                    CurrentPage = new APIView();
-                    break;
-                case "AssetsExtractor":
-                    CurrentPage = new AssetsExtractorView();
-                    break;
-                default:
-                    CurrentPage = new HomeView();
-                    break;
-            }
+                "Home" => new HomeView(),
+                "Controllers" => new ParsingControllersView(),
+                "WebsiteUpdate" => new UpdateManagerView(),
+                "API" => new APIView(),
+                "AssetsExtractor" => new AssetsExtractorView(),
+                _ => new HomeView(),
+            };
         }
     }
 
-    private static void OpenSettingsWindow()
+    private void OpenSettingsWindow()
     {
-        var settingsWindow = new SettingsView();
-        settingsWindow.Show();
+        if (_settingsWindow == null || !_settingsWindow.IsVisible)
+        {
+            _settingsWindow = new SettingsView();
+            _settingsWindow.Closed += OnSettingsWindowClosed;
+            _settingsWindow.Show();
+        }
+        else
+        {
+            _settingsWindow.Activate();
+        }
+    }
+
+    private void OnSettingsWindowClosed(object? sender, EventArgs e)
+    {
+        _settingsWindow = null;
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
