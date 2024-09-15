@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace UEParser.Parser.Wwise;
+namespace UEParser.Utils;
 
-public class WwiseUtilities
+public class CommandUtils
 {
     public class CommandModel
     {
@@ -38,7 +38,7 @@ public class WwiseUtilities
                 CreateNoWindow = true
             };
 
-            using Process? process = Process.Start(processInfo);
+            using Process? process = Process.Start(processInfo) ?? throw new Exception($"Failed to start the process.");
 
             process?.WaitForExit();
         }

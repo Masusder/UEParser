@@ -22,4 +22,19 @@ public class FileUtils
 
         return deserializedData ?? throw new Exception("Loaded data is null.");
     }
+
+    public static bool IsFileLocked(string filePath)
+    {
+        try
+        {
+            using FileStream fileStream = new(filePath, FileMode.Open, FileAccess.Read, FileShare.None);
+        }
+        catch (IOException)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
 }

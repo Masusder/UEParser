@@ -3,12 +3,12 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using UEParser.ViewModels;
 using System.Text.RegularExpressions;
-using UEParser.Utils;
 using System.Threading;
 using Newtonsoft.Json.Linq;
 using UEParser.AssetRegistry.Wwise;
+using UEParser.Utils;
+using UEParser.ViewModels;
 
 namespace UEParser.Parser.Wwise;
 
@@ -94,7 +94,7 @@ public partial class WwiseFileHandler
         if (!IsPythonInstalled()) throw new Exception("Python is not installed or not accessible from the command line, which is required for audio extraction to work.");
 
         // Generate txtp files with reversed names that we will use to convert to playable audio
-        WwiseUtilities.ExecuteCommand(arguments, "python", temporaryDirectory);
+        CommandUtils.ExecuteCommand(arguments, "python", temporaryDirectory);
     }
 
     // We need to check if Python is installed in order for user to be able to decompile audio
@@ -330,7 +330,7 @@ public partial class WwiseFileHandler
                 string arguments = $"-i -o \"{outputFilePath}\" \"{filePath}\"";
 
                 // Convert txtp files to wav audio format
-                WwiseUtilities.ExecuteCommand(arguments, GlobalVariables.vgmStreamCliPath, GlobalVariables.rootDir);
+                CommandUtils.ExecuteCommand(arguments, GlobalVariables.vgmStreamCliPath, GlobalVariables.rootDir);
 
                 string txtpFileName = Path.GetFileName(filePath);
 
@@ -365,12 +365,12 @@ public partial class WwiseFileHandler
             return;
         }
 
-        List<WwiseUtilities.CommandModel> commands = [];
+        List<CommandUtils.CommandModel> commands = [];
         foreach (var bnkFilePath in bnkFiles)
         {
             string command = $"--audio {bnkFilePath} --output {temporaryDirectory} --wems-only";
 
-            WwiseUtilities.CommandModel model = new()
+            CommandUtils.CommandModel model = new()
             {
                 Argument = command,
                 PathToExe = GlobalVariables.bnkExtractorPath
@@ -379,7 +379,7 @@ public partial class WwiseFileHandler
             commands.Add(model);
         }
 
-        await WwiseUtilities.ExecuteCommandsAsync(commands);
+        await CommandUtils.ExecuteCommandsAsync(commands);
     }
 
     // We use WAV format now, but in case I will need OGG I will leave this method for a reference

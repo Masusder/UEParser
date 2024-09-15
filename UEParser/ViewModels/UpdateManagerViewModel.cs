@@ -1,17 +1,13 @@
-﻿using Amazon.Runtime.Internal.Util;
-using Amazon.S3.Transfer;
-using Microsoft.VisualBasic;
-using ReactiveUI;
-using SharpGLTF.Schema2;
+﻿using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using UEParser.Network;
 using UEParser.Services;
 using UEParser.Utils;
 
@@ -23,6 +19,7 @@ public class UpdateManagerViewModel : ReactiveObject
     public ICommand ConvertUEModelsCommand { get; }
     public ICommand ValidateAssetsCommand { get; }
     public ICommand UploadModelsDataCommand { get; }
+    public ICommand ConvertAudioToOggFormatCommand { get; }
 
     public UpdateManagerViewModel()
     {
@@ -30,6 +27,88 @@ public class UpdateManagerViewModel : ReactiveObject
         ConvertUEModelsCommand = ReactiveCommand.Create(ConvertUEModels);
         ValidateAssetsCommand = ReactiveCommand.Create(ValidateAssetsInBucket);
         UploadModelsDataCommand = ReactiveCommand.Create(UploadModelsData);
+        ConvertAudioToOggFormatCommand = ReactiveCommand.Create(ConvertAudioToOggFormat);
+    }
+
+    public static async Task ConvertAudioToOggFormat()
+    {
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+        LogsWindowViewModel.Instance.AddLog("Starting audio conversion..", Logger.LogTags.Info);
+
+        await Task.Run(async () =>
+        {
+            try
+            {
+                int convertedAudioCount = 0;
+                await DownloadFfmpegDependency(); // FFmpeg isn't included in UEParser build due to its size and the fact it might be useful in rare cases
+
+                string extractedAudioPath = Path.Combine(GlobalVariables.rootDir, "Output", "ExtractedAssets", "Audio", GlobalVariables.versionWithBranch);
+                string[] wavFiles = Directory.GetFiles(extractedAudioPath, "*.wav", SearchOption.AllDirectories);
+
+                LogsWindowViewModel.Instance.AddLog($"Detected total of {wavFiles.Length} files to convert.", Logger.LogTags.Info);
+
+                foreach (string file in wavFiles)
+                {
+                    string? dir = Path.GetDirectoryName(file);
+
+                    if (string.IsNullOrEmpty(dir)) continue;
+
+                    string baseName = Path.GetFileNameWithoutExtension(file);
+                    string outputFilePath = Path.Combine(dir, $"{baseName}.ogg");
+
+                    string arguments = $"-i \"{file}\" -c:a libvorbis \"{outputFilePath}\" -y";
+
+                    CommandUtils.ExecuteCommand(arguments, GlobalVariables.ffmpegPath, GlobalVariables.rootDir);
+                    convertedAudioCount++;
+
+                    if (File.Exists(outputFilePath) && !FileUtils.IsFileLocked(file))
+                    {
+                        File.Delete(file);
+                    }
+                }
+
+                if (convertedAudioCount > 0)
+                {
+                    LogsWindowViewModel.Instance.AddLog($"Converted total of {convertedAudioCount} audio files.", Logger.LogTags.Info);
+                }
+
+                LogsWindowViewModel.Instance.AddLog("Finished audio conversion.", Logger.LogTags.Success);
+            }
+            catch (Exception ex)
+            {
+                LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+                LogsWindowViewModel.Instance.AddLog(ex.Message, Logger.LogTags.Error);
+            }
+            finally
+            {
+                LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            }
+        });
+    }
+
+    private static async Task DownloadFfmpegDependency()
+    {
+        if (File.Exists(GlobalVariables.ffmpegPath))
+        {
+            return;
+        }
+
+        LogsWindowViewModel.Instance.AddLog("Please wait, downloading FFmpeg dependency..", Logger.LogTags.Info);
+
+        string ffmpegDownloadUrl = GlobalVariables.dbdinfoBaseUrl + $"UEParser/ffmpeg.exe";
+
+        try
+        {
+            byte[] fileBytes = await NetAPI.FetchFileBytesAsync(ffmpegDownloadUrl);
+
+            File.WriteAllBytes(GlobalVariables.ffmpegPath, fileBytes);
+            LogsWindowViewModel.Instance.AddLog($"Succesffully downloaded FFmpeg dependency.", Logger.LogTags.Success);
+        }
+        catch (Exception ex)
+        {
+            LogsWindowViewModel.Instance.AddLog($"Error downloading ffmpeg: {ex.Message}", Logger.LogTags.Error);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+        }
     }
 
     // Assets validation in the bucket

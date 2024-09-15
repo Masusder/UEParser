@@ -28,7 +28,7 @@
             <Border.Effect>
               <DropShadowEffect
                   Color="Black"
-                  Opacity="0.3"
+                  Opacity="0.1"
                   BlurRadius="30"/>
             </Border.Effect>
             <StackPanel Spacing="7.5">
@@ -53,7 +53,7 @@
             <Border.Effect>
               <DropShadowEffect
                   Color="Black"
-                  Opacity="0.3"
+                  Opacity="0.1"
                   BlurRadius="30"/>
             </Border.Effect>
             <StackPanel Spacing="7.5">
@@ -78,7 +78,7 @@
             <Border.Effect>
               <DropShadowEffect
                   Color="Black"
-                  Opacity="0.3"
+                  Opacity="0.1"
                   BlurRadius="30"/>
             </Border.Effect>
             <StackPanel Spacing="7.5">
@@ -93,7 +93,7 @@
           </Border>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="25">
           <Border Background="#E62d2d2d"
           CornerRadius="7.5"
           Padding="10, 7.5"
@@ -104,7 +104,7 @@
             <Border.Effect>
               <DropShadowEffect
                   Color="Black"
-                  Opacity="0.3"
+                  Opacity="0.1"
                   BlurRadius="30"/>
             </Border.Effect>
             <StackPanel Spacing="7.5">
@@ -117,6 +117,32 @@
                       Cursor="Hand"
                       Content="Upload"
                       Command="{Binding UploadModelsDataCommand}" />
+            </StackPanel>
+          </Border>
+
+          <Border Background="#E62d2d2d"
+CornerRadius="7.5"
+Padding="10, 7.5"
+MinWidth="250"
+BorderBrush="#1AFFFFFF"
+BorderThickness="1"
+       >
+            <Border.Effect>
+              <DropShadowEffect
+                  Color="Black"
+                  Opacity="0.1"
+                  BlurRadius="30"/>
+            </Border.Effect>
+            <StackPanel Spacing="7.5">
+              <TextBlock HorizontalAlignment="Center"
+                          TextAlignment="Center"
+                         TextWrapping="Wrap"
+                         Text="Convert audio to OGG format."
+                         FontSize="16"/>
+              <Button HorizontalAlignment="Center"
+                      Cursor="Hand"
+                      Content="Convert"
+                      Command="{Binding ConvertAudioToOggFormatCommand}" />
             </StackPanel>
           </Border>
         </StackPanel>
