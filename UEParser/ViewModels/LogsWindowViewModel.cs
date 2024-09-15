@@ -32,6 +32,8 @@ public partial class LogsWindowViewModel : ReactiveObject
         Neutral,
         Finished,
         Running,
+        RunningWithCancellation,
+        Cancellation,
         Error,
         Warning
     }
@@ -63,6 +65,8 @@ public partial class LogsWindowViewModel : ReactiveObject
                 {
                     ELogState.Finished => "GreenYellow",
                     ELogState.Running => "Orange",
+                    ELogState.RunningWithCancellation => "Orange",
+                    ELogState.Cancellation => "#F08080",
                     ELogState.Error => "Red",
                     ELogState.Neutral => "#323232",
                     ELogState.Warning => "#ffcc00",
@@ -75,6 +79,8 @@ public partial class LogsWindowViewModel : ReactiveObject
                 {
                     ELogState.Finished => "Tasks Finished",
                     ELogState.Running => "Tasks Running..",
+                    ELogState.RunningWithCancellation => "Tasks Running [ESC to cancel]..",
+                    ELogState.Cancellation => "Task cancellation in progress..",
                     ELogState.Error => "Error Occured",
                     ELogState.Neutral => "Waiting.. do something",
                     ELogState.Warning => "Warning",
@@ -87,6 +93,8 @@ public partial class LogsWindowViewModel : ReactiveObject
                 {
                     ELogState.Finished => "Black",
                     ELogState.Running => "Black",
+                    ELogState.RunningWithCancellation => "Black",
+                    ELogState.Cancellation => "Black",
                     ELogState.Error => "White",
                     ELogState.Neutral => "White",
                     ELogState.Warning => "Black",
@@ -98,6 +106,7 @@ public partial class LogsWindowViewModel : ReactiveObject
             .Select(state => state switch
             {
                 ELogState.Running => true,
+                ELogState.RunningWithCancellation => true,
                 _ => false
             })
             .ToProperty(this, x => x.IsLoading);

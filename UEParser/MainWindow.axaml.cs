@@ -1,5 +1,5 @@
 using Avalonia.Markup.Xaml;
-using UEParser.ViewModels;
+using Avalonia.Input;
 using FluentAvalonia.UI.Windowing;
 using Avalonia.Media;
 using System.Threading.Tasks;
@@ -7,6 +7,7 @@ using System.Threading;
 using System;
 using UEParser.Services;
 using UEParser.Network.Kraken;
+using UEParser.ViewModels;
 using UEParser.Views;
 
 namespace UEParser;
@@ -24,6 +25,17 @@ public partial class MainWindow : AppWindow
     private void InitializeComponent()
     {
         AvaloniaXamlLoader.Load(this);
+    }
+
+    protected override void OnKeyDown(KeyEventArgs e)
+    {
+        base.OnKeyDown(e);
+
+        if (e.Key == Key.Escape)
+        {
+            // Handle ESC key globally
+            CancellationTokenService.Instance.Cancel();
+        }
     }
 
     private InitializationConfirmPopupView? _confirmationPopup;

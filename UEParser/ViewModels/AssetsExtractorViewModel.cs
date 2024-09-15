@@ -1,12 +1,12 @@
-﻿using Avalonia.Threading;
-using ReactiveUI;
+﻿using ReactiveUI;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using UEParser.Parser;
+using System.Threading;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using UEParser.Parser;
 using UEParser.Services;
 using UEParser.AssetRegistry;
 
@@ -26,26 +26,31 @@ public class AssetsExtractorViewModel
 
     public AssetsExtractorViewModel()
     {
-        CheckMissingAssetsCommand = ReactiveCommand.Create(CheckMissingAssets);
-        ExtractMeshesCommand = ReactiveCommand.Create(ExtractMeshes);
-        ExtractTexturesCommand = ReactiveCommand.Create(ExtractTextures);
-        ExtractUICommand = ReactiveCommand.Create(ExtractUI);
-        ExtractAnimationsCommand = ReactiveCommand.Create(ExtractAnimations);
-        ExtractAudioCommand = ReactiveCommand.Create(ExtractAudio);
+        CheckMissingAssetsCommand = ReactiveCommand.CreateFromTask(() => CheckMissingAssets(CancellationTokenService.Instance.Token));
+        ExtractMeshesCommand = ReactiveCommand.CreateFromTask(() => ExtractMeshes(CancellationTokenService.Instance.Token));
+        ExtractTexturesCommand = ReactiveCommand.CreateFromTask(() => ExtractTextures(CancellationTokenService.Instance.Token));
+        ExtractUICommand = ReactiveCommand.CreateFromTask(() => ExtractUI(CancellationTokenService.Instance.Token));
+        ExtractAnimationsCommand = ReactiveCommand.CreateFromTask(() => ExtractAnimations(CancellationTokenService.Instance.Token));
+        ExtractAudioCommand = ReactiveCommand.CreateFromTask(() => ExtractAudio(CancellationTokenService.Instance.Token));
     }
 
-    private async Task ExtractMeshes()
+    private static async Task ExtractMeshes(CancellationToken token)
     {
         try
         {
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
             LogsWindowViewModel.Instance.AddLog("Starting meshes extraction..", Logger.LogTags.Info);
 
-            await AssetsManager.ParseMeshes();
+            await AssetsManager.ParseMeshes(token);
 
             LogsWindowViewModel.Instance.AddLog("Finished extracting meshes.", Logger.LogTags.Success);
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
+        catch (OperationCanceledException)
+        {
+            LogsWindowViewModel.Instance.AddLog("Extraction was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
+        }
         catch (Exception ex)
         {
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
@@ -53,18 +58,23 @@ public class AssetsExtractorViewModel
         }
     }
 
-    private async Task ExtractTextures()
+    private static async Task ExtractTextures(CancellationToken token)
     {
         try
         {
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
             LogsWindowViewModel.Instance.AddLog("Starting textures extraction..", Logger.LogTags.Info);
 
-            await AssetsManager.ParseTextures();
+            await AssetsManager.ParseTextures(token);
 
             LogsWindowViewModel.Instance.AddLog("Finished extracting textures.", Logger.LogTags.Success);
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
+        catch (OperationCanceledException)
+        {
+            LogsWindowViewModel.Instance.AddLog("Extraction was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
+        }
         catch (Exception ex)
         {
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
@@ -72,18 +82,23 @@ public class AssetsExtractorViewModel
         }
     }
 
-    private async Task ExtractUI()
+    private static async Task ExtractUI(CancellationToken token)
     {
         try
         {
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
             LogsWindowViewModel.Instance.AddLog("Starting UI extraction..", Logger.LogTags.Info);
 
-            await AssetsManager.ParseUI();
+            await AssetsManager.ParseUI(token);
 
             LogsWindowViewModel.Instance.AddLog("Finished extracting UI.", Logger.LogTags.Success);
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
+        catch (OperationCanceledException)
+        {
+            LogsWindowViewModel.Instance.AddLog("Extraction was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
+        }
         catch (Exception ex)
         {
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
@@ -91,18 +106,23 @@ public class AssetsExtractorViewModel
         }
     }
 
-    private async Task ExtractAnimations()
+    private static async Task ExtractAnimations(CancellationToken token)
     {
         try
         {
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
             LogsWindowViewModel.Instance.AddLog("Starting animations extraction..", Logger.LogTags.Info);
 
-            await AssetsManager.ParseAnimations();
+            await AssetsManager.ParseAnimations(token);
 
             LogsWindowViewModel.Instance.AddLog("Finished extracting animations.", Logger.LogTags.Success);
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
+        catch (OperationCanceledException)
+        {
+            LogsWindowViewModel.Instance.AddLog("Extraction was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
+        }
         catch (Exception ex)
         {
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
@@ -110,17 +130,22 @@ public class AssetsExtractorViewModel
         }
     }
 
-    private async Task ExtractAudio()
+    private static async Task ExtractAudio(CancellationToken token)
     {
         try
         {
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
             LogsWindowViewModel.Instance.AddLog("Starting audio extraction..", Logger.LogTags.Info);
 
-            await AssetsManager.ParseAudio();
+            await AssetsManager.ParseAudio(token);
 
             LogsWindowViewModel.Instance.AddLog("Finished extracting audio.", Logger.LogTags.Success);
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        }
+        catch (OperationCanceledException)
+        {
+            LogsWindowViewModel.Instance.AddLog("Extraction was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
         }
         catch (Exception ex)
         {
@@ -136,12 +161,14 @@ public class AssetsExtractorViewModel
     private const string packagePluginsDirectory = "DeadByDaylight/Plugins";
     private const string packageLocalizationDirectory = "DeadByDaylight/Content/Localization";
     private const string packageWwiseDirectory = "DeadByDaylight/Content/WwiseAudio";
-    private async Task CheckMissingAssets()
+    private static async Task CheckMissingAssets(CancellationToken token)
     {
-        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
         LogsWindowViewModel.Instance.AddLog("Looking for missing assets..", Logger.LogTags.Info);
 
-        var fileRegisterDictionary = FilesRegister.MountFileRegisterDictionary();
+        await Task.Run(async () =>
+        {
+            var fileRegisterDictionary = FilesRegister.MountFileRegisterDictionary();
         string pathToExtractedAssets = GlobalVariables.pathToExtractedAssets;
 
         var directoriesToMatch = new List<string>
@@ -156,10 +183,10 @@ public class AssetsExtractorViewModel
         };
 
         List<string> missingAssetsList = [];
-        await Task.Run(() =>
-        {
+
             foreach (var file in fileRegisterDictionary)
             {
+                token.ThrowIfCancellationRequested();
                 // Check if file.Key starts with any of the specified directories
                 if (directoriesToMatch.Any(dir => file.Key.StartsWith(dir, StringComparison.OrdinalIgnoreCase)))
                 {
@@ -177,7 +204,7 @@ public class AssetsExtractorViewModel
                     }
                 }
             }
-        });
+
 
         var fatalCrashAssets = GlobalVariables.fatalCrashAssets;
 
@@ -194,10 +221,11 @@ public class AssetsExtractorViewModel
         {
             LogsWindowViewModel.Instance.AddLog($"Detected total of: {missingAssetsCount} missing assets. Starting export process..", Logger.LogTags.Warning);
 
-            await AssetsManager.ParseMissingAssets(missingAssetsList);
+            await AssetsManager.ParseMissingAssets(missingAssetsList, token);
 
             LogsWindowViewModel.Instance.AddLog("Finished exporting.", Logger.LogTags.Success);
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
+        }, token);
     }
 }

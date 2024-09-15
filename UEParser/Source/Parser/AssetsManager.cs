@@ -1,4 +1,11 @@
-﻿using CUE4Parse.FileProvider;
+﻿using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using CUE4Parse.FileProvider;
 using CUE4Parse.UE4.Versions;
 using CUE4Parse.Encryption.Aes;
 using CUE4Parse.UE4.Objects.Core.Misc;
@@ -11,19 +18,13 @@ using CUE4Parse.UE4.Localization;
 using CUE4Parse.UE4.Readers;
 using CUE4Parse.GameTypes.DBD.Encryption.Aes;
 using CUE4Parse.Compression;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.IO;
-using System;
-using System.Linq;
+using CUE4Parse.UE4.AssetRegistry;
 using UEParser.Services;
 using UEParser.Utils;
 using UEParser.ViewModels;
-using System.Threading.Tasks;
 using UEParser.AssetRegistry;
 using UEParser.AssetRegistry.Wwise;
 using UEParser.Parser.Wwise;
-using CUE4Parse.UE4.AssetRegistry;
 
 namespace UEParser.Parser;
 
@@ -283,10 +284,12 @@ public class AssetsManager
         });
     }
 
-    public static async Task ParseMeshes()
+    public static async Task ParseMeshes(CancellationToken token)
     {
         await Task.Run(() =>
         {
+            token.ThrowIfCancellationRequested();
+
             var files = Provider.Files.Values.ToList();
             var newAssets = FilesRegister.NewAssets;
             var modifiedAssets = FilesRegister.ModifiedAssets;
@@ -297,6 +300,8 @@ public class AssetsManager
 
             foreach (var file in files)
             {
+                token.ThrowIfCancellationRequested();
+
                 try
                 {
                     string pathWithoutExtension = file.PathWithoutExtension;
@@ -363,13 +368,15 @@ public class AssetsManager
             {
                 LogsWindowViewModel.Instance.AddLog($"Extracted total of {extractedAssetsCount} mesh(es).", Logger.LogTags.Info);
             }
-        });
+        }, token);
     }
 
-    public static async Task ParseAnimations()
+    public static async Task ParseAnimations(CancellationToken token)
     {
         await Task.Run(() =>
         {
+            token.ThrowIfCancellationRequested();
+
             var files = Provider.Files.Values.ToList();
             var newAssets = FilesRegister.NewAssets;
             var modifiedAssets = FilesRegister.ModifiedAssets;
@@ -380,6 +387,8 @@ public class AssetsManager
 
             foreach (var file in files)
             {
+                token.ThrowIfCancellationRequested();
+
                 try
                 {
                     string pathWithoutExtension = file.PathWithoutExtension;
@@ -447,13 +456,15 @@ public class AssetsManager
             {
                 LogsWindowViewModel.Instance.AddLog($"Extracted total of {extractedAssetsCount} animation(s).", Logger.LogTags.Info);
             }
-        });
+        }, token);
     }
 
-    public static async Task ParseTextures()
+    public static async Task ParseTextures(CancellationToken token)
     {
         await Task.Run(() =>
         {
+            token.ThrowIfCancellationRequested();
+
             var files = Provider.Files.Values.ToList();
             var newAssets = FilesRegister.NewAssets;
             var modifiedAssets = FilesRegister.ModifiedAssets;
@@ -464,11 +475,12 @@ public class AssetsManager
 
             foreach (var file in files)
             {
+                token.ThrowIfCancellationRequested();
+
                 try
                 {
                     string pathWithoutExtension = file.PathWithoutExtension;
                     if (!newAssets.ContainsKey(pathWithoutExtension) && !modifiedAssets.ContainsKey(pathWithoutExtension)) continue;
-                    //if (!newAssets.ContainsKey(pathWithoutExtension)) continue;
 
                     if (GlobalVariables.fatalCrashAssets.Contains(pathWithoutExtension)) continue;
 
@@ -524,13 +536,15 @@ public class AssetsManager
             {
                 LogsWindowViewModel.Instance.AddLog($"Extracted total of {extractedAssetsCount} texture(s).", Logger.LogTags.Info);
             }
-        });
+        }, token);
     }
 
-    public static async Task ParseUI()
+    public static async Task ParseUI(CancellationToken token)
     {
         await Task.Run(() =>
         {
+            token.ThrowIfCancellationRequested();
+
             var files = Provider.Files.Values.ToList();
             var newAssets = FilesRegister.NewAssets;
             var modifiedAssets = FilesRegister.ModifiedAssets;
@@ -541,6 +555,8 @@ public class AssetsManager
 
             foreach (var file in files)
             {
+                token.ThrowIfCancellationRequested();
+
                 try
                 {
                     string pathWithoutExtension = file.PathWithoutExtension;
@@ -610,66 +626,92 @@ public class AssetsManager
             {
                 LogsWindowViewModel.Instance.AddLog($"Extracted total of {extractedAssetsCount} UI asset(s).", Logger.LogTags.Info);
             }
-        });
+        }, token);
     }
 
     // TODO: add collection of unused audio
-    public static async Task ParseAudio()
+    public static async Task ParseAudio(CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog("Audio extraction is highly intensive process, which may take even up to an hour, depending whether audio registry is available..", Logger.LogTags.Info);
         await Task.Run(async () =>
         {
+            token.ThrowIfCancellationRequested();
+
             LogsWindowViewModel.Instance.AddLog("Moving compressed audio into temporary folder..", Logger.LogTags.Info);
 
             WwiseFileHandler.MoveCompressedAudio();
+
+            token.ThrowIfCancellationRequested();
 
             LogsWindowViewModel.Instance.AddLog("Unpacking audio banks..", Logger.LogTags.Info);
 
             await WwiseFileHandler.UnpackAudioBanks();
 
+            token.ThrowIfCancellationRequested();
+
             LogsWindowViewModel.Instance.AddLog("Generating txtp files from compiled audio..", Logger.LogTags.Info);
 
             WwiseFileHandler.GenerateTxtp();
+
+            token.ThrowIfCancellationRequested();
 
             LogsWindowViewModel.Instance.AddLog("Collecting associated audio event IDs..", Logger.LogTags.Info);
 
             var associatedAudioEventIds = WwiseFileHandler.GrabAudioEventIds();
 
+            token.ThrowIfCancellationRequested();
+
             LogsWindowViewModel.Instance.AddLog("Collecting Wwise data from preallocated buffers..", Logger.LogTags.Info);
 
             var audioEventsLinkage = WwiseFileHandler.ConstructAudioEventsLinkage();
+
+            token.ThrowIfCancellationRequested();
 
             LogsWindowViewModel.Instance.AddLog("Populating audio registry..", Logger.LogTags.Info);
 
             WwiseRegister.PopulateAudioRegister();
             WwiseRegister.SaveAudioInfoDictionary();
 
+            token.ThrowIfCancellationRequested();
+
             LogsWindowViewModel.Instance.AddLog("Converting audio to WAV audio format..", Logger.LogTags.Info);
 
             WwiseFileHandler.ConvertTxtpToWav();
+
+            token.ThrowIfCancellationRequested();
 
             LogsWindowViewModel.Instance.AddLog("Reversing audio structure..", Logger.LogTags.Info);
 
             WwiseFileHandler.ReverseAudioStructure(associatedAudioEventIds, audioEventsLinkage);
 
+            token.ThrowIfCancellationRequested();
+
             LogsWindowViewModel.Instance.AddLog("Moving converted audio into output directory..", Logger.LogTags.Info);
 
             WwiseFileHandler.MoveAudioToOutput();
 
+            token.ThrowIfCancellationRequested();
+
             LogsWindowViewModel.Instance.AddLog("Deleting temporary audio folder..", Logger.LogTags.Info);
 
             WwiseFileHandler.CleanExtractedAudioDir();
-        });
+
+            token.ThrowIfCancellationRequested();
+        }, token);
     }
 
-    public static async Task ParseMissingAssets(List<string> missingAssetsList)
+    public static async Task ParseMissingAssets(List<string> missingAssetsList, CancellationToken token)
     {
         await Task.Run(() =>
         {
+            token.ThrowIfCancellationRequested();
+
             var files = Provider.Files.Values.ToList();
 
             foreach (var file in files)
             {
+                token.ThrowIfCancellationRequested();
+
                 try
                 {
                     string pathWithoutExtension = file.PathWithoutExtension;
@@ -773,7 +815,7 @@ public class AssetsManager
             // Deletion of unused files needs to invoked after fileInfoDictionary cleanup!
             DeleteUnusedFiles();
             FilesRegister.SaveFileInfoDictionary();
-        });
+        }, token);
     }
 
     private static bool UpdateFileInfoIfNeeded(string packagePath, string extension, long size)
