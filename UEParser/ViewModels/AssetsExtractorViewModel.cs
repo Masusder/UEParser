@@ -12,10 +12,24 @@ using UEParser.AssetRegistry;
 
 namespace UEParser.ViewModels;
 
-public class AssetsExtractorViewModel
+public class AssetsExtractorViewModel : ReactiveObject
 {
     public static bool IsComparisonVersionAvailable =>
         !string.IsNullOrEmpty(ConfigurationService.Config.Core.VersionData.CompareVersionHeader);
+
+    private bool _canExtract = true;
+    public bool CanExtract
+    {
+        get => _canExtract;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _canExtract, value);
+            // Notify that CanExtractWithVersionCheck has also changed
+            this.RaisePropertyChanged(nameof(CanExtractWithVersionCheck));
+        }
+    }
+
+    public bool CanExtractWithVersionCheck => IsComparisonVersionAvailable && CanExtract;
 
     public ICommand CheckMissingAssetsCommand { get; }
     public ICommand ExtractMeshesCommand { get; }
@@ -34,10 +48,11 @@ public class AssetsExtractorViewModel
         ExtractAudioCommand = ReactiveCommand.CreateFromTask(() => ExtractAudio(CancellationTokenService.Instance.Token));
     }
 
-    private static async Task ExtractMeshes(CancellationToken token)
+    private async Task ExtractMeshes(CancellationToken token)
     {
         try
         {
+            CanExtract = false;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
             LogsWindowViewModel.Instance.AddLog("Starting meshes extraction..", Logger.LogTags.Info);
 
@@ -56,12 +71,17 @@ public class AssetsExtractorViewModel
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
             LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
         }
+        finally
+        {
+            CanExtract = true;
+        }
     }
 
-    private static async Task ExtractTextures(CancellationToken token)
+    private async Task ExtractTextures(CancellationToken token)
     {
         try
         {
+            CanExtract = false;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
             LogsWindowViewModel.Instance.AddLog("Starting textures extraction..", Logger.LogTags.Info);
 
@@ -80,12 +100,17 @@ public class AssetsExtractorViewModel
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
             LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
         }
+        finally
+        {
+            CanExtract = true;
+        }
     }
 
-    private static async Task ExtractUI(CancellationToken token)
+    private async Task ExtractUI(CancellationToken token)
     {
         try
         {
+            CanExtract = false;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
             LogsWindowViewModel.Instance.AddLog("Starting UI extraction..", Logger.LogTags.Info);
 
@@ -104,12 +129,17 @@ public class AssetsExtractorViewModel
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
             LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
         }
+        finally
+        {
+            CanExtract = true;
+        }
     }
 
-    private static async Task ExtractAnimations(CancellationToken token)
+    private async Task ExtractAnimations(CancellationToken token)
     {
         try
         {
+            CanExtract = false;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
             LogsWindowViewModel.Instance.AddLog("Starting animations extraction..", Logger.LogTags.Info);
 
@@ -128,12 +158,17 @@ public class AssetsExtractorViewModel
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
             LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
         }
+        finally
+        {
+            CanExtract = true;
+        }
     }
 
-    private static async Task ExtractAudio(CancellationToken token)
+    private async Task ExtractAudio(CancellationToken token)
     {
         try
         {
+            CanExtract = false;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
             LogsWindowViewModel.Instance.AddLog("Starting audio extraction..", Logger.LogTags.Info);
 
@@ -152,6 +187,10 @@ public class AssetsExtractorViewModel
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
             LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
         }
+        finally
+        {
+            CanExtract = true;
+        }
     }
 
     private const string packageDataDirectory = "DeadByDaylight/Content/Data";
@@ -161,28 +200,32 @@ public class AssetsExtractorViewModel
     private const string packagePluginsDirectory = "DeadByDaylight/Plugins";
     private const string packageLocalizationDirectory = "DeadByDaylight/Content/Localization";
     private const string packageWwiseDirectory = "DeadByDaylight/Content/WwiseAudio";
-    private static async Task CheckMissingAssets(CancellationToken token)
+    private async Task CheckMissingAssets(CancellationToken token)
     {
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
         LogsWindowViewModel.Instance.AddLog("Looking for missing assets..", Logger.LogTags.Info);
 
-        await Task.Run(async () =>
+        CanExtract = false;
+
+        try
+        {
+            await Task.Run(async () =>
         {
             var fileRegisterDictionary = FilesRegister.MountFileRegisterDictionary();
-        string pathToExtractedAssets = GlobalVariables.pathToExtractedAssets;
+            string pathToExtractedAssets = GlobalVariables.pathToExtractedAssets;
 
-        var directoriesToMatch = new List<string>
-        {
-            packageDataDirectory,
-            packageCharactersDirectory,
-            packageMeshesDirectory,
-            packageEffectsDirectory,
-            packagePluginsDirectory,
-            packageLocalizationDirectory,
-            packageWwiseDirectory
-        };
+            var directoriesToMatch = new List<string>
+            {
+                packageDataDirectory,
+                packageCharactersDirectory,
+                packageMeshesDirectory,
+                packageEffectsDirectory,
+                packagePluginsDirectory,
+                packageLocalizationDirectory,
+                packageWwiseDirectory
+            };
 
-        List<string> missingAssetsList = [];
+            List<string> missingAssetsList = [];
 
             foreach (var file in fileRegisterDictionary)
             {
@@ -205,27 +248,36 @@ public class AssetsExtractorViewModel
                 }
             }
 
+            var fatalCrashAssets = GlobalVariables.fatalCrashAssets;
 
-        var fatalCrashAssets = GlobalVariables.fatalCrashAssets;
+            // Remove any strings from missingAssetsList that are in fatalCrashAssets
+            missingAssetsList.RemoveAll(asset => fatalCrashAssets.Contains(asset));
 
-        // Remove any strings from missingAssetsList that are in fatalCrashAssets
-        missingAssetsList.RemoveAll(asset => fatalCrashAssets.Contains(asset));
+            var missingAssetsCount = missingAssetsList.Count;
+            if (missingAssetsCount == 0)
+            {
+                LogsWindowViewModel.Instance.AddLog("No missing assets have been detected!", Logger.LogTags.Success);
+                LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            }
+            else
+            {
+                LogsWindowViewModel.Instance.AddLog($"Detected total of: {missingAssetsCount} missing assets. Starting export process..", Logger.LogTags.Warning);
 
-        var missingAssetsCount = missingAssetsList.Count;
-        if (missingAssetsCount == 0)
-        {
-            LogsWindowViewModel.Instance.AddLog("No missing assets have been detected!", Logger.LogTags.Success);
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-        }
-        else
-        {
-            LogsWindowViewModel.Instance.AddLog($"Detected total of: {missingAssetsCount} missing assets. Starting export process..", Logger.LogTags.Warning);
+                await AssetsManager.ParseMissingAssets(missingAssetsList, token);
 
-            await AssetsManager.ParseMissingAssets(missingAssetsList, token);
-
-            LogsWindowViewModel.Instance.AddLog("Finished exporting.", Logger.LogTags.Success);
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-        }
+                LogsWindowViewModel.Instance.AddLog("Finished exporting.", Logger.LogTags.Success);
+                LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            }
         }, token);
+        }
+        catch (OperationCanceledException)
+        {
+            LogsWindowViewModel.Instance.AddLog("Extraction was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
+        }
+        finally
+        {
+            CanExtract = true;
+        }
     }
 }

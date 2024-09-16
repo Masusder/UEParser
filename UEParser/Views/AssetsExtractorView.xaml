@@ -72,7 +72,7 @@
                 <Run Foreground="Gold" FontWeight="700">BNK</Run> formats).
               </TextBlock>
             </StackPanel>
-            <Button PointerExited="OnPointerExit" Background="DodgerBlue" Name="MissingAssetsCheck" Command="{Binding CheckMissingAssetsCommand}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">
+            <Button PointerExited="OnPointerExit" Background="DodgerBlue" Name="MissingAssetsCheck" Command="{Binding CheckMissingAssetsCommand}" IsEnabled="{Binding CanExtract}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">
               <i:Icon Value="fa-solid fa-computer-mouse" Width="32" Height="32" FontSize="16" />
             </Button>
           </StackPanel>
@@ -97,7 +97,7 @@
                 Extract meshes (<Run Foreground="#514FC0" FontWeight="700">PSK</Run> format).
               </TextBlock>
             </StackPanel>
-            <Button Background="DodgerBlue" Name="ExtractMeshes" IsEnabled="{Binding IsComparisonVersionAvailable}" Command="{Binding ExtractMeshesCommand}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">
+            <Button Background="DodgerBlue" Name="ExtractMeshes" IsEnabled="{Binding CanExtractWithVersionCheck}" Command="{Binding ExtractMeshesCommand}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">
               <i:Icon Value="fa-solid fa-computer-mouse" Width="32" Height="32" FontSize="16" />
             </Button>
           </StackPanel>
@@ -123,7 +123,7 @@
               </TextBlock>
               <TextBlock FontSize="12">format).</TextBlock>
             </StackPanel>
-            <Button Background="DodgerBlue" Name="ExtractTextures" IsEnabled="{Binding IsComparisonVersionAvailable}" Command="{Binding ExtractTexturesCommand}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">
+            <Button Background="DodgerBlue" Name="ExtractTextures" IsEnabled="{Binding CanExtractWithVersionCheck}" Command="{Binding ExtractTexturesCommand}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">
               <i:Icon Value="fa-solid fa-computer-mouse" Width="32" Height="32" FontSize="16" />
             </Button>
           </StackPanel>
@@ -149,7 +149,7 @@
                 icons etc. (<Run Foreground="LightSkyBlue" FontWeight="700">PNG</Run> format).
               </TextBlock>
             </StackPanel>
-            <Button Background="DodgerBlue" Name="ExtractUI" IsEnabled="{Binding IsComparisonVersionAvailable}" Command="{Binding ExtractUICommand}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">
+            <Button Background="DodgerBlue" Name="ExtractUI" IsEnabled="{Binding CanExtractWithVersionCheck}" Command="{Binding ExtractUICommand}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">
               <i:Icon Value="fa-solid fa-computer-mouse" Width="32" Height="32" FontSize="16" />
             </Button>
           </StackPanel>
@@ -175,7 +175,7 @@
                 Extract animations (<Run Foreground="Red" FontWeight="700">PSA</Run> format).
               </TextBlock>
             </StackPanel>
-            <Button Background="DodgerBlue" Name="ExtractAnimations" IsEnabled="{Binding IsComparisonVersionAvailable}" Command="{Binding ExtractAnimationsCommand}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">
+            <Button Background="DodgerBlue" Name="ExtractAnimations" IsEnabled="{Binding CanExtractWithVersionCheck}" Command="{Binding ExtractAnimationsCommand}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">
               <i:Icon Value="fa-solid fa-computer-mouse" Width="32" Height="32" FontSize="16" />
             </Button>
           </StackPanel>
@@ -200,7 +200,7 @@
                 Extract audio with proper files structure <LineBreak/> and create audio registry (<Run Foreground="AliceBlue" FontWeight="700">OGG</Run> format).
               </TextBlock>
             </StackPanel>
-            <Button Background="DodgerBlue" Name="ExtractAudio" Command="{Binding ExtractAudioCommand}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">
+            <Button Background="DodgerBlue" Name="ExtractAudio" Command="{Binding ExtractAudioCommand}" IsEnabled="{Binding CanExtract}" Foreground="#FFFFFF" Cursor="Hand" Padding="2.5" CornerRadius="4">
               <i:Icon Value="fa-solid fa-computer-mouse" Width="32" Height="32" FontSize="16" />
             </Button>
           </StackPanel>

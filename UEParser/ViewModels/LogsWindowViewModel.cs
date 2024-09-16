@@ -107,6 +107,7 @@ public partial class LogsWindowViewModel : ReactiveObject
             {
                 ELogState.Running => true,
                 ELogState.RunningWithCancellation => true,
+                ELogState.Cancellation => true,
                 _ => false
             })
             .ToProperty(this, x => x.IsLoading);
