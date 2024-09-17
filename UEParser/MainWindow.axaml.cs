@@ -50,7 +50,16 @@ public partial class MainWindow : AppWindow
         if (updateAPIDuringInitialization)
         {
             LogsWindowViewModel.Instance.AddLog("You have set up the application to check for Kraken API updates during initialization.", Logger.LogTags.Info);
-            await KrakenManager.UpdateKrakenApi();
+
+            try
+            {
+                await KrakenManager.UpdateKrakenApi();
+            }
+            catch (Exception ex)
+            {
+                LogsWindowViewModel.Instance.AddLog($"Error occured, if you haven't initialized app yet this error may be ignored. {ex.Message}", Logger.LogTags.Error);
+                LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            }
         }
 
         if (hasVersionChanged)
@@ -77,7 +86,15 @@ public partial class MainWindow : AppWindow
 
     private static async Task InitializeMain(bool hasVersionChanged, string buildVersion)
     {
-        await Initialize.UpdateApp(hasVersionChanged, buildVersion);
+        try
+        {
+            await Initialize.UpdateApp(hasVersionChanged, buildVersion);
+        }
+        catch (Exception ex)
+        {
+            LogsWindowViewModel.Instance.AddLog($"Fatal error! Initialization failed! {ex.Message}", Logger.LogTags.Error);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+        }
     }
 
     internal class MainAppSplashScreen() : IApplicationSplashScreen
