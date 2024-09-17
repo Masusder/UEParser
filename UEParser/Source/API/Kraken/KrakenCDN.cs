@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using UEParser.Services;
@@ -174,7 +175,9 @@ public partial class KrakenCDN
 
         // Use Kraken API version instead of one configured locally!
         string krakenApiVersion = KrakenAPI.DeconstructKrakenApiVersion(latestVersion);
-        string s3AccessKey = config.Core.ApiConfig.S3AccessKeys[krakenApiVersion];
+        config.Core.ApiConfig.S3AccessKeys.TryGetValue(krakenApiVersion, out string? s3AccessKey);
+
+        if (string.IsNullOrEmpty(s3AccessKey)) throw new Exception("S3 Access Key was not present.");
 
         string cdnBaseUrlWithBranch = string.Format(cdnBaseUrl, branch);
         string cdnFullUrl = cdnBaseUrlWithBranch + Path.Combine(contentSegment, latestVersion, s3AccessKey, uri).Replace("\\", "/");

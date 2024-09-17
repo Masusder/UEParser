@@ -93,7 +93,10 @@ public partial class KrakenAPI
 
                 string latestVersion = config.Core.ApiConfig.LatestVersion;
                 string krakenApiVersion = DeconstructKrakenApiVersion(latestVersion);
-                string s3AccessKey = config.Core.ApiConfig.S3AccessKeys[krakenApiVersion];
+
+                config.Core.ApiConfig.S3AccessKeys.TryGetValue(krakenApiVersion, out string? s3AccessKey);
+
+                if (string.IsNullOrEmpty(s3AccessKey)) throw new Exception("S3 Access Key was not present.");
 
                 var headers = new Dictionary<string, string>
                 {
@@ -127,7 +130,7 @@ public partial class KrakenAPI
         });
     }
 
-    [GeneratedRegex(@"^(?<version>\d+\.\d+\.\d+)_.+(?<environment>live|qa|stage|dev|cert|uat)$")]
+    [GeneratedRegex(@"^(?<version>\d+\.\d+\.\d+)_.+(?<environment>live|qa|stage|dev|cert|uat|ptb)$")]
     private static partial Regex GetVersionAndEnvironmentRegex();
 
     public static string DeconstructKrakenApiVersion(string latestVersion)
