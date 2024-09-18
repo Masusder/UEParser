@@ -149,6 +149,11 @@ public class ModelData
                 {
                     foreach (var materialMap in materialsMap)
                     {
+                        // Replaced material doesn't exist in the files
+                        // Why is it even changing this material at all????
+                        // TODO: Revisit this when 8.3.0 releases
+                        if (cosmeticId == "DO_W011") continue;
+
                         string materialFromPath = materialMap.From.AssetPathName;
                         string gameInitialMaterial = StringUtils.ModifyPath(materialFromPath, "json", false, characterIndex);
                         StringUtils.RemoveDoubleSlashes(gameInitialMaterial);

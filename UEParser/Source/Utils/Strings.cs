@@ -239,10 +239,37 @@ public partial class StringUtils
     // if we wanna preserve original files structure we have to somehow determine what is inside of plugins and whats not
     // that's what this fix is for
     // In case this fix becomes too much of a hassle to maintain just mount plugins content to the main content directory..
-    private static bool IsInDBDCharactersDir(int characterIndex)
+    //private static bool IsInDBDCharactersDir(int characterIndex)
+    //{
+    //    List<int> killersSet = [
+    //        268435461,
+    //        268435462,
+    //        268435464,
+    //        268435465,
+    //        268435466,
+    //        268435469,
+    //        268435470,
+    //        268435491
+    //    ];
+    //    List<int> survivorsSet = [
+    //        41,
+    //        42,
+    //        43
+    //    ];
+
+    //    List<int> charactersSet = [.. killersSet, .. survivorsSet];
+
+    //    return charactersSet.Contains(characterIndex);
+    //}
+
+    private static bool IsOutsidePluginsCharactersDir(int characterIndex)
     {
-        List<int> killersSet = [268435461, 268435462, 268435464, 268435465, 268435466, 268435469, 268435470, 268435491];
-        List<int> survivorsSet = [41, 42, 43];
+        List<int> killersSet = [
+            268435492
+        ];
+        List<int> survivorsSet = [
+
+        ];
 
         List<int> charactersSet = [.. killersSet, .. survivorsSet];
 
@@ -250,11 +277,11 @@ public partial class StringUtils
     }
 
     // I hate this
-    public static string ModifyPath(string path, string replacement, bool isInDBDCharacters = false, int characterIndex = -1)
+    public static string ModifyPath(string path, string replacement, bool isOutsideDBDCharacters = false, int characterIndex = -1)
     {
-        if (!isInDBDCharacters)
+        if (!isOutsideDBDCharacters)
         {
-            isInDBDCharacters = IsInDBDCharactersDir(characterIndex);
+            isOutsideDBDCharacters = IsOutsidePluginsCharactersDir(characterIndex);
         }
 
         // Check if the delimiter exists in the original path
@@ -281,15 +308,15 @@ public partial class StringUtils
                 modifiedPath = fixedPath.Insert(dynamicPartIndex + 1, "Content/");
             }
 
-            if (isInDBDCharacters)
+            if (isOutsideDBDCharacters)
             {
                 modifiedPath = modifiedPath.TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-                modifiedPath = Path.Combine("/DeadByDaylight/Plugins/DBDCharacters", modifiedPath);
+                modifiedPath = Path.Combine("/DeadByDaylight/Plugins/Runtime/Bhvr/DBDCharacters", modifiedPath);
             }
             else
             {
                 modifiedPath = modifiedPath.TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
-                modifiedPath = Path.Combine("/DeadByDaylight/Plugins/Runtime/Bhvr/DBDCharacters", modifiedPath);
+                modifiedPath = Path.Combine("/DeadByDaylight/Plugins/DBDCharacters", modifiedPath);
             }
         }
         else

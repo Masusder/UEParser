@@ -110,6 +110,8 @@ public class PerkUtils
             int tunablesArrayLength = tunables.Count;
             if (tunablesArrayLength > 0)
             {
+                // TODO: Revisit this when 8.3.0 releases to live servers to check whats still broken and whats not anymore
+
                 // Hex Undying in zh-Hant language has placeholder index set incorrectly
                 // {1} but it should be {0}
                 if (langKey == "zh-Hant" && perkId == "HexUndying")
@@ -125,6 +127,21 @@ public class PerkUtils
                 else if (perkId == "S43P02") // Description expects 2 tunable values while it should be only 1
                 {
                     string formattedDescription = string.Format(description.Replace("{1}", ""), [.. formattedTunables]);
+                    item.Value.Description = formattedDescription;
+                }
+                else if (perkId == "Distortion") // Wrong index, {1}, should be {0}
+                {
+                    string formattedDescription = description.Replace("{1}", formattedTunables[0].ToString());
+                    item.Value.Description = formattedDescription;
+                }
+                else if ((langKey == "fr" || langKey == "zh-Hans") && perkId == "Deathbound") // Missing tunables, leave description not formatted I guess
+                {
+                    item.Value.Description = description;
+                }
+                else if (langKey == "pl" && perkId == "S39P01") // Wrong index, {2}, should be {1}
+                {
+                    string fixedDescription = description.Replace("{2}", "{1}");
+                    string formattedDescription = string.Format(fixedDescription, [.. formattedTunables]);
                     item.Value.Description = formattedDescription;
                 }
                 else

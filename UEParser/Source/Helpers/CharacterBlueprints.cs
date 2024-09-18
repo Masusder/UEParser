@@ -43,17 +43,17 @@ public partial class Helpers
                 {
                     string characterIndex = item.Name;
 
-                    bool isInDBDCharacters = false;
-                    if (filePath.Contains("DBDCharacters") && int.Parse(characterIndex) != 268435492)
-                    {
-                        isInDBDCharacters = true;
-                    }
+                    //bool isOutsidePluginsCharactersDir = false;
+                    //if (filePath.Contains("DBDCharacters") && int.Parse(characterIndex) == 268435492)
+                    //{
+                    //    isOutsidePluginsCharactersDir = true;
+                    //}
 
                     string gameBlueprintPathRaw = item.Value["GamePawn"]["AssetPathName"];
-                    string gameBlueprintPath = StringUtils.ModifyPath(gameBlueprintPathRaw, "json", isInDBDCharacters, int.Parse(characterIndex));
+                    string gameBlueprintPath = StringUtils.ModifyPath(gameBlueprintPathRaw, "json", false, int.Parse(characterIndex));
 
                     string menuBlueprintPathRaw = item.Value["MenuPawn"]["AssetPathName"];
-                    string menuBlueprintPath = StringUtils.ModifyPath(menuBlueprintPathRaw, "json", isInDBDCharacters, int.Parse(characterIndex));
+                    string menuBlueprintPath = StringUtils.ModifyPath(menuBlueprintPathRaw, "json", false, int.Parse(characterIndex));
 
                     characters[characterIndex] = new CharacterData
                     {
@@ -75,11 +75,11 @@ public partial class Helpers
 
         foreach (string filePath in filePaths)
         {
-            bool isInDBDCharacters = false;
-            if (filePath.Contains("DBDCharacters"))
-            {
-                isInDBDCharacters = true;
-            }
+            //bool isInDBDCharacters = false;
+            //if (filePath.Contains("DBDCharacters"))
+            //{
+            //    isInDBDCharacters = true;
+            //}
 
             string jsonString = File.ReadAllText(filePath);
             List<Dictionary<string, dynamic>>? items = JsonConvert.DeserializeObject<List<Dictionary<string, dynamic>>>(jsonString);
@@ -90,10 +90,10 @@ public partial class Helpers
                     string cosmeticId = item.Name;
                     JArray cosmeticItems = item.Value["RequiredItemIds"];
                     string gameBlueprintPathRaw = item.Value["GameBlueprint"]["AssetPathName"];
-                    string gameBlueprintPath = StringUtils.ModifyPath(gameBlueprintPathRaw, "json", isInDBDCharacters);
+                    string gameBlueprintPath = StringUtils.ModifyPath(gameBlueprintPathRaw, "json", false);
 
                     string menuBlueprintPathRaw = item.Value["MenuBlueprint"]["AssetPathName"];
-                    string menuBlueprintPath = StringUtils.ModifyPath(menuBlueprintPathRaw, "json", isInDBDCharacters);
+                    string menuBlueprintPath = StringUtils.ModifyPath(menuBlueprintPathRaw, "json", false);
 
                     cosmetics[cosmeticId] = new CosmeticData
                     {
