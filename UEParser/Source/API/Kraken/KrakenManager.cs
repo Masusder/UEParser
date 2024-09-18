@@ -1,12 +1,13 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.IO;
+using Newtonsoft.Json;
 using UEParser.ViewModels;
 using UEParser.Network.Kraken.CDN;
 using UEParser.Network.Kraken.API;
 using UEParser.AssetRegistry;
+using UEParser.Models;
 using UEParser.Models.KrakenCDN;
 using UEParser.Utils;
 using UEParser.Services;
@@ -69,10 +70,10 @@ public class KrakenManager
         var responseData = JsonConvert.DeserializeObject<KrakenAPI.KrakenVersionData>(response.Data);
 
         string? customVersion = config.Core.ApiConfig.CustomVersion;
-        if (!string.IsNullOrEmpty(config.Core.ApiConfig.CustomVersion))
+        if (!string.IsNullOrEmpty(customVersion))
         {
             LogsWindowViewModel.Instance.AddLog($"API Version has been overridden with custom value set in settings - '{customVersion}'. If you wish to use latest version you should remove value set in 'Override API Versions' in settings.", Logger.LogTags.Warning);
-            await RetrieveData();
+            await RetrieveData(config, customVersion);
 
             return;
         }
@@ -117,13 +118,11 @@ public class KrakenManager
                 throw new Exception("Kraken version check failed.");
             }
 
-            config.Core.ApiConfig.LatestVersion = latestVersion;
-
             if (latestSavedVersion != latestVersion)
             {
                 LogsWindowViewModel.Instance.AddLog($"Detected new version: '{latestVersion}'.", Logger.LogTags.Info);
 
-                await RetrieveData();
+                await RetrieveData(config, latestVersion);
             }
             else
             {
@@ -136,7 +135,7 @@ public class KrakenManager
             LogsWindowViewModel.Instance.AddLog($"Failed to fetch latest Kraken version: {response.ErrorMessage}", Logger.LogTags.Error);
         }
 
-        static async Task RetrieveData()
+        static async Task RetrieveData(Configuration config, string latestVersion)
         {
             await KrakenCDN.FetchCdnContent();
             await KrakenCDN.FetchDynamicCdnContent(KrakenCDN.CDNOutputDirName.Tomes);
@@ -144,6 +143,8 @@ public class KrakenManager
 
             LogsWindowViewModel.Instance.AddLog("Creating game characters helper table from retrieved API.", Logger.LogTags.Info);
             Helpers.CreateCharacterTable();
+
+            config.Core.ApiConfig.LatestVersion = latestVersion;
 
             await ConfigurationService.SaveConfiguration();
 
@@ -172,14 +173,7 @@ public class KrakenManager
                 .Replace(Path.AltDirectorySeparatorChar, '/');
 
                 string assetOutputPath = Path.Combine(GlobalVariables.pathToDynamicAssets, GlobalVariables.versionWithBranch, modifiedPackagedPath);
-                //if (downloadStrategy == "preferRemote")
-                //{
-                //    assetOutputPath = Path.Combine(GlobalVariables.pathToDynamicAssets, GlobalVariables.versionWithBranch, modifiedPackagedPath);
-                //}
-                //else
-                //{
-                //    assetOutputPath = Path.Combine(GlobalVariables.pathToDynamicAssets, GlobalVariables.versionWithBranch, uri);
-                //}
+
                 bool fileExistsInPackagedAssets = FilesRegister.DoesFileExist(modifiedPackagedPathWithoutExtension);
 
 #if DEBUG
