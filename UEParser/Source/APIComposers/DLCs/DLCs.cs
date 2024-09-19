@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using UEParser.Models;
 using UEParser.Parser;
 using UEParser.Utils;
@@ -116,17 +116,12 @@ public class DLCs
 
         foreach (string filePath in filePaths)
         {
-            //string jsonString = File.ReadAllText(filePath);
             string fileName = Path.GetFileName(filePath);
 
             string langKey = StringUtils.LangSplit(fileName);
 
-            //Dictionary<string, string> languageKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString) ?? throw new Exception($"Failed to load following locres file: {langKey}.");
-
             var objectString = JsonConvert.SerializeObject(parsedDlcsDB);
             Dictionary<string, DLC> localizedDlcsDB = JsonConvert.DeserializeObject<Dictionary<string, DLC>>(objectString) ?? [];
-
-            //Helpers.LocalizeDB(localizedDlcsDB, LocalizationData, languageKeys, langKey);
 
             await DLCUtils.PopulateSteamAPIData(localizedDlcsDB, langKey);
 

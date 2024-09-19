@@ -1,22 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using UEParser.ViewModels;
 using Newtonsoft.Json;
 using UEParser.Utils;
 using UEParser.Services;
 using UEParser.Parser;
-using System.Threading.Tasks;
-
 using UEParser.Models;
 
 namespace UEParser.APIComposers;
 
 public class Rifts
-{
-    private static readonly dynamic? archiveRewardData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "archiveRewardData.json"));
+{ 
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
+    private static dynamic? ArchiveRewardData => FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "ArchiveRewardData.json")) ?? throw new Exception("Failed to load archive reward data.");
 
     public static async Task InitializeRiftsDB()
     {
@@ -88,8 +87,8 @@ public class Rifts
                     {
                         Name = item.Value["Title"]["Key"],
                         Requirement = riftData?.GetValue(riftId, StringComparison.OrdinalIgnoreCase)?["requirement"],
-                        EndDate = archiveRewardData?.GetValue(riftId, StringComparison.OrdinalIgnoreCase)?["endDate"],
-                        StartDate = archiveRewardData?.GetValue(riftId, StringComparison.OrdinalIgnoreCase)?["startDate"],
+                        EndDate = ArchiveRewardData?.GetValue(riftId, StringComparison.OrdinalIgnoreCase)?["endDate"],
+                        StartDate = ArchiveRewardData?.GetValue(riftId, StringComparison.OrdinalIgnoreCase)?["startDate"],
                         TierInfo = riftData?.GetValue(riftId, StringComparison.OrdinalIgnoreCase)?["tierInfo"]?.ToObject<List<TierInfo>>() ?? new List<TierInfo>()
                     };
 

@@ -1,26 +1,26 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UEParser.Models;
 using UEParser.Parser;
 using UEParser.ViewModels;
 using UEParser.Utils;
-using Newtonsoft.Json.Linq;
 
 namespace UEParser.APIComposers;
 
 // Works but is outdated, should be reworked
 public class Tomes
 {
-    private static readonly Dictionary<string, object> CosmeticsData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, object>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, "en", "Cosmetics.json"));
-    private static readonly Dictionary<string, object> QuestNodeDatabase = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, object>>(Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "questNodeDatabase.json"));
-    private static readonly Dictionary<string, object> QuestObjectiveDatabase = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, object>>(Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "questObjectiveDatabase.json"));
-    private static readonly Dictionary<string, int> CharacterIds = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, int>>(Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "characterIds.json"));
-    private static readonly TagConverters HTMLTagConverters = FileUtils.LoadJsonFileWithTypeCheck<TagConverters>(Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "tagConverters.json"));
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
+    private static Dictionary<string, object> CosmeticsData => FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, object>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, "en", "Cosmetics.json")) ?? throw new Exception("Failed to load cosmetics data.");
+    private static Dictionary<string, object> QuestNodeDatabase => FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, object>>(Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "questNodeDatabase.json")) ?? throw new Exception("Failed to load quest node database.");
+    private static Dictionary<string, object> QuestObjectiveDatabase => FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, object>>(Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "questObjectiveDatabase.json")) ?? throw new Exception("Failed to load quest objective database.");
+    private static Dictionary<string, int> CharacterIds => FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, int>>(Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "characterIds.json")) ?? throw new Exception("Failed to load Characters ID table.");
+    private static TagConverters HTMLTagConverters => FileUtils.LoadJsonFileWithTypeCheck<TagConverters>(Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "tagConverters.json")) ?? throw new Exception("Failed to load html tag converters.");
 
     public static async Task InitializeTomesDB()
     {

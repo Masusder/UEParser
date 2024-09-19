@@ -1,12 +1,9 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UEParser.Models;
 using UEParser.Parser;
 using UEParser.Utils;
@@ -17,7 +14,7 @@ namespace UEParser.APIComposers;
 public class Collections
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
-    private static readonly dynamic CollectionsData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "collections.json")) ?? throw new Exception("Failed to load collections data.");
+    private static dynamic CollectionsData => FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "collections.json")) ?? throw new Exception("Failed to load collections data.");
 
     public static async Task InitializeCollectionsDB()
     {
@@ -46,17 +43,8 @@ public class Collections
 
             LogsWindowViewModel.Instance.AddLog($"Processing: {collectionId}", Logger.LogTags.Info, Logger.ELogExtraTag.Collections);
 
-            //JObject collectionTitle = collection["collectionTitle"];
-            //JObject collectionSubtitle = collection["collectionSubtitle"];
-
             string heroImageRaw = collection["heroImage"]["path"];
             string heroImage = CollectionUtils.TransformImagePath(heroImageRaw);
-
-            //long activeFromTicks = collection.Value["ActiveFrom"]["Ticks"];
-            //DateTime activeFrom = new(activeFromTicks);
-
-            //long activeUntilTicks = collection.Value["ActiveUntil"]["Ticks"];
-            //DateTime activeUntil = new(activeUntilTicks);
 
             // Combine AssetPathNames into one array
             JArray additionalImages = [];
@@ -78,7 +66,6 @@ public class Collections
             DateTime updatedDate = collection["updatedDate"];
             DateTime? limitedAvailabilityStartDate = collection["limitedAvailabilityStartDate"];
             bool visibleBeforeStartDate = collection?["visibleBeforeStartDate"] ?? false;
-            //int flags = collection.Value["Flags"];
 
             Collection model = new()
             {
@@ -94,7 +81,6 @@ public class Collections
                 UpdatedDate = updatedDate,
                 LimitedAvailabilityStartDate = limitedAvailabilityStartDate,
                 VisibleBeforeStartDate = visibleBeforeStartDate
-                // Flags = flags
             };
 
             parsedCollectionsDB.Add(collectionId, model);
@@ -112,17 +98,13 @@ public class Collections
 
         foreach (string filePath in filePaths)
         {
-            //string jsonString = File.ReadAllText(filePath);
             string fileName = Path.GetFileName(filePath);
 
             string langKey = StringUtils.LangSplit(fileName);
 
-            //Dictionary<string, string> languageKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString) ?? throw new Exception($"Failed to load following locres file: {langKey}.");
-
             var objectString = JsonConvert.SerializeObject(parsedCollectionsDB);
             Dictionary<string, Collection> localizedCollectionsDB = JsonConvert.DeserializeObject<Dictionary<string, Collection>>(objectString) ?? [];
 
-            //Helpers.LocalizeDB(localizedCollectionsDB, LocalizationData, languageKeys, langKey);
             CollectionUtils.PopulateLocalizationFromApi(localizedCollectionsDB, langKey, collectionsDictionary, CollectionsData);
 
             string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Collections.json");

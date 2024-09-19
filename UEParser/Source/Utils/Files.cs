@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace UEParser.Utils;
 
@@ -9,7 +9,9 @@ public class FileUtils
     // Used to load exported game properties
     public static dynamic LoadDynamicJson(string pathToJsonFile)
     {
-        string data = File.ReadAllText(pathToJsonFile) ?? throw new Exception("File content is empty.");
+        if (!File.Exists(pathToJsonFile)) throw new Exception($"JSON file doesn't exist: {pathToJsonFile}");
+
+        string? data = File.ReadAllText(pathToJsonFile) ?? throw new Exception("File content is empty.");
         dynamic? deserializedData = JsonConvert.DeserializeObject<dynamic>(data);
 
         return deserializedData ?? throw new Exception("Loaded dynamic data is null.");

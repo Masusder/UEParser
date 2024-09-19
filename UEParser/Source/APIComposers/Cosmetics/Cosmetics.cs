@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UEParser.Models;
 using UEParser.Parser;
 using UEParser.Utils;
@@ -15,9 +15,9 @@ namespace UEParser.APIComposers;
 public class Cosmetics
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
-    private static readonly dynamic catalogData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "catalog.json")) ?? throw new Exception("Failed to load catalog data.");
-    private static readonly Dictionary<string, Rift> riftData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Rift>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, "en", "Rifts.json")) ?? throw new Exception("Failed to load rifts data.");
-    private static readonly Dictionary<string, int> catalogDictionary = CosmeticUtils.CreateCatalogDictionary(catalogData);
+    private static dynamic CatalogData => FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "catalog.json")) ?? throw new Exception("Failed to load catalog data.");
+    private static Dictionary<string, Rift> RiftData => FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Rift>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, "en", "Rifts.json")) ?? throw new Exception("Failed to load rifts data.");
+    private static Dictionary<string, int> CatalogDictionary => CosmeticUtils.CreateCatalogDictionary(CatalogData);
 
     public static async Task InitializeCosmeticsDB()
     {
@@ -68,24 +68,24 @@ public class Cosmetics
                 JArray cosmeticPieces = item.Value["OutfitItems"];
 
                 string cosmeticIdLower = cosmeticId.ToLower();
-                if (catalogDictionary.TryGetValue(cosmeticIdLower, out int matchingIndex))
+                if (CatalogDictionary.TryGetValue(cosmeticIdLower, out int matchingIndex))
                 {
-                    string rarity = CosmeticUtils.FindRarityInCatalog(catalogData, catalogDictionary, matchingIndex);
-                    List<Dictionary<string, int>> prices = CosmeticUtils.CalculateOutfitPrices(catalogData, catalogDictionary, cosmeticPieces);
+                    string rarity = CosmeticUtils.FindRarityInCatalog(CatalogData, CatalogDictionary, matchingIndex);
+                    List<Dictionary<string, int>> prices = CosmeticUtils.CalculateOutfitPrices(CatalogData, CatalogDictionary, cosmeticPieces);
 
                     string gameIconPath = item.Value["UIData"]["IconFilePathList"][0];
                     string iconPath = StringUtils.AddRootDirectory(gameIconPath, "/images/");
 
-                    bool purchasable = catalogData[matchingIndex]["purchasable"];
+                    bool purchasable = CatalogData[matchingIndex]["purchasable"];
 
-                    bool isLinked = catalogData[matchingIndex]["metaData"]["unbreakable"];
+                    bool isLinked = CatalogData[matchingIndex]["metaData"]["unbreakable"];
 
-                    string characterString = catalogData[matchingIndex]["metaData"]["character"].ToString().ToLower();
+                    string characterString = CatalogData[matchingIndex]["metaData"]["character"].ToString().ToLower();
                     int? characterIndex = CosmeticUtils.CharacterStringToIndex(characterString);
 
-                    double discountPercentage = catalogData[matchingIndex]["metaData"]["discountPercentage"];
+                    double discountPercentage = CatalogData[matchingIndex]["metaData"]["discountPercentage"];
 
-                    DateTime releaseDate = catalogData[matchingIndex]["metaData"]["releaseDate"];
+                    DateTime releaseDate = CatalogData[matchingIndex]["metaData"]["releaseDate"];
 
                     List<LocalizationEntry> collectionName = CosmeticUtils.GetCollectionName(item);
 
@@ -94,9 +94,9 @@ public class Cosmetics
 
                     string descriptionKey = CosmeticUtils.ParseCosmeticDescription(item.Value, "Key");
 
-                    string eventId = CosmeticUtils.GrabEventIdForOutfit(catalogData, catalogDictionary, cosmeticPieces);
+                    string eventId = CosmeticUtils.GrabEventIdForOutfit(CatalogData, CatalogDictionary, cosmeticPieces);
 
-                    DateTime? limitedTimeEndDate = CosmeticUtils.GrabLimitedTimeEndDate(catalogData, matchingIndex);
+                    DateTime? limitedTimeEndDate = CosmeticUtils.GrabLimitedTimeEndDate(CatalogData, matchingIndex);
 
                     string customizedAudioStateCollection = item.Value["CustomizedAudioStateCollection"];
 
@@ -199,13 +199,13 @@ public class Cosmetics
                 DateTime releaseDate = new();
                 string? eventId = null;
                 DateTime? limitedTimeEndDate = null;
-                if (catalogDictionary.TryGetValue(cosmeticIdLower, out int matchingIndex))
+                if (CatalogDictionary.TryGetValue(cosmeticIdLower, out int matchingIndex))
                 {
-                    prices = CosmeticUtils.GrabCustomizationItemPrices(catalogData[matchingIndex]["defaultCost"]);
-                    purchasable = catalogData[matchingIndex]["purchasable"];
-                    releaseDate = catalogData[matchingIndex]["metaData"]["releaseDate"];
-                    eventId = catalogData[matchingIndex]["metaData"]["eventID"];
-                    limitedTimeEndDate = CosmeticUtils.GrabLimitedTimeEndDate(catalogData, matchingIndex);
+                    prices = CosmeticUtils.GrabCustomizationItemPrices(CatalogData[matchingIndex]["defaultCost"]);
+                    purchasable = CatalogData[matchingIndex]["purchasable"];
+                    releaseDate = CatalogData[matchingIndex]["metaData"]["releaseDate"];
+                    eventId = CatalogData[matchingIndex]["metaData"]["eventID"];
+                    limitedTimeEndDate = CosmeticUtils.GrabLimitedTimeEndDate(CatalogData, matchingIndex);
                 }
 
                 int characterIndex = item.Value["AssociatedCharacter"];
@@ -327,9 +327,9 @@ public class Cosmetics
     {
         Dictionary<string, string> riftCosmeticsList = [];
 
-        if (riftData != null)
+        if (RiftData != null)
         {
-            foreach (var rift in riftData)
+            foreach (var rift in RiftData)
             {
                 string tomeId = rift.Key;
                 foreach (var tierInfo in rift.Value.TierInfo)

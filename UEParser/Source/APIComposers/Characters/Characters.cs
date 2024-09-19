@@ -1,12 +1,11 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using UEParser.Models;
 using UEParser.Utils;
 using UEParser.ViewModels;
-using System.IO;
-using Newtonsoft.Json;
-
-using UEParser.Models;
 using UEParser.Parser;
 
 namespace UEParser.APIComposers;
