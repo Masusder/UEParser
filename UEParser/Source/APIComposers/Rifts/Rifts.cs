@@ -15,7 +15,7 @@ namespace UEParser.APIComposers;
 public class Rifts
 { 
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
-    private static dynamic? ArchiveRewardData => FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "ArchiveRewardData.json")) ?? throw new Exception("Failed to load archive reward data.");
+    private static readonly dynamic? ArchiveRewardData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "ArchiveRewardData.json")) ?? throw new Exception("Failed to load archive reward data.");
 
     public static async Task InitializeRiftsDB()
     {

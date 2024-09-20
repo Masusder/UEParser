@@ -15,9 +15,9 @@ namespace UEParser.APIComposers;
 public class Cosmetics
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
-    private static dynamic CatalogData => FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "catalog.json")) ?? throw new Exception("Failed to load catalog data.");
-    private static Dictionary<string, Rift> RiftData => FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Rift>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, "en", "Rifts.json")) ?? throw new Exception("Failed to load rifts data.");
-    private static Dictionary<string, int> CatalogDictionary => CosmeticUtils.CreateCatalogDictionary(CatalogData);
+    private static readonly dynamic CatalogData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "catalog.json")) ?? throw new Exception("Failed to load catalog data.");
+    private static readonly Dictionary<string, Rift> RiftData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Rift>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, "en", "Rifts.json")) ?? throw new Exception("Failed to load rifts data.");
+    private static readonly Dictionary<string, int> CatalogDictionary = CosmeticUtils.CreateCatalogDictionary(CatalogData);
 
     public static async Task InitializeCosmeticsDB()
     {

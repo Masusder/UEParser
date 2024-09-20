@@ -7,7 +7,6 @@ This software includes material developed by the following third-party libraries
 - Avalonia.ReactiveUI (https://github.com/AvaloniaUI/Avalonia/blob/master/licence.md) - Copyright (c) 2018-2024 AvaloniaUI OÜ Licensed under the MIT License.
 - CUE4Parse (https://github.com/FabianFG/CUE4Parse/blob/master/LICENSE) - Copyright 2023 CUE4Parse Contributors. Licensed under the Apache License 2.0.
 - AWSSDK.S3 (https://github.com/aws/aws-sdk-net/blob/main/License.txt) - Copyright (c) Amazon Web Services, Inc. Licensed under the Apache License 2.0.
-- DotNetEnv (https://github.com/tonerdo/dotnet-env/blob/master/LICENSE) - Copyright (c) 2019-2023 Tonerdo. Licensed under the MIT License.
 - FluentAvaloniaUI (https://github.com/amwx/FluentAvalonia/blob/master/LICENSE) - Copyright (c) 2019-2024 FluentAvalonia Contributors. Licensed under the MIT License.
 - LoadingIndicators.Avalonia (https://github.com/moviegear/LoadingIndicators.Avalonia/blob/master/LICENSE.md) - Copyright (c) 2022-2024 Moviegear. Licensed under the Unlicensed License.
 - Newtonsoft.Json (https://github.com/JamesNK/Newtonsoft.Json/blob/master/LICENSE.md) - Copyright (c) 2007 James Newton-King. Licensed under the MIT License.

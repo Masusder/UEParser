@@ -15,9 +15,9 @@ namespace UEParser.APIComposers;
 public class Bundles
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
-    private static dynamic CatalogData => FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "catalog.json")) ?? throw new Exception("Failed to load catalog data.");
-    private static Dictionary<string, DLC> DlcsData => FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, DLC>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, "en", "DLC.json")) ?? throw new Exception("Failed to load parsed DLC data.");
-    private static Dictionary<string, Character> CharactersData => FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Character>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, "en", "Characters.json")) ?? throw new Exception("Failed to load parsed Characters data.");
+    private static readonly dynamic CatalogData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "catalog.json")) ?? throw new Exception("Failed to load catalog data.");
+    private static readonly Dictionary<string, DLC> DlcsData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, DLC>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, "en", "DLC.json")) ?? throw new Exception("Failed to load parsed DLC data.");
+    private static readonly Dictionary<string, Character> CharactersData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Character>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, "en", "Characters.json")) ?? throw new Exception("Failed to load parsed Characters data.");
 
     public static async Task InitializeBundlesDB()
     {

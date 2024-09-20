@@ -14,7 +14,7 @@ namespace UEParser.APIComposers;
 public class Collections
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
-    private static dynamic CollectionsData => FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "collections.json")) ?? throw new Exception("Failed to load collections data.");
+    private static readonly dynamic CollectionsData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "collections.json")) ?? throw new Exception("Failed to load collections data.");
 
     public static async Task InitializeCollectionsDB()
     {

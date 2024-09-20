@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,7 +6,6 @@ using UEParser.Services;
 using UEParser.ViewModels;
 using CUE4Parse.FileProvider.Objects;
 using System.Text.RegularExpressions;
-using UEParser.AssetRegistry.Wwise;
 
 namespace UEParser.AssetRegistry;
 
