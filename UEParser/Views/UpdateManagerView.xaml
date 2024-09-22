@@ -145,6 +145,34 @@ BorderThickness="1"
                       Command="{Binding ConvertAudioToOggFormatCommand}" />
             </StackPanel>
           </Border>
+
+          <Border Background="#E62d2d2d"
+                  CornerRadius="7.5"
+                  Padding="10, 7.5"
+                  MinWidth="250"
+                  BorderBrush="#1AFFFFFF"
+                  BorderThickness="1"
+                  IsVisible="{Binding IsDebug}"
+                >
+            <Border.Effect>
+              <DropShadowEffect
+                  Color="Black"
+                  Opacity="0.1"
+                  BlurRadius="30"/>
+            </Border.Effect>
+            <StackPanel Spacing="7.5">
+              <TextBlock HorizontalAlignment="Center"
+                          TextAlignment="Center"
+                         TextWrapping="Wrap"
+                         Text="Cleanup local audio archive."
+                         FontSize="16"/>
+              <Button HorizontalAlignment="Center"
+                      Cursor="Hand"
+                      Content="Clean-up"
+                      Command="{Binding CleanupLocalAudioArchiveCommand}" />
+            </StackPanel>
+          </Border>
+
         </StackPanel>
       </StackPanel>
     </StackPanel>

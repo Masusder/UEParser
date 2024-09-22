@@ -15,7 +15,7 @@ public partial class WwiseRegister
 #pragma warning restore IDE0044
 
     private static readonly string filesRegisterDirectoryPath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "FilesRegister");
-    private static readonly string PathToAudioRegister;
+    public static readonly string PathToAudioRegister;
 
     public class AudioInfo(string hash, long size)
     {

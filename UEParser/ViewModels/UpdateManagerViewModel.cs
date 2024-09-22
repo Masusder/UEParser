@@ -1,5 +1,4 @@
-﻿using ReactiveUI;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -7,19 +6,35 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using ReactiveUI;
 using UEParser.Network;
 using UEParser.Services;
 using UEParser.Utils;
+using UEParser.AssetRegistry;
+using UEParser.AssetRegistry.Wwise;
 
 namespace UEParser.ViewModels;
 
 public class UpdateManagerViewModel : ReactiveObject
 {
+    public static bool IsDebug
+    {
+        get
+        {
+#if DEBUG
+            return true;
+#else
+        return false;
+#endif
+        }
+    }
+
     public ICommand UploadParsedDataCommand { get; }
     public ICommand ConvertUEModelsCommand { get; }
     public ICommand ValidateAssetsCommand { get; }
     public ICommand UploadModelsDataCommand { get; }
     public ICommand ConvertAudioToOggFormatCommand { get; }
+    public ICommand CleanupLocalAudioArchiveCommand { get; }
 
     public UpdateManagerViewModel()
     {
@@ -28,6 +43,63 @@ public class UpdateManagerViewModel : ReactiveObject
         ValidateAssetsCommand = ReactiveCommand.Create(ValidateAssetsInBucket);
         UploadModelsDataCommand = ReactiveCommand.Create(UploadModelsData);
         ConvertAudioToOggFormatCommand = ReactiveCommand.Create(ConvertAudioToOggFormat);
+        CleanupLocalAudioArchiveCommand = ReactiveCommand.Create(CleanupLocalAudioArchive);
+    }
+
+    // Debug method only, should not be shipped to release
+    // Can be hidden in UI using IsDebug property
+    public static async Task CleanupLocalAudioArchive()
+    {
+        LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+        LogsWindowViewModel.Instance.AddLog("Cleaning local audio archive..", Logger.LogTags.Info);
+
+        var config = ConfigurationService.Config;
+        await Task.Run(() =>
+        {
+            try
+            {
+                string localAudioArchivePath = config.Global.LocalAudioArchivePath;
+
+                if (!Directory.Exists(localAudioArchivePath)) throw new Exception("Local audio archive doesn't exist.");
+
+                string[] localFiles = Directory.GetFiles(localAudioArchivePath, "*.*", SearchOption.AllDirectories);
+
+                if (!File.Exists(WwiseRegister.PathToAudioRegister)) throw new Exception("Audio registry doesn't exist.");
+
+                var (_, audio) = RegistryManager.ReadFromUInfoFile(WwiseRegister.PathToAudioRegister);
+
+                List<string> audioToDelete = [];
+                foreach (var localFilePath in localFiles) 
+                {
+                    string fileName = Path.GetFileName(localFilePath);
+                    string txtpFileName = Path.ChangeExtension(fileName, ".txtp");
+
+                    if (!audio.ContainsKey(txtpFileName))
+                    {
+                        audioToDelete.Add(localFilePath);
+                    }
+                }
+
+                foreach (var audioFilePath in audioToDelete)
+                {
+                    if (File.Exists(audioFilePath))
+                    {
+                        File.Delete(audioFilePath);
+                    }
+                }
+
+                LogsWindowViewModel.Instance.AddLog("Finished cleaning up audio archive.", Logger.LogTags.Success);
+            }
+            catch (Exception ex)
+            {
+                LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+                LogsWindowViewModel.Instance.AddLog(ex.Message, Logger.LogTags.Error);
+            }
+            finally
+            {
+                LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+            }
+        });
     }
 
     public static async Task ConvertAudioToOggFormat()

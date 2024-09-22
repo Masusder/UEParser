@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -26,6 +25,7 @@ public class GlobalConfig
 {
     public Dictionary<string, string> BranchRoots { get; set; }
     public string BlenderPath { get; set; }
+    public string LocalAudioArchivePath { get; set; }
     public bool UpdateAPIDuringInitialization { get; set; }
     public bool FirstInitializationCompleted { get; set; }
 
@@ -44,6 +44,7 @@ public class GlobalConfig
 
         BranchRoots = branchRoots;
         BlenderPath = "";
+        LocalAudioArchivePath = "";
         UpdateAPIDuringInitialization = false;
         FirstInitializationCompleted = false;
     }
