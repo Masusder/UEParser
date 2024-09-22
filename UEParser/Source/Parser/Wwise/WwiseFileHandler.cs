@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UEParser.AssetRegistry.Wwise;
 using UEParser.Utils;
@@ -75,10 +76,18 @@ public partial class WwiseFileHandler
     private static void ProvideWwnamesFile()
     {
         if (!File.Exists(pathToUEAssetsRegistry)) throw new Exception("Not found Unreal Engine assets registry.");
+        if (!File.Exists(GlobalVariables.preGeneratedWwnames)) throw new Exception("Not found pre-generated Wwnames.");
 
         string destinationFilePath = Path.Combine(temporaryDirectory, "wwnames.txt");
 
-        File.Copy(pathToUEAssetsRegistry, destinationFilePath, true);
+        File.Copy(GlobalVariables.preGeneratedWwnames, destinationFilePath, true);
+
+        string jsonContent = File.ReadAllText(pathToUEAssetsRegistry);
+
+        JObject jsonObject = JObject.Parse(jsonContent);
+
+        string formattedJson = jsonObject.ToString(Formatting.Indented);
+        File.AppendAllText(destinationFilePath, formattedJson);
     }
 
     // Generate txtp files that will be used to play audio simulating Wwise
@@ -89,6 +98,7 @@ public partial class WwiseFileHandler
 
         ProvideWwnamesFile(); // Neccessary for reversing audio names
 
+        // TODO: using multiple languages forces re-computing of SFX files for each language, which significantly increases time it takes to generate txtp files, pull request with a solution to Wwiser is needed to fix it
         string arguments = $"\"{GlobalVariables.wwiserPath}\" \"{bnkFilesDirectory}\" \"{bnkFilesSubDirectories}\" -g --txtp-wemdir \"{temporaryDirectory}\" --txtp-lang en fr jp";
 
         if (!IsPythonInstalled()) throw new Exception("Python is not installed or not accessible from the command line, which is required for audio extraction to work.");

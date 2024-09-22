@@ -19,6 +19,7 @@ public class GlobalVariables
     public static readonly string wwiserPath = Path.Combine(rootDir, ".data", "wwiser.pyz");
     public static readonly string vgmStreamCliPath = Path.Combine(rootDir, ".data", "VgmStream", "vgmstream-cli.exe");
     public static readonly string ffmpegPath = Path.Combine(rootDir, ".data", "ffmpeg.exe");
+    public static readonly string preGeneratedWwnames = Path.Combine(rootDir, ".data", "wwnames.txt");
     #endregion
 
     #region DIRECTORIES PATHS
