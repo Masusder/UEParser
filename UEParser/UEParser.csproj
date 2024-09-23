@@ -18,6 +18,7 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <StartupObject>UEParser.Program</StartupObject>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <LongPathAware>true</LongPathAware> 
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
 

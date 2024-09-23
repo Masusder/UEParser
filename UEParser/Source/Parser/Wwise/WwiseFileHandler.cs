@@ -178,7 +178,7 @@ public partial class WwiseFileHandler
     }
 
     public class AudioEventsLinkageData
-    { 
+    {
         public required string PackagePath { get; set; }
         public required string WwiseName { get; set; }
         public required string WwiseGuid { get; set; }
@@ -206,7 +206,7 @@ public partial class WwiseFileHandler
 
             if (tagsAndValues.TryGetValue("WwiseShortId", out JToken wwiseIdToken))
             {
-                string wwiseId = wwiseIdToken.ToString(); 
+                string wwiseId = wwiseIdToken.ToString();
                 if (long.TryParse(wwiseId, out long wwiseIdInt))
                 {
                     long adjustedWwiseId = wwiseIdInt;
@@ -359,6 +359,23 @@ public partial class WwiseFileHandler
         await CommandUtils.ExecuteCommandsAsync(commands);
     }
 
+    [GeneratedRegex(@"\b\d+\.wem\b", RegexOptions.Compiled)]
+    private static partial Regex WemFileRegex();
+    public static string[] CollectWemFiles(string inputText)
+    {
+        MatchCollection matches = WemFileRegex().Matches(inputText);
+
+        List<string> wemFiles = [];
+
+        foreach (Match match in matches)
+        {
+            string wemFilePath = Path.Combine(temporaryDirectory, match.Value);
+            wemFiles.Add(wemFilePath);
+        }
+
+        return [.. wemFiles];
+    }
+
     // We use WAV format now, but in case I will need OGG I will leave this method for a reference
 
     //public static void ConvertToOggAndMove()
@@ -427,6 +444,59 @@ public partial class WwiseFileHandler
             catch (Exception ex)
             {
                 throw new Exception($"Error moving file {tempWavPath} to target directory: {ex.Message}");
+            }
+        }
+    }
+
+
+    [GeneratedRegex(@"(?<!\S)([^#\n]*\.txtp)", RegexOptions.Compiled)]
+    private static partial Regex TxtpFileRegex();
+    // In case txtp file path is too long it gets truncated and moved out of temporary wwise directory
+    // We need to handle them manually
+    public static void RenameAndMoveTruncatedTxtpFiles()
+    {
+        string[] txtpFiles = Directory.GetFiles(GlobalVariables.pathToExtractedAudio, "*.txtp");
+
+        if (txtpFiles.Length == 0) return;
+
+        foreach (var txtpFilePath in txtpFiles)
+        {
+            string txtpFileContent = File.ReadAllText(txtpFilePath);
+            // Use the regex to find the full .txtp path in the content
+            MatchCollection matches = TxtpFileRegex().Matches(txtpFileContent);
+
+            if (matches.Count == 1)
+            {
+                foreach (Match match in matches)
+                {
+                    string matchedTxtpPath = match.Value;
+                    string originalFileName = Path.GetFileName(matchedTxtpPath);
+
+                    // Check if the filename is too long (due to file path length limit)
+                    string newFileName = originalFileName.Length > 250
+                        ? string.Concat(originalFileName.AsSpan(0, 250), Path.GetExtension(originalFileName))
+                        : originalFileName;
+
+                    // Construct the full destination path with long path prefix
+                    string destinationPath = $@"\\?\{Path.Combine(temporaryDirectory, "txtp", newFileName)}";
+
+                    try
+                    {
+                        File.Move(txtpFilePath, destinationPath, true);
+                    }
+                    catch
+                    {
+                        // Exit the method completely on failure
+                        // Cause that most likely means user doesnt have support for long file paths
+                        LogsWindowViewModel.Instance.AddLog($"Failed to move: {originalFileName}. File path may be too long, you need to enable support for long file paths in your system to fix that. Abandoning handling of truncated files..", Logger.LogTags.Warning);
+                        return;
+                    }
+
+                    if (!File.Exists(destinationPath))
+                    {
+                        LogsWindowViewModel.Instance.AddLog($"Failed to move: {originalFileName}. File path may be too long.", Logger.LogTags.Warning);
+                    }
+                }
             }
         }
     }

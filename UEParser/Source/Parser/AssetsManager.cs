@@ -655,6 +655,12 @@ public class AssetsManager
 
             token.ThrowIfCancellationRequested();
 
+            LogsWindowViewModel.Instance.AddLog("Handling truncated txtp files..", Logger.LogTags.Info);
+
+            WwiseFileHandler.RenameAndMoveTruncatedTxtpFiles();
+
+            token.ThrowIfCancellationRequested();
+
             LogsWindowViewModel.Instance.AddLog("Collecting associated audio event IDs..", Logger.LogTags.Info);
 
             var associatedAudioEventIds = WwiseFileHandler.GrabAudioEventIds();
