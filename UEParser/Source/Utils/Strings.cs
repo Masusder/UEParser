@@ -1,70 +1,14 @@
-﻿using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.IO;
-using UEParser.Models;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
-using System.Linq;
+using Newtonsoft.Json;
+using UEParser.Models;
 
 namespace UEParser.Utils;
 
 public partial class StringUtils
 {
-    //public static string ChangeToNeteasePath(string path)
-    //{
-    //    string pathWithoutGame = path.Replace("/Game/", "");
-    //    if (pathWithoutGame.StartsWith('/'))
-    //    {
-    //        pathWithoutGame = pathWithoutGame[1..];
-    //    }
-    //    string modifiedPath = Path.Combine("/netease", "assets", pathWithoutGame);
-    //    string unifiedSlashes = modifiedPath.Replace("\\", "/");
-
-    //    return unifiedSlashes;
-    //}
-
-    //public static List<LocalizationEntry> GetCollectionName(dynamic asset)
-    //{
-    //    var localizationEntries = new List<LocalizationEntry>();
-    //    // Check if "CollectionName" exists in the root of the asset
-    //    if (asset.Value["CollectionName"] != null)
-    //    {
-    //        // Check if "LocalizedString" exists within "CollectionName"
-    //        if (asset.Value["CollectionName"]["LocalizedString"] != null)
-    //        {
-    //            LocalizationEntry entry = new()
-    //            {
-    //                Key = asset.Value["CollectionName"]["Key"].ToString(),
-    //                SourceString = asset.Value["CollectionName"]["SourceString"].ToString()
-    //            };
-    //            localizationEntries.Add(entry);
-
-    //            return localizationEntries;
-    //        }
-    //    }
-
-    //    // Check if "UIData" exists
-    //    if (asset.Value["UIData"] != null && asset.Value["UIData"]["CollectionName"] != null)
-    //    {
-    //        // Check if "LocalizedString" exists within nested "CollectionName"
-    //        if (asset.Value["UIData"]["CollectionName"]["LocalizedString"] != null)
-    //        {
-    //            LocalizationEntry entry = new()
-    //            {
-    //                Key = asset.Value["UIData"]["CollectionName"]["Key"].ToString(),
-    //                SourceString = asset.Value["UIData"]["CollectionName"]["SourceString"].ToString()
-    //            };
-    //            localizationEntries.Add(entry);
-
-    //            return localizationEntries;
-    //        }
-    //    }
-
-    //    // If any part of the path is missing or null, return empty string
-    //    return localizationEntries;
-    //}
-
     public static string GetRelativePathWithoutExtension(string fullPath, string rootPath)
     {
         Uri fullPathUri = new(fullPath);
@@ -73,7 +17,6 @@ public partial class StringUtils
 
         string directoryToRemove = "ExtractedAssets/";
 
-        // Check if the relative path starts with the directory to remove
         if (relativePath.StartsWith(directoryToRemove, StringComparison.OrdinalIgnoreCase))
         {
             // Remove the directory and the following directory separator
@@ -113,7 +56,6 @@ public partial class StringUtils
         // Check if fullPath starts with pathToExtractedAssets
         if (fullPath.StartsWith(pathToExtractedAssets, StringComparison.OrdinalIgnoreCase))
         {
-            // Strip pathToExtractedAssets from fullPath
             string strippedPath = fullPath[pathToExtractedAssets.Length..];
 
             // Remove leading directory separator if present
@@ -136,7 +78,6 @@ public partial class StringUtils
         // Check if fullPath starts with directoryRoot
         if (fullPath.StartsWith(directoryRoot, StringComparison.OrdinalIgnoreCase))
         {
-            // Strip directoryRoot from fullPath
             string strippedPath = fullPath[directoryRoot.Length..];
 
             // Remove leading directory separator if present
@@ -154,14 +95,13 @@ public partial class StringUtils
         }
     }
 
-    public static string StripRootDir(string fullPath) 
+    public static string StripRootDir(string fullPath)
     {
         string rootDir = GlobalVariables.rootDir;
 
         // Check if fullPath starts with rootDir
         if (fullPath.StartsWith(rootDir, StringComparison.OrdinalIgnoreCase))
         {
-            // Strip rootDir from fullPath
             string strippedPath = fullPath[rootDir.Length..];
 
             // Remove leading directory separator if present
@@ -228,7 +168,6 @@ public partial class StringUtils
             path = path[1..];
         }
 
-        // Combine the root directory with the path, ensuring correct separators
         string fullPath = Path.Combine(rootDirectory, path);
 
         return fullPath;
@@ -239,29 +178,6 @@ public partial class StringUtils
     // if we wanna preserve original files structure we have to somehow determine what is inside of plugins and whats not
     // that's what this fix is for
     // In case this fix becomes too much of a hassle to maintain just mount plugins content to the main content directory..
-    //private static bool IsInDBDCharactersDir(int characterIndex)
-    //{
-    //    List<int> killersSet = [
-    //        268435461,
-    //        268435462,
-    //        268435464,
-    //        268435465,
-    //        268435466,
-    //        268435469,
-    //        268435470,
-    //        268435491
-    //    ];
-    //    List<int> survivorsSet = [
-    //        41,
-    //        42,
-    //        43
-    //    ];
-
-    //    List<int> charactersSet = [.. killersSet, .. survivorsSet];
-
-    //    return charactersSet.Contains(characterIndex);
-    //}
-
     private static bool IsOutsidePluginsCharactersDir(int characterIndex)
     {
         List<int> killersSet = [
@@ -413,10 +329,7 @@ public partial class StringUtils
 
     public static string TransformImagePathSpecialPacks(string input)
     {
-        // Define the regex pattern to match both formats
         string pattern = @"/Game/UI/UMGAssets/Icons/Banners/BundleBanners/(SpecialPack|ChapterBundles)/([^./]+)\.\w+";
-
-        // Replace the matched pattern with the desired format
         string transformedString = Regex.Replace(input, pattern, "/images/UI/Icons/Banners/BundleBanners/$1/$2.png");
 
         return transformedString;

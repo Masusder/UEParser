@@ -1,7 +1,6 @@
-﻿using Avalonia.Controls;
+﻿using System.Linq;
+using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Microsoft.Win32;
-using System.Linq;
 using UEParser.ViewModels;
 
 namespace UEParser.Views;

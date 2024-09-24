@@ -305,7 +305,6 @@ public class AssetsManager
                 try
                 {
                     string pathWithoutExtension = file.PathWithoutExtension;
-                    //if (!newAssets.ContainsKey(pathWithoutExtension)) continue;
                     if (!newAssets.ContainsKey(pathWithoutExtension) && !modifiedAssets.ContainsKey(pathWithoutExtension)) continue;
 
                     if (GlobalVariables.fatalCrashAssets.Contains(pathWithoutExtension)) continue;
@@ -393,7 +392,6 @@ public class AssetsManager
                 {
                     string pathWithoutExtension = file.PathWithoutExtension;
                     if (!newAssets.ContainsKey(pathWithoutExtension) && !modifiedAssets.ContainsKey(pathWithoutExtension)) continue;
-                    //if (!newAssets.ContainsKey(pathWithoutExtension)) continue;
 
                     if (GlobalVariables.fatalCrashAssets.Contains(pathWithoutExtension)) continue;
 

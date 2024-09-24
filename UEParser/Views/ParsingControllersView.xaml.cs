@@ -1,12 +1,13 @@
-using Avalonia.Controls;
-using Avalonia.Controls.Documents;
-using Avalonia.Input;
-using Avalonia.Markup.Xaml;
-using UEParser.ViewModels;
-using System.Text.Json.Serialization;
-using Avalonia.Controls.Primitives;
-using System.Linq;
 using System;
+using System.Linq;
+using System.Text.Json.Serialization;
+using Avalonia.Input;
+using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
+using Avalonia.Controls.Documents;
+using Avalonia.Controls.Primitives;
+using UEParser.ViewModels;
+
 using Avalonia;
 
 namespace UEParser.Views;

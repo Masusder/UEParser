@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using UEParser.Services;
 using UEParser.ViewModels;
 using UEParser.Network.Kraken.API;

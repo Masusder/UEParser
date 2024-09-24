@@ -1,13 +1,12 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.IO;
-using System.Collections.Generic;
 using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
-using System.Threading.Tasks;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace UEParser.Network;
 
@@ -54,7 +53,7 @@ public class NetAPI
         try
         {
             HttpResponseMessage response = await client.GetAsync(fileUrl);
-            response.EnsureSuccessStatusCode(); 
+            response.EnsureSuccessStatusCode();
 
             byte[] fileBytes = await response.Content.ReadAsByteArrayAsync();
             return fileBytes;
@@ -163,12 +162,12 @@ public class NetAPI
                         cookie.Expires = expires;
                     }
                     break;
-                //case "secure":
-                //    cookie.Secure = true;
-                //    break;
-                //case "httponly":
-                //    cookie.HttpOnly = true;
-                //    break;
+                    //case "secure":
+                    //    cookie.Secure = true;
+                    //    break;
+                    //case "httponly":
+                    //    cookie.HttpOnly = true;
+                    //    break;
             }
         }
 
@@ -222,7 +221,7 @@ public class NetAPI
                 {
                     // Check if the cookie is expired
                     if (serializableCookie.Expires > DateTime.Now)
-                    { 
+                    {
                         var uri = new Uri($"https://{serializableCookie.Domain}"); // I assume domain is always secure
                         cookieContainer.Add(uri, serializableCookie.ToCookie());
                     }
@@ -275,5 +274,4 @@ public class NetAPI
             };
         }
     }
-
 }

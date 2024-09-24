@@ -1,21 +1,21 @@
-﻿using Avalonia.Controls;
+﻿using System;
+using System.Web;
+using System.Linq;
+using System.Windows.Input;
+using System.ComponentModel;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
+using System.Runtime.CompilerServices;
+using Avalonia;
+using Avalonia.Data;
+using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using ReactiveUI;
-using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using UEParser.Services;
 using UEParser.Views;
-using Avalonia;
-using System.Web;
-using System.Collections.Generic;
 using UEParser.Models;
-using System.Linq;
-using System.Text.RegularExpressions;
-using Avalonia.Data;
-using System.Collections.ObjectModel;
+using UEParser.Services;
 using UEParser.AssetRegistry;
 
 namespace UEParser.ViewModels;
@@ -71,7 +71,7 @@ public partial class SettingsViewModel : INotifyPropertyChanged
     public string? SelectedCurrentVersion
     {
         get => _selectedCurrentVersion;
-        set 
+        set
         {
             if (SetProperty(ref _selectedCurrentVersion, value))
             {
@@ -404,7 +404,7 @@ public partial class SettingsViewModel : INotifyPropertyChanged
 
         var storage = window.StorageProvider;
 
-        var result = await storage.OpenFolderPickerAsync(new FolderPickerOpenOptions { AllowMultiple = false});
+        var result = await storage.OpenFolderPickerAsync(new FolderPickerOpenOptions { AllowMultiple = false });
         if (result.Count > 0)
         {
             string selectedDirectoryPath = result[0].Path.AbsolutePath;

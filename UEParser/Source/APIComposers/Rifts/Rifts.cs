@@ -13,7 +13,7 @@ using UEParser.Models;
 namespace UEParser.APIComposers;
 
 public class Rifts
-{ 
+{
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
     private static readonly dynamic? ArchiveRewardData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "ArchiveRewardData.json")) ?? throw new Exception("Failed to load archive reward data.");
 

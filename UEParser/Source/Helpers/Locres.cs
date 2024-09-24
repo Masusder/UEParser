@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace UEParser;
 

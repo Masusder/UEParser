@@ -1,5 +1,5 @@
-﻿using Avalonia.Markup.Xaml;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
 using UEParser.ViewModels;
 
 namespace UEParser.Views;

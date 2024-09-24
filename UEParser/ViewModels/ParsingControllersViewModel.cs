@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
-using ReactiveUI;
 using System.Threading.Tasks;
+using ReactiveUI;
 using UEParser.APIComposers;
 
 namespace UEParser.ViewModels;

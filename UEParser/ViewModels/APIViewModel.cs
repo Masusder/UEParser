@@ -1,9 +1,9 @@
-﻿using ReactiveUI;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿using System;
 using System.Windows.Input;
+using System.ComponentModel;
 using System.Threading.Tasks;
-using System;
+using System.Runtime.CompilerServices;
+using ReactiveUI;
 using UEParser.Network.Kraken;
 
 namespace UEParser.ViewModels;

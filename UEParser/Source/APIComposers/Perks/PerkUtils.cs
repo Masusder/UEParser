@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using UEParser.Models;
 
 namespace UEParser.APIComposers;
@@ -35,8 +35,6 @@ public class PerkUtils
         {
             throw new Exception("Failed to parse perk description.");
         }
-
-        //string key = input?["UIData"]?["Description"]?["Key"] ?? input?["PerkLevel3Description"]?["Key"] ?? throw new Exception("Failed to parse perk description.");
 
         return description;
     }
@@ -112,9 +110,7 @@ public class PerkUtils
             {
                 // TODO: Revisit this when 8.3.0 releases to live servers to check whats still broken and whats not anymore
 
-                // Hex Undying in zh-Hant language has placeholder index set incorrectly
-                // {1} but it should be {0}
-                if (langKey == "zh-Hant" && perkId == "HexUndying")
+                if (langKey == "zh-Hant" && perkId == "HexUndying") // Hex Undying in zh-Hant language has placeholder index set incorrectly, {1} but it should be {0}
                 {
                     string formattedDescription = description.Replace("{1}", formattedTunables[0].ToString());
                     item.Value.Description = formattedDescription;

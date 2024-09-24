@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using SteamKit2;
-using UEParser.ViewModels;
-using SteamKit2.Authentication;
 using QRCoder;
+using SteamKit2;
+using SteamKit2.Authentication;
+using UEParser.ViewModels;
 
 namespace UEParser.Network.Steam;
 
@@ -126,9 +126,6 @@ public class SteamAuthenticator
     {
         LogsWindowViewModel.Instance.AddLog("Disconnected from Steam.", Logger.LogTags.Info);
         authenticationCompletionSource?.TrySetResult(true);
-
-        //if (!callback.UserInitiated)
-        //    steamClient.Connect();
     }
 
     static void DrawQRCode(QrAuthSession authSession)

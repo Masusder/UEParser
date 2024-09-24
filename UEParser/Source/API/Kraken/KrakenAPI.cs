@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Text.RegularExpressions;
-using System;
+﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using UEParser.Services;
 using UEParser.ViewModels;
 using UEParser.Network.Steam;
@@ -80,7 +80,7 @@ public partial class KrakenAPI
 
             // Access the stored auth ticket
             var authTicket = steamAuthenticator.AuthTicket;
-            
+
             if (authTicket != null)
             {
                 string authTicketString = ByteSessionTokenToString(authTicket);

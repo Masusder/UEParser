@@ -1,13 +1,12 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Linq;
+using System.Data;
 using System.Reflection;
 using System.Collections;
-using System.Data;
-
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UEParser.Services;
 using UEParser.Models;
 using UEParser.ViewModels;

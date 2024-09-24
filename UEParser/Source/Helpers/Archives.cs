@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.IO;
 using System.Collections.Generic;
-using System.IO;
+using Newtonsoft.Json;
 
 namespace UEParser;
 
@@ -42,9 +42,7 @@ public partial class Helpers
 
         string outputPath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "questNodeDatabase.json");
 
-
         Dictionary<string, object> jsonObject = [];
-
 
         foreach (string filePath in filePaths)
         {

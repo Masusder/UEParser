@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UEParser.Models;
 using UEParser.Parser;
 using UEParser.Utils;
@@ -72,15 +72,13 @@ public class Bundles
                 bool isConsumable = item["consumable"];
                 bool purchasable = item["purchasable"];
 
-                //JObject specialPackTitle = item["metaData"]["specialPackTitle"];
-
                 JArray fullPriceArray = (JArray)item["metaData"]["fullPrice"];
                 List<FullPrice> fullPrices = BundleUtils.ParseFullPrice(fullPriceArray);
 
                 List<ConsumptionRewards> consumptionRewards = BundleUtils.ParseConsumptionRewards((JArray)item["consumptionReward"]);
                 JArray segmentationTags = item["metaData"]["segmentationTags"];
 
-                string? imagePath = item["metaData"]["imagePath"]; // They sometimes don't include image, but why???
+                string? imagePath = item["metaData"]["imagePath"];
 
                 bool bundleContainsCharacterReward = consumptionRewards.Any(r => r.GameSpecificData.Type == "Character");
 
@@ -162,17 +160,12 @@ public class Bundles
 
         foreach (string filePath in filePaths)
         {
-            //string jsonString = File.ReadAllText(filePath);
             string fileName = Path.GetFileName(filePath);
 
             string langKey = StringUtils.LangSplit(fileName);
 
-            //Dictionary<string, string> languageKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString) ?? throw new Exception($"Failed to load following locres file: {langKey}.");
-
             var objectString = JsonConvert.SerializeObject(parsedBundlesDB);
             Dictionary<string, Bundle> localizedBundlesDB = JsonConvert.DeserializeObject<Dictionary<string, Bundle>>(objectString) ?? [];
-
-            //Helpers.LocalizeDB(localizedBundlesDB, LocalizationData, languageKeys, langKey);
 
             BundleUtils.PopulateLocalizationFromApi(localizedBundlesDB, langKey, catalogDictionary, CatalogData);
 

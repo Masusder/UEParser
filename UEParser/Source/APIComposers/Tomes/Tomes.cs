@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UEParser.Models;
@@ -129,7 +129,7 @@ public class Tomes
 
                     if (CosmeticsData.TryGetValue(endNodeRewardId, out dynamic? value))
                     {
-                       endNodeRewardIconPath = value["IconFilePathList"]; 
+                        endNodeRewardIconPath = value["IconFilePathList"];
                     }
                     else
                     {

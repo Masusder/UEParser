@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.IO;
 using System.Threading.Tasks;
 using UEParser.Models;
 using UEParser.Services;
-using System.IO;
 using UEParser.ViewModels;
 using UEParser.Network;
 
@@ -13,7 +9,8 @@ namespace UEParser;
 
 public class Mappings
 {
-    private const string mappingsGithubUrl = @"https://raw.githubusercontent.com/Masusder/Unreal-Mappings-Archive/main/Dead%20by%20Daylight/{0}/Mappings.usmap";
+    private const string MappingsGithubUrl = @"https://raw.githubusercontent.com/Masusder/Unreal-Mappings-Archive/main/Dead%20by%20Daylight/{0}/Mappings.usmap";
+
     public static async Task DownloadMappings()
     {
         
@@ -24,13 +21,13 @@ public class Mappings
         string url;
         if (branch == Branch.live)
         {
-            url = string.Format(mappingsGithubUrl, versionHeader);
+            url = string.Format(MappingsGithubUrl, versionHeader);
         }
         else
         {
             string branchString = branch.ToString().ToUpper();
             string versionWithBranch = $"{versionHeader}%20{branchString}";
-            url = string.Format(mappingsGithubUrl, versionWithBranch);
+            url = string.Format(MappingsGithubUrl, versionWithBranch);
         }
 
         string versionHeaderWithBranch = Helpers.ConstructVersionHeaderWithBranch();

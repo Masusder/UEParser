@@ -495,7 +495,6 @@ public class UpdateManagerViewModel : ReactiveObject
     {
         string jsonContent = File.ReadAllText(filePath);
 
-        // Parse the JSON content and write it back in minified format
         var jsonDocument = JsonDocument.Parse(jsonContent);
         var options = new JsonWriterOptions { Indented = false };
 
@@ -504,15 +503,14 @@ public class UpdateManagerViewModel : ReactiveObject
         {
             jsonDocument.WriteTo(writer);
         }
-        File.WriteAllBytes(filePath, stream.ToArray());
 
+        File.WriteAllBytes(filePath, stream.ToArray());
     }
 
     private static void PrettifyJsonFile(string filePath)
     {
         string jsonContent = File.ReadAllText(filePath);
 
-        // Parse the JSON content and write it back in indented format
         var jsonDocument = JsonDocument.Parse(jsonContent);
         var options = new JsonWriterOptions { Indented = true };
 

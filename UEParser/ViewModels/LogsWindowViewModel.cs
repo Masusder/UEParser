@@ -1,14 +1,14 @@
-﻿using Avalonia.Media;
-using Avalonia.Threading;
-using ReactiveUI;
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using System.Reactive.Linq;
-using System.Windows.Input;
-using System;
-using System.Diagnostics;
+﻿using System;
 using System.IO;
 using System.Linq;
+using System.Diagnostics;
+using System.Reactive.Linq;
+using System.Windows.Input;
+using System.Threading.Tasks;
+using System.Collections.ObjectModel;
+using Avalonia.Media;
+using Avalonia.Threading;
+using ReactiveUI;
 
 namespace UEParser.ViewModels;
 
@@ -212,15 +212,6 @@ public partial class LogsWindowViewModel : ReactiveObject
         string stringTag = $"[{tag.ToString().ToUpper()}]: ";
         Color tagColor = GetTagColor(tag);
 
-        // Regular expression pattern to match text inside []
-        //string pattern = @"\[(.*?)\]";
-
-        // Find all matches of the pattern
-        //MatchCollection matches = Regex.Matches(logMessage, pattern);
-
-        // Remove the matched segments from the logMessage
-        //string cleanedLogMessage = Regex.Replace(logMessage, pattern, "");
-
         logEntry.Segments.Add(new LogSegment { Text = stringTag, Color = new SolidColorBrush(tagColor) });
 
         // Extra tag, mainly for parsing controllers
@@ -232,19 +223,6 @@ public partial class LogsWindowViewModel : ReactiveObject
                 Color = new SolidColorBrush(Colors.AntiqueWhite)
             });
         }
-        // Iterate through matches and add them as separate segments
-        //foreach (Match match in matches)
-        //{
-        //    string matchedText = match.Groups[1].Value; // Get text inside []
-        //    if (!string.IsNullOrEmpty(matchedText)) // Ensure text isn't empty
-        //    {
-        //        logEntry.Segments.Add(new LogSegment
-        //        {
-        //            Text = $"[{matchedText}]",
-        //            Color = new SolidColorBrush(Colors.AntiqueWhite)
-        //        });
-        //    }
-        //}
 
         logEntry.Segments.Add(new LogSegment
         {

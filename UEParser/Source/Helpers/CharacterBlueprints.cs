@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
+﻿using System.IO;
 using System.Collections.Generic;
-using System.IO;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using UEParser.Models;
 using UEParser.Utils;
 
@@ -70,7 +70,7 @@ public partial class Helpers
     private static Dictionary<string, CosmeticData> TraverseCharacterDescriptionOverrideDB()
     {
         string[] filePaths = FindFilePathsInExtractedAssetsCaseInsensitive("CharacterDescriptionOverrideDB.json");
-        
+
         var cosmetics = new Dictionary<string, CosmeticData>();
 
         foreach (string filePath in filePaths)

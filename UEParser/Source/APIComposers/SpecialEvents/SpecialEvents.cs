@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using UEParser.Models;
 using UEParser.Parser;
@@ -60,24 +60,6 @@ public class SpecialEvents
                 Dictionary<string, List<LocalizationEntry>> localizationModel = [];
 
                 if (ignoreEvents.Contains(eventId)) continue;
-
-                //Dictionary<string, List<LocalizationEntry>> localizationModel = new()
-                //{
-                //    ["Name"] = [
-                //    new LocalizationEntry
-                //        {
-                //            Key = item.Value["EventName"]["Key"],
-                //            SourceString = item.Value["EventName"]["SourceString"]
-                //        }
-                //    ],
-                //    ["Description"] = [
-                //    new LocalizationEntry
-                //        {
-                //            Key = item.Value["EventEntryData"]["Description"]["Key"],
-                //            SourceString = item.Value["EventEntryData"]["Description"]["SourceString"]
-                //        }
-                //    ]
-                //};
 
                 string nameKey = item.Value["EventName"]["Key"];
                 string nameSourceString = item.Value["EventName"]["SourceString"];

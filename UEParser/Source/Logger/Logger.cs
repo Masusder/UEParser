@@ -1,8 +1,5 @@
-﻿using Microsoft.VisualBasic;
+﻿using System;
 using System.IO;
-using System;
-using System.Reflection;
-using UEParser.ViewModels;
 
 namespace UEParser;
 

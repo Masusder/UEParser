@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Collections.Generic;
 
 namespace UEParser;
 
@@ -10,7 +10,6 @@ public class GlobalVariables
     public static readonly string rootDir = AppDomain.CurrentDomain.BaseDirectory;
 
     #region BINARIES/SCRIPTS PATHS
-    // Binaries/Scripts paths
     public static readonly string bnkExtractorPath = Path.Combine(rootDir, ".data", "bnk-extract.exe");
     public static readonly string modelsConverterScriptPath = Path.Combine(rootDir, ".data", "UEModelsConverter.py");
     //public static readonly string revorbPath = Path.Combine(rootDir, ".data", "revorb.exe");
@@ -23,7 +22,6 @@ public class GlobalVariables
     #endregion
 
     #region DIRECTORIES PATHS
-    // Directories paths
     public static readonly string pathToExtractedAssets = Path.Combine(rootDir, "Dependencies", "ExtractedAssets");
     public static readonly string pathToExtractedAudio = Path.Combine(rootDir, "Dependencies", "ExtractedAudio");
     public static readonly string pathToDynamicAssets = Path.Combine(rootDir, "Output", "DynamicAssets");
@@ -35,12 +33,10 @@ public class GlobalVariables
     #endregion
 
     #region OTHER
-    // Other
     public static readonly string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch(); // Ex. "8.1.0_ptb"
     public static readonly string compareVersionWithBranch = Helpers.ConstructVersionHeaderWithBranch(true);
-    #endregion
-
     public static readonly string dbdinfoBaseUrl = "https://dbd-info.com/";
+    #endregion
 
     // List of assets that cause fatal crash of the app and cannot be parsed!
     public static readonly List<string> fatalCrashAssets = [

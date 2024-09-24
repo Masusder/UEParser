@@ -1,19 +1,18 @@
-﻿using CUE4Parse_Conversion.Textures;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using SkiaSharp;
+using CUE4Parse_Conversion.Textures;
 using CUE4Parse.UE4.Assets.Exports.Texture;
 using CUE4Parse_Conversion.UEFormat.Enums;
 using CUE4Parse_Conversion.Animations;
 using CUE4Parse_Conversion;
 using CUE4Parse_Conversion.Meshes;
 using CUE4Parse.UE4.Assets.Exports.Material;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using SkiaSharp;
-using System.IO;
-using System;
 using CUE4Parse.UE4.Assets.Exports;
 using UEParser.ViewModels;
-using System.Collections.Generic;
-using System.Linq;
 using UEParser.Utils;
 
 namespace UEParser.Parser;

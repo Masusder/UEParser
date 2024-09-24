@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using UEParser.Models;
 
 namespace UEParser.APIComposers;
@@ -13,10 +8,7 @@ public class CollectionUtils
 {
     public static string TransformImagePath(string input)
     {
-        // Define the regex pattern
         string pattern = @"/Game/UI/UMGAssets/Icons/Banners/CollectionBanners/(.+)\.\1";
-
-        // Replace the matched pattern with the desired format
         string transformedString = Regex.Replace(input, pattern, "/images/UI/Icons/Banners/CollectionBanners/$1.png");
 
         return transformedString;

@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using UEParser.Models;
 using UEParser.Parser;
@@ -31,7 +31,7 @@ public class Items
         });
     }
 
-    private static readonly string[]  ignoreItems =
+    private static readonly string[] ignoreItems =
     [
         "Item_Blighted_Serum",
         "Item_Camper_OnryoTape",

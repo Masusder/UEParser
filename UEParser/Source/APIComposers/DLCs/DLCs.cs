@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using UEParser.Models;
 using UEParser.Parser;
@@ -66,19 +66,6 @@ public class DLCs
 
                 string bannerImageRaw = item.Value["BannerImage"]["AssetPathName"];
                 string bannerImage = StringUtils.TransformImagePathSpecialPacks(bannerImageRaw);
-
-                //Dictionary<string, List<LocalizationEntry>> localizationModel = new()
-                //{
-                //    ["Name"] = [
-                //    new LocalizationEntry
-                //        {
-                //            Key = item.Value["DisplayName"]["Key"],
-                //            SourceString = item.Value["DisplayName"]["SourceString"]
-                //        }
-                //    ]
-                //};
-
-                //LocalizationData.TryAdd(dlcId, localizationModel);
 
                 DLC model = new()
                 {

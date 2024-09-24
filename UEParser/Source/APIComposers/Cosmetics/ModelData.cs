@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.IO;
 using UEParser.Models;
 using UEParser.Utils;
 
@@ -116,13 +116,13 @@ public class ModelData
     {
         string meshPath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAssets" + modelDataPath);
         dynamic meshData = FileUtils.LoadDynamicJson(meshPath);
- 
+
         CharacterMaterialsOutput meshMaterialItems = FindCharacterMaterials(meshData);
 
         var materialsModel = new Dictionary<string, Materials>();
 
         foreach (var material in meshMaterialItems.Materials ?? Enumerable.Empty<dynamic>())
-        { 
+        {
             if (material != null)
             {
                 //string fullObjectName = material["ObjectName"];
@@ -599,9 +599,10 @@ public class ModelData
             if (array[i]["Type"] != null && array[i]?["Type"] == "SkeletalMesh" &&
                 array[i]["Materials"] != null)
             {
-                 materials = array[i]?["Materials"];
+                materials = array[i]?["Materials"];
                 break;
-            } else if (array[i]["Type"] != null && array[i]?["Type"] == "SkeletalMesh" &&
+            }
+            else if (array[i]["Type"] != null && array[i]?["Type"] == "SkeletalMesh" &&
                 array[i]["SkeletalMaterials"] != null)
             {
                 materials = array[i]?["SkeletalMaterials"];

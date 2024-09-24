@@ -1,10 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System.Linq;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using UEParser.Models;
 using UEParser.Utils;
 
@@ -53,7 +50,7 @@ public class BundleUtils
             OverrideDefaults = overrideDefaults,
             Type = type
         };
-        
+
         return imageComposition;
     }
 
@@ -95,6 +92,7 @@ public class BundleUtils
             }
 
         }
+
         return consumptionRewardsList;
     }
 
@@ -102,10 +100,7 @@ public class BundleUtils
     {
         if (input == null) return null;
 
-        // Define the regex pattern to match both formats
         string pattern = @"/Game/UI/UMGAssets/Icons/Banners/BundleBanners/(SpecialPack|ChapterBundles)/([^./]+)\.\w+";
-
-        // Replace the matched pattern with the desired format
         string transformedString = Regex.Replace(input, pattern, "/images/UI/Icons/Banners/BundleBanners/$1/$2.png");
 
         return transformedString;

@@ -1,16 +1,11 @@
-﻿using Microsoft.Win32;
-using Newtonsoft.Json.Linq;
-using ReactiveUI;
-using System;
+﻿using System;
 using System.IO;
+using System.Windows.Input;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
+using Newtonsoft.Json.Linq;
+using ReactiveUI;
 using UEParser.AssetRegistry;
 using UEParser.Network;
 

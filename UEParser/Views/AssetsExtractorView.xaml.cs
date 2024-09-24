@@ -1,8 +1,8 @@
-﻿using Avalonia.Markup.Xaml;
-using UEParser.ViewModels;
-using Avalonia.Controls;
-using Avalonia.Input;
+﻿using Avalonia.Input;
 using Avalonia.Media;
+using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
+using UEParser.ViewModels;
 
 namespace UEParser.Views;
 

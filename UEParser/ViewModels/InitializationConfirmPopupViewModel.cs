@@ -1,7 +1,7 @@
-﻿using ReactiveUI;
-using System;
+﻿using System;
 using System.Reactive;
 using System.Reactive.Linq;
+using ReactiveUI;
 using UEParser.Services;
 
 namespace UEParser.ViewModels;

@@ -1,11 +1,11 @@
-﻿using ReactiveUI;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Threading;
-using System.IO;
 using System.Collections.Generic;
-using System.Linq;
-using System;
+using ReactiveUI;
 using UEParser.Parser;
 using UEParser.Services;
 using UEParser.AssetRegistry;
