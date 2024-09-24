@@ -449,6 +449,7 @@ public partial class WwiseFileHandler
     }
 
 
+    private const int MaxFileNameLength = 233; // A little below actual max file name length limit, otherwise we can't perform basic operations on the file
     [GeneratedRegex(@"(?<!\S)([^#\n]*\.txtp)", RegexOptions.Compiled)]
     private static partial Regex TxtpFileRegex();
     // In case txtp file path is too long it gets truncated and moved out of temporary wwise directory
@@ -473,8 +474,8 @@ public partial class WwiseFileHandler
                     string originalFileName = Path.GetFileName(matchedTxtpPath);
 
                     // Check if the filename is too long (due to file path length limit)
-                    string newFileName = originalFileName.Length > 250
-                        ? string.Concat(originalFileName.AsSpan(0, 250), Path.GetExtension(originalFileName))
+                    string newFileName = originalFileName.Length > MaxFileNameLength
+                        ? string.Concat(originalFileName.AsSpan(0, MaxFileNameLength), Path.GetExtension(originalFileName))
                         : originalFileName;
 
                     // Construct the full destination path with long path prefix
