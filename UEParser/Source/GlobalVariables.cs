@@ -19,6 +19,7 @@ public class GlobalVariables
     public static readonly string vgmStreamCliPath = Path.Combine(rootDir, ".data", "VgmStream", "vgmstream-cli.exe");
     public static readonly string ffmpegPath = Path.Combine(rootDir, ".data", "ffmpeg.exe");
     public static readonly string preGeneratedWwnames = Path.Combine(rootDir, ".data", "wwnames.txt");
+    public static readonly string tempDir = Path.Combine(Path.GetPathRoot(rootDir) ?? "C:\\", "WWISE");
     #endregion
 
     #region DIRECTORIES PATHS

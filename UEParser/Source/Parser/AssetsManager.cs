@@ -680,7 +680,7 @@ public class AssetsManager
 
             LogsWindowViewModel.Instance.AddLog("Converting audio to WAV audio format..", Logger.LogTags.Info);
 
-            WwiseFileHandler.ConvertTxtpToWav();
+            WwiseFileHandler.ConvertTxtpToWav(token);
 
             token.ThrowIfCancellationRequested();
 

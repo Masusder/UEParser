@@ -160,13 +160,14 @@ public partial class WwiseFileHandler
         foreach (string filePath in txtpFiles)
         {
             string fileContent = File.ReadAllText(filePath);
+            string fileName = Path.GetFileName(filePath);
 
             Match match = CAkEventRegex().Match(fileContent);
 
             if (match.Success)
             {
                 string cakEventId = match.Groups[1].Value; // Wwise audio event id
-                kvp[filePath] = long.Parse(cakEventId);
+                kvp[fileName] = long.Parse(cakEventId);
             }
             else
             {
@@ -239,6 +240,7 @@ public partial class WwiseFileHandler
 
     public static void ReverseAudioStructure(Dictionary<string, long> associatedAudioEventIds, Dictionary<long, AudioEventsLinkageData> audioEventsLinkage)
     {
+        const int Offset = 2;
         foreach (var audioEvent in associatedAudioEventIds)
         {
             bool matchFound = false;
@@ -248,13 +250,13 @@ public partial class WwiseFileHandler
                 long audioEventValue = audioEvent.Value;
                 if (attempt == 1)
                 {
-                    audioEventValue -= 2;
+                    audioEventValue -= Offset;
                 }
 
                 if (audioEventsLinkage.TryGetValue(audioEventValue, out AudioEventsLinkageData? audioEventData))
                 {
                     matchFound = true;
-                    string reversedFileName = Path.GetFileName(audioEvent.Key);
+                    string reversedFileName = audioEvent.Key;
 
                     string combinedPath = Path.Combine(WwiseStructured, audioEventData.PackagePath.TrimStart('/'), Path.ChangeExtension(reversedFileName, ".wav"));
 
@@ -262,9 +264,10 @@ public partial class WwiseFileHandler
 
                     Directory.CreateDirectory(Path.GetDirectoryName(finalPath) ?? string.Empty);
 
-                    if (File.Exists(Path.ChangeExtension(audioEvent.Key, ".wav")))
+                    string wavFilePath = Path.Combine(GlobalVariables.tempDir, Path.ChangeExtension(reversedFileName, ".wav"));
+                    if (File.Exists(wavFilePath))
                     {
-                        File.Move(Path.ChangeExtension(audioEvent.Key, ".wav"), finalPath, overwrite: true);
+                        File.Move(wavFilePath, finalPath, overwrite: true);
                     }
 
                     break; // Exit the loop after successfully handling the file
@@ -284,10 +287,21 @@ public partial class WwiseFileHandler
         "AudioEvent_K23_Comet_Status_Start_InGame [AudioSwitchKillerStatus=Crazy] {r} {m}.txtp",
         "AudioEvent_K23_Comet_Status_Start_Menu [AudioSwitchKillerStatus=Crazy] {r} {m}.txtp",
     ];
-    public static void ConvertTxtpToWav()
+    public static void ConvertTxtpToWav(CancellationToken token)
     {
-        // Get all .txtp files in the directory and its subdirectories
-        var txtpFiles = Directory.GetFiles(TemporaryDirectory, "*.txtp", SearchOption.AllDirectories);
+        Directory.CreateDirectory(GlobalVariables.tempDir);
+
+        // We need to copy all txtp files to shorter file path
+        Directory.EnumerateFiles(TemporaryDirectory, "*.txtp", SearchOption.AllDirectories)
+            .ToList()
+            .ForEach(txtpFile =>
+        {
+            token.ThrowIfCancellationRequested();
+
+            File.Copy(txtpFile, Path.Combine(GlobalVariables.tempDir, Path.GetFileName(txtpFile)), overwrite: true);
+        });
+
+        var txtpFiles = Directory.GetFiles(GlobalVariables.tempDir, "*.txtp", SearchOption.TopDirectoryOnly);
 
         var audioToParse = WwiseRegister.RetrieveAudioToParse(txtpFiles);
 
@@ -295,12 +309,16 @@ public partial class WwiseFileHandler
         // Convert txtp files to wav audio format
         Parallel.ForEach(txtpFiles, new ParallelOptions { MaxDegreeOfParallelism = 4 }, filePath =>
         {
+            token.ThrowIfCancellationRequested();
+
             if (!audioToParse.Contains(filePath)) return; // We only want to convert new/modified audio
 
             try
             {
                 // Construct the output .wav file path
-                string outputFilePath = Path.ChangeExtension(filePath, ".wav");
+                // We need directory close to the root
+                // Otherwise audio might fail to convert due to path length limit
+                string outputFilePath = Path.Combine(GlobalVariables.tempDir, Path.ChangeExtension(Path.GetFileName(filePath), ".wav"));
                 if (File.Exists(outputFilePath)) return;
 
                 // Prepare the arguments for the vgmstream-cli command

@@ -190,6 +190,13 @@ public class AssetsExtractorViewModel : ReactiveObject
         finally
         {
             CanExtract = true;
+
+            // Cleanup: Delete temporary directory upon task completion
+            if (Directory.Exists(GlobalVariables.tempDir))
+            {
+                try { Directory.Delete(GlobalVariables.tempDir, true); }
+                catch (Exception ex) { LogsWindowViewModel.Instance.AddLog($"Failed to delete temporary directory: {ex.Message}", Logger.LogTags.Error); }
+            }
         }
     }
 
