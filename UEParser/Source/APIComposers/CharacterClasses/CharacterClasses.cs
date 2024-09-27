@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Newtonsoft.Json;
@@ -15,7 +16,7 @@ public class CharacterClasses
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
 
-    public static async Task InitializeCharacterClassesDB()
+    public static async Task InitializeCharacterClassesDB(CancellationToken token)
     {
         await Task.Run(() =>
         {
@@ -23,15 +24,15 @@ public class CharacterClasses
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.CharacterClasses);
 
-            ParseCharacterClasses(parsedCharacterClassesDB);
+            ParseCharacterClasses(parsedCharacterClassesDB, token);
 
             LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedCharacterClassesDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.CharacterClasses);
 
-            ParseLocalizationAndSave(parsedCharacterClassesDB);
-        });
+            ParseLocalizationAndSave(parsedCharacterClassesDB, token);
+        }, token);
     }
 
-    private static void ParseCharacterClasses(Dictionary<string, CharacterClass> parsedCharacterClassesDB)
+    private static void ParseCharacterClasses(Dictionary<string, CharacterClass> parsedCharacterClassesDB, CancellationToken token)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("CharacterClassDB.json");
 
@@ -46,6 +47,8 @@ public class CharacterClasses
 
             foreach (var item in assetItems[0]["Rows"])
             {
+                token.ThrowIfCancellationRequested();
+
                 string characterClassId = item.Name;
 
                 JArray skills = item.Value["Skills"];
@@ -90,7 +93,7 @@ public class CharacterClasses
         }
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, CharacterClass> parsedCharacterClassesDB)
+    private static void ParseLocalizationAndSave(Dictionary<string, CharacterClass> parsedCharacterClassesDB, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.CharacterClasses);
 
@@ -98,9 +101,10 @@ public class CharacterClasses
 
         foreach (string filePath in filePaths)
         {
+            token.ThrowIfCancellationRequested();
+
             string jsonString = File.ReadAllText(filePath);
             string fileName = Path.GetFileName(filePath);
-
             string langKey = StringUtils.LangSplit(fileName);
 
             Dictionary<string, string> languageKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString) ?? throw new Exception($"Failed to load following locres file: {langKey}.");

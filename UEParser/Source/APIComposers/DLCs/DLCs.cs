@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Newtonsoft.Json;
@@ -15,7 +16,7 @@ public class DLCs
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
 
-    public static async Task InitializeDlcsDB()
+    public static async Task InitializeDlcsDB(CancellationToken token)
     {
         await Task.Run(async () =>
         {
@@ -23,12 +24,12 @@ public class DLCs
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.DLC);
 
-            ParseDLCs(parsedDlcsDB);
+            ParseDLCs(parsedDlcsDB, token);
 
             LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedDlcsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.DLC);
 
-            await ParseLocalizationAndSave(parsedDlcsDB);
-        });
+            await ParseLocalizationAndSave(parsedDlcsDB, token);
+        }, token);
     }
 
     private static readonly string[] ignoreSteamIds =
@@ -43,7 +44,7 @@ public class DLCs
         "555440",
         "499080"
     ];
-    private static void ParseDLCs(Dictionary<string, DLC> parsedDlcsDB)
+    private static void ParseDLCs(Dictionary<string, DLC> parsedDlcsDB, CancellationToken token)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("DlcDB.json");
 
@@ -58,6 +59,8 @@ public class DLCs
 
             foreach (var item in assetItems[0]["Rows"])
             {
+                token.ThrowIfCancellationRequested();
+
                 string dlcId = item.Name;
 
                 string steamId = item.Value["DlcIdSteam"];
@@ -95,7 +98,7 @@ public class DLCs
         }
     }
 
-    private static async Task ParseLocalizationAndSave(Dictionary<string, DLC> parsedDlcsDB)
+    private static async Task ParseLocalizationAndSave(Dictionary<string, DLC> parsedDlcsDB, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.DLC);
 
@@ -103,8 +106,9 @@ public class DLCs
 
         foreach (string filePath in filePaths)
         {
-            string fileName = Path.GetFileName(filePath);
+            token.ThrowIfCancellationRequested();
 
+            string fileName = Path.GetFileName(filePath);
             string langKey = StringUtils.LangSplit(fileName);
 
             var objectString = JsonConvert.SerializeObject(parsedDlcsDB);

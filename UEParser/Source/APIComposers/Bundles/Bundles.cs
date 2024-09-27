@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Newtonsoft.Json;
@@ -19,7 +20,7 @@ public class Bundles
     private static readonly Dictionary<string, DLC> DlcsData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, DLC>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, "en", "DLC.json")) ?? throw new Exception("Failed to load parsed DLC data.");
     private static readonly Dictionary<string, Character> CharactersData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Character>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, "en", "Characters.json")) ?? throw new Exception("Failed to load parsed Characters data.");
 
-    public static async Task InitializeBundlesDB()
+    public static async Task InitializeBundlesDB(CancellationToken token)
     {
         await Task.Run(() =>
         {
@@ -27,12 +28,12 @@ public class Bundles
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Bundles);
 
-            ParseBundles(parsedBundlesDB);
+            ParseBundles(parsedBundlesDB, token);
 
             LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedBundlesDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Bundles);
 
-            ParseLocalizationAndSave(parsedBundlesDB);
-        });
+            ParseLocalizationAndSave(parsedBundlesDB, token);
+        }, token);
     }
 
     private static readonly string[] ignoreDlcs =
@@ -41,10 +42,12 @@ public class Bundles
         "bloodstainedSack",
         "headCase"
     ];
-    private static void ParseBundles(Dictionary<string, Bundle> parsedBundlesDB)
+    private static void ParseBundles(Dictionary<string, Bundle> parsedBundlesDB, CancellationToken token)
     {
         foreach (var item in CatalogData)
         {
+            token.ThrowIfCancellationRequested();
+
             JArray typeArray = item["categories"];
             string prettyType = string.Join(" ", typeArray);
 
@@ -150,7 +153,7 @@ public class Bundles
         }
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, Bundle> parsedBundlesDB)
+    private static void ParseLocalizationAndSave(Dictionary<string, Bundle> parsedBundlesDB, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Bundles);
 
@@ -160,8 +163,9 @@ public class Bundles
 
         foreach (string filePath in filePaths)
         {
-            string fileName = Path.GetFileName(filePath);
+            token.ThrowIfCancellationRequested();
 
+            string fileName = Path.GetFileName(filePath);
             string langKey = StringUtils.LangSplit(fileName);
 
             var objectString = JsonConvert.SerializeObject(parsedBundlesDB);

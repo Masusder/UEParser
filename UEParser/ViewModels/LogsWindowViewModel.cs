@@ -53,6 +53,9 @@ public partial class LogsWindowViewModel : ReactiveObject
     private readonly ObservableAsPropertyHelper<string> _stateTextColor;
     public string StateTextColor => _stateTextColor.Value;
 
+    private readonly ObservableAsPropertyHelper<string> _stateIcon;
+    public string StateIcon => _stateIcon.Value;
+
     private readonly ObservableAsPropertyHelper<bool> _isLoading;
     public bool IsLoading => _isLoading.Value;
 
@@ -81,9 +84,9 @@ public partial class LogsWindowViewModel : ReactiveObject
                     ELogState.Running => "Tasks Running..",
                     ELogState.RunningWithCancellation => "Tasks Running [ESC to cancel]..",
                     ELogState.Cancellation => "Task cancellation in progress..",
-                    ELogState.Error => "Error Occured",
+                    ELogState.Error => "Error Occured!",
                     ELogState.Neutral => "Waiting.. do something",
-                    ELogState.Warning => "Warning",
+                    ELogState.Warning => "Warning!",
                     _ => "Waiting.. do something",
                 })
                 .ToProperty(this, x => x.StateText);
@@ -101,6 +104,20 @@ public partial class LogsWindowViewModel : ReactiveObject
                     _ => "White",
                 })
                 .ToProperty(this, x => x.StateTextColor);
+
+        _stateIcon = this.WhenAnyValue(x => x.LogState)
+            .Select(state => state switch
+            {
+                ELogState.Finished => "fa-solid fa-trophy",
+                ELogState.Running => "fa-solid fa-person-running",
+                ELogState.RunningWithCancellation => "fa-solid fa-person-running",
+                ELogState.Cancellation => "fa-solid fa-ban",
+                ELogState.Error => "fa-solid fa-circle-exclamation",
+                ELogState.Neutral => "fa-solid fa-square-pen",
+                ELogState.Warning => "fa-solid fa-triangle-exclamation",
+                _ => "fa-solid fa-square-pen"
+            })
+            .ToProperty(this, x => x.StateIcon);
 
         _isLoading = this.WhenAnyValue(x => x.LogState)
             .Select(state => state switch
@@ -209,7 +226,7 @@ public partial class LogsWindowViewModel : ReactiveObject
     {
         var logEntry = new LogEntry();
 
-        string stringTag = $"[{tag.ToString().ToUpper()}]: ";
+        string stringTag = tag == Logger.LogTags.Warning ? $"[WARN]: " : $"[{tag.ToString().ToUpper()}]: ";
         Color tagColor = GetTagColor(tag);
 
         logEntry.Segments.Add(new LogSegment { Text = stringTag, Color = new SolidColorBrush(tagColor) });

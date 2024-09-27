@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Newtonsoft.Json;
@@ -14,7 +15,7 @@ internal class Maps
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
 
-    public static async Task InitializeMapsDB()
+    public static async Task InitializeMapsDB(CancellationToken token)
     {
         await Task.Run(() =>
         {
@@ -22,15 +23,15 @@ internal class Maps
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Maps);
 
-            ParseMaps(parsedMapsDB);
+            ParseMaps(parsedMapsDB, token);
 
             LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedMapsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Maps);
 
-            ParseLocalizationAndSave(parsedMapsDB);
-        });
+            ParseLocalizationAndSave(parsedMapsDB, token);
+        }, token);
     }
 
-    private static void ParseMaps(Dictionary<string, Map> parsedMapsDB)
+    private static void ParseMaps(Dictionary<string, Map> parsedMapsDB, CancellationToken token)
     {
         // There's also limited gamemode maps, but we don't want these
         // If you for some reason need them comment out helper method
@@ -48,6 +49,8 @@ internal class Maps
 
             foreach (var item in assetItems[0]["Rows"])
             {
+                token.ThrowIfCancellationRequested();
+
                 string mapId = item.Name;
 
                 if (mapId == "Swp_Mound") continue; // Unfinished, unreleased map
@@ -103,7 +106,7 @@ internal class Maps
         }
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, Map> parsedMapsDB)
+    private static void ParseLocalizationAndSave(Dictionary<string, Map> parsedMapsDB, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Maps);
 
@@ -111,9 +114,10 @@ internal class Maps
 
         foreach (string filePath in filePaths)
         {
+            token.ThrowIfCancellationRequested();
+
             string jsonString = File.ReadAllText(filePath);
             string fileName = Path.GetFileName(filePath);
-
             string langKey = StringUtils.LangSplit(fileName);
 
             Dictionary<string, string> languageKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString) ?? throw new Exception($"Failed to load following locres file: {langKey}.");

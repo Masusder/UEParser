@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Newtonsoft.Json;
@@ -14,7 +15,7 @@ public class Offerings
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
 
-    public static async Task InitializeOfferingsDB()
+    public static async Task InitializeOfferingsDB(CancellationToken token)
     {
         await Task.Run(() =>
         {
@@ -22,15 +23,15 @@ public class Offerings
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Offerings);
 
-            ParseOfferings(parsedOfferingsDB);
+            ParseOfferings(parsedOfferingsDB, token);
 
             LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedOfferingsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Offerings);
 
-            ParseLocalizationAndSave(parsedOfferingsDB);
-        });
+            ParseLocalizationAndSave(parsedOfferingsDB, token);
+        }, token);
     }
 
-    private static void ParseOfferings(Dictionary<string, Offering> parsedOfferingsDB)
+    private static void ParseOfferings(Dictionary<string, Offering> parsedOfferingsDB, CancellationToken token)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("OfferingDB.json");
 
@@ -45,6 +46,8 @@ public class Offerings
 
             foreach (var item in assetItems[0]["Rows"])
             {
+                token.ThrowIfCancellationRequested();
+
                 string offeringId = item.Name;
 
                 string typeRaw = item.Value["OfferingType"];
@@ -110,7 +113,7 @@ public class Offerings
         }
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, Offering> parsedOfferingsDB)
+    private static void ParseLocalizationAndSave(Dictionary<string, Offering> parsedOfferingsDB, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Offerings);
 
@@ -118,9 +121,10 @@ public class Offerings
 
         foreach (string filePath in filePaths)
         {
+            token.ThrowIfCancellationRequested();
+
             string jsonString = File.ReadAllText(filePath);
             string fileName = Path.GetFileName(filePath);
-
             string langKey = StringUtils.LangSplit(fileName);
 
             Dictionary<string, string> languageKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString) ?? throw new Exception($"Failed to load following locres file: {langKey}.");

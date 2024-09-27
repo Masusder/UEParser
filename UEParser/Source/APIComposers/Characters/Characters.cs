@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using UEParser.Models;
 using UEParser.Utils;
@@ -14,7 +15,7 @@ public class Characters
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> localizationData = [];
 
-    public static async Task InitializeCharactersDB()
+    public static async Task InitializeCharactersDB(CancellationToken token)
     {
         await Task.Run(() =>
         {
@@ -22,15 +23,15 @@ public class Characters
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Characters);
 
-            parsedCharactersDB = ParseCharacters(parsedCharactersDB);
+            parsedCharactersDB = ParseCharacters(parsedCharactersDB, token);
 
             LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedCharactersDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Characters);
 
-            ParseLocalizationAndSave(parsedCharactersDB);
-        });
+            ParseLocalizationAndSave(parsedCharactersDB, token);
+        }, token);
     }
 
-    private static Dictionary<string, Character> ParseCharacters(Dictionary<string, Character> parsedCharactersDB)
+    private static Dictionary<string, Character> ParseCharacters(Dictionary<string, Character> parsedCharactersDB, CancellationToken token)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("CharacterDescriptionDB.json");
 
@@ -47,6 +48,8 @@ public class Characters
 
             foreach (var item in assetItems[0]["Rows"])
             {
+                token.ThrowIfCancellationRequested();
+
                 string characterIndex = item.Name;
                 if (characterIndex == "-1")
                 {
@@ -123,7 +126,7 @@ public class Characters
         return parsedCharactersDB;
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, Character> parsedCharactersDB)
+    private static void ParseLocalizationAndSave(Dictionary<string, Character> parsedCharactersDB, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Characters);
 
@@ -131,6 +134,8 @@ public class Characters
 
         foreach (string filePath in filePaths)
         {
+            token.ThrowIfCancellationRequested();
+
             string jsonString = File.ReadAllText(filePath);
             string fileName = Path.GetFileName(filePath);
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Newtonsoft.Json;
@@ -19,7 +20,7 @@ public class Cosmetics
     private static readonly Dictionary<string, Rift> RiftData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Rift>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, "en", "Rifts.json")) ?? throw new Exception("Failed to load rifts data.");
     private static readonly Dictionary<string, int> CatalogDictionary = CosmeticUtils.CreateCatalogDictionary(CatalogData);
 
-    public static async Task InitializeCosmeticsDB()
+    public static async Task InitializeCosmeticsDB(CancellationToken token)
     {
         await Task.Run(() =>
         {
@@ -27,18 +28,18 @@ public class Cosmetics
 
             LogsWindowViewModel.Instance.AddLog("Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Cosmetics);
 
-            parsedCosmeticsDB = ParseOutfits(parsedCosmeticsDB);
-            parsedCosmeticsDB = ParseCustomizationItems(parsedCosmeticsDB);
+            parsedCosmeticsDB = ParseOutfits(parsedCosmeticsDB, token);
+            parsedCosmeticsDB = ParseCustomizationItems(parsedCosmeticsDB, token);
             parsedCosmeticsDB = AssignRiftData(parsedCosmeticsDB);
             parsedCosmeticsDB = AppendStaticCurrencies(parsedCosmeticsDB);
 
             LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedCosmeticsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Cosmetics);
 
-            ParseLocalizationAndSave(parsedCosmeticsDB);
-        });
+            ParseLocalizationAndSave(parsedCosmeticsDB, token);
+        }, token);
     }
 
-    public static Dictionary<string, object> ParseOutfits(Dictionary<string, object> parsedCosmeticsDB)
+    public static Dictionary<string, object> ParseOutfits(Dictionary<string, object> parsedCosmeticsDB, CancellationToken token)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("OutfitDB.json");
 
@@ -61,6 +62,8 @@ public class Cosmetics
 
             foreach (var item in assetItems[0]["Rows"])
             {
+                token.ThrowIfCancellationRequested();
+
                 string cosmeticId = item.Name;
 
                 if (outfitsToIgnore.Contains(cosmeticId)) continue;
@@ -171,7 +174,7 @@ public class Cosmetics
         "Default_Badge",
         "Default_Banner"
     ];
-    private static Dictionary<string, object> ParseCustomizationItems(Dictionary<string, object> parsedCosmeticsDB)
+    private static Dictionary<string, object> ParseCustomizationItems(Dictionary<string, object> parsedCosmeticsDB, CancellationToken token)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("CustomizationItemDB.json");
 
@@ -188,6 +191,8 @@ public class Cosmetics
 
             foreach (var item in assetItems[0]["Rows"])
             {
+                token.ThrowIfCancellationRequested();
+
                 string cosmeticId = item.Name;
 
                 if (customizationItemsToIgnore.Contains(cosmeticId)) continue;
@@ -428,7 +433,7 @@ public class Cosmetics
         return parsedCosmeticsDB;
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, object> parsedCosmeticsDB)
+    private static void ParseLocalizationAndSave(Dictionary<string, object> parsedCosmeticsDB, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Cosmetics);
 
@@ -436,6 +441,8 @@ public class Cosmetics
 
         foreach (string filePath in filePaths)
         {
+            token.ThrowIfCancellationRequested();
+
             string jsonString = File.ReadAllText(filePath);
             string fileName = Path.GetFileName(filePath);
             string langKey = StringUtils.LangSplit(fileName);

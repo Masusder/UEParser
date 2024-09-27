@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Newtonsoft.Json;
@@ -22,7 +23,7 @@ public class Tomes
     private static readonly Dictionary<string, int> CharacterIds = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, int>>(Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "characterIds.json")) ?? throw new Exception("Failed to load Characters ID table.");
     private static readonly TagConverters HTMLTagConverters = FileUtils.LoadJsonFileWithTypeCheck<TagConverters>(Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "tagConverters.json")) ?? throw new Exception("Failed to load html tag converters.");
 
-    public static async Task InitializeTomesDB()
+    public static async Task InitializeTomesDB(CancellationToken token)
     {
         await Task.Run(() =>
         {
@@ -30,15 +31,15 @@ public class Tomes
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Tomes);
 
-            ParseTomes(parsedTomesDB);
+            ParseTomes(parsedTomesDB, token);
 
             LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedTomesDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Tomes);
 
-            ParseLocalizationAndSave(parsedTomesDB);
-        });
+            ParseLocalizationAndSave(parsedTomesDB, token);
+        }, token);
     }
 
-    private static void ParseTomes(Dictionary<string, Tome> parsedTomesDB)
+    private static void ParseTomes(Dictionary<string, Tome> parsedTomesDB, CancellationToken token)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("ArchiveDB.json");
 
@@ -62,6 +63,8 @@ public class Tomes
 
             foreach (var item in assetItems[0]["Rows"])
             {
+                token.ThrowIfCancellationRequested();
+
                 string tomeId = item.Name;
                 string tomeIdTitleCase = StringUtils.TomeToTitleCase(tomeId);
 
@@ -331,7 +334,7 @@ public class Tomes
         return nodeModel;
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, Tome> parsedTomesDB)
+    private static void ParseLocalizationAndSave(Dictionary<string, Tome> parsedTomesDB, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Tomes);
 
@@ -339,9 +342,10 @@ public class Tomes
 
         foreach (string filePath in filePaths)
         {
+            token.ThrowIfCancellationRequested();
+
             string jsonString = File.ReadAllText(filePath);
             string fileName = Path.GetFileName(filePath);
-
             string langKey = StringUtils.LangSplit(fileName);
 
             Dictionary<string, string> languageKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString) ?? throw new Exception($"Failed to load following locres file: {langKey}.");

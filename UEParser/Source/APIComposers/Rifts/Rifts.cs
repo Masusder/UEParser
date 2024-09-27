@@ -1,8 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using UEParser.ViewModels;
 using Newtonsoft.Json;
 using UEParser.Utils;
@@ -17,7 +18,7 @@ public class Rifts
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
     private static readonly dynamic? ArchiveRewardData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "ArchiveRewardData.json")) ?? throw new Exception("Failed to load archive reward data.");
 
-    public static async Task InitializeRiftsDB()
+    public static async Task InitializeRiftsDB(CancellationToken token)
     {
         await Task.Run(() =>
         {
@@ -25,15 +26,15 @@ public class Rifts
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Rifts);
 
-            parsedRiftsDB = ParseRifts(parsedRiftsDB);
+            parsedRiftsDB = ParseRifts(parsedRiftsDB, token);
 
             LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedRiftsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Rifts);
 
-            ParseLocalizationAndSave(parsedRiftsDB);
-        });
+            ParseLocalizationAndSave(parsedRiftsDB, token);
+        }, token);
     }
 
-    private static Dictionary<string, Rift> ParseRifts(Dictionary<string, Rift> parsedRiftsDB)
+    private static Dictionary<string, Rift> ParseRifts(Dictionary<string, Rift> parsedRiftsDB, CancellationToken token)
     {
         var config = ConfigurationService.Config;
         var eventTomesArray = config.Core.EventTomesList;
@@ -54,6 +55,8 @@ public class Rifts
 
             foreach (var item in assetItems[0]["Rows"])
             {
+                token.ThrowIfCancellationRequested();
+
                 string riftId = item.Name;
                 bool exists = eventTomesArray?.Any(x => x == riftId) ?? true;
                 if (!exists)
@@ -100,7 +103,7 @@ public class Rifts
         return parsedRiftsDB;
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, Rift> parsedRiftsDB)
+    private static void ParseLocalizationAndSave(Dictionary<string, Rift> parsedRiftsDB, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Rifts);
 
@@ -108,6 +111,8 @@ public class Rifts
 
         foreach (string filePath in filePaths)
         {
+            token.ThrowIfCancellationRequested();
+
             string jsonString = File.ReadAllText(filePath);
             string fileName = Path.GetFileName(filePath);
 

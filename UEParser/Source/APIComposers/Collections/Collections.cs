@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Newtonsoft.Json;
@@ -16,7 +17,7 @@ public class Collections
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
     private static readonly dynamic CollectionsData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "collections.json")) ?? throw new Exception("Failed to load collections data.");
 
-    public static async Task InitializeCollectionsDB()
+    public static async Task InitializeCollectionsDB(CancellationToken token)
     {
         await Task.Run(() =>
         {
@@ -24,21 +25,23 @@ public class Collections
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Collections);
 
-            ParseCollections(parsedCollectionsDB);
+            ParseCollections(parsedCollectionsDB, token);
 
             LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedCollectionsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Collections);
 
-            ParseLocalizationAndSave(parsedCollectionsDB);
-        });
+            ParseLocalizationAndSave(parsedCollectionsDB, token);
+        }, token);
     }
 
-    private static void ParseCollections(Dictionary<string, Collection> parsedCollectionsDB)
+    private static void ParseCollections(Dictionary<string, Collection> parsedCollectionsDB, CancellationToken token)
     {
         // CollectionsDB exists locally but shouldn't be used!
         //string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("CollectionDB.json");
 
         foreach (var collection in CollectionsData.collections)
         {
+            token.ThrowIfCancellationRequested();
+
             string collectionId = collection["collectionId"];
 
             LogsWindowViewModel.Instance.AddLog($"Processing: {collectionId}", Logger.LogTags.Info, Logger.ELogExtraTag.Collections);
@@ -88,7 +91,7 @@ public class Collections
 
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, Collection> parsedCollectionsDB)
+    private static void ParseLocalizationAndSave(Dictionary<string, Collection> parsedCollectionsDB, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Collections);
 
@@ -98,8 +101,9 @@ public class Collections
 
         foreach (string filePath in filePaths)
         {
-            string fileName = Path.GetFileName(filePath);
+            token.ThrowIfCancellationRequested();
 
+            string fileName = Path.GetFileName(filePath);
             string langKey = StringUtils.LangSplit(fileName);
 
             var objectString = JsonConvert.SerializeObject(parsedCollectionsDB);

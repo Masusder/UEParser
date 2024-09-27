@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Threading;
 using System.Windows.Input;
 using System.Threading.Tasks;
 using ReactiveUI;
 using UEParser.APIComposers;
+using UEParser.Services;
 
 namespace UEParser.ViewModels;
 
@@ -44,373 +46,532 @@ public class ParsingControllersViewModel : ReactiveObject
 
     private ParsingControllersViewModel()
     {
-        ParseEverythingCommand = ReactiveCommand.Create(ParseEverything);
-        ParseRiftsCommand = ReactiveCommand.Create(ParseRifts);
-        ParseCharactersCommand = ReactiveCommand.Create(ParseCharacters);
-        ParseCosmeticsCommand = ReactiveCommand.Create(ParseCosmetics);
-        ParsePerksCommand = ReactiveCommand.Create(ParsePerks);
-        ParseCharacterClassesCommand = ReactiveCommand.Create(ParseCharacterClasses);
-        ParseTomesCommand = ReactiveCommand.Create(ParseTomes);
-        ParseAddonsCommand = ReactiveCommand.Create(ParseAddons);
-        ParseItemsCommand = ReactiveCommand.Create(ParseItems);
-        ParseOfferingsCommand = ReactiveCommand.Create(ParseOfferings);
-        ParseMapsCommand = ReactiveCommand.Create(ParseMaps);
-        ParseDlcsCommand = ReactiveCommand.Create(ParseDlcs);
-        ParseJournalsCommand = ReactiveCommand.Create(ParseJournals);
-        ParseSpecialEventsCommand = ReactiveCommand.Create(ParseSpecialEvents);
-        ParseCollectionsCommand = ReactiveCommand.Create(ParseCollections);
-        ParseBundlesCommand = ReactiveCommand.Create(ParseBundles);
+        ParseEverythingCommand = ReactiveCommand.CreateFromTask(() => ParseEverything(CancellationTokenService.Instance.Token));
+        ParseRiftsCommand = ReactiveCommand.CreateFromTask(() => ParseRifts(CancellationTokenService.Instance.Token));
+        ParseCharactersCommand = ReactiveCommand.CreateFromTask(() => ParseCharacters(CancellationTokenService.Instance.Token));
+        ParseCosmeticsCommand = ReactiveCommand.CreateFromTask(() => ParseCosmetics(CancellationTokenService.Instance.Token));
+        ParsePerksCommand = ReactiveCommand.CreateFromTask(() => ParsePerks(CancellationTokenService.Instance.Token));
+        ParseCharacterClassesCommand = ReactiveCommand.CreateFromTask(() => ParseCharacterClasses(CancellationTokenService.Instance.Token));
+        ParseTomesCommand = ReactiveCommand.CreateFromTask(() => ParseTomes(CancellationTokenService.Instance.Token));
+        ParseAddonsCommand = ReactiveCommand.CreateFromTask(() => ParseAddons(CancellationTokenService.Instance.Token));
+        ParseItemsCommand = ReactiveCommand.CreateFromTask(() => ParseItems(CancellationTokenService.Instance.Token));
+        ParseOfferingsCommand = ReactiveCommand.CreateFromTask(() => ParseOfferings(CancellationTokenService.Instance.Token));
+        ParseMapsCommand = ReactiveCommand.CreateFromTask(() => ParseMaps(CancellationTokenService.Instance.Token));
+        ParseDlcsCommand = ReactiveCommand.CreateFromTask(() => ParseDlcs(CancellationTokenService.Instance.Token));
+        ParseJournalsCommand = ReactiveCommand.CreateFromTask(() => ParseJournals(CancellationTokenService.Instance.Token));
+        ParseSpecialEventsCommand = ReactiveCommand.CreateFromTask(() => ParseSpecialEvents(CancellationTokenService.Instance.Token));
+        ParseCollectionsCommand = ReactiveCommand.CreateFromTask(() => ParseCollections(CancellationTokenService.Instance.Token));
+        ParseBundlesCommand = ReactiveCommand.CreateFromTask(() => ParseBundles(CancellationTokenService.Instance.Token));
     }
 
-    private async void ParseEverything()
-    {
-        IsParsing = true;
-        await ParseRifts();
-        await ParseCharacters();
-        await ParseCosmetics();
-        await ParsePerks();
-        await ParseCharacterClasses();
-        await ParseTomes();
-        await ParseAddons();
-        await ParseItems();
-        await ParseAddons();
-        await ParseOfferings();
-        await ParseMaps();
-        await ParseDlcs();
-        await ParseJournals();
-        await ParseSpecialEvents();
-        await ParseCollections();
-        await ParseBundles();
-        IsParsing = false;
-    }
-
-    private async Task ParseRifts()
+    private async Task ParseEverything(CancellationToken token)
     {
         try
         {
             IsParsing = true;
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+            await Helpers.ExecuteWithCancellation(() => ParseRifts(token), token);
+            await Helpers.ExecuteWithCancellation(() => ParseCharacters(token), token);
+            await Helpers.ExecuteWithCancellation(() => ParseCosmetics(token), token);
+            await Helpers.ExecuteWithCancellation(() => ParsePerks(token), token);
+            await Helpers.ExecuteWithCancellation(() => ParseCharacterClasses(token), token);
+            await Helpers.ExecuteWithCancellation(() => ParseTomes(token), token);
+            await Helpers.ExecuteWithCancellation(() => ParseAddons(token), token);
+            await Helpers.ExecuteWithCancellation(() => ParseItems(token), token);
+            await Helpers.ExecuteWithCancellation(() => ParseOfferings(token), token);
+            await Helpers.ExecuteWithCancellation(() => ParseMaps(token), token);
+            await Helpers.ExecuteWithCancellation(() => ParseDlcs(token), token);
+            await Helpers.ExecuteWithCancellation(() => ParseJournals(token), token);
+            await Helpers.ExecuteWithCancellation(() => ParseSpecialEvents(token), token);
+            await Helpers.ExecuteWithCancellation(() => ParseCollections(token), token);
+            await Helpers.ExecuteWithCancellation(() => ParseBundles(token), token);
+        }
+        catch
+        {
+            // do nothing, it's alredy logged in the parsers
+        }
+        finally
+        {
+            IsParsing = false;
+        }
+    }
 
-            await Rifts.InitializeRiftsDB();
+    private async Task ParseRifts(CancellationToken token)
+    {
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
+
+            await Rifts.InitializeRiftsDB(token);
 
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-            IsParsing = false;
         }
         catch (TypeInitializationException ex)
         {
-            IsParsing = false;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
             LogsWindowViewModel.Instance.AddLog($"Error occured, make sure you meet requirements of this parser! {ex.Message}", Logger.LogTags.Error);
         }
+        catch (OperationCanceledException)
+        {
+            LogsWindowViewModel.Instance.AddLog("Parsing was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
+        }
         catch (Exception ex)
         {
-            IsParsing = false;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
             LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
         }
+        finally
+        {
+            IsParsing = false;
+        }
     }
 
-    private async Task ParseCharacters()
+    private async Task ParseCharacters(CancellationToken token)
     {
         try
         {
             IsParsing = true;
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
 
-            await Characters.InitializeCharactersDB();
-
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-            IsParsing = false;
-        }
-        catch (Exception ex)
-        {
-            IsParsing = false;
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
-            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
-        }
-    }
-
-    private async Task ParseCosmetics()
-    {
-        try
-        {
-            IsParsing = true;
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
-
-            await Cosmetics.InitializeCosmeticsDB();
+            await Characters.InitializeCharactersDB(token);
 
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-            IsParsing = false;
         }
         catch (TypeInitializationException ex)
         {
-            IsParsing = false;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
             LogsWindowViewModel.Instance.AddLog($"Error occured, make sure you meet requirements of this parser! {ex.Message}", Logger.LogTags.Error);
         }
+        catch (OperationCanceledException)
+        {
+            LogsWindowViewModel.Instance.AddLog("Parsing was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
+        }
         catch (Exception ex)
         {
-            IsParsing = false;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
             LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
         }
+        finally
+        {
+            IsParsing = false;
+        }
     }
 
-    private async Task ParsePerks()
+    private async Task ParseCosmetics(CancellationToken token)
     {
         try
         {
             IsParsing = true;
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
 
-            await Perks.InitializePerksDB();
-
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-            IsParsing = false;
-        }
-        catch (Exception ex)
-        {
-            IsParsing = false;
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
-            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
-        }
-    }
-
-    private async Task ParseCharacterClasses()
-    {
-        try
-        {
-            IsParsing = true;
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
-
-            await CharacterClasses.InitializeCharacterClassesDB();
+            await Cosmetics.InitializeCosmeticsDB(token);
 
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-            IsParsing = false;
-        }
-        catch (Exception ex)
-        {
-            IsParsing = false;
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
-            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
-        }
-    }
-
-    private async Task ParseTomes()
-    {
-        try
-        {
-            IsParsing = true;
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
-
-            await Tomes.InitializeTomesDB();
-
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-            IsParsing = false;
         }
         catch (TypeInitializationException ex)
         {
-            IsParsing = false;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
             LogsWindowViewModel.Instance.AddLog($"Error occured, make sure you meet requirements of this parser! {ex.Message}", Logger.LogTags.Error);
         }
+        catch (OperationCanceledException)
+        {
+            LogsWindowViewModel.Instance.AddLog("Parsing was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
+        }
         catch (Exception ex)
         {
-            IsParsing = false;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
             LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
         }
+        finally
+        {
+            IsParsing = false;
+        }
     }
 
-    private async Task ParseAddons()
+    private async Task ParsePerks(CancellationToken token)
     {
         try
         {
             IsParsing = true;
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
 
-            await Addons.InitializeAddonsDB();
-
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-            IsParsing = false;
-        }
-        catch (Exception ex)
-        {
-            IsParsing = false;
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
-            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
-        }
-    }
-
-    private async Task ParseItems()
-    {
-        try
-        {
-            IsParsing = true;
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
-
-            await Items.InitializeItemsDB();
+            await Perks.InitializePerksDB(token);
 
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-            IsParsing = false;
-        }
-        catch (Exception ex)
-        {
-            IsParsing = false;
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
-            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
-        }
-    }
-
-    private async Task ParseOfferings()
-    {
-        try
-        {
-            IsParsing = true;
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
-
-            await Offerings.InitializeOfferingsDB();
-
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-            IsParsing = false;
-        }
-        catch (Exception ex)
-        {
-            IsParsing = false;
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
-            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
-        }
-    }
-
-    private async Task ParseMaps()
-    {
-        try
-        {
-            IsParsing = true;
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
-
-            await Maps.InitializeMapsDB();
-
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-            IsParsing = false;
-        }
-        catch (Exception ex)
-        {
-            IsParsing = false;
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
-            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
-        }
-    }
-
-    private async Task ParseDlcs()
-    {
-        try
-        {
-            IsParsing = true;
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
-
-            await DLCs.InitializeDlcsDB();
-
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-            IsParsing = false;
-        }
-        catch (Exception ex)
-        {
-            IsParsing = false;
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
-            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
-        }
-    }
-
-    private async Task ParseJournals()
-    {
-        try
-        {
-            IsParsing = true;
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
-
-            await Journals.InitializeJournalsDB();
-
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-            IsParsing = false;
-        }
-        catch (Exception ex)
-        {
-            IsParsing = false;
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
-            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
-        }
-    }
-
-    private async Task ParseSpecialEvents()
-    {
-        try
-        {
-            IsParsing = true;
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
-
-            await SpecialEvents.InitializeSpecialEventsDB();
-
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-            IsParsing = false;
-        }
-        catch (Exception ex)
-        {
-            IsParsing = false;
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
-            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
-        }
-    }
-
-    private async Task ParseCollections()
-    {
-        try
-        {
-            IsParsing = true;
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
-
-            await Collections.InitializeCollectionsDB();
-
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-            IsParsing = false;
         }
         catch (TypeInitializationException ex)
         {
-            IsParsing = false;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
             LogsWindowViewModel.Instance.AddLog($"Error occured, make sure you meet requirements of this parser! {ex.Message}", Logger.LogTags.Error);
         }
+        catch (OperationCanceledException)
+        {
+            LogsWindowViewModel.Instance.AddLog("Parsing was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
+        }
         catch (Exception ex)
         {
-            IsParsing = false;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
             LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
         }
+        finally
+        {
+            IsParsing = false;
+        }
     }
 
-    private async Task ParseBundles()
+    private async Task ParseCharacterClasses(CancellationToken token)
     {
         try
         {
             IsParsing = true;
-            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
 
-            await Bundles.InitializeBundlesDB();
+            await CharacterClasses.InitializeCharacterClassesDB(token);
 
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
-            IsParsing = false;
         }
         catch (TypeInitializationException ex)
         {
-            IsParsing = false;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
             LogsWindowViewModel.Instance.AddLog($"Error occured, make sure you meet requirements of this parser! {ex.Message}", Logger.LogTags.Error);
         }
+        catch (OperationCanceledException)
+        {
+            LogsWindowViewModel.Instance.AddLog("Parsing was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
+        }
         catch (Exception ex)
         {
-            IsParsing = false;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
             LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
+        finally
+        {
+            IsParsing = false;
+        }
+    }
+
+    private async Task ParseTomes(CancellationToken token)
+    {
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
+
+            await Tomes.InitializeTomesDB(token);
+
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        }
+        catch (TypeInitializationException ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"Error occured, make sure you meet requirements of this parser! {ex.Message}", Logger.LogTags.Error);
+        }
+        catch (OperationCanceledException)
+        {
+            LogsWindowViewModel.Instance.AddLog("Parsing was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
+        }
+        catch (Exception ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
+        finally
+        {
+            IsParsing = false;
+        }
+    }
+
+    private async Task ParseAddons(CancellationToken token)
+    {
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
+
+            await Addons.InitializeAddonsDB(token);
+
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        }
+        catch (TypeInitializationException ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"Error occured, make sure you meet requirements of this parser! {ex.Message}", Logger.LogTags.Error);
+        }
+        catch (OperationCanceledException)
+        {
+            LogsWindowViewModel.Instance.AddLog("Parsing was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
+        }
+        catch (Exception ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
+        finally
+        {
+            IsParsing = false;
+        }
+    }
+
+    private async Task ParseItems(CancellationToken token)
+    {
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
+
+            await Items.InitializeItemsDB(token);
+
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        }
+        catch (TypeInitializationException ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"Error occured, make sure you meet requirements of this parser! {ex.Message}", Logger.LogTags.Error);
+        }
+        catch (OperationCanceledException)
+        {
+            LogsWindowViewModel.Instance.AddLog("Parsing was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
+        }
+        catch (Exception ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
+        finally
+        {
+            IsParsing = false;
+        }
+    }
+
+    private async Task ParseOfferings(CancellationToken token)
+    {
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
+
+            await Offerings.InitializeOfferingsDB(token);
+
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        }
+        catch (TypeInitializationException ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"Error occured, make sure you meet requirements of this parser! {ex.Message}", Logger.LogTags.Error);
+        }
+        catch (OperationCanceledException)
+        {
+            LogsWindowViewModel.Instance.AddLog("Parsing was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
+        }
+        catch (Exception ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
+        finally
+        {
+            IsParsing = false;
+        }
+    }
+
+    private async Task ParseMaps(CancellationToken token)
+    {
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
+
+            await Maps.InitializeMapsDB(token);
+
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        }
+        catch (TypeInitializationException ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"Error occured, make sure you meet requirements of this parser! {ex.Message}", Logger.LogTags.Error);
+        }
+        catch (OperationCanceledException)
+        {
+            LogsWindowViewModel.Instance.AddLog("Parsing was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
+        }
+        catch (Exception ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
+        finally
+        {
+            IsParsing = false;
+        }
+    }
+
+    private async Task ParseDlcs(CancellationToken token)
+    {
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
+
+            await DLCs.InitializeDlcsDB(token);
+
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        }
+        catch (TypeInitializationException ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"Error occured, make sure you meet requirements of this parser! {ex.Message}", Logger.LogTags.Error);
+        }
+        catch (OperationCanceledException)
+        {
+            LogsWindowViewModel.Instance.AddLog("Parsing was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
+        }
+        catch (Exception ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
+        finally
+        {
+            IsParsing = false;
+        }
+    }
+
+    private async Task ParseJournals(CancellationToken token)
+    {
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
+
+            await Journals.InitializeJournalsDB(token);
+
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        }
+        catch (TypeInitializationException ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"Error occured, make sure you meet requirements of this parser! {ex.Message}", Logger.LogTags.Error);
+        }
+        catch (OperationCanceledException)
+        {
+            LogsWindowViewModel.Instance.AddLog("Parsing was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
+        }
+        catch (Exception ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
+        finally
+        {
+            IsParsing = false;
+        }
+    }
+
+    private async Task ParseSpecialEvents(CancellationToken token)
+    {
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
+
+            await SpecialEvents.InitializeSpecialEventsDB(token);
+
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        }
+        catch (TypeInitializationException ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"Error occured, make sure you meet requirements of this parser! {ex.Message}", Logger.LogTags.Error);
+        }
+        catch (OperationCanceledException)
+        {
+            LogsWindowViewModel.Instance.AddLog("Parsing was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
+        }
+        catch (Exception ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
+        finally
+        {
+            IsParsing = false;
+        }
+    }
+
+    private async Task ParseCollections(CancellationToken token)
+    {
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
+
+            await Collections.InitializeCollectionsDB(token);
+
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        }
+        catch (TypeInitializationException ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"Error occured, make sure you meet requirements of this parser! {ex.Message}", Logger.LogTags.Error);
+        }
+        catch (OperationCanceledException)
+        {
+            LogsWindowViewModel.Instance.AddLog("Parsing was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
+        }
+        catch (Exception ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
+        finally
+        {
+            IsParsing = false;
+        }
+    }
+
+    private async Task ParseBundles(CancellationToken token)
+    {
+        try
+        {
+            IsParsing = true;
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
+
+            await Bundles.InitializeBundlesDB(token);
+
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        }
+        catch (TypeInitializationException ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"Error occured, make sure you meet requirements of this parser! {ex.Message}", Logger.LogTags.Error);
+        }
+        catch (OperationCanceledException)
+        {
+            LogsWindowViewModel.Instance.AddLog("Parsing was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
+        }
+        catch (Exception ex)
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            LogsWindowViewModel.Instance.AddLog($"{ex.Message}", Logger.LogTags.Error);
+        }
+        finally
+        {
+            IsParsing = false;
         }
     }
 }

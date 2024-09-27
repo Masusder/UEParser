@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Newtonsoft.Json;
@@ -15,7 +16,7 @@ public class SpecialEvents
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
 
-    public static async Task InitializeSpecialEventsDB()
+    public static async Task InitializeSpecialEventsDB(CancellationToken token)
     {
         await Task.Run(() =>
         {
@@ -23,12 +24,12 @@ public class SpecialEvents
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.SpecialEvents);
 
-            ParseSpecialEvents(parsedSpecialEventsDB);
+            ParseSpecialEvents(parsedSpecialEventsDB, token);
 
             LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedSpecialEventsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.SpecialEvents);
 
-            ParseLocalizationAndSave(parsedSpecialEventsDB);
-        });
+            ParseLocalizationAndSave(parsedSpecialEventsDB, token);
+        }, token);
     }
 
     private static readonly string[] ignoreEvents =
@@ -37,7 +38,7 @@ public class SpecialEvents
         "Gnome2021",
         "EddieZodiac"
     ];
-    private static void ParseSpecialEvents(Dictionary<string, SpecialEvent> parsedSpecialEventsDB)
+    private static void ParseSpecialEvents(Dictionary<string, SpecialEvent> parsedSpecialEventsDB, CancellationToken token)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("SpecialEventsDB.json");
 
@@ -55,6 +56,8 @@ public class SpecialEvents
 
             foreach (var item in assetItems[0]["Rows"])
             {
+                token.ThrowIfCancellationRequested();
+
                 string eventId = item.Value["EventId"];
 
                 Dictionary<string, List<LocalizationEntry>> localizationModel = [];
@@ -84,7 +87,7 @@ public class SpecialEvents
         }
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, SpecialEvent> parsedSpecialEventsDB)
+    private static void ParseLocalizationAndSave(Dictionary<string, SpecialEvent> parsedSpecialEventsDB, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.SpecialEvents);
 
@@ -92,9 +95,10 @@ public class SpecialEvents
 
         foreach (string filePath in filePaths)
         {
+            token.ThrowIfCancellationRequested();
+
             string jsonString = File.ReadAllText(filePath);
             string fileName = Path.GetFileName(filePath);
-
             string langKey = StringUtils.LangSplit(fileName);
 
             Dictionary<string, string> languageKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString) ?? throw new Exception($"Failed to load following locres file: {langKey}.");

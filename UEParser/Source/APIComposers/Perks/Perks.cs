@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Newtonsoft.Json;
@@ -15,7 +16,7 @@ public class Perks
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> localizationData = [];
 
-    public static async Task InitializePerksDB()
+    public static async Task InitializePerksDB(CancellationToken token)
     {
         await Task.Run(() =>
         {
@@ -23,15 +24,15 @@ public class Perks
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Perks);
 
-            ParsePerks(parsedPerksDB);
+            ParsePerks(parsedPerksDB, token);
 
             LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedPerksDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Perks);
 
-            ParseLocalizationAndSave(parsedPerksDB);
-        });
+            ParseLocalizationAndSave(parsedPerksDB, token);
+        }, token);
     }
 
-    public static void ParsePerks(Dictionary<string, Perk> parsedPerksDB)
+    public static void ParsePerks(Dictionary<string, Perk> parsedPerksDB, CancellationToken token)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("PerkDB.json");
 
@@ -48,6 +49,8 @@ public class Perks
 
             foreach (var item in assetItems[0]["Rows"])
             {
+                token.ThrowIfCancellationRequested();
+
                 string perkId = item.Name;
 
                 JArray tagArray = item.Value["Tags"];
@@ -115,7 +118,7 @@ public class Perks
         }
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, Perk> parsedPerksDB)
+    private static void ParseLocalizationAndSave(Dictionary<string, Perk> parsedPerksDB, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Perks);
 
@@ -123,6 +126,8 @@ public class Perks
 
         foreach (string filePath in filePaths)
         {
+            token.ThrowIfCancellationRequested();
+
             string jsonString = File.ReadAllText(filePath);
             string fileName = Path.GetFileName(filePath);
             string langKey = StringUtils.LangSplit(fileName);

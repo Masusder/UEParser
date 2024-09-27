@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Newtonsoft.Json;
@@ -14,7 +15,7 @@ public class Journals
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
 
-    public static async Task InitializeJournalsDB()
+    public static async Task InitializeJournalsDB(CancellationToken token)
     {
         await Task.Run(() =>
         {
@@ -22,15 +23,15 @@ public class Journals
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Journals);
 
-            ParseJournals(parsedJournalsDB);
+            ParseJournals(parsedJournalsDB, token);
 
             LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedJournalsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Journals);
 
-            ParseLocalizationAndSave(parsedJournalsDB);
-        });
+            ParseLocalizationAndSave(parsedJournalsDB, token);
+        }, token);
     }
 
-    private static void ParseJournals(Dictionary<string, Journal> parsedJournalsDB)
+    private static void ParseJournals(Dictionary<string, Journal> parsedJournalsDB, CancellationToken token)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("ArchiveJournalDB.json");
 
@@ -45,6 +46,8 @@ public class Journals
 
             foreach (var item in assetItems[0]["Rows"])
             {
+                token.ThrowIfCancellationRequested();
+
                 string tomeId = item.Name;
 
                 Dictionary<string, List<LocalizationEntry>> localizationModel = [];
@@ -143,7 +146,7 @@ public class Journals
         }
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, Journal> parsedJournalsDB)
+    private static void ParseLocalizationAndSave(Dictionary<string, Journal> parsedJournalsDB, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Journals);
 
@@ -151,9 +154,10 @@ public class Journals
 
         foreach (string filePath in filePaths)
         {
+            token.ThrowIfCancellationRequested();
+
             string jsonString = File.ReadAllText(filePath);
             string fileName = Path.GetFileName(filePath);
-
             string langKey = StringUtils.LangSplit(fileName);
 
             Dictionary<string, string> languageKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString) ?? throw new Exception($"Failed to load following locres file: {langKey}.");

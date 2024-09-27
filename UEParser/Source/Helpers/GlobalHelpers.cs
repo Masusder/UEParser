@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Data;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json;
@@ -484,5 +486,11 @@ public partial class Helpers
                 }
             ];
         }
+    }
+
+    public static async Task ExecuteWithCancellation(Func<Task> action, CancellationToken token)
+    {
+        token.ThrowIfCancellationRequested();
+        await action();
     }
 }

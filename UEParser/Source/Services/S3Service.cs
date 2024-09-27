@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Amazon;
 using Amazon.S3;
+using Amazon.Runtime;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using UEParser.ViewModels;
@@ -16,7 +17,7 @@ public class S3Service
 
     public S3Service(string accessKey, string secretKey, string region)
     {
-        var credentials = new Amazon.Runtime.BasicAWSCredentials(accessKey, secretKey);
+        var credentials = new BasicAWSCredentials(accessKey, secretKey);
         _s3Client = new AmazonS3Client(credentials, RegionEndpoint.GetBySystemName(region));
     }
 

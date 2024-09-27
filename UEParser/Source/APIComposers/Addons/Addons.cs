@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Newtonsoft.Json;
@@ -15,7 +16,7 @@ public class Addons
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
 
-    public static async Task InitializeAddonsDB()
+    public static async Task InitializeAddonsDB(CancellationToken token)
     {
         await Task.Run(() =>
         {
@@ -23,12 +24,12 @@ public class Addons
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Addons);
 
-            ParseAddons(parsedAddonsDB);
+            ParseAddons(parsedAddonsDB, token);
 
             LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedAddonsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Addons);
 
-            ParseLocalizationAndSave(parsedAddonsDB);
-        });
+            ParseLocalizationAndSave(parsedAddonsDB, token);
+        }, token);
     }
 
     private static readonly string[] ignoreAddons =
@@ -45,7 +46,7 @@ public class Addons
         "Addon_GasBomb_20a",
         "Addon_GasBomb_20b"
     ];
-    private static void ParseAddons(Dictionary<string, Addon> parsedAddonsDB)
+    private static void ParseAddons(Dictionary<string, Addon> parsedAddonsDB, CancellationToken token)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("ItemAddonDB.json");
 
@@ -60,6 +61,8 @@ public class Addons
 
             foreach (var item in assetItems[0]["Rows"])
             {
+                token.ThrowIfCancellationRequested();
+
                 string addonId = item.Name;
 
                 if (ignoreAddons.Contains(addonId)) continue;
@@ -122,7 +125,7 @@ public class Addons
         }
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, Addon> parsedAddonsDB)
+    private static void ParseLocalizationAndSave(Dictionary<string, Addon> parsedAddonsDB, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Addons);
 
@@ -130,9 +133,10 @@ public class Addons
 
         foreach (string filePath in filePaths)
         {
+            token.ThrowIfCancellationRequested();
+
             string jsonString = File.ReadAllText(filePath);
             string fileName = Path.GetFileName(filePath);
-
             string langKey = StringUtils.LangSplit(fileName);
 
             Dictionary<string, string> languageKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString) ?? throw new Exception($"Failed to load following locres file: {langKey}.");
