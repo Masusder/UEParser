@@ -237,6 +237,10 @@ public class Cosmetics
                 }
 
                 string secondaryIcon = item.Value["UIData"]["SecondaryIcon"];
+                if (!string.IsNullOrEmpty(secondaryIcon))
+                {
+                    secondaryIcon = StringUtils.AddRootDirectory(secondaryIcon, "/images/");
+                }
 
                 string roleString = item.Value["AssociatedRole"];
                 string role = StringUtils.StringSplitVE(roleString);
