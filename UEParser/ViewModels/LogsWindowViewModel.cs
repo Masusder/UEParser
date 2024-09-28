@@ -108,7 +108,7 @@ public partial class LogsWindowViewModel : ReactiveObject
         _stateIcon = this.WhenAnyValue(x => x.LogState)
             .Select(state => state switch
             {
-                ELogState.Finished => "fa-solid fa-trophy",
+                ELogState.Finished => "fa-solid fa-flag-checkered",
                 ELogState.Running => "fa-solid fa-person-running",
                 ELogState.RunningWithCancellation => "fa-solid fa-person-running",
                 ELogState.Cancellation => "fa-solid fa-ban",
