@@ -63,7 +63,7 @@ public class AssetsExtractorViewModel : ReactiveObject
         }
         catch (OperationCanceledException)
         {
-            LogsWindowViewModel.Instance.AddLog("Extraction was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.AddLog("Meshes extraction was canceled by the user.", Logger.LogTags.Warning);
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
         }
         catch (Exception ex)
@@ -92,7 +92,7 @@ public class AssetsExtractorViewModel : ReactiveObject
         }
         catch (OperationCanceledException)
         {
-            LogsWindowViewModel.Instance.AddLog("Extraction was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.AddLog("Textures extraction was canceled by the user.", Logger.LogTags.Warning);
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
         }
         catch (Exception ex)
@@ -121,7 +121,7 @@ public class AssetsExtractorViewModel : ReactiveObject
         }
         catch (OperationCanceledException)
         {
-            LogsWindowViewModel.Instance.AddLog("Extraction was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.AddLog("UI extraction was canceled by the user.", Logger.LogTags.Warning);
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
         }
         catch (Exception ex)
@@ -150,7 +150,7 @@ public class AssetsExtractorViewModel : ReactiveObject
         }
         catch (OperationCanceledException)
         {
-            LogsWindowViewModel.Instance.AddLog("Extraction was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.AddLog("Animations extraction was canceled by the user.", Logger.LogTags.Warning);
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
         }
         catch (Exception ex)
@@ -179,7 +179,7 @@ public class AssetsExtractorViewModel : ReactiveObject
         }
         catch (OperationCanceledException)
         {
-            LogsWindowViewModel.Instance.AddLog("Extraction was canceled by the user.", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.AddLog("Audio extraction was canceled by the user.", Logger.LogTags.Warning);
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
         }
         catch (Exception ex)

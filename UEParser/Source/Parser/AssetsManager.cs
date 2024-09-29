@@ -633,74 +633,39 @@ public class AssetsManager
         LogsWindowViewModel.Instance.AddLog("Audio extraction is highly intensive process, which may take even up to an hour, depending whether audio registry is available..", Logger.LogTags.Info);
         await Task.Run(async () =>
         {
-            token.ThrowIfCancellationRequested();
-
             LogsWindowViewModel.Instance.AddLog("Moving compressed audio into temporary folder..", Logger.LogTags.Info);
-
-            WwiseFileHandler.MoveCompressedAudio();
-
-            token.ThrowIfCancellationRequested();
+            Helpers.ExecuteWithCancellation(() => WwiseFileHandler.MoveCompressedAudio(token), token);
 
             LogsWindowViewModel.Instance.AddLog("Unpacking audio banks..", Logger.LogTags.Info);
-
-            await WwiseFileHandler.UnpackAudioBanks();
-
-            token.ThrowIfCancellationRequested();
+            await Helpers.ExecuteWithCancellation(() => WwiseFileHandler.UnpackAudioBanks(), token);
 
             LogsWindowViewModel.Instance.AddLog("Generating txtp files from compiled audio..", Logger.LogTags.Info);
-
-            WwiseFileHandler.GenerateTxtp();
-
-            token.ThrowIfCancellationRequested();
+            Helpers.ExecuteWithCancellation(() => WwiseFileHandler.GenerateTxtp(), token);
 
             LogsWindowViewModel.Instance.AddLog("Handling truncated txtp files..", Logger.LogTags.Info);
-
-            WwiseFileHandler.RenameAndMoveTruncatedTxtpFiles();
-
-            token.ThrowIfCancellationRequested();
+            Helpers.ExecuteWithCancellation(() => WwiseFileHandler.RenameAndMoveTruncatedTxtpFiles(), token);
 
             LogsWindowViewModel.Instance.AddLog("Collecting associated audio event IDs..", Logger.LogTags.Info);
-
-            var associatedAudioEventIds = WwiseFileHandler.GrabAudioEventIds();
-
-            token.ThrowIfCancellationRequested();
+            var associatedAudioEventIds = Helpers.ExecuteWithCancellation(() => WwiseFileHandler.GrabAudioEventIds(), token);
 
             LogsWindowViewModel.Instance.AddLog("Collecting Wwise data from preallocated buffers..", Logger.LogTags.Info);
-
-            var audioEventsLinkage = WwiseFileHandler.ConstructAudioEventsLinkage();
-
-            token.ThrowIfCancellationRequested();
+            var audioEventsLinkage = Helpers.ExecuteWithCancellation(() => WwiseFileHandler.ConstructAudioEventsLinkage(), token);
 
             LogsWindowViewModel.Instance.AddLog("Populating audio registry..", Logger.LogTags.Info);
-
-            WwiseRegister.PopulateAudioRegister();
-            WwiseRegister.SaveAudioInfoDictionary();
-
-            token.ThrowIfCancellationRequested();
+            Helpers.ExecuteWithCancellation(() => WwiseRegister.PopulateAudioRegister(), token);
+            Helpers.ExecuteWithCancellation(() => WwiseRegister.SaveAudioInfoDictionary(), token);
 
             LogsWindowViewModel.Instance.AddLog("Converting audio to WAV audio format..", Logger.LogTags.Info);
-
-            WwiseFileHandler.ConvertTxtpToWav(token);
-
-            token.ThrowIfCancellationRequested();
+            Helpers.ExecuteWithCancellation(() => WwiseFileHandler.ConvertTxtpToWav(token), token);
 
             LogsWindowViewModel.Instance.AddLog("Reversing audio structure..", Logger.LogTags.Info);
-
-            WwiseFileHandler.ReverseAudioStructure(associatedAudioEventIds, audioEventsLinkage);
-
-            token.ThrowIfCancellationRequested();
+            Helpers.ExecuteWithCancellation(() => WwiseFileHandler.ReverseAudioStructure(associatedAudioEventIds, audioEventsLinkage), token);
 
             LogsWindowViewModel.Instance.AddLog("Moving converted audio into output directory..", Logger.LogTags.Info);
-
-            WwiseFileHandler.MoveAudioToOutput();
-
-            token.ThrowIfCancellationRequested();
+            Helpers.ExecuteWithCancellation(() => WwiseFileHandler.MoveAudioToOutput(), token);
 
             LogsWindowViewModel.Instance.AddLog("Deleting temporary audio folder..", Logger.LogTags.Info);
-
-            WwiseFileHandler.CleanExtractedAudioDir();
-
-            token.ThrowIfCancellationRequested();
+            Helpers.ExecuteWithCancellation(() => WwiseFileHandler.CleanExtractedAudioDir(), token);
         }, token);
     }
 

@@ -112,6 +112,7 @@ public partial class Helpers
         return versionWithBranch;
     }
 
+    #region Helper File Components
     public static void CreateCharacterTable()
     {
         string versionWithBranch = ConstructVersionHeaderWithBranch();
@@ -182,7 +183,9 @@ public partial class Helpers
 
         File.WriteAllText(outputPath, jsonString);
     }
+    #endregion
 
+    #region Localization Helpers
     private static readonly string[] itemsWithoutLocalization = [
         "C_Head01",
         "D_Head01",
@@ -487,10 +490,35 @@ public partial class Helpers
             ];
         }
     }
+    #endregion
 
+    #region Method Wrappers
+    // For asynchronous actions returning a value
+    public static async Task<T> ExecuteWithCancellation<T>(Func<Task<T>> action, CancellationToken token)
+    {
+        token.ThrowIfCancellationRequested();
+        return await action();
+    }
+
+    // For asynchronous actions with no return value
     public static async Task ExecuteWithCancellation(Func<Task> action, CancellationToken token)
     {
         token.ThrowIfCancellationRequested();
         await action();
     }
+
+    // For synchronous actions returning a value
+    public static T ExecuteWithCancellation<T>(Func<T> action, CancellationToken token)
+    {
+        token.ThrowIfCancellationRequested();
+        return action();
+    }
+
+    // For synchronous actions with no return value
+    public static void ExecuteWithCancellation(Action action, CancellationToken token)
+    {
+        token.ThrowIfCancellationRequested();
+        action();
+    }
+    #endregion
 }

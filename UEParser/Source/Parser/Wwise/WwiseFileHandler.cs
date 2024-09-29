@@ -19,7 +19,7 @@ public partial class WwiseFileHandler
     private static readonly string WwiseStructured = Path.Combine(GlobalVariables.pathToExtractedAudio, "WwiseStructured");
     private static readonly string PathToUEAssetsRegistry = Path.Combine(GlobalVariables.pathToExtractedAssets, "DeadByDaylight", "AssetRegistry.json");
 
-    public static void MoveCompressedAudio()
+    public static void MoveCompressedAudio(CancellationToken token)
     {
         string pathToExtractedWwiseDirectory = Path.Combine(GlobalVariables.pathToExtractedAssets, "DeadByDaylight", "Content", "WwiseAudio", "Cooked");
 
@@ -36,6 +36,8 @@ public partial class WwiseFileHandler
 
         foreach (var filePath in filesToMove)
         {
+            token.ThrowIfCancellationRequested();
+
             try
             {
                 string originalFilePath = StringUtils.StripDynamicDirectory(filePath, pathToExtractedWwiseDirectory);
@@ -208,16 +210,16 @@ public partial class WwiseFileHandler
             if (tagsAndValues.TryGetValue("WwiseShortId", out JToken wwiseIdToken))
             {
                 string wwiseId = wwiseIdToken.ToString();
-                if (long.TryParse(wwiseId, out long wwiseIdInt))
+                if (long.TryParse(wwiseId, out long wwiseIdLong))
                 {
-                    long adjustedWwiseId = wwiseIdInt;
+                    long adjustedWwiseId = wwiseIdLong;
 
-                    // If audio event id is negative we need to add double maxium integer value and use that instead
-                    // For some reason ids overflow to negativity in assets registry and don't match to compiled audio event ids
+                    // If audio event id is negative we need to add maxium unsigned integer value and use that instead
+                    // Ids overflow to negativity in assets registry and don't match to compiled audio event ids because of int type mismatch
                     // In some cases adjusted value is also off by 2
-                    if (wwiseIdInt < 0)
+                    if (wwiseIdLong < 0)
                     {
-                        adjustedWwiseId = wwiseIdInt + 2L * int.MaxValue;
+                        adjustedWwiseId = wwiseIdLong + uint.MaxValue;
                     }
 
                     string wwiseName = tagsAndValues["WwiseName"].ToString();

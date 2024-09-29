@@ -9,7 +9,7 @@ public class GlobalVariables
     // Root directory
     public static readonly string rootDir = AppDomain.CurrentDomain.BaseDirectory;
 
-    #region BINARIES/SCRIPTS PATHS
+    #region Binaries/Scripts Paths
     public static readonly string bnkExtractorPath = Path.Combine(rootDir, ".data", "bnk-extract.exe");
     public static readonly string modelsConverterScriptPath = Path.Combine(rootDir, ".data", "UEModelsConverter.py");
     //public static readonly string revorbPath = Path.Combine(rootDir, ".data", "revorb.exe");
@@ -22,7 +22,7 @@ public class GlobalVariables
     public static readonly string tempDir = Path.Combine(Path.GetPathRoot(rootDir) ?? "C:\\", "WWISE");
     #endregion
 
-    #region DIRECTORIES PATHS
+    #region Directories Paths
     public static readonly string pathToExtractedAssets = Path.Combine(rootDir, "Dependencies", "ExtractedAssets");
     public static readonly string pathToExtractedAudio = Path.Combine(rootDir, "Dependencies", "ExtractedAudio");
     public static readonly string pathToDynamicAssets = Path.Combine(rootDir, "Output", "DynamicAssets");
@@ -33,7 +33,7 @@ public class GlobalVariables
     public static readonly string pathToTemporaryWwise = Path.Combine(pathToExtractedAudio, "WwiseTemporary");
     #endregion
 
-    #region OTHER
+    #region Other
     public static readonly string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch(); // Ex. "8.1.0_ptb"
     public static readonly string compareVersionWithBranch = Helpers.ConstructVersionHeaderWithBranch(true);
     public static readonly string dbdinfoBaseUrl = "https://dbd-info.com/";
