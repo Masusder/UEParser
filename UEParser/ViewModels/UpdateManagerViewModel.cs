@@ -203,7 +203,7 @@ public class UpdateManagerViewModel : ReactiveObject
 
                 if (string.IsNullOrEmpty(bucketName))
                 {
-                    throw new Exception("Bucket name is not set in settings");
+                    throw new Exception("Bucket name is not set in settings.");
                 }
 
                 LogsWindowViewModel.Instance.AddLog("Loading list of objects in the bucket..", Logger.LogTags.Info);
@@ -212,7 +212,7 @@ public class UpdateManagerViewModel : ReactiveObject
 
                 var objectKeys = s3Service.ListAllObjectsInFolder(bucketName, "assets");
 
-                LogsWindowViewModel.Instance.AddLog("Loading list of objects in the models mappings..", Logger.LogTags.Info);
+                LogsWindowViewModel.Instance.AddLog("Loading list of objects in the model mappings..", Logger.LogTags.Info);
 
                 await Task.Delay(100);
 

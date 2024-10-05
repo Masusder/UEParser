@@ -1,10 +1,10 @@
-using Avalonia.Markup.Xaml;
-using Avalonia.Input;
-using FluentAvalonia.UI.Windowing;
-using Avalonia.Media;
-using System.Threading.Tasks;
-using System.Threading;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Avalonia.Input;
+using Avalonia.Media;
+using Avalonia.Markup.Xaml;
+using FluentAvalonia.UI.Windowing;
 using UEParser.Services;
 using UEParser.Network.Kraken;
 using UEParser.ViewModels;

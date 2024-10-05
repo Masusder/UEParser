@@ -58,7 +58,7 @@ public class Logger
         SaveLog("UEParser terminated. Logging finished.", LogTags.Exit, ELogExtraTag.None);
     }
 
-    public static void SaveLog(string logMessage, LogTags logTag, ELogExtraTag extraTag)
+    public static void SaveLog(string logMessage, LogTags logTag, ELogExtraTag extraTag = ELogExtraTag.None)
     {
         lock (LogLock)
         {

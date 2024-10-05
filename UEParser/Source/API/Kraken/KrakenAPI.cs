@@ -157,20 +157,15 @@ public partial class KrakenAPI
         {
             string fullProfileUrl = ConstructApiUrl("getPlayerFullProfileState");
 
-            LogsWindowViewModel.Instance.AddLog($"Fetching Full Profile..", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Fetching and saving Full Profile..", Logger.LogTags.Info);
 
             NetAPI.ApiResponse response = await NetAPI.FetchUrl(fullProfileUrl);
 
             if (response.Success)
             {
-                // Unlike other requests, Full Profile response needs to be decoded
-                LogsWindowViewModel.Instance.AddLog($"Decrypting Full Profile..", Logger.LogTags.Info);
-
                 string branch = config.Core.VersionData.Branch.ToString();
-
+                // Unlike other requests, Full Profile response needs to be decoded
                 string decodedData = DbdDecryption.DecryptCDN(response.Data, branch);
-
-                LogsWindowViewModel.Instance.AddLog($"Saving Full Profile..", Logger.LogTags.Info);
 
                 FileWriter.SaveApiResponseToFile(decodedData, "fullProfile.json");
             }
