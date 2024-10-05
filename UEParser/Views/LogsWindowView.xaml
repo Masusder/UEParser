@@ -14,10 +14,31 @@
              x:DataType="vm:LogsWindowViewModel">
   <UserControl.Styles>
     <Style Selector="TextBox.logger">
-      <Setter Property="BorderBrush"
-              Value="#1AFFFFFF" />
-      <Setter Property="Background"
-              Value="#282828" />
+      <Setter Property="BorderBrush" Value="#1AFFFFFF" />
+      <Setter Property="Background" Value="#282828" />
+    </Style>
+
+    <Style Selector=".openOutputButton /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="BorderThickness" Value="1" />
+
+    </Style>
+    
+    <Style Selector=".openOutputButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#60fbcb40" />
+      <Setter Property="BorderBrush" Value="#80fbcb40" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="2" />
+    </Style>
+
+    <Style Selector=".clearLogsButton /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style Selector=".clearLogsButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#60ff0000" />
+      <Setter Property="BorderBrush" Value="#80ff0000" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="6, 6, 15, 15" />
     </Style>
   </UserControl.Styles>
   <Grid RowDefinitions="*, Auto">
@@ -44,80 +65,91 @@
               HorizontalAlignment="Left"
               VerticalAlignment="Center"
               Margin="5,0,0,0"
-                 Width="16"
-                 Height="16"
+              Width="16"
+              Height="16"
               Foreground="{Binding StateTextColor}"
-                 FontSize="14" />
+              FontSize="14" />
       <li:LoadingIndicator IsActive="{Binding IsLoading}"
                            Mode="ThreeDots"
                            Foreground="White"
                            HorizontalAlignment="Right"
                            SpeedRatio="1.2" />
     </Grid>
-    <StackPanel Orientation="Vertical"
-                HorizontalAlignment="Right"
-                Spacing="5"
-                Margin="10,10,12.5,10"
-                VerticalAlignment="Bottom">
-      <StackPanel Spacing="2.5">
+    <Border
+            Background="#323232"
+            HorizontalAlignment="Right"
+            Margin="10,10,12.5,10"
+            CornerRadius="15"
+            VerticalAlignment="Bottom">
+      <StackPanel Orientation="Vertical"
+                  HorizontalAlignment="Right"
+                  Spacing="5"
+                  VerticalAlignment="Bottom">
+        <StackPanel
+          Spacing="2.5">
+          <Button Grid.Row="0"
+                  ToolTip.Tip="Scroll to top"
+                  Width="32"
+                  CornerRadius="15, 15, 6, 6"
+                  HorizontalAlignment="Right"
+                  BorderBrush="Transparent"
+                  Background="Transparent"
+                  Cursor="Hand"
+                  Click="ScrollToTop"
+                  VerticalAlignment="Bottom">
+            <i:Icon Value="fa-solid fa-circle-up"
+                    Width="16"
+                    Height="16"
+                    FontSize="16" />
+          </Button>
+          <Button Grid.Row="0"
+                  ToolTip.Tip="Scroll to bottom"
+                  Width="32"
+                  HorizontalAlignment="Right"
+                  BorderBrush="Transparent"
+                  Background="Transparent"
+                  Cursor="Hand"
+                  Click="ScrollToBottom"
+                  VerticalAlignment="Bottom">
+            <i:Icon Value="fa-solid fa-circle-down"
+                    Width="16"
+                    Height="16"
+                    FontSize="16" />
+          </Button>
+        </StackPanel>
         <Button Grid.Row="0"
-                ToolTip.Tip="Scroll to top"
+                ToolTip.Tip="Open Output"
                 Width="32"
                 HorizontalAlignment="Right"
                 BorderBrush="Transparent"
                 Background="Transparent"
                 Cursor="Hand"
-                Click="ScrollToTop"
+                Classes="openOutputButton"
+                Command="{Binding OpenOutputCommand}"
                 VerticalAlignment="Bottom">
-          <i:Icon Value="fa-solid fa-circle-up"
+          <i:Icon Value="fa-solid fa-folder"
                   Width="16"
                   Height="16"
                   FontSize="16" />
         </Button>
         <Button Grid.Row="0"
-                ToolTip.Tip="Scroll to bottom"
+                ToolTip.Tip="Clear Logs"
                 Width="32"
                 HorizontalAlignment="Right"
                 BorderBrush="Transparent"
                 Background="Transparent"
+                CornerRadius="6, 6, 15, 15"
                 Cursor="Hand"
-                Click="ScrollToBottom"
+                Classes="clearLogsButton"
+                Command="{Binding ClearLogsCommand}"
                 VerticalAlignment="Bottom">
-          <i:Icon Value="fa-solid fa-circle-down"
+          <i:Icon Value="fa-solid fa-trash"
                   Width="16"
                   Height="16"
                   FontSize="16" />
         </Button>
       </StackPanel>
-      <Button Grid.Row="0"
-              ToolTip.Tip="Open Output"
-              Width="32"
-              HorizontalAlignment="Right"
-              BorderBrush="Transparent"
-              Background="Transparent"
-              Cursor="Hand"
-              Command="{Binding OpenOutputCommand}"
-              VerticalAlignment="Bottom">
-        <i:Icon Value="fa-solid fa-folder"
-                Width="16"
-                Height="16"
-                FontSize="16" />
-      </Button>
-      <Button Grid.Row="0"
-              ToolTip.Tip="Clear Logs"
-              Width="32"
-              HorizontalAlignment="Right"
-              BorderBrush="Transparent"
-              Background="Transparent"
-              Cursor="Hand"
-              Command="{Binding ClearLogsCommand}"
-              VerticalAlignment="Bottom">
-        <i:Icon Value="fa-solid fa-trash"
-                Width="16"
-                Height="16"
-                FontSize="16" />
-      </Button>
-    </StackPanel>
+    </Border>
     <!-- InfoBar to display when logs are cleared -->
     <ui:InfoBar x:Name="InfoBarControl"
                 Title="Logs Cleared"
