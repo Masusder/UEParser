@@ -5,8 +5,9 @@ namespace UEParser;
 
 public class Logger
 {
-    private static readonly string logDirectoryPath = Path.Combine(GlobalVariables.rootDir, "Output", "Logs");
-    private static readonly string logFilePath;
+    private static readonly string LogDirectoryPath = Path.Combine(GlobalVariables.rootDir, "Output", "Logs");
+    private static readonly object LogLock = new();
+    private static readonly string LogFilePath;
 
     public enum LogTags
     {
@@ -42,12 +43,9 @@ public class Logger
     {
         // Generate log file path with current date and time
         string logFileName = $"UEParser-Logs-{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.log";
-        logFilePath = Path.Combine(logDirectoryPath, logFileName);
+        LogFilePath = Path.Combine(LogDirectoryPath, logFileName);
 
-        if (!Directory.Exists(logDirectoryPath))
-        {
-            Directory.CreateDirectory(logDirectoryPath);
-        }
+        if (!Directory.Exists(LogDirectoryPath)) Directory.CreateDirectory(LogDirectoryPath);
     }
 
     public static void OnProcessExit(object? sender, EventArgs e)
@@ -62,28 +60,30 @@ public class Logger
 
     public static void SaveLog(string logMessage, LogTags logTag, ELogExtraTag extraTag)
     {
-        try
+        lock (LogLock)
         {
-            if (logFilePath != null)
+            try
             {
-
-                // Append the log message to the log file
-                using StreamWriter writer = File.AppendText(logFilePath);
-
-                string formattedLogMessage = $"[{DateTime.Now}] [{logTag}]";
-
-                if (extraTag != ELogExtraTag.None)
+                if (LogFilePath != null)
                 {
-                    formattedLogMessage += $" [{extraTag}]";
-                }
+                    // Append the log message to the log file
+                    using StreamWriter writer = File.AppendText(LogFilePath);
 
-                formattedLogMessage += $" {logMessage}";
-                writer.WriteLine(formattedLogMessage);
+                    string formattedLogMessage = $"[{DateTime.Now}] [{logTag}]";
+
+                    if (extraTag != ELogExtraTag.None)
+                    {
+                        formattedLogMessage += $" [{extraTag}]";
+                    }
+
+                    formattedLogMessage += $" {logMessage}";
+                    writer.WriteLine(formattedLogMessage);
+                }
             }
-        }
-        catch 
-        {
-            // do nothing
+            catch
+            {
+                // do nothing
+            }
         }
     }
 }
