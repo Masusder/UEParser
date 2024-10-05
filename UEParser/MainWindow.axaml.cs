@@ -42,7 +42,7 @@ public partial class MainWindow : AppWindow
 
     private async void MainWindow_Loaded(object? sender, EventArgs e)
     {
-        var (hasVersionChanged, buildVersion) = Initialize.CheckBuildVersion();
+        var (hasVersionChanged, buildVersion, isVersionConfigured) = Initialize.CheckBuildVersion();
 
         var config = ConfigurationService.Config;
         bool updateAPIDuringInitialization = config.Global.UpdateAPIDuringInitialization;
@@ -78,7 +78,7 @@ public partial class MainWindow : AppWindow
                 LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Warning);
             }
         }
-        else
+        else if (isVersionConfigured)
         {
             LogsWindowViewModel.Instance.AddLog("No new Dead by Daylight build has been detected.", Logger.LogTags.Info);
         }

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -8,7 +9,8 @@ namespace UEParser.Services;
 
 public class ConfigurationService
 {
-    private const string ConfigFilePath = "config.json";
+    private static readonly string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "UEParser");
+    private static readonly string ConfigFilePath = Path.Combine(AppDataFolder, "config.json");
 
     public static Configuration Config { get; private set; }
 
@@ -20,6 +22,8 @@ public class ConfigurationService
     private static Configuration LoadConfiguration()
     {
         Configuration initializationConfig = new();
+
+        if (!Directory.Exists(AppDataFolder)) Directory.CreateDirectory(AppDataFolder);
 
         if (File.Exists(ConfigFilePath))
         {
@@ -35,10 +39,13 @@ public class ConfigurationService
 
     public static async Task SaveConfiguration()
     {
+        if (!Directory.Exists(AppDataFolder)) Directory.CreateDirectory(AppDataFolder);
+
         var json = JsonConvert.SerializeObject(Config, Formatting.Indented, new JsonSerializerSettings
         {
             Converters = { new StringEnumConverter() } // Use StringEnumConverter for enum handling
         });
+
         await File.WriteAllTextAsync(ConfigFilePath, json);
     }
 }

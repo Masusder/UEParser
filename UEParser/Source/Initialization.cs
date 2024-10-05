@@ -50,16 +50,19 @@ public class Initialize
 
     }
 
-    public static (bool, string) CheckBuildVersion()
+
+    public static (bool hasVersionChanged, string buildVersion, bool isVersionConfigured) CheckBuildVersion()
     {
         var config = ConfigurationService.Config;
         string gameDirectoryPath = config.Core.PathToGameDirectory;
         string? configuredCurrentVersion = config.Core.VersionData.LatestVersionHeader;
         string buildVersion = "";
 
+        bool isVersionConfigured = true;
         if (string.IsNullOrEmpty(configuredCurrentVersion))
         {
             LogsWindowViewModel.Instance.AddLog("Current Version isn't configured in settings.", Logger.LogTags.Error);
+            isVersionConfigured = false;
         }
 
         bool hasVersionChanged = false;
@@ -95,7 +98,7 @@ public class Initialize
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
         }
 
-        return (hasVersionChanged, buildVersion);
+        return (hasVersionChanged, buildVersion, isVersionConfigured);
     }
 
     private static bool IsGameDirectoryPathCorrect(string gameDirectoryPath)

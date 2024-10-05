@@ -27,14 +27,29 @@
       <Setter Property="Height" Value="52" />
     </Style>
 
+    <Style Selector=".saveSettingsButton /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="4" />
+    </Style>
+
     <Style Selector=".saveSettingsButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="#2b9348" />
+      <Setter Property="Background" Value="#44664e" />
+      <Setter Property="BorderBrush" Value="#4c8c5f" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="4" />
+    </Style>
+
+    <Style Selector=".removeTomeButton /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="BorderBrush" Value="#80FF0000" />
+      <Setter Property="BorderThickness" Value="1" />
       <Setter Property="CornerRadius" Value="4" />
     </Style>
 
     <Style Selector=".removeTomeButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-      <Setter Property="Background" Value="Red" />
+      <Setter Property="Background" Value="#5e3737" />
       <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="BorderBrush" Value="#80FF0000" />
+      <Setter Property="BorderThickness" Value="1" />
     </Style>
 
   </Window.Styles>
@@ -111,7 +126,6 @@
                     SelectedItem="{Binding SelectedCurrentBranch}" />
               </StackPanel>
 
-
               <!--<StackPanel>
               <TextBlock
                   Margin="0,0,0,7.5"
@@ -129,7 +143,8 @@
             </StackPanel>
 
           </StackPanel>
-          <Separator/>
+
+          <Separator MaxWidth="500" />
 
           <StackPanel>
             <TextBlock
@@ -137,7 +152,7 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 FontWeight="600"
-                Text="Select Comparsion Version" />
+                Text="Select Comparison Version" />
             <ComboBox
                 HorizontalAlignment="Center"
                 MaxDropDownHeight="175"
@@ -213,7 +228,7 @@
             </Button>
           </StackPanel>
 
-          <Separator />
+          <Separator MaxWidth="500" />
 
           <StackPanel
               Margin="0,15,0,15"
@@ -233,14 +248,14 @@
                 IsReadOnly="True"
                 Text="{Binding PathToMappings}" />
             <Button
-                Command="{Binding OpenDirectoryDialogCommand}"
+                Command="{Binding OpenFileDialogCommand}"
                 CommandParameter="PathToMappings"
                 Cursor="Hand">
               <i:Icon FontSize="10" Value="fa-solid fa-ellipsis" />
             </Button>
           </StackPanel>
 
-          <Separator />
+          <Separator MaxWidth="500" />
 
           <StackPanel
               Margin="0,15,0,15"
@@ -269,18 +284,19 @@
 
         </StackPanel>
       </TabItem>
+
       <TabItem>
         <TabItem.Header>
           <StackPanel
               VerticalAlignment="Center"
               Orientation="Horizontal"
               Spacing="5">
-            <i:Icon FontSize="14" Value="fa-solid fa-gears" />
+            <i:Icon FontSize="14" Value="fa-solid fa-server" />
             <TextBlock
                 VerticalAlignment="Center"
                 FontSize="16"
                 FontWeight="700">
-              Other
+              API
             </TextBlock>
           </StackPanel>
         </TabItem.Header>
@@ -326,124 +342,6 @@
                   MaxLength="30"
                   Text="{Binding CustomVersion}"
                   Watermark="e.x. '8.1.0_1877175live'" />
-            </StackPanel>
-
-          </StackPanel>
-
-          <Separator />
-
-          <StackPanel>
-            <TextBlock
-                Margin="0,0,0,7.5"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                FontWeight="600"
-                Text="AES Key" />
-            <TextBox
-                MaxWidth="555"
-                Margin="0,0,0,10"
-                MaxLength="66"
-                Text="{Binding AESKey}"
-                Watermark="e.x. '0x22b1639b548124925cf7b9cbaa09f9ac295fcf0324586d6b37ee1d42670b39b3'" />
-          </StackPanel>
-
-          <Separator />
-
-          <StackPanel Orientation="Horizontal">
-
-            <StackPanel Margin="10">
-              <StackPanel
-                  Margin="0,0,0,10"
-                  Orientation="Horizontal"
-                  Spacing="12.5">
-                <TextBox
-                    Width="200"
-                    MaxLength="32"
-                    Text="{Binding NewTome}"
-                    Watermark="Enter new tome" />
-                <Button
-                    Command="{Binding AddTome}"
-                    Content="Add Tome"
-                    Cursor="Hand" />
-              </StackPanel>
-              <Expander
-                  MaxHeight="250"
-                  Header="Tomes List"
-                  IsExpanded="false">
-                <ListBox
-                    x:Name="TomesListBox"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    DataContext="{Binding}"
-                    ItemsSource="{Binding TomesList}">
-                  <ListBox.ItemTemplate>
-                    <DataTemplate>
-                      <StackPanel Orientation="Horizontal">
-                        <TextBlock
-                            Width="150"
-                            VerticalAlignment="Center"
-                            Text="{Binding}" />
-                        <Button
-                            Classes="removeTomeButton"
-                            Command="{Binding #TomesListBox.((vm:SettingsViewModel)DataContext).RemoveTomeCommand}"
-                            CommandParameter="{Binding}"
-                            Content="Remove"
-                            Cursor="Hand" />
-                      </StackPanel>
-                    </DataTemplate>
-                  </ListBox.ItemTemplate>
-                </ListBox>
-              </Expander>
-            </StackPanel>
-
-            <Border
-                Width="1"
-                Height="125"
-                Margin="10,0"
-                Background="#323232" />
-
-            <StackPanel Margin="10">
-              <StackPanel
-                  Margin="0,0,0,10"
-                  Orientation="Horizontal"
-                  Spacing="12.5">
-                <TextBox
-                    Width="200"
-                    MaxLength="32"
-                    Text="{Binding NewEventTome}"
-                    Watermark="Enter new event tome" />
-                <Button
-                    Command="{Binding AddEventTome}"
-                    Content="Add Tome"
-                    Cursor="Hand" />
-              </StackPanel>
-              <Expander
-                  MaxHeight="250"
-                  Header="Event Tomes List"
-                  IsExpanded="false">
-                <ListBox
-                    x:Name="EventTomesListBox"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    ItemsSource="{Binding EventTomesList}">
-                  <ListBox.ItemTemplate>
-                    <DataTemplate>
-                      <StackPanel Orientation="Horizontal">
-                        <TextBlock
-                            Width="150"
-                            VerticalAlignment="Center"
-                            Text="{Binding}" />
-                        <Button
-                            Classes="removeTomeButton"
-                            Command="{Binding #EventTomesListBox.((vm:SettingsViewModel)DataContext).RemoveEventTomeCommand}"
-                            CommandParameter="{Binding}"
-                            Content="Remove"
-                            Cursor="Hand" />
-                      </StackPanel>
-                    </DataTemplate>
-                  </ListBox.ItemTemplate>
-                </ListBox>
-              </Expander>
             </StackPanel>
 
           </StackPanel>
@@ -573,6 +471,155 @@
 
         </StackPanel>
       </TabItem>
+
+      <TabItem>
+        <TabItem.Header>
+          <StackPanel
+              VerticalAlignment="Center"
+              Orientation="Horizontal"
+              Spacing="5">
+            <i:Icon FontSize="14" Value="fa-solid fa-gears" />
+            <TextBlock
+                VerticalAlignment="Center"
+                FontSize="16"
+                FontWeight="700">
+              Other
+            </TextBlock>
+          </StackPanel>
+        </TabItem.Header>
+        <StackPanel
+            HorizontalAlignment="Center"
+            Orientation="Vertical"
+            Spacing="7.5">
+
+          <StackPanel
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center"
+              Orientation="Horizontal"
+              Spacing="7.5">
+          </StackPanel>
+
+          <StackPanel>
+            <TextBlock
+                Margin="0,0,0,7.5"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontWeight="600"
+                Text="AES Key" />
+            <TextBox
+                MaxWidth="555"
+                Margin="0,0,0,10"
+                MaxLength="66"
+                Text="{Binding AESKey}"
+                Watermark="e.x. '0x22b1639b548124925cf7b9cbaa09f9ac295fcf0324586d6b37ee1d42670b39b3'" />
+          </StackPanel>
+
+          <Separator />
+
+          <StackPanel Orientation="Horizontal">
+
+            <StackPanel Margin="10">
+              <StackPanel
+                  Margin="0,0,0,10"
+                  Orientation="Horizontal"
+                  Spacing="12.5">
+                <TextBox
+                    Width="200"
+                    MaxLength="32"
+                    Text="{Binding NewTome}"
+                    Watermark="Enter new tome" />
+                <Button
+                    Command="{Binding AddTome}"
+                    Content="Add Tome"
+                    Cursor="Hand" />
+              </StackPanel>
+              <Expander
+                  MaxHeight="230"
+                  Header="Tomes List"
+                  IsExpanded="false">
+                <ListBox
+                    x:Name="TomesListBox"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    DataContext="{Binding}"
+                    ItemsSource="{Binding TomesList}">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate>
+                      <StackPanel Orientation="Horizontal">
+                        <TextBlock
+                            Width="150"
+                            VerticalAlignment="Center"
+                            Cursor="Hand"
+                            Text="{Binding}" />
+                        <Button
+                            Classes="removeTomeButton"
+                            Command="{Binding #TomesListBox.((vm:SettingsViewModel)DataContext).RemoveTomeCommand}"
+                            CommandParameter="{Binding}"
+                            Content="Remove"
+                            Cursor="Hand" />
+                      </StackPanel>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+              </Expander>
+            </StackPanel>
+
+            <Border
+              VerticalAlignment="Top"
+                Width="1"
+                Height="125"
+                Margin="10,0"
+                Background="#323232" />
+
+            <StackPanel Margin="10">
+              <StackPanel
+                  Margin="0,0,0,10"
+                  Orientation="Horizontal"
+                  Spacing="12.5">
+                <TextBox
+                    Width="200"
+                    MaxLength="32"
+                    Text="{Binding NewEventTome}"
+                    Watermark="Enter new event tome" />
+                <Button
+                    Command="{Binding AddEventTome}"
+                    Content="Add Tome"
+                    Cursor="Hand" />
+              </StackPanel>
+              <Expander
+                  MaxHeight="230"
+                  Header="Event Tomes List"
+                  IsExpanded="false">
+                <ListBox
+                    x:Name="EventTomesListBox"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    ItemsSource="{Binding EventTomesList}">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate>
+                      <StackPanel Orientation="Horizontal">
+                        <TextBlock
+                            Width="150"
+                            VerticalAlignment="Center"
+                            Text="{Binding}" />
+                        <Button
+                            Classes="removeTomeButton"
+                            Command="{Binding #EventTomesListBox.((vm:SettingsViewModel)DataContext).RemoveEventTomeCommand}"
+                            CommandParameter="{Binding}"
+                            Content="Remove"
+                            Cursor="Hand" />
+                      </StackPanel>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+              </Expander>
+            </StackPanel>
+
+          </StackPanel>
+
+        </StackPanel>
+      </TabItem>
+
     </TabControl>
     <Button
         Margin="0,0,0,10"

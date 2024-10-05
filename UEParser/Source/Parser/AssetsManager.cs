@@ -94,7 +94,7 @@ public class AssetsManager
 
                 provider = new DefaultFileProvider(pathToPaks, SearchOption.TopDirectoryOnly, true, new VersionContainer(EGame.GAME_DeadByDaylight))
                 {
-                    MappingsContainer = new FileUsmapTypeMappingsProvider(config.Core.MappingsPath)
+                    MappingsContainer = new FileUsmapTypeMappingsProvider(mappingsPath)
                 };
 
                 provider.CustomEncryption = provider.Versions.Game switch
