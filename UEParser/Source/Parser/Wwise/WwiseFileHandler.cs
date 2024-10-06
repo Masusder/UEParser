@@ -100,7 +100,6 @@ public partial class WwiseFileHandler
 
         ProvideWwnamesFile(); // Neccessary for reversing audio names
 
-        // TODO: using multiple languages forces re-computing of SFX files for each language, which significantly increases time it takes to generate txtp files, pull request with a solution to Wwiser is needed to fix it
         string arguments = $"\"{GlobalVariables.wwiserPath}\" \"{bnkFilesDirectory}\" \"{bnkFilesSubDirectories}\" -g --txtp-wemdir \"{TemporaryDirectory}\" --txtp-lang en fr jp";
 
         if (!IsPythonInstalled()) throw new Exception("Python is not installed or not accessible from the command line, which is required for audio extraction to work.");
