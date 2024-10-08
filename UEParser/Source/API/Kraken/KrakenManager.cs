@@ -137,9 +137,9 @@ public class KrakenManager
 
         static async Task RetrieveData(Configuration config, string latestVersion)
         {
-            await KrakenCDN.FetchCdnContent();
-            await KrakenCDN.FetchDynamicCdnContent(KrakenCDN.CDNOutputDirName.Tomes);
-            await KrakenCDN.FetchDynamicCdnContent(KrakenCDN.CDNOutputDirName.Rifts);
+            await KrakenCDN.FetchCdnContent(latestVersion);
+            await KrakenCDN.FetchDynamicCdnContent(KrakenCDN.CDNOutputDirName.Tomes, latestVersion);
+            await KrakenCDN.FetchDynamicCdnContent(KrakenCDN.CDNOutputDirName.Rifts, latestVersion);
 
             LogsWindowViewModel.Instance.AddLog("Creating game characters helper table from retrieved API.", Logger.LogTags.Info);
             Helpers.CreateCharacterTable();

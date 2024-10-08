@@ -10,7 +10,7 @@ namespace UEParser.Network.Kraken.CDN;
 
 public partial class KrakenCDN
 {
-    private static string ConstructCdnUrl(string endpoint)
+    private static string ConstructCdnUrl(string endpoint, string latestVersion)
     {
         var config = ConfigurationService.Config;
 
@@ -20,15 +20,9 @@ public partial class KrakenCDN
         string cdnRoot = config.Global.BranchRoots[branch];
 
         string? customVersion = config.Core.ApiConfig.CustomVersion;
-
-        string latestVersion;
         if (!string.IsNullOrEmpty(customVersion))
         {
             latestVersion = customVersion;
-        }
-        else
-        {
-            latestVersion = config.Core.ApiConfig.LatestVersion;
         }
 
         string contentSegmentWithoutRoot = config.Core.ApiConfig.CdnContentSegment;
@@ -39,7 +33,7 @@ public partial class KrakenCDN
         return cdnFullUrl;
     }
 
-    public static async Task FetchCdnContent()
+    public static async Task FetchCdnContent(string latestVersion)
     {
         var config = ConfigurationService.Config;
 
@@ -57,7 +51,7 @@ public partial class KrakenCDN
             LogsWindowViewModel.Instance.AddLog($"Fetching CDN: '{cdnEndpoint}'.", Logger.LogTags.Info);
 
             string outputPath = Path.Combine(outputDir, cdnEndpoint + ".json");
-            string url = ConstructCdnUrl(cdnEndpoints[cdnEndpoint]);
+            string url = ConstructCdnUrl(cdnEndpoints[cdnEndpoint], latestVersion);
             NetAPI.ApiResponse response = await NetAPI.FetchUrl(url);
 
             LogsWindowViewModel.Instance.AddLog($"Decrypting CDN: '{cdnEndpoint}'.", Logger.LogTags.Info);
@@ -75,7 +69,7 @@ public partial class KrakenCDN
         Tomes,
         Rifts
     }
-    public static async Task FetchDynamicCdnContent(CDNOutputDirName outputDirName)
+    public static async Task FetchDynamicCdnContent(CDNOutputDirName outputDirName, string latestVersion)
     {
         var config = ConfigurationService.Config;
 
@@ -105,7 +99,7 @@ public partial class KrakenCDN
                 }
 
                 string tomeCdnEndpoint = string.Format(cdnEndpoint, tomeId);
-                string url = ConstructCdnUrl(tomeCdnEndpoint);
+                string url = ConstructCdnUrl(tomeCdnEndpoint, latestVersion);
 
                 LogsWindowViewModel.Instance.AddLog($"Fetching CDN: '{outputDirNameString} {tomeId}'", Logger.LogTags.Info);
 
@@ -132,7 +126,7 @@ public partial class KrakenCDN
                 }
 
                 string tomeCdnEndpoint = string.Format(cdnEndpoint, tomeId);
-                string url = ConstructCdnUrl(tomeCdnEndpoint);
+                string url = ConstructCdnUrl(tomeCdnEndpoint, latestVersion);
 
                 LogsWindowViewModel.Instance.AddLog($"Fetching CDN: '{outputDirNameString} {tomeId}'", Logger.LogTags.Info);
 
