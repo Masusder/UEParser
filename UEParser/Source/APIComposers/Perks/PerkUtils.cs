@@ -140,6 +140,12 @@ public class PerkUtils
                     string formattedDescription = string.Format(fixedDescription, [.. formattedTunables]);
                     item.Value.Description = formattedDescription;
                 }
+                else if (perkId == "ZanshinTactics")
+                {
+                    string fixedDescription = description.Replace("{2}", "");
+                    string formattedDescription = string.Format(fixedDescription, [.. formattedTunables]);
+                    item.Value.Description = formattedDescription;
+                }
                 else
                 {
                     string formattedDescription = string.Format(description, [.. formattedTunables]);

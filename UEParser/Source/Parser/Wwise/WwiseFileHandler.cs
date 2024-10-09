@@ -214,8 +214,9 @@ public partial class WwiseFileHandler
                     long adjustedWwiseId = wwiseIdLong;
 
                     // If audio event id is negative we need to add maxium unsigned integer value and use that instead
-                    // Ids overflow to negativity in assets registry and don't match to compiled audio event ids because of int type mismatch
-                    // In some cases adjusted value is also off by 2
+                    // Ids overflow to negativity in assets registry
+                    // and don't match to compiled audio event ids because of int type mismatch
+                    // In some cases adjusted value is also off by 2 or 1
                     if (wwiseIdLong < 0)
                     {
                         adjustedWwiseId = wwiseIdLong + uint.MaxValue;
@@ -241,17 +242,22 @@ public partial class WwiseFileHandler
 
     public static void ReverseAudioStructure(Dictionary<string, long> associatedAudioEventIds, Dictionary<long, AudioEventsLinkageData> audioEventsLinkage)
     {
-        const int Offset = 2;
+        const int OffsetAttempt1 = 1;
+        const int OffsetAttempt2 = 2;
         foreach (var audioEvent in associatedAudioEventIds)
         {
             bool matchFound = false;
-            // We need to try twice, sometimes value is off by 2, hence why we need to subtract 2
-            for (int attempt = 0; attempt < 2; attempt++)
+            // We need to try three times, sometimes value is off by 2 or 1, hence why we need to subtract
+            for (int attempt = 0; attempt < 3; attempt++)
             {
                 long audioEventValue = audioEvent.Value;
                 if (attempt == 1)
                 {
-                    audioEventValue -= Offset;
+                    audioEventValue -= OffsetAttempt1;
+                }
+                else if (attempt == 2)
+                {
+                    audioEventValue -= OffsetAttempt2;
                 }
 
                 if (audioEventsLinkage.TryGetValue(audioEventValue, out AudioEventsLinkageData? audioEventData))

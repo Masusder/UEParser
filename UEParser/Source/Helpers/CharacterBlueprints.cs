@@ -67,6 +67,7 @@ public partial class Helpers
         return characters;
     }
 
+    // TODO: figure out how to match character index to outfit
     private static Dictionary<string, CosmeticData> TraverseCharacterDescriptionOverrideDB()
     {
         string[] filePaths = FindFilePathsInExtractedAssetsCaseInsensitive("CharacterDescriptionOverrideDB.json");

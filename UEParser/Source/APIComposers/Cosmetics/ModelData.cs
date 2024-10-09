@@ -455,6 +455,7 @@ public class ModelData
         return vectorParametersModel;
     }
 
+    // TODO: rework this method later
     private static string? FindSkeletonPath(string cosmeticId, int characterIndex)
     {
         string characterIndexString = characterIndex.ToString();
@@ -496,70 +497,78 @@ public class ModelData
             return null;
         }
 
-        dynamic skeletonBlueprintData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAssets" + pathToGameBlueprint));
-        string? gameSkeletonPath = FindCharacterMeshPath(skeletonBlueprintData);
+        // TODO: I need to figure out how to match outfit id with character index
+        string[] trueFormDarkLordOverride = ["K37_Head008", "K37_Body008", "K37_W008", "K37_Head008_01", "K37_Body008_01", "K37_W008_01"];
+
+        dynamic skeletonBlueprintData;
+        string? gameSkeletonPath = "";
+        if (!trueFormDarkLordOverride.Contains(cosmeticId))
+        {
+            skeletonBlueprintData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAssets" + pathToGameBlueprint));
+            gameSkeletonPath = FindCharacterMeshPath(skeletonBlueprintData);
+        }
 
         // These manual overrides should be resolved but I couldn't find any good solution
         // BHVR often sets skeletons to wrong cosmetic ID and only reason it works in-game
         // is because only one cosmetic piece needs to be set right in terms of linked cosmetics
         // ...
 
-        // Give Ripley skeleton manually as she doesnt have skeleton
-        if (characterIndex == 38)
-        {
-            gameSkeletonPath = "DeadByDaylight/Content/Characters/Campers/S39/Models/S39_DSkeleton_Menu_REF.glb";
-        }
-
-        // Give Naughty Bear skeleton manually because BHVR used wrong cosmetic ID
-        // "TR_Head018" instead of "TR_Mask018"
-        if (cosmeticId == "TR_Mask018")
-        {
-            gameSkeletonPath = "DeadByDaylight/Content/Characters/Slashers/Trapper/Models/TR_018_DSkeleton_REF.glb";
-        }
-
-        // Set Queen Xenomorph animation manually as it uses different animation with the same skeleton as default Xenomorph
-        // (I don't allow multiple animations in the same skeleton [like it works in-game], that's why it needs to be resolved manually)
+        #region Animations work-around
+        // I don't allow multiple animations in the same skeleton (like it works in-game)
+        // that's why below skeletons are customized manually by me
         string[] queenXenomorphOverride = ["K33_Head007", "K33_Body007", "K33_W007"];
         if (queenXenomorphOverride.Contains(cosmeticId))
         {
             gameSkeletonPath = "DeadByDaylight/Content/Characters/Slashers/K33/Models/K33_DSkeleton_REF_QueenXenomorph.glb";
         }
-
-        // Set Cybil Bennett animation manually
         string[] cybilOverride = ["S22_Head008", "S22_Torso008", "S22_Legs008"];
         if (cybilOverride.Contains(cosmeticId))
         {
             gameSkeletonPath = "DeadByDaylight/Content/Characters/Campers/S22/Models/S22_DSkeleton_REF_Cybil.glb";
         }
+        if (trueFormDarkLordOverride.Contains(cosmeticId))
+        {
+            gameSkeletonPath = "DeadByDaylight/Plugins/Runtime/Bhvr/DBDCharacters/K37/Content/ArtAssets/Models/K37_DSkeleton_REF_TrueForm.glb";
+        }
+        #endregion
 
+        #region Bhvr's IDs mismatch
+        if (cosmeticId == "TR_Mask018") // Give Naughty Bear skeleton manually because BHVR used wrong cosmetic ID "TR_Head018" instead of "TR_Mask018"
+        {
+            gameSkeletonPath = "DeadByDaylight/Content/Characters/Slashers/Trapper/Models/TR_018_DSkeleton_REF.glb";
+        }
+        if (characterIndex == 38) // Give Ripley skeleton manually as she doesnt have skeleton
+        {
+            gameSkeletonPath = "DeadByDaylight/Content/Characters/Campers/S39/Models/S39_DSkeleton_Menu_REF.glb";
+        }
         string[] wereElkOverride = ["BE_Mask024", "BE_Body024", "BE_W024"];
         if (wereElkOverride.Contains(cosmeticId))
         {
             gameSkeletonPath = "DeadByDaylight/Content/Characters/Slashers/Bear/Models/BE_DSkeleton_024_REF.glb";
         }
-
-        // Set Maria's skeleton manually as they gave it to Cybil instead of Maria (legs only)
-        if (cosmeticId == "S22_Legs012")
+        if (cosmeticId == "S22_Legs012") // Set Maria's skeleton manually as they gave it to Cybil instead of Maria (legs only)
         {
             gameSkeletonPath = "DeadByDaylight/Content/Characters/Campers/S22/Models/S22_012_DSkeleton_REF.glb";
         }
-
         if (characterIndex == 41)
         {
             gameSkeletonPath = "DeadByDaylight/Plugins/Runtime/Bhvr/DBDCharacters/S42/Content/ArtAssets/Models/S42_DSkeleton_REF.glb";
         }
-
         string[] rainOverride = ["S39_Head009", "S39_Torso009", "S39_Legs009"];
         if (rainOverride.Contains(cosmeticId))
         {
             gameSkeletonPath = "DeadByDaylight/Content/Characters/Campers/S39/Models/S39_009_DSkeleton_Menu_REF.glb";
         }
-
-        // Give Alucard's legs skeleton manually, they set it to S40_Legs006 instead of S44_Legs006..
-        if (cosmeticId == "S44_Legs006")
+        if (cosmeticId == "S44_Legs006") // Give Alucard's legs skeleton manually, they set it to S40_Legs006 instead of S44_Legs006..
         {
             gameSkeletonPath = "DeadByDaylight/Plugins/DBDCharacters/S44/Content/ArtAssets/Models/S44_006_DSkeleton_REF.glb";
         }
+        string[] somaOverride = ["S44_Torso009_01", "S44_Legs009_01"];
+        if (somaOverride.Contains(cosmeticId))
+        {
+            gameSkeletonPath = "DeadByDaylight/Plugins/DBDCharacters/S44/Content/ArtAssets/Models/S44_009_DSkeleton_REF.glb";
+        }
+        #endregion
 
         string skeletonPathWithoutAssets = StringUtils.ModifyPath(gameSkeletonPath, "glb", false, characterIndex);
         string skeletonPath = StringUtils.RemoveDoubleSlashes("/assets/" + skeletonPathWithoutAssets);
