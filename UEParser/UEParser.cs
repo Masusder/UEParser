@@ -40,6 +40,10 @@ class Program
 
         if (Directory.Exists(nativeLibraryPath))
         {
+            // Hide directory
+            DirectoryInfo dirInfo = new(nativeLibraryPath);
+            dirInfo.Attributes |= FileAttributes.Hidden;
+
             var path = Environment.GetEnvironmentVariable("PATH");
             path = $"{nativeLibraryPath}{Path.PathSeparator}{path}";
             Environment.SetEnvironmentVariable("PATH", path);
