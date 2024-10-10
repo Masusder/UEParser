@@ -74,22 +74,54 @@ public partial class WwiseFileHandler
         }
     }
 
+    [GeneratedRegex(@"""(?<Key>CustomizedAudioStateCollection|SwitchState)""\s*:\s*""(?<Value>.*?)""")]
+    private static partial Regex DatatablesRegex();
     // Provide wwnames file (an artificial list of possible Wwise names) that will be used to reverse audio event names
     private static void ProvideWwnamesFile()
     {
         if (!File.Exists(PathToUEAssetsRegistry)) throw new Exception("Not found Unreal Engine assets registry.");
         if (!File.Exists(GlobalVariables.preGeneratedWwnames)) throw new Exception("Not found pre-generated Wwnames.");
 
-        string destinationFilePath = Path.Combine(TemporaryDirectory, "wwnames.txt");
+        string wwnamesPath = Path.Combine(TemporaryDirectory, "wwnames.txt");
+        File.Copy(GlobalVariables.preGeneratedWwnames, wwnamesPath, true);
 
-        File.Copy(GlobalVariables.preGeneratedWwnames, destinationFilePath, true);
+        static void AppendUEAssetRegistry(string wwnamesPath)
+        {
+            string jsonContent = File.ReadAllText(PathToUEAssetsRegistry);
+            JObject jsonObject = JObject.Parse(jsonContent);
+            string formattedJson = jsonObject.ToString(Formatting.Indented);
 
-        string jsonContent = File.ReadAllText(PathToUEAssetsRegistry);
+            File.AppendAllText(wwnamesPath, formattedJson);
+        }
 
-        JObject jsonObject = JObject.Parse(jsonContent);
+        static void AppendNamesFromDatatables(string wwnamesPath)
+        {
+            string[] customizationItemsDB = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("CustomizationItemDB.json");
+            string[] outfitDB = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("OutfitDB.json");
+            string[] dataTablesArray = [.. customizationItemsDB, .. outfitDB];
 
-        string formattedJson = jsonObject.ToString(Formatting.Indented);
-        File.AppendAllText(destinationFilePath, formattedJson);
+            HashSet<string> dbNames = [];
+            foreach (var dbPath in dataTablesArray)
+            {
+                if (!FileUtils.IsFileLocked(dbPath))
+                {
+                    var dbContent = File.ReadAllText(dbPath);
+                    var matches = DatatablesRegex().Matches(dbContent);
+
+                    foreach (Match match in matches)
+                    {
+                        string value = match.Groups["Value"].Value;
+                        dbNames.Add(value);
+                    }
+                }
+            }
+
+            string dbNamesString = string.Join(Environment.NewLine, dbNames);
+            File.AppendAllText(wwnamesPath, dbNamesString);
+        }
+
+        AppendUEAssetRegistry(wwnamesPath);
+        AppendNamesFromDatatables(wwnamesPath);
     }
 
     // Generate txtp files that will be used to play audio simulating Wwise

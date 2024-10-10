@@ -627,7 +627,6 @@ public class AssetsManager
         }, token);
     }
 
-    // TODO: add collection of unused audio
     public static async Task ParseAudio(CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog("Audio extraction is highly intensive process, which may take even up to an hour, depending whether audio registry is available..", Logger.LogTags.Info);
