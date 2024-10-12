@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using UEParser.Models;
-using UEParser.Utils;
 
 namespace UEParser;
 
@@ -11,7 +10,7 @@ public partial class Helpers
 {
     public static void CombineCharacterBlueprints()
     {
-        string outputPath = Path.Combine(GlobalVariables.rootDir, "Dependencies/HelperComponents/characterBlueprintsLinkage.json");
+        string outputPath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "characterBlueprintsLinkage.json");
 
         var characters = TraverseCharacterDescriptionDB();
         var cosmetics = TraverseCharacterDescriptionOverrideDB();
@@ -43,22 +42,13 @@ public partial class Helpers
                 {
                     string characterIndex = item.Name;
 
-                    //bool isOutsidePluginsCharactersDir = false;
-                    //if (filePath.Contains("DBDCharacters") && int.Parse(characterIndex) == 268435492)
-                    //{
-                    //    isOutsidePluginsCharactersDir = true;
-                    //}
-
                     string gameBlueprintPathRaw = item.Value["GamePawn"]["AssetPathName"];
-                    string gameBlueprintPath = StringUtils.ModifyPath(gameBlueprintPathRaw, "json", false, int.Parse(characterIndex));
-
                     string menuBlueprintPathRaw = item.Value["MenuPawn"]["AssetPathName"];
-                    string menuBlueprintPath = StringUtils.ModifyPath(menuBlueprintPathRaw, "json", false, int.Parse(characterIndex));
 
                     characters[characterIndex] = new CharacterData
                     {
-                        GameBlueprint = gameBlueprintPath,
-                        MenuBlueprint = menuBlueprintPath
+                        GameBlueprint = gameBlueprintPathRaw,
+                        MenuBlueprint = menuBlueprintPathRaw
                     };
                 }
             }
@@ -67,7 +57,6 @@ public partial class Helpers
         return characters;
     }
 
-    // TODO: figure out how to match character index to outfit
     private static Dictionary<string, CosmeticData> TraverseCharacterDescriptionOverrideDB()
     {
         string[] filePaths = FindFilePathsInExtractedAssetsCaseInsensitive("CharacterDescriptionOverrideDB.json");
@@ -76,12 +65,6 @@ public partial class Helpers
 
         foreach (string filePath in filePaths)
         {
-            //bool isInDBDCharacters = false;
-            //if (filePath.Contains("DBDCharacters"))
-            //{
-            //    isInDBDCharacters = true;
-            //}
-
             string jsonString = File.ReadAllText(filePath);
             List<Dictionary<string, dynamic>>? items = JsonConvert.DeserializeObject<List<Dictionary<string, dynamic>>>(jsonString);
             if (items?[0]?["Rows"] != null)
@@ -91,16 +74,13 @@ public partial class Helpers
                     string cosmeticId = item.Name;
                     JArray cosmeticItems = item.Value["RequiredItemIds"];
                     string gameBlueprintPathRaw = item.Value["GameBlueprint"]["AssetPathName"];
-                    string gameBlueprintPath = StringUtils.ModifyPath(gameBlueprintPathRaw, "json", false);
-
                     string menuBlueprintPathRaw = item.Value["MenuBlueprint"]["AssetPathName"];
-                    string menuBlueprintPath = StringUtils.ModifyPath(menuBlueprintPathRaw, "json", false);
 
                     cosmetics[cosmeticId] = new CosmeticData
                     {
                         CosmeticItems = cosmeticItems,
-                        GameBlueprint = gameBlueprintPath,
-                        MenuBlueprint = menuBlueprintPath
+                        GameBlueprint = gameBlueprintPathRaw,
+                        MenuBlueprint = menuBlueprintPathRaw
                     };
                 }
             }

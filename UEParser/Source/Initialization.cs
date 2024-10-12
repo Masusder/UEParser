@@ -19,7 +19,7 @@ public class Initialize
         if (hasVersionChanged)
         {
             LogsWindowViewModel.Instance.AddLog("Detected new build version of Dead by Daylight.. starting initialization process.", Logger.LogTags.Info);
-            
+
             // Download mappings from github archive
             bool mappingsExist = Mappings.CheckIfMappingsExist();
             if (!mappingsExist)

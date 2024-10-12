@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UEParser.Models;
 using UEParser.Utils;
+using UEParser.ViewModels;
 
 namespace UEParser.APIComposers;
 
@@ -14,30 +15,18 @@ public class ModelData
 {
     public static void CreateModelData(string modelDataPath, string cosmeticId, int characterIndex, string cosmeticType, dynamic accessoriesData, dynamic materialsMap, dynamic texturesMap)
     {
-        // Ignore cosmetics that dont have model
+        // Ignore cosmetics that don't have model
         string[] cosmeticTypesToIgnore = ["Badge", "Banner"];
-        if (cosmeticTypesToIgnore.Contains(cosmeticType))
-        {
-            return;
-        }
-
+        if (cosmeticTypesToIgnore.Contains(cosmeticType)) return;
+        
         string? skeletonPath = "";
-        if (characterIndex != -1)
-        {
-            skeletonPath = FindSkeletonPath(cosmeticId, characterIndex);
-        }
+        if (characterIndex != -1) skeletonPath = FindSkeletonPath(cosmeticId, characterIndex);
 
         bool isStaticMesh = false;
-        if (characterIndex == -1)
-        {
-            isStaticMesh = true;
-        }
+        if (characterIndex == -1) isStaticMesh = true;
 
         bool isWeapon = false;
-        if (cosmeticType == "KillerWeapon")
-        {
-            isWeapon = true;
-        }
+        if (cosmeticType == "KillerWeapon") isWeapon = true;
 
         string meshPath = "/assets" + modelDataPath.Replace(".json", ".glb");
 
@@ -149,11 +138,6 @@ public class ModelData
                 {
                     foreach (var materialMap in materialsMap)
                     {
-                        // Replaced material doesn't exist in the files
-                        // Why is it even changing this material at all????
-                        // TODO: Revisit this when 8.3.0 releases
-                        if (cosmeticId == "DO_W011") continue;
-
                         string materialFromPath = materialMap.From.AssetPathName;
                         string gameInitialMaterial = StringUtils.ModifyPath(materialFromPath, "json", false, characterIndex);
                         StringUtils.RemoveDoubleSlashes(gameInitialMaterial);
@@ -407,11 +391,6 @@ public class ModelData
             }
         }
 
-        //if (cosmeticId == "K33_Head008" && scalarParametersModel.GlassOpacity > 0)
-        //{
-        //    scalarParametersModel.GlassOpacity = 0.3f;
-        //}
-
         return scalarParametersModel;
     }
 
@@ -455,12 +434,11 @@ public class ModelData
         return vectorParametersModel;
     }
 
-    // TODO: rework this method later
     private static string? FindSkeletonPath(string cosmeticId, int characterIndex)
     {
         string characterIndexString = characterIndex.ToString();
 
-        string blueprintsPath = Path.Combine(GlobalVariables.rootDir, "Dependencies/HelperComponents/characterBlueprintsLinkage.json");
+        string blueprintsPath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "characterBlueprintsLinkage.json");
         dynamic blueprintsData = FileUtils.LoadDynamicJson(blueprintsPath);
 
         string? pathToGameBlueprint = null;
@@ -494,19 +472,16 @@ public class ModelData
 
         if (pathToGameBlueprint == null)
         {
+#if DEBUG
+            LogsWindowViewModel.Instance.AddLog($"Path to character blueprint for '{cosmeticId}' was null.", Logger.LogTags.Debug);
+#endif
             return null;
         }
 
-        // TODO: I need to figure out how to match outfit id with character index
-        string[] trueFormDarkLordOverride = ["K37_Head008", "K37_Body008", "K37_W008", "K37_Head008_01", "K37_Body008_01", "K37_W008_01"];
+        pathToGameBlueprint = StringUtils.ModifyPath(pathToGameBlueprint, "json", false, characterIndex);
 
-        dynamic skeletonBlueprintData;
-        string? gameSkeletonPath = "";
-        if (!trueFormDarkLordOverride.Contains(cosmeticId))
-        {
-            skeletonBlueprintData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAssets" + pathToGameBlueprint));
-            gameSkeletonPath = FindCharacterMeshPath(skeletonBlueprintData);
-        }
+        dynamic skeletonBlueprintData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAssets" + pathToGameBlueprint));
+        string? gameSkeletonPath = FindCharacterMeshPath(skeletonBlueprintData);
 
         // These manual overrides should be resolved but I couldn't find any good solution
         // BHVR often sets skeletons to wrong cosmetic ID and only reason it works in-game
@@ -526,6 +501,7 @@ public class ModelData
         {
             gameSkeletonPath = "DeadByDaylight/Content/Characters/Campers/S22/Models/S22_DSkeleton_REF_Cybil.glb";
         }
+        string[] trueFormDarkLordOverride = ["K37_Head008", "K37_Body008", "K37_W008", "K37_Head008_01", "K37_Body008_01", "K37_W008_01"];
         if (trueFormDarkLordOverride.Contains(cosmeticId))
         {
             gameSkeletonPath = "DeadByDaylight/Plugins/Runtime/Bhvr/DBDCharacters/K37/Content/ArtAssets/Models/K37_DSkeleton_REF_TrueForm.glb";
@@ -563,12 +539,19 @@ public class ModelData
         {
             gameSkeletonPath = "DeadByDaylight/Plugins/DBDCharacters/S44/Content/ArtAssets/Models/S44_006_DSkeleton_REF.glb";
         }
-        string[] somaOverride = ["S44_Torso009_01", "S44_Legs009_01"];
+        string[] somaOverride = ["S44_Torso009_01", "S44_Legs009_01"]; // They set head cosmetic id three times :_:
         if (somaOverride.Contains(cosmeticId))
         {
             gameSkeletonPath = "DeadByDaylight/Plugins/DBDCharacters/S44/Content/ArtAssets/Models/S44_009_DSkeleton_REF.glb";
         }
         #endregion
+
+#if DEBUG
+        if (string.IsNullOrEmpty(gameSkeletonPath))
+        {
+            LogsWindowViewModel.Instance.AddLog($"Skeleton path for {cosmeticId} was null or empty, it needs to be provided manually.", Logger.LogTags.Debug);
+        }
+#endif
 
         string skeletonPathWithoutAssets = StringUtils.ModifyPath(gameSkeletonPath, "glb", false, characterIndex);
         string skeletonPath = StringUtils.RemoveDoubleSlashes("/assets/" + skeletonPathWithoutAssets);
