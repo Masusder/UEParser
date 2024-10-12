@@ -125,7 +125,7 @@ public partial class KrakenAPI
             }
             else
             {
-                LogsWindowViewModel.Instance.AddLog("Auth Ticket not available.", Logger.LogTags.Error);
+                throw new Exception("Auth Ticket not available.");
             }
         });
     }

@@ -56,7 +56,13 @@ public partial class SettingsViewModel : INotifyPropertyChanged
     public Branch SelectedCurrentBranch
     {
         get => _selectedCurrentBranch;
-        set => SetProperty(ref _selectedCurrentBranch, value);
+        set 
+        { 
+            if (SetProperty(ref _selectedCurrentBranch, value))
+            {
+                UpdateAvailableComparisonVersions(); // Update list when the branch changes
+            }
+        }
     }
 
     private Branch _selectedComparisonBranch;
