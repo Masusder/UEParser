@@ -13,7 +13,7 @@
     d:DesignHeight="600"
     d:DesignWidth="700"
     x:DataType="vm:SettingsViewModel"
-    Icon="/Resources/UEParser.ico"
+    Icon="/Resources/UEParserLogo.ico"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
   <Window.Resources>

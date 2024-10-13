@@ -10,7 +10,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     <Watch>true</Watch>
-    <ApplicationIcon>Resources\UEParser.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\UEParserLogo.ico</ApplicationIcon>
     <PublishTrimmed>False</PublishTrimmed>
     <PublishAot>False</PublishAot>
     <PublishSingleFile>True</PublishSingleFile>

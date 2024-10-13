@@ -17,12 +17,12 @@
         <DropShadowEffect 
           BlurRadius="30"
           Color="Black"
-          Opacity="0.5"/>
+          Opacity="0.66"/>
       </Border.Effect>
-      <Image Source="avares://UEParser/Resources/DBDInfoLogo.png"
+      <Image Source="avares://UEParser/Resources/UEParserLogo.png"
              HorizontalAlignment="Center"
              VerticalAlignment="Center"
-             Width="196"/>
+             Width="256"/>
     </Border>
     <TextBlock Text="Welcome to UEParser"
                FontWeight="700"

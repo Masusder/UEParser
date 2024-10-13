@@ -1,13 +1,15 @@
-# UEParser - Parser of Dead by Daylight game assets
-
-<img src="https://www.dbd-info.com/images/Logo/DBDInfoLogo.png" align="right" alt="DBDInfo Logo" width="192">
+<p align="center">
+    <img src="/UEParser/Resources/UEParserLogo.png" alt="UEParserLogo" width="192">
+   <br/>
+   <b align="center">UEParser - Parser of Dead by Daylight game assets</b>
+</p>
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 ![Commit Activity](https://img.shields.io/github/commit-activity/m/Masusder/UEParser.svg)
 ![Last Commit](https://img.shields.io/github/last-commit/Masusder/UEParser.svg)
 [![Discord](https://discordapp.com/api/guilds/637265123144237061/widget.png?style=shield)](https://discord.gg/dbdleaks)
 
-UEParser is an Avalonia-based application developed as a part of [DBDInfo](https://dbd-info.com/) project. 
+UEParser is an Avalonia-based application developed as a part of [DBDInfo](https://dbd-info.com/) <a href="https://dbd-info.com/"><img src="https://dbd-info.com/images/Logo/DBDInfoLogo.png" alt="UEParserLogo" align="center" width="32"></a> project. 
 It is specifically designed to work with Dead by Daylight game, mainly focusing on **automated and bulk retrieval of data from the game assets**, while maintaining organization by build version.
 
 This project wouldn't be possible without great team behind [CUE4Parse](https://github.com/FabianFG/CUE4Parse) library.<br/>

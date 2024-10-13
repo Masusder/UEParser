@@ -6,7 +6,7 @@
         Height="190"
         Title="UEParser - Initialization"
         WindowStartupLocation="CenterOwner"
-        Icon="/Resources/UEParser.ico"
+        Icon="/Resources/UEParserLogo.ico"
         x:DataType="vm:InitializationConfirmPopupViewModel">
   <StackPanel Margin="20">
     <TextBlock Text="Do you want to initialize application to latest Dead by Daylight build?"

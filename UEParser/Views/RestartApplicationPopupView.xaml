@@ -6,7 +6,7 @@
         Width="400"
         Height="150"
         WindowStartupLocation="CenterOwner"
-        Icon="/Resources/UEParser.ico"
+        Icon="/Resources/UEParserLogo.ico"
         x:DataType="vm:RestartApplicationPopupViewModel">
   <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Margin="20">
     <TextBlock Text="To save settings application will have to be restarted." TextAlignment="Center"/>
