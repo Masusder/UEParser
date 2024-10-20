@@ -1,0 +1,175 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="https://github.com/projektanker/icons.avalonia"
+        xmlns:vm="clr-namespace:UEParser.ViewModels"
+        xmlns:convert="clr-namespace:UEParser.Converters"
+        mc:Ignorable="d"
+        Width="870"
+        Height="640"
+        WindowStartupLocation="CenterOwner"
+        x:Class="UEParser.Views.NeteaseFileDialogView"
+        x:DataType="vm:NeteaseFileDialogViewModel"
+        Title="UEParser - NetEase Downloader"
+        Icon="/Resources/UEParserLogo.ico">
+  <Window.Resources>
+    <convert:FileExtensionToIconConverter x:Key="FileExtensionToIconConverter" />
+    <convert:SizeToBytesConverter x:Key="SizeToBytesConverter" />
+    <convert:FileExtensionToColorConverter x:Key="FileExtensionToColorConverter" />
+  </Window.Resources>
+
+  <Window.Styles>
+    <Style Selector=".downloadContentButton /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style Selector=".downloadContentButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#A89ACD32" />
+      <Setter Property="CornerRadius" Value="100" />
+      <Setter Property="BorderBrush" Value="#1AFFFFFF"/>
+      <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style Selector=".cancelButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Background" Value="#A8FF0000" />
+      <Setter Property="CornerRadius" Value="100" />
+    </Style>
+  </Window.Styles>
+
+  <Grid MaxWidth="850"
+        Margin="0,10,0,0">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*" />
+      <ColumnDefinition Width="Auto" />
+    </Grid.ColumnDefinitions>
+
+    <!-- Header with Title, Total Size and Version -->
+    <StackPanel Grid.Row="0"
+                Grid.Column="0"
+                Orientation="Horizontal"
+                Spacing="10"
+                Margin="17.5,0,0,0">
+      <TextBlock Text="NetEase Content Downloader"
+                 FontWeight="Black"
+                 FontSize="28"
+                 VerticalAlignment="Center" />
+      <Border Background="#323232"
+              Padding="7.5, 5"
+              Height="27.5"
+              CornerRadius="100"
+              VerticalAlignment="Center">
+        <TextBlock Text="{Binding TotalSize}"
+                   VerticalAlignment="Center"
+                   Foreground="AntiqueWhite"/>
+      </Border>
+      <Border Background="#323232"
+              Padding="7.5, 5"
+              Height="27.5"
+              CornerRadius="100"
+              VerticalAlignment="Center">
+        <TextBlock Text="{Binding VersionDisplayed}"
+                   VerticalAlignment="Center"
+                   Foreground="AntiqueWhite"/>
+      </Border>
+    </StackPanel>
+
+    <!-- Download and Cancel buttons positioned on the right -->
+    <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="7.5">
+      <Button Classes="cancelButton"
+              Click="OnCancelButtonClick"
+              Cursor="Hand"
+              CornerRadius="100"
+              VerticalAlignment="Center">
+        <StackPanel Orientation="Horizontal"
+            Spacing="5">
+          <i:Icon Grid.Column="0" Value="fa-solid fa-ban" FontSize="16"/>
+          <TextBlock VerticalAlignment="Center">Cancel</TextBlock>
+        </StackPanel>
+      </Button>
+      <Button Classes="downloadContentButton"
+              Command="{Binding DownloadContentCommand}"
+              Cursor="Hand"
+              CornerRadius="100"
+              VerticalAlignment="Center">
+        <StackPanel Orientation="Horizontal"
+                    Spacing="5">
+          <i:Icon Grid.Column="0" Value="fa-solid fa-cloud-arrow-down" FontSize="16"/>
+          <TextBlock VerticalAlignment="Center">Download</TextBlock>
+        </StackPanel>
+      </Button>
+    </StackPanel>
+
+    <StackPanel Orientation="Vertical"
+                Grid.Row="1"
+                Grid.ColumnSpan="2">
+      <TextBlock Text="Select files you want to download."
+                 FontWeight="Light"
+                 FontSize="14"
+                 VerticalAlignment="Center"
+                 HorizontalAlignment="Left"
+                 Margin="17.5,0,0,10"/>
+      <Separator Height="5"
+                 Width="900"
+                 Background="DodgerBlue"/>
+      <StackPanel Orientation="Horizontal" Spacing="7.5">
+        <CheckBox Content="Select All"
+                  HorizontalAlignment="Left"
+                  IsChecked="{Binding IsAllSelected, Mode=TwoWay}"
+                  Margin="18,10,0,0" />
+        <CheckBox Content="Select Regular Paks"
+                  HorizontalAlignment="Left"
+                  IsChecked="{Binding IsRegularPaksSelected, Mode=TwoWay}"
+                  Margin="0,10,0,0" />
+        <CheckBox Content="Select All Paks"
+                  HorizontalAlignment="Left"
+                  IsChecked="{Binding IsOnlyPaksSelected, Mode=TwoWay}"
+                  Margin="0,10,0,0" />
+        <CheckBox Content="Select Optional Paks"
+                  HorizontalAlignment="Left"
+                  IsChecked="{Binding IsOptionalPaksSelected, Mode=TwoWay}"
+                  Margin="0,10,0,0" />
+        <CheckBox Content="Select Script Paks"
+                  HorizontalAlignment="Left"
+                  IsChecked="{Binding IsScriptPaksSelected, Mode=TwoWay}"
+                  Margin="0,10,0,0" />
+      </StackPanel>
+    </StackPanel>
+
+    <!-- Scrollable file selection area -->
+    <StackPanel Grid.Row="2"
+                Grid.ColumnSpan="2">
+      <ScrollViewer VerticalScrollBarVisibility="Auto"
+                    MaxHeight="500"
+                    Margin="0,0,0,20">
+        <StackPanel Orientation="Vertical" Spacing="10" HorizontalAlignment="Center">
+
+          <ListBox ItemsSource="{Binding Files}">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="5">
+                  <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                            Margin="0,0,5,0" />
+                  <StackPanel Orientation="Horizontal">
+                    <i:Icon Value="{Binding FileExtension, Converter={StaticResource FileExtensionToIconConverter}}"
+                            Foreground="{Binding FileExtension, Converter={StaticResource FileExtensionToColorConverter}}"
+                            Width="24" Height="24" FontSize="16" Margin="-12,0,10,0" />
+                    <TextBlock Text="{Binding FilePathWithExtension}" VerticalAlignment="Center" Width="400" />
+                  </StackPanel>
+                  <TextBlock Text="{Binding FileSize, Converter={StaticResource SizeToBytesConverter}}" VerticalAlignment="Center" Width="100" />
+                  <TextBlock Text="{Binding FileHash}" Foreground="AntiqueWhite" VerticalAlignment="Center" Width="300" />
+                </StackPanel>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </StackPanel>
+      </ScrollViewer>
+    </StackPanel>
+  </Grid>
+</Window>

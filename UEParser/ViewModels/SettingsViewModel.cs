@@ -382,7 +382,6 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         Environment.Exit(0);
     }
 
-
     private static async Task<bool> ShowRestartPopup()
     {
         var viewModel = new RestartApplicationPopupViewModel();

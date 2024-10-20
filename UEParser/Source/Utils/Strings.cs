@@ -363,4 +363,16 @@ public partial class StringUtils
 
         return (parts[0], parts[1]);
     }
+
+    public static string FormatBytes(long bytes)
+    {
+        const long kilobyte = 1024;
+        const long megabyte = kilobyte * 1024;
+        const long gigabyte = megabyte * 1024;
+
+        if (bytes < kilobyte) return $"{bytes} B";
+        else if (bytes < megabyte) return $"{(double)bytes / kilobyte:F2} KB";
+        else if (bytes < gigabyte) return $"{(double)bytes / megabyte:F2} MB";
+        else return $"{(double)bytes / gigabyte:F2} GB";
+    }
 }

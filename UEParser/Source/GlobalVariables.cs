@@ -31,12 +31,14 @@ public class GlobalVariables
     public static readonly string pathToModelsData = Path.Combine(rootDir, "Output", "ModelsData");
     public static readonly string pathToStructuredWwise = Path.Combine(pathToExtractedAudio, "WwiseStructured");
     public static readonly string pathToTemporaryWwise = Path.Combine(pathToExtractedAudio, "WwiseTemporary");
+    public static readonly string pathToNetease = Path.Combine(rootDir, "Output", "Netease");
     #endregion
 
     #region Other
     public static readonly string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch(); // Ex. "8.1.0_ptb"
     public static readonly string compareVersionWithBranch = Helpers.ConstructVersionHeaderWithBranch(true);
     public static readonly string dbdinfoBaseUrl = "https://dbd-info.com/";
+    public const string PlatformType = "naxx2jp"; // Can also be "ena" but this is useless as its content is always behind "naxx2jp"
     #endregion
 
     // List of assets that cause fatal crash of the app and cannot be parsed!

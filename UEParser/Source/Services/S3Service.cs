@@ -8,6 +8,7 @@ using Amazon.Runtime;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using UEParser.ViewModels;
+using UEParser.Utils;
 
 namespace UEParser.Services;
 
@@ -124,10 +125,10 @@ public class S3Service
     private static void UploadDirectoryProgressCallback(object? _, UploadDirectoryProgressArgs e, string uploadDirectory)
     {
         double percentage = (double)e.NumberOfFilesUploaded / e.TotalNumberOfFiles * 100;
-        string formattedBytes = Helpers.FormatBytes(e.TransferredBytes);
-        string formattedTotalBytes = Helpers.FormatBytes(e.TotalBytes);
+        string formattedBytes = StringUtils.FormatBytes(e.TransferredBytes);
+        string formattedTotalBytes = StringUtils.FormatBytes(e.TotalBytes);
 
-        string strippedUploadDirectory = Utils.StringUtils.StripDynamicDirectory(uploadDirectory, GlobalVariables.rootDir);
+        string strippedUploadDirectory = StringUtils.StripDynamicDirectory(uploadDirectory, GlobalVariables.rootDir);
         var logMessage = $"Uploading from directory: {strippedUploadDirectory}\n" +
                  $"• Total number of files to upload: {e.TotalNumberOfFiles} ({formattedTotalBytes} total)\n" +
                  $"• Number of files uploaded: {e.NumberOfFilesUploaded} ({percentage:F2}%)\n" +

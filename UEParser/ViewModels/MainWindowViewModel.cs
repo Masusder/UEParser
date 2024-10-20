@@ -59,6 +59,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
                 "WebsiteUpdate" => new UpdateManagerView(),
                 "API" => new APIView(),
                 "AssetsExtractor" => new AssetsExtractorView(),
+                "Netease" => new NeteaseView(),
                 _ => new HomeView(),
             };
         }

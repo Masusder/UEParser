@@ -376,6 +376,7 @@ public class NeteaseConfig
     [JsonConverter(typeof(StringEnumConverter))]
     public Platform Platform { get; set; }
     public string PathToGameDirectory { get; set; }
+    public NeteaseContentConfig ContentConfig { get; set; }
     public NeteaseApiConfig ApiConfig { get; set; }
 
     public NeteaseConfig()
@@ -386,28 +387,28 @@ public class NeteaseConfig
         Branch = Branch.live;
         Platform = Platform.ios; // iOS is pretty much always updated earlier
         PathToGameDirectory = "";
+        ContentConfig = new NeteaseContentConfig();
         ApiConfig = new NeteaseApiConfig();
     }
 }
 
-// Sensitive config, such as credentials
-public class SensitiveConfig
+public class NeteaseContentConfig
 {
-    public string? S3AccessKey { get; set; }
-    public string? S3SecretKey { get; set; }
-    public string? S3BucketName { get; set; }
-    public string? AWSRegion { get; set; }
-    public string? SteamUsername { get; set; }
-    public string? SteamPassword { get; set; }
+    public string NeteaseManifestBaseUrl { get; set; }
+    public string NeteaseManifestEndpoint { get; set; }
+    public string NeteaseContentCdnBaseUrl { get; set; }
+    public string NeteaseContentCdnEndpoint { get; set; }
+    public int LatestManifestVersion { get; set; }
+    public Platform Platform { get; set; }
 
-    public SensitiveConfig()
+    public NeteaseContentConfig()
     {
-        S3AccessKey = "";
-        S3SecretKey = "";
-        S3BucketName = "";
-        AWSRegion = "";
-        SteamUsername = "";
-        SteamPassword = "";
+        NeteaseManifestBaseUrl = "https://ma100{0}.update.easebar.com";
+        NeteaseManifestEndpoint = "/pl/version_{0}_{1}_release";
+        NeteaseContentCdnBaseUrl = "https://ma100{0}-13.gph.easebar.com";
+        NeteaseContentCdnEndpoint = "/{0}.release.{1}/{2}";
+        LatestManifestVersion = 60;
+        Platform = Platform.ios;
     }
 }
 
@@ -438,6 +439,27 @@ public class NeteaseApiConfig
         {
             { "contentVersion", "/utils/contentVersion/version" }
         };
+    }
+}
+
+// Sensitive config, such as credentials
+public class SensitiveConfig
+{
+    public string? S3AccessKey { get; set; }
+    public string? S3SecretKey { get; set; }
+    public string? S3BucketName { get; set; }
+    public string? AWSRegion { get; set; }
+    public string? SteamUsername { get; set; }
+    public string? SteamPassword { get; set; }
+
+    public SensitiveConfig()
+    {
+        S3AccessKey = "";
+        S3SecretKey = "";
+        S3BucketName = "";
+        AWSRegion = "";
+        SteamUsername = "";
+        SteamPassword = "";
     }
 }
 
