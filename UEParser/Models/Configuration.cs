@@ -73,7 +73,7 @@ public class CoreConfig
         {
             "Tome01", "Tome02", "Tome03", "Tome04", "Tome05", "Tome06", "Tome07",
             "Tome08", "Tome09", "Tome10", "Tome11", "Tome12", "Tome13", "Tome14",
-            "Tome15", "Tome16", "Tome17", "Tome18", "Tome19", "Tome20"
+            "Tome15", "Tome16", "Tome17", "Tome18", "Tome19", "Tome20", "Tome21"
         };
 
         var defaultEventTomes = new HashSet<string>
@@ -81,7 +81,7 @@ public class CoreConfig
             "Halloween2021", "Halloween2022", "Anniversary2022", "Anniversary2023",
             "Winter2022", "Summer2023", "Halloween2023", "Winter2023",
             "DreadByDaylightZodiac", "Spring2024", "ChocolateBoxV1", "Anniversary2024", "CalamariV1",
-            "FireflyV1"
+            "FireflyV1", "Halloween2024", "CalamariV2"
         };
 
         TomesList = defaultTomes;
@@ -115,6 +115,7 @@ public class KrakenApiConfig
 {
     public string LatestVersion { get; set; }
     public string? CustomVersion { get; set; }
+    public bool ForceKrakenUpdate { get; set; }
     public string ApiBaseUrl { get; set; }
     public string SteamApiBaseUrl { get; set; }
     public string CdnBaseUrl { get; set; }
@@ -128,6 +129,7 @@ public class KrakenApiConfig
     {
         LatestVersion = "";
         CustomVersion = null;
+        ForceKrakenUpdate = false;
         ApiBaseUrl = "https://latest.{0}.bhvrdbd.com/api/v1";
         SteamApiBaseUrl = "https://steam.{0}.bhvrdbd.com/api/v1";
         CdnBaseUrl = "https://cdn.{0}.bhvrdbd.com";
@@ -343,11 +345,24 @@ public class KrakenApiConfig
             { "8.1.0_qa", "NOqDNLSGuu/6uZ2ezNiV6Sr42gfJkS46riDX3UfEoDI=" },
             { "8.1.0_stage", "kUxPy+fwYWStoAtJHmxlL9NWNyktBr6qbeRiwup0vEg=" },
             { "8.2.0_ptb", "HKOuAKvGgM//E3YRC7hO9DEOxK98E32fZ9ZYidJ+PBE=" },
-            { "8.2.0_cert", "cOOEIRTqKv2J0jM2w29TMPrn/2olhWxWm1Dbix4lEaY="},
-            { "8.2.0_live", "cz9ERAjJXR02FXy7ZaIKVhY2ipFRbQLyRS1m7qYFROQ="},
-            { "8.2.0_qa", "MI/v9ZnD+elB8MRSogpqxHAK2Dm5+6H7tmq/aIuSWfg="},
-            { "8.2.0_stage", "FqG9KybdtZqOE113LF3P4AyOW+p0zaHUA1tZkFkJB7o="},
-            // End of V3 encryption algorithm
+            { "8.2.0_cert", "cOOEIRTqKv2J0jM2w29TMPrn/2olhWxWm1Dbix4lEaY=" },
+            { "8.2.0_live", "cz9ERAjJXR02FXy7ZaIKVhY2ipFRbQLyRS1m7qYFROQ=" },
+            { "8.2.0_qa", "MI/v9ZnD+elB8MRSogpqxHAK2Dm5+6H7tmq/aIuSWfg=" },
+            { "8.2.0_stage", "FqG9KybdtZqOE113LF3P4AyOW+p0zaHUA1tZkFkJB7o=" },
+            { "8.3.0_cert", "sQcyOnoA9/76i7I1Uv/9oXaxkjzMnI4Ec/hDsBSBIcA=" },
+            { "8.3.0_live", "fMYq7WF+cNspGeCujfjvuw0GxlpjsXwfhfsh6O2Xn9U=" },
+            { "8.3.0_ptb", "/ecXuJvk9l38ffnkHalYfeEbumocDBK+DaUeYcIr82o=" },
+            { "8.3.0_qa", "PMpWSDCacs4gxAsW5tIqRK6LdFXwYYIYYnPfevI1HQo=" },
+            { "8.3.0_stage", "tlr7va/WqYlQF2Yp+KQN7KDLtsG/jg7OpxB/pUCtrQA=" },
+            { "8.3.1_cert", "4qLPWefFSxIkAJ8LwEKZKa+vqJ/GY102qOOFG5CUgA0=" },
+            { "8.3.1_live", "2X/5Q6mVLlhiAvfndcpQGtiq0Ff6YbQihw+rXDSG0HE=" },
+            { "8.3.1_qa", "AbVcU5Nd+lQs6LPYfBS9RgwXbaDX5mTE0LdWjABOZ+U=" },
+            { "8.3.1_stage", "5MTApKAnan25Niya0Q4qGGC7B6lRLCx+eUS2bL3lT5c=" },
+            { "8.3.2_cert", "6U8YeUkQAK/6SFU/apKdKWi4XQj6WpEYYr9oowegKns=" },
+            { "8.3.2_live", "Hqn3MOuoUmgV3tHEs+aGQ2h4okVd6VJeGnx7K+ltcGc=" },
+            { "8.3.2_qa", "Q7togl29cDK8NzohvLOYZyfUwn9sDnFz2JzzAzM8lJk=" },
+            { "8.3.2_stage", "PBcq6dBi5lwreqEPQFtO0uhg3zJ5Sy/mKzojoKOtURI=" },
+            // End of V3 encryption algorithm                                   
             // Start of test builds? Couldn't figure decryption
             { "9999.17.0", "pGJJqK8oYVFKVSZwynOFAGAYniIZd/ycyFBZc8L7HJk=" },
             { "9999.7.0", "vGeAns6/FR+tisIgyJYAoQAaaQT8+wdKcJuKvFfCiXw=" },
@@ -398,6 +413,7 @@ public class NeteaseContentConfig
     public string NeteaseManifestEndpoint { get; set; }
     public string NeteaseContentCdnBaseUrl { get; set; }
     public string NeteaseContentCdnEndpoint { get; set; }
+    public string LatestContentVersion { get; set; }
     public int LatestManifestVersion { get; set; }
     public Platform Platform { get; set; }
 
@@ -407,6 +423,7 @@ public class NeteaseContentConfig
         NeteaseManifestEndpoint = "/pl/version_{0}_{1}_release";
         NeteaseContentCdnBaseUrl = "https://ma100{0}-13.gph.easebar.com";
         NeteaseContentCdnEndpoint = "/{0}.release.{1}/{2}";
+        LatestContentVersion = "";
         LatestManifestVersion = 60;
         Platform = Platform.ios;
     }

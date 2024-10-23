@@ -33,7 +33,7 @@ public partial class KrakenCDN
         return cdnFullUrl;
     }
 
-    public static async Task FetchCdnContent(string latestVersion)
+    public static async Task FetchGeneralCdnContent(string latestVersion)
     {
         var config = ConfigurationService.Config;
 
@@ -48,17 +48,13 @@ public partial class KrakenCDN
 
         foreach (string cdnEndpoint in cdnEndpoints.Keys)
         {
-            LogsWindowViewModel.Instance.AddLog($"Fetching CDN: '{cdnEndpoint}'.", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog($"Fetching, decrypting and saving CDN: '{cdnEndpoint}'.", Logger.LogTags.Info);
 
             string outputPath = Path.Combine(outputDir, cdnEndpoint + ".json");
             string url = ConstructCdnUrl(cdnEndpoints[cdnEndpoint], latestVersion);
+
             NetAPI.ApiResponse response = await NetAPI.FetchUrl(url);
-
-            LogsWindowViewModel.Instance.AddLog($"Decrypting CDN: '{cdnEndpoint}'.", Logger.LogTags.Info);
-
             string decodedData = DbdDecryption.DecryptCDN(response.Data, branch);
-
-            LogsWindowViewModel.Instance.AddLog($"Saved CDN: '{cdnEndpoint}'.", Logger.LogTags.Info);
 
             File.WriteAllText(outputPath, decodedData);
         }
@@ -69,7 +65,8 @@ public partial class KrakenCDN
         Tomes,
         Rifts
     }
-    public static async Task FetchDynamicCdnContent(CDNOutputDirName outputDirName, string latestVersion)
+
+    public static async Task FetchArchivesCdnContent(CDNOutputDirName outputDirName, string latestVersion)
     {
         var config = ConfigurationService.Config;
 
@@ -87,59 +84,31 @@ public partial class KrakenCDN
 
         string cdnEndpoint = config.Core.ApiConfig.DynamicCdnEndpoints[outputDirNameString];
 
-        if (CDNOutputDirName.Tomes == outputDirName)
+        IEnumerable<string> listToProcess = outputDirName == CDNOutputDirName.Tomes ? combinedTomesList : tomesList;
+
+        await ProcessCdnItems(listToProcess, outputDir, outputDirNameString, cdnEndpoint, latestVersion, branch);
+    }
+
+    private static async Task ProcessCdnItems(IEnumerable<string> items, string outputDir, string outputDirNameString, string cdnEndpoint, string latestVersion, string branch)
+    {
+        foreach (string itemId in items)
         {
-            foreach (string tomeId in combinedTomesList)
+            string outputPath = Path.Combine(outputDir, itemId + ".json");
+
+            if (File.Exists(outputPath))
             {
-                string outputPath = Path.Combine(outputDir, tomeId + ".json");
-
-                if (File.Exists(outputPath))
-                {
-                    continue;
-                }
-
-                string tomeCdnEndpoint = string.Format(cdnEndpoint, tomeId);
-                string url = ConstructCdnUrl(tomeCdnEndpoint, latestVersion);
-
-                LogsWindowViewModel.Instance.AddLog($"Fetching CDN: '{outputDirNameString} {tomeId}'", Logger.LogTags.Info);
-
-                NetAPI.ApiResponse response = await NetAPI.FetchUrl(url);
-
-                LogsWindowViewModel.Instance.AddLog($"Decrypting CDN: '{outputDirNameString} {tomeId}'.", Logger.LogTags.Info);
-
-                string decodedData = DbdDecryption.DecryptCDN(response.Data, branch);
-
-                LogsWindowViewModel.Instance.AddLog($"Saved CDN: '{outputDirNameString} {tomeId}'.", Logger.LogTags.Info);
-
-                File.WriteAllText(outputPath, decodedData);
+                continue;
             }
-        }
-        else if (CDNOutputDirName.Rifts == outputDirName)
-        {
-            foreach (string tomeId in tomesList)
-            {
-                string outputPath = Path.Combine(outputDir, tomeId + ".json");
 
-                if (File.Exists(outputPath))
-                {
-                    continue;
-                }
+            string itemCdnEndpoint = string.Format(cdnEndpoint, itemId);
+            string url = ConstructCdnUrl(itemCdnEndpoint, latestVersion);
 
-                string tomeCdnEndpoint = string.Format(cdnEndpoint, tomeId);
-                string url = ConstructCdnUrl(tomeCdnEndpoint, latestVersion);
+            LogsWindowViewModel.Instance.AddLog($"Fetching, decrypting and saving CDN: '{outputDirNameString} {itemId}'", Logger.LogTags.Info);
 
-                LogsWindowViewModel.Instance.AddLog($"Fetching CDN: '{outputDirNameString} {tomeId}'", Logger.LogTags.Info);
+            NetAPI.ApiResponse response = await NetAPI.FetchUrl(url);
+            string decodedData = DbdDecryption.DecryptCDN(response.Data, branch);
 
-                NetAPI.ApiResponse response = await NetAPI.FetchUrl(url);
-
-                LogsWindowViewModel.Instance.AddLog($"Decrypting CDN: '{outputDirNameString} {tomeId}'.", Logger.LogTags.Info);
-
-                string decodedData = DbdDecryption.DecryptCDN(response.Data, branch);
-
-                LogsWindowViewModel.Instance.AddLog($"Saved CDN: '{outputDirNameString} {tomeId}'.", Logger.LogTags.Info);
-
-                File.WriteAllText(outputPath, decodedData);
-            }
+            File.WriteAllText(outputPath, decodedData);
         }
     }
 

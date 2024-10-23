@@ -20,10 +20,12 @@ public class ContentDownloader(NeteaseViewModel viewModel)
         string exportPath = Path.Combine(GlobalVariables.pathToNetease, platform, version, $"{fileData.FilePath}.{fileData.FileExtension}");
         Directory.CreateDirectory(Path.GetDirectoryName(exportPath)!);
 
+        if (CheckLocalFile(exportPath)) return;
+
         await DownloadFileAsync(url, exportPath, fileData, token);
     }
 
-    public async Task DownloadFileAsync(string url, string filePath, ManifestFileData fileData, CancellationToken token)
+    private async Task DownloadFileAsync(string url, string filePath, ManifestFileData fileData, CancellationToken token)
     {
         using var httpClient = new HttpClient();
         var response = await httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token);
@@ -49,6 +51,7 @@ public class ContentDownloader(NeteaseViewModel viewModel)
 
                 ViewModel.CurrentSize = StringUtils.FormatBytes(totalRead);
                 ViewModel.ProgressPercentage = (double)totalRead / totalBytes * 100;
+                ViewModel.AddToCombinedSize(bytesRead);
             }
 
             await fileStream.FlushAsync(token);
@@ -66,6 +69,7 @@ public class ContentDownloader(NeteaseViewModel viewModel)
         }
     }
 
+    #region Utils
     private static string FormNeteaseDownloadUrl(string version, string FilePathWithExtension)
     {
         var config = ConfigurationService.Config;
@@ -74,4 +78,16 @@ public class ContentDownloader(NeteaseViewModel viewModel)
 
         return url;
     }
+
+    private static bool CheckLocalFile(string filePath)
+    {
+        if (File.Exists(filePath))
+        {
+            LogsWindowViewModel.Instance.AddLog("File already exists. Delete the file if you wish to download it again.", Logger.LogTags.Info);
+            return true;
+        }
+
+        return false;
+    }
+    #endregion
 }

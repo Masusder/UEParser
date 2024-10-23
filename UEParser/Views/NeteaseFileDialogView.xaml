@@ -109,6 +109,24 @@
     <StackPanel Orientation="Vertical"
                 Grid.Row="1"
                 Grid.ColumnSpan="2">
+      <!-- TextBlock shown when content has been downloaded -->
+      <TextBlock Text="You've previously downloaded content for this version."
+                 IsVisible="{Binding HasContentBeenDownloaded}"
+                 Foreground="OrangeRed"
+                 FontWeight="Bold"
+                 FontSize="16"
+                 VerticalAlignment="Center"
+                 HorizontalAlignment="Left"
+                 Margin="17.5,0,0,0"/>
+      <!-- TextBlock shown when content hasn't been downloaded -->
+      <TextBlock Text="You haven't downloaded content for this version yet!"
+                 IsVisible="{Binding !HasContentBeenDownloaded}"
+                 Foreground="YellowGreen"
+                 FontWeight="Bold"
+                 FontSize="16"
+                 VerticalAlignment="Center"
+                 HorizontalAlignment="Left"
+                 Margin="17.5,0,0,0"/>
       <TextBlock Text="Select files you want to download."
                  FontWeight="Light"
                  FontSize="14"

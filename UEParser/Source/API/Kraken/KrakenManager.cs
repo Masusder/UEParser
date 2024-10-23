@@ -118,9 +118,18 @@ public class KrakenManager
                 throw new Exception("Kraken version check failed.");
             }
 
-            if (latestSavedVersion != latestVersion)
+            bool isNewVersion = latestSavedVersion != latestVersion;
+            bool isForcedUpdate = config.Core.ApiConfig.ForceKrakenUpdate;
+            if (isNewVersion || isForcedUpdate)
             {
-                LogsWindowViewModel.Instance.AddLog($"Detected new version: '{latestVersion}'.", Logger.LogTags.Info);
+                if (isNewVersion)
+                {
+                    LogsWindowViewModel.Instance.AddLog($"Detected new version: '{latestVersion}'.", Logger.LogTags.Info);
+                }
+                else if (isForcedUpdate)
+                {
+                    LogsWindowViewModel.Instance.AddLog($"Update has been forced, you can change that in the settings. Version: '{latestVersion}'", Logger.LogTags.Info);
+                }
 
                 await RetrieveData(config, latestVersion);
             }
@@ -137,9 +146,9 @@ public class KrakenManager
 
         static async Task RetrieveData(Configuration config, string latestVersion)
         {
-            await KrakenCDN.FetchCdnContent(latestVersion);
-            await KrakenCDN.FetchDynamicCdnContent(KrakenCDN.CDNOutputDirName.Tomes, latestVersion);
-            await KrakenCDN.FetchDynamicCdnContent(KrakenCDN.CDNOutputDirName.Rifts, latestVersion);
+            await KrakenCDN.FetchGeneralCdnContent(latestVersion);
+            await KrakenCDN.FetchArchivesCdnContent(KrakenCDN.CDNOutputDirName.Tomes, latestVersion);
+            await KrakenCDN.FetchArchivesCdnContent(KrakenCDN.CDNOutputDirName.Rifts, latestVersion);
 
             LogsWindowViewModel.Instance.AddLog("Creating game characters helper table from retrieved API.", Logger.LogTags.Info);
             Helpers.CreateCharacterTable();

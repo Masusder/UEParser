@@ -24,6 +24,7 @@ public partial class SettingsViewModel : INotifyPropertyChanged
 {
     public ObservableCollection<string> AvailableComparisonVersions { get; set; }
 
+    #region Path Settings
     private string? _pathToGameDirectory;
     public string? PathToGameDirectory
     {
@@ -44,12 +45,20 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         get => _blenderPath;
         set => SetProperty(ref _blenderPath, value);
     }
+    #endregion
 
     private bool _updateApiDuringInitialization = false;
     public bool UpdateApiDuringInitialization
     {
         get => _updateApiDuringInitialization;
         set => SetProperty(ref _updateApiDuringInitialization, value);
+    }
+
+    private bool _forceKrakenUpdate = false;
+    public bool ForceKrakenUpdate
+    {
+        get => _forceKrakenUpdate;
+        set => SetProperty(ref _forceKrakenUpdate, value);
     }
 
     private Branch _selectedCurrentBranch;
@@ -213,28 +222,29 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         SelectedComparisonVersionWithBranch = Helpers.ConstructVersionHeaderWithBranch(true);
         var (version, branch) = Utils.StringUtils.SplitVersionAndBranch(SelectedComparisonVersionWithBranch);
 
-        #region PATHS
+        #region Paths
         PathToGameDirectory = config.Core.PathToGameDirectory;
         PathToMappings = config.Core.MappingsPath;
         BlenderPath = config.Global.BlenderPath;
         #endregion
 
-        #region BRANCHES
+        #region Branches
         SelectedCurrentBranch = config.Core.VersionData.Branch;
         SelectedComparisonBranch = (Branch)Enum.Parse(typeof(Branch), branch);
         #endregion
 
-        #region VERSIONS
+        #region Versions
         SelectedCurrentVersion = config.Core.VersionData.LatestVersionHeader;
         SelectedComparisonVersion = version;
         CustomVersion = config.Core.ApiConfig.CustomVersion;
         #endregion
 
-        #region BOOLEANS
+        #region Booleans
         UpdateApiDuringInitialization = config.Global.UpdateAPIDuringInitialization;
+        ForceKrakenUpdate = config.Core.ApiConfig.ForceKrakenUpdate;
         #endregion
 
-        #region SENSITIVE
+        #region Sensitive
         // AWS
         S3AccessKey = config.Sensitive.S3AccessKey;
         S3SecretKey = config.Sensitive.S3SecretKey;
@@ -323,6 +333,7 @@ public partial class SettingsViewModel : INotifyPropertyChanged
 
             // Booleans
             config.Global.UpdateAPIDuringInitialization = UpdateApiDuringInitialization;
+            config.Core.ApiConfig.ForceKrakenUpdate = ForceKrakenUpdate;
 
             // Other
             config.Core.TomesList = new HashSet<string>(TomesList);
@@ -382,6 +393,7 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         Environment.Exit(0);
     }
 
+    #region Dialogs
     private static async Task<bool> ShowRestartPopup()
     {
         var viewModel = new RestartApplicationPopupViewModel();
@@ -435,6 +447,7 @@ public partial class SettingsViewModel : INotifyPropertyChanged
             UpdateProperty(propertyName, decodedPath);
         }
     }
+    #endregion
 
     private void UpdateProperty(string propertyName, string path)
     {

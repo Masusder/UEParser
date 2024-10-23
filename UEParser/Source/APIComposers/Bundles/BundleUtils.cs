@@ -64,8 +64,8 @@ public class BundleUtils
             string? id = rewardObject["id"]?.ToString();
             string? type = rewardObject["type"]?.ToString();
 
-            // Parse game specific data
             JObject? gameSpecificDataObject = rewardObject["gameSpecificData"] as JObject;
+            bool hasPriorityForPackImageComposition = gameSpecificDataObject?["hasPriorityForPackImageComposition"]?.ToObject<bool>() ?? false;
             bool ignoreOwnership = gameSpecificDataObject?["ignoreOwnership"]?.ToObject<bool>() ?? false;
             bool includeInOwnership = gameSpecificDataObject?["includeInOwnership"]?.ToObject<bool>() ?? false;
             bool includeInPricing = gameSpecificDataObject?["includeInPricing"]?.ToObject<bool>() ?? false;
@@ -81,6 +81,7 @@ public class BundleUtils
                     Type = type,
                     GameSpecificData = new GameSpecificData
                     {
+                        HasPriorityForPackImageComposition = hasPriorityForPackImageComposition,
                         IgnoreOwnership = ignoreOwnership,
                         IncludeInOwnership = includeInOwnership,
                         IncludeInPricing = includeInPricing,

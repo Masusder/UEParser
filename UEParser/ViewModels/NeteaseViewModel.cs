@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Net.Http;
+using System.Linq;
+using System.Threading;
 using System.Windows.Input;
 using System.Threading.Tasks;
-using Avalonia.Threading;
 using ReactiveUI;
 using UEParser.Utils;
 using UEParser.Views;
 using UEParser.Network.Netease;
-using System.Threading;
 using UEParser.Services;
 using UEParser.Netease;
 
@@ -18,6 +17,8 @@ public class NeteaseViewModel : ReactiveObject
     #region Properties
     private string? _fileName;
     private string? _currentSize;
+    private string? _combinedCurrentSize;
+    private long _combinedCurrentSizeInBytes;
     private string? _totalMaxSize;
     private string? _maxSize;
     private double _progressPercentage;
@@ -33,6 +34,12 @@ public class NeteaseViewModel : ReactiveObject
     {
         get => _currentSize;
         set => this.RaiseAndSetIfChanged(ref _currentSize, value);
+    }
+
+    public string? CombinedCurrentSize
+    {
+        get => _combinedCurrentSize;
+        set => this.RaiseAndSetIfChanged(ref _combinedCurrentSize, value);
     }
 
     public string? TotalMaxSize
@@ -82,7 +89,9 @@ public class NeteaseViewModel : ReactiveObject
         DownloadLatestContentCommand = ReactiveCommand.Create(DownloadLatestContent);
         ProgressPercentage = 0;
         FileName = "";
+        CombinedCurrentSize = "0 B";
         CurrentSize = "0 B";
+        TotalMaxSize = "0 B";
         MaxSize = "0 B";
         Utils.MessageBus.DownloadContentStream.Subscribe(OnDownloadContentReceived);
     }
@@ -137,12 +146,20 @@ public class NeteaseViewModel : ReactiveObject
 
             var filesToProcess = message.SelectedFiles;
 
+            TotalMaxSize = StringUtils.FormatBytes(
+                filesToProcess.Where(file => file.IsSelected)
+                              .Sum(file => file.FileSize)
+            );
+
             var contentDownloader = new ContentDownloader(this);
             foreach (var file in filesToProcess)
             {
                 token.ThrowIfCancellationRequested();
 
                 LogsWindowViewModel.Instance.AddLog($"Downloading: {file.FilePathWithExtension}", Logger.LogTags.Info);
+
+                config.Netease.ContentConfig.LatestContentVersion = message.Version;
+                await ConfigurationService.SaveConfiguration();
 
                 await contentDownloader.ConstructFilePathAndDownloadAsync(file, message.Version, config.Netease.Platform.ToString(), token);
             }
@@ -160,6 +177,22 @@ public class NeteaseViewModel : ReactiveObject
             LogsWindowViewModel.Instance.AddLog(ex.ToString(), Logger.LogTags.Error);
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
         }
+        finally
+        {
+            // "Dispose"
+            IsDownloading = false;
+            TotalMaxSize = "0 B";
+            CombinedCurrentSize = "0 B";
+            _combinedCurrentSizeInBytes = 0;
+        }
+    }
+    #endregion
+
+    #region Utils
+    public void AddToCombinedSize(long bytesRead)
+    {
+        _combinedCurrentSizeInBytes += bytesRead;
+        CombinedCurrentSize = StringUtils.FormatBytes(_combinedCurrentSizeInBytes);
     }
     #endregion
 }

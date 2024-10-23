@@ -53,6 +53,12 @@
            Foreground="White" />
 
     <StackPanel Orientation="Vertical" IsVisible="{Binding IsDownloading}" Spacing="5">
+      <TextBlock Text="Total Download Size:" FontWeight="Black" HorizontalAlignment="Center" FontSize="14" />
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+        <TextBlock Text="{Binding CombinedCurrentSize}"  Margin="0,0,5,0" FontSize="14" />
+        <TextBlock Text="/"  FontSize="14" />
+        <TextBlock Text="{Binding TotalMaxSize}" Margin="5,0,0,0" FontSize="14" />
+      </StackPanel>
       <TextBlock Text="{Binding FileName}" FontWeight="Black" HorizontalAlignment="Center" FontSize="16" />
       <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
         <TextBlock Text="{Binding CurrentSize}" FontSize="14" Margin="0,0,5,0"/>

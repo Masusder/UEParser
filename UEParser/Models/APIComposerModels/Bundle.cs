@@ -131,6 +131,16 @@ public class ImageComposition
 public class GameSpecificData
 {
     /// <summary>
+    /// Indicates whether this reward has priority during the composition 
+    /// of the pack image.
+    /// </summary>
+    /// <remarks>
+    /// If <c>true</c>, this reward's image will be prioritized in the 
+    /// composition process, overriding other elements.
+    /// </remarks>
+    public required bool HasPriorityForPackImageComposition { get; set; }
+
+    /// <summary>
     /// Indicates if ownership should be ignored.
     /// </summary>
     public required bool IgnoreOwnership { get; set; }

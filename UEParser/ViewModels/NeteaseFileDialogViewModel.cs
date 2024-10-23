@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using ReactiveUI;
 using UEParser.Models.Netease;
 using UEParser.Utils;
+using UEParser.Services;
 
 namespace UEParser.ViewModels;
 
@@ -25,6 +26,16 @@ public class NeteaseFileDialogViewModel : ReactiveObject
         }
     }
 
+    private bool _hasContentBeenDownloaded;
+    public bool HasContentBeenDownloaded
+    {
+        get => _hasContentBeenDownloaded;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _hasContentBeenDownloaded, value);
+        }
+    }
+
     private string? _version;
     public string? Version
     {
@@ -33,6 +44,7 @@ public class NeteaseFileDialogViewModel : ReactiveObject
         {
             this.RaiseAndSetIfChanged(ref _version, value);
             UpdateDisplayedVersion();
+            UpdateHasContentBeenDownloaded();
         }
     }
 
@@ -235,6 +247,19 @@ public class NeteaseFileDialogViewModel : ReactiveObject
     public void UpdateDisplayedVersion()
     {
         VersionDisplayed = $"Version: {Version}";
+    }
+
+    public void UpdateHasContentBeenDownloaded()
+    {
+        var config = ConfigurationService.Config;
+        if (config.Netease.ContentConfig.LatestContentVersion != Version)
+        {
+            HasContentBeenDownloaded = false;
+        }
+        else
+        {
+            HasContentBeenDownloaded = true;
+        }
     }
 
     public void LoadFiles(IEnumerable<ManifestFileData> files)
