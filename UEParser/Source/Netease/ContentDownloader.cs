@@ -38,7 +38,7 @@ public class ContentDownloader(NeteaseViewModel viewModel)
         try
         {
             fileStream = File.Create(filePath);
-            using var contentStream = await response.Content.ReadAsStreamAsync(token);
+            await using var contentStream = await response.Content.ReadAsStreamAsync(token);
             var buffer = new byte[8192];
             long totalRead = 0;
             int bytesRead;

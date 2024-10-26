@@ -20,7 +20,7 @@ using UEParser.AssetRegistry;
 
 namespace UEParser.ViewModels;
 
-public partial class SettingsViewModel : INotifyPropertyChanged
+public sealed partial class SettingsViewModel : INotifyPropertyChanged
 {
     public ObservableCollection<string> AvailableComparisonVersions { get; set; }
 
@@ -47,14 +47,14 @@ public partial class SettingsViewModel : INotifyPropertyChanged
     }
     #endregion
 
-    private bool _updateApiDuringInitialization = false;
+    private bool _updateApiDuringInitialization;
     public bool UpdateApiDuringInitialization
     {
         get => _updateApiDuringInitialization;
         set => SetProperty(ref _updateApiDuringInitialization, value);
     }
 
-    private bool _forceKrakenUpdate = false;
+    private bool _forceKrakenUpdate;
     public bool ForceKrakenUpdate
     {
         get => _forceKrakenUpdate;
@@ -99,15 +99,12 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         }
     }
 
-    public static bool FirstInitializationCompleted => ConfigurationService.Config.Global.FirstInitializationCompleted;
-    public bool IsCurrentVersionConfigured => !string.IsNullOrEmpty(SelectedCurrentVersion);
+    private static bool FirstInitializationCompleted => ConfigurationService.Config.Global.FirstInitializationCompleted;
+    private bool IsCurrentVersionConfigured => !string.IsNullOrEmpty(SelectedCurrentVersion);
 
     // I only want to allow download of register when current version is configured
     // and user initialized build at least once
-    public bool CanDownloadRegisters
-    {
-        get { return IsCurrentVersionConfigured && FirstInitializationCompleted; }
-    }
+    public bool CanDownloadRegisters => IsCurrentVersionConfigured && FirstInitializationCompleted;
 
     private string? _selectedComparisonVersion;
     public string? SelectedComparisonVersion
@@ -294,7 +291,7 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         {
             if (!AvailableComparisonVersions.Contains(version))
             {
-                // I wanna add it to the beginning of the list, as it is displayed in the UI
+                // I want to add it to the beginning of the list, as it is displayed in the UI
                 AvailableComparisonVersions.Insert(0, version);
             }
         }
@@ -336,8 +333,8 @@ public partial class SettingsViewModel : INotifyPropertyChanged
             config.Core.ApiConfig.ForceKrakenUpdate = ForceKrakenUpdate;
 
             // Other
-            config.Core.TomesList = new HashSet<string>(TomesList);
-            config.Core.EventTomesList = new HashSet<string>(EventTomesList);
+            config.Core.TomesList = [..TomesList];
+            config.Core.EventTomesList = [..EventTomesList];
             config.Core.AesKey = AESKey ?? "";
 
             await ConfigurationService.SaveConfiguration();
@@ -363,12 +360,12 @@ public partial class SettingsViewModel : INotifyPropertyChanged
         }
     }
 
-    public void RemoveTome(string tome)
+    private void RemoveTome(string tome)
     {
         TomesList.Remove(tome);
     }
 
-    public void RemoveEventTome(string tome)
+    private void RemoveEventTome(string tome)
     {
         EventTomesList.Remove(tome);
     }
@@ -470,7 +467,7 @@ public partial class SettingsViewModel : INotifyPropertyChanged
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }

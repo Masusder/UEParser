@@ -88,7 +88,7 @@ public class APIViewModel
         }
     }
 
-    public void ConstructFullVersion()
+    private void ConstructFullVersion()
     {
         string fullVersion = $"Selected version: {GlobalVariables.versionWithBranch}";
         Version = fullVersion;

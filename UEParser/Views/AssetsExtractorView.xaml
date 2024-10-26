@@ -5,7 +5,6 @@
              xmlns:i="https://github.com/projektanker/icons.avalonia"
              mc:Ignorable="d"
              x:Class="UEParser.Views.AssetsExtractorView"
-             xmlns:views="clr-namespace:UEParser.Views"
              xmlns:vm="clr-namespace:UEParser.ViewModels"
              xmlns:convert="clr-namespace:UEParser.Converters"
              x:DataType="vm:AssetsExtractorViewModel">
@@ -52,7 +51,7 @@
         <Border Grid.Row="0" Grid.Column="0" Background="Transparent" BorderBrush="#1AFFFFFF" BorderThickness="3" Padding="20" Margin="10" CornerRadius="8">
           <StackPanel Orientation="Horizontal" Spacing="7.5">
             <Grid Width="64" Height="64" Margin="0,0,10,0" HorizontalAlignment="Left">
-              <Border CornerRadius="8" BoxShadow="5 5 10 -5 #CC000000" BorderBrush="#1AFFFFFF" BorderThickness="1" Background="White">
+              <Border CornerRadius="8" BoxShadow="5 5 10 -5 #CC000000" BorderBrush="#1AFFFFFF" BorderThickness="1">
                 <Border.Background>
                   <LinearGradientBrush StartPoint="30%,0%" EndPoint="50%,120%">
                     <GradientStop Color="#66DA89" Offset="0"/>
@@ -81,7 +80,7 @@
         <Border Grid.Row="0" Grid.Column="1" Background="Transparent" BorderBrush="#1AFFFFFF" BorderThickness="3" Padding="20" Margin="10" CornerRadius="8">
           <StackPanel Orientation="Horizontal" Spacing="7.5">
             <Grid Width="64" Height="64" Margin="0,0,10,0" HorizontalAlignment="Left">
-              <Border CornerRadius="8" BoxShadow="5 5 10 -5 #CC000000" BorderBrush="#1AFFFFFF" BorderThickness="1" Background="White">
+              <Border CornerRadius="8" BoxShadow="5 5 10 -5 #CC000000" BorderBrush="#1AFFFFFF" BorderThickness="1">
                 <Border.Background>
                   <LinearGradientBrush StartPoint="30%,0%" EndPoint="50%,120%">
                     <GradientStop Color="#514FC0" Offset="0"/>
@@ -106,7 +105,7 @@
         <Border Grid.Row="1" Grid.Column="0" Background="Transparent" BorderBrush="#1AFFFFFF" BorderThickness="3" Padding="20" Margin="10" CornerRadius="8">
           <StackPanel Orientation="Horizontal" Spacing="7.5">
             <Grid Width="64" Height="64" Margin="0,0,10,0" HorizontalAlignment="Left">
-              <Border CornerRadius="8" BoxShadow="5 5 10 -5 #CC000000" BorderBrush="#1AFFFFFF" BorderThickness="1" Background="White">
+              <Border CornerRadius="8" BoxShadow="5 5 10 -5 #CC000000" BorderBrush="#1AFFFFFF" BorderThickness="1">
                 <Border.Background>
                   <LinearGradientBrush StartPoint="30%,0%" EndPoint="50%,120%">
                     <GradientStop Color="#F7CE46" Offset="0"/>
@@ -132,7 +131,7 @@
         <Border Grid.Row="1" Grid.Column="1" Background="Transparent" BorderBrush="#1AFFFFFF" BorderThickness="3" Padding="20" Margin="10" CornerRadius="8">
           <StackPanel Orientation="Horizontal" Spacing="7.5">
             <Grid Width="64" Height="64" Margin="0,0,10,0" HorizontalAlignment="Left">
-              <Border CornerRadius="8" BoxShadow="5 5 10 -5 #CC000000" BorderBrush="#1AFFFFFF" BorderThickness="1" Background="White">
+              <Border CornerRadius="8" BoxShadow="5 5 10 -5 #CC000000" BorderBrush="#1AFFFFFF" BorderThickness="1">
                 <Border.Background>
                   <LinearGradientBrush StartPoint="30%,0%" EndPoint="50%,120%">
                     <GradientStop Color="Dodgerblue" Offset="0"/>
@@ -159,7 +158,7 @@
         <Border Grid.Row="2" Grid.Column="0" Background="Transparent" BorderBrush="#1AFFFFFF" BorderThickness="3" Padding="20" Margin="10" CornerRadius="8">
           <StackPanel Orientation="Horizontal" Spacing="7.5">
             <Grid Width="64" Height="64" Margin="0,0,10,0" HorizontalAlignment="Left">
-              <Border CornerRadius="8" BoxShadow="5 5 10 -5 #CC000000" BorderBrush="#1AFFFFFF" BorderThickness="1" Background="White">
+              <Border CornerRadius="8" BoxShadow="5 5 10 -5 #CC000000" BorderBrush="#1AFFFFFF" BorderThickness="1">
                 <Border.Background>
                   <LinearGradientBrush StartPoint="30%,0%" EndPoint="50%,120%">
                     <GradientStop Color="Red" Offset="0"/>
@@ -184,10 +183,10 @@
         <Border Grid.Row="2" Grid.Column="1" Background="Transparent" BorderBrush="#1AFFFFFF" BorderThickness="3" Padding="20" Margin="10" CornerRadius="8">
           <StackPanel Orientation="Horizontal" Spacing="7.5">
             <Grid Width="64" Height="64" Margin="0,0,10,0" HorizontalAlignment="Left">
-              <Border CornerRadius="8" BoxShadow="5 5 10 -5 #CC000000" BorderBrush="#1AFFFFFF" BorderThickness="1" Background="White">
+              <Border CornerRadius="8" BoxShadow="5 5 10 -5 #CC000000" BorderBrush="#1AFFFFFF" BorderThickness="1">
                 <Border.Background>
                   <LinearGradientBrush StartPoint="30%,0%" EndPoint="50%,120%">
-                    <GradientStop Color="" Offset="0"/>
+                    <GradientStop Color="Black" Offset="0"/>
                     <GradientStop Color="#3d3d3d" Offset="1"/>
                   </LinearGradientBrush>
                 </Border.Background>

@@ -5,7 +5,7 @@ using UEParser.ViewModels;
 
 namespace UEParser.Netease;
 
-public class ContentManager
+public static class ContentManager
 {
     public static async Task ChangeMagicValue(string filePath)
     {
@@ -38,7 +38,7 @@ public class ContentManager
                 }
             }
 
-            File.WriteAllBytes(filePath, fileBytes);
+            await File.WriteAllBytesAsync(filePath, fileBytes);
             LogsWindowViewModel.Instance.AddLog($"Pak '{Path.GetFileName(filePath)}' has been successfully patched.", Logger.LogTags.Info);
         }
         catch (Exception ex)

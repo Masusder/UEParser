@@ -560,7 +560,7 @@
                     x:Name="TomesListBox"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
-                    DataContext="{Binding}"
+
                     ItemsSource="{Binding TomesList}">
                   <ListBox.ItemTemplate>
                     <DataTemplate>

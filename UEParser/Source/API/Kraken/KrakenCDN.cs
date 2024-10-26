@@ -8,7 +8,7 @@ using UEParser.Network.Kraken.API;
 
 namespace UEParser.Network.Kraken.CDN;
 
-public partial class KrakenCDN
+public class KrakenCDN
 {
     private static string ConstructCdnUrl(string endpoint, string latestVersion)
     {

@@ -13,7 +13,7 @@ namespace UEParser.Network.Kraken;
 // Special thanks to Archengius for help
 // This is V3 decryption algorithm with combination of V1 algorithm
 // which allows us to use the same method without need to check origin of encrypted data
-public class DbdDecryption
+public static class DbdDecryption
 {
     private static readonly string ASSET_ENCRYPTION_PREFIX = "DbdDAwAC";
     private static readonly string PROFILE_ENCRYPTION_PREFIX = "DbdDAgAC";
@@ -41,8 +41,8 @@ public class DbdDecryption
         // inputText will still go past all above methods without any errors
         // but result will be meaningless string
         // check for that here
-        // If input text is null or empty that means request failed
-        // but I wanna allow that personally
+        // If input text is null or empty that means request failed,
+        // but I want to allow that personally
         if (!string.IsNullOrEmpty(inputText) && !IsValidJson(inputText))
         {
             throw new Exception("Decrypted data is not a valid JSON. Most likely encryption key is invalid.");
@@ -63,7 +63,7 @@ public class DbdDecryption
         if (string.IsNullOrWhiteSpace(strInput)) return true;
         try
         {
-            var obj = JToken.Parse(strInput);
+            JToken.Parse(strInput);
             return true;
         }
         catch (JsonReaderException)
