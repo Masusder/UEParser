@@ -139,7 +139,7 @@ public partial class LogsWindowViewModel : ReactiveObject
 
     private static void OpenOutput()
     {
-        string outputFolder = Path.Combine(GlobalVariables.rootDir, "Output");
+        string outputFolder = Path.Combine(GlobalVariables.RootDir, "Output");
         Directory.CreateDirectory(outputFolder);
 
         // Check if the output folder exists before attempting to open it

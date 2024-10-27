@@ -15,23 +15,23 @@ public class Offerings
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
 
-    public static async Task InitializeOfferingsDB(CancellationToken token)
+    public static async Task InitializeOfferingsDb(CancellationToken token)
     {
         await Task.Run(() =>
         {
-            Dictionary<string, Offering> parsedOfferingsDB = [];
+            Dictionary<string, Offering> parsedOfferingsDb = [];
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Offerings);
 
-            ParseOfferings(parsedOfferingsDB, token);
+            ParseOfferings(parsedOfferingsDb, token);
 
-            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedOfferingsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Offerings);
+            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedOfferingsDb.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Offerings);
 
-            ParseLocalizationAndSave(parsedOfferingsDB, token);
+            ParseLocalizationAndSave(parsedOfferingsDb, token);
         }, token);
     }
 
-    private static void ParseOfferings(Dictionary<string, Offering> parsedOfferingsDB, CancellationToken token)
+    private static void ParseOfferings(Dictionary<string, Offering> parsedOfferingsDb, CancellationToken token)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("OfferingDB.json");
 
@@ -57,7 +57,7 @@ public class Offerings
                 string available = StringUtils.DoubleDotsSplit(availableRaw);
 
                 string roleRaw = item.Value["Role"];
-                string role = StringUtils.StringSplitVE(roleRaw);
+                string role = StringUtils.StringSplitVe(roleRaw);
 
                 string rarityRaw = item.Value["Rarity"];
                 string rarity = StringUtils.DoubleDotsSplit(rarityRaw);
@@ -108,16 +108,16 @@ public class Offerings
                     Image = iconPath
                 };
 
-                parsedOfferingsDB.Add(offeringId, model);
+                parsedOfferingsDb.Add(offeringId, model);
             }
         }
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, Offering> parsedOfferingsDB, CancellationToken token)
+    private static void ParseLocalizationAndSave(Dictionary<string, Offering> parsedOfferingsDb, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Offerings);
 
-        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
+        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.RootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
 
         foreach (string filePath in filePaths)
         {
@@ -129,14 +129,14 @@ public class Offerings
 
             Dictionary<string, string> languageKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString) ?? throw new Exception($"Failed to load following locres file: {langKey}.");
 
-            var objectString = JsonConvert.SerializeObject(parsedOfferingsDB);
-            Dictionary<string, Offering> localizedOfferingsDB = JsonConvert.DeserializeObject<Dictionary<string, Offering>>(objectString) ?? [];
+            var objectString = JsonConvert.SerializeObject(parsedOfferingsDb);
+            Dictionary<string, Offering> localizedOfferingsDb = JsonConvert.DeserializeObject<Dictionary<string, Offering>>(objectString) ?? [];
 
-            Helpers.LocalizeDB(localizedOfferingsDB, LocalizationData, languageKeys, langKey);
+            Helpers.LocalizeDb(localizedOfferingsDb, LocalizationData, languageKeys, langKey);
 
-            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Offerings.json");
+            string outputPath = Path.Combine(GlobalVariables.PathToParsedData, GlobalVariables.VersionWithBranch, langKey, "Offerings.json");
 
-            FileWriter.SaveParsedDB(localizedOfferingsDB, outputPath, Logger.ELogExtraTag.Offerings);
+            FileWriter.SaveParsedDb(localizedOfferingsDb, outputPath, Logger.ELogExtraTag.Offerings);
         }
     }
 }

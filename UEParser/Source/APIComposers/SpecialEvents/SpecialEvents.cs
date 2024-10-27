@@ -16,29 +16,29 @@ public class SpecialEvents
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
 
-    public static async Task InitializeSpecialEventsDB(CancellationToken token)
+    public static async Task InitializeSpecialEventsDb(CancellationToken token)
     {
         await Task.Run(() =>
         {
-            Dictionary<string, SpecialEvent> parsedSpecialEventsDB = [];
+            Dictionary<string, SpecialEvent> parsedSpecialEventsDb = [];
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.SpecialEvents);
 
-            ParseSpecialEvents(parsedSpecialEventsDB, token);
+            ParseSpecialEvents(parsedSpecialEventsDb, token);
 
-            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedSpecialEventsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.SpecialEvents);
+            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedSpecialEventsDb.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.SpecialEvents);
 
-            ParseLocalizationAndSave(parsedSpecialEventsDB, token);
+            ParseLocalizationAndSave(parsedSpecialEventsDb, token);
         }, token);
     }
 
-    private static readonly string[] ignoreEvents =
+    private static readonly string[] IgnoreEvents =
     [
         "Barrel2023",
         "Gnome2021",
         "EddieZodiac"
     ];
-    private static void ParseSpecialEvents(Dictionary<string, SpecialEvent> parsedSpecialEventsDB, CancellationToken token)
+    private static void ParseSpecialEvents(Dictionary<string, SpecialEvent> parsedSpecialEventsDb, CancellationToken token)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("SpecialEventsDB.json");
 
@@ -62,7 +62,7 @@ public class SpecialEvents
 
                 Dictionary<string, List<LocalizationEntry>> localizationModel = [];
 
-                if (ignoreEvents.Contains(eventId)) continue;
+                if (IgnoreEvents.Contains(eventId)) continue;
 
                 string nameKey = item.Value["EventName"]["Key"];
                 string nameSourceString = item.Value["EventName"]["SourceString"];
@@ -82,16 +82,16 @@ public class SpecialEvents
                     StoreItemIds = item.Value["EventEntryData"]["AdditionalStoreItemIds"]
                 };
 
-                parsedSpecialEventsDB.Add(eventId, model);
+                parsedSpecialEventsDb.Add(eventId, model);
             }
         }
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, SpecialEvent> parsedSpecialEventsDB, CancellationToken token)
+    private static void ParseLocalizationAndSave(Dictionary<string, SpecialEvent> parsedSpecialEventsDb, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.SpecialEvents);
 
-        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
+        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.RootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
 
         foreach (string filePath in filePaths)
         {
@@ -103,14 +103,14 @@ public class SpecialEvents
 
             Dictionary<string, string> languageKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString) ?? throw new Exception($"Failed to load following locres file: {langKey}.");
 
-            var objectString = JsonConvert.SerializeObject(parsedSpecialEventsDB);
-            Dictionary<string, SpecialEvent> localizedSpecialEventsDB = JsonConvert.DeserializeObject<Dictionary<string, SpecialEvent>>(objectString) ?? [];
+            var objectString = JsonConvert.SerializeObject(parsedSpecialEventsDb);
+            Dictionary<string, SpecialEvent> localizedSpecialEventsDb = JsonConvert.DeserializeObject<Dictionary<string, SpecialEvent>>(objectString) ?? [];
 
-            Helpers.LocalizeDB(localizedSpecialEventsDB, LocalizationData, languageKeys, langKey);
+            Helpers.LocalizeDb(localizedSpecialEventsDb, LocalizationData, languageKeys, langKey);
 
-            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "SpecialEvents.json");
+            string outputPath = Path.Combine(GlobalVariables.PathToParsedData, GlobalVariables.VersionWithBranch, langKey, "SpecialEvents.json");
 
-            FileWriter.SaveParsedDB(localizedSpecialEventsDB, outputPath, Logger.ELogExtraTag.SpecialEvents);
+            FileWriter.SaveParsedDb(localizedSpecialEventsDb, outputPath, Logger.ELogExtraTag.SpecialEvents);
         }
     }
 }

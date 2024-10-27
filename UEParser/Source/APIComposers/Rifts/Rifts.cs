@@ -16,25 +16,25 @@ namespace UEParser.APIComposers;
 public class Rifts
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
-    private static readonly dynamic? ArchiveRewardData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "ArchiveRewardData.json")) ?? throw new Exception("Failed to load archive reward data.");
+    private static readonly dynamic? ArchiveRewardData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.PathToKraken, GlobalVariables.VersionWithBranch, "CDN", "ArchiveRewardData.json")) ?? throw new Exception("Failed to load archive reward data.");
 
-    public static async Task InitializeRiftsDB(CancellationToken token)
+    public static async Task InitializeRiftsDb(CancellationToken token)
     {
         await Task.Run(() =>
         {
-            Dictionary<string, Rift> parsedRiftsDB = [];
+            Dictionary<string, Rift> parsedRiftsDb = [];
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Rifts);
 
-            parsedRiftsDB = ParseRifts(parsedRiftsDB, token);
+            parsedRiftsDb = ParseRifts(parsedRiftsDb, token);
 
-            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedRiftsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Rifts);
+            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedRiftsDb.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Rifts);
 
-            ParseLocalizationAndSave(parsedRiftsDB, token);
+            ParseLocalizationAndSave(parsedRiftsDb, token);
         }, token);
     }
 
-    private static Dictionary<string, Rift> ParseRifts(Dictionary<string, Rift> parsedRiftsDB, CancellationToken token)
+    private static Dictionary<string, Rift> ParseRifts(Dictionary<string, Rift> parsedRiftsDb, CancellationToken token)
     {
         var config = ConfigurationService.Config;
         var eventTomesArray = config.Core.EventTomesList;
@@ -61,7 +61,7 @@ public class Rifts
                 bool exists = eventTomesArray?.Any(x => x == riftId) ?? true;
                 if (!exists)
                 {
-                    string pathToRiftFile = Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "Rifts", $"{riftId}.json");
+                    string pathToRiftFile = Path.Combine(GlobalVariables.PathToKraken, GlobalVariables.VersionWithBranch, "CDN", "Rifts", $"{riftId}.json");
                     if (!File.Exists(pathToRiftFile))
                     {
                         LogsWindowViewModel.Instance.AddLog($"Not found Rift data for '{riftId}'. Make sure to update API first or add any missing event tomes to config.", Logger.LogTags.Error);
@@ -95,19 +95,19 @@ public class Rifts
                         TierInfo = riftData?.GetValue(riftId, StringComparison.OrdinalIgnoreCase)?["tierInfo"]?.ToObject<List<TierInfo>>() ?? new List<TierInfo>()
                     };
 
-                    parsedRiftsDB.Add(riftIdTitleCase, model);
+                    parsedRiftsDb.Add(riftIdTitleCase, model);
                 }
             }
         }
 
-        return parsedRiftsDB;
+        return parsedRiftsDb;
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, Rift> parsedRiftsDB, CancellationToken token)
+    private static void ParseLocalizationAndSave(Dictionary<string, Rift> parsedRiftsDb, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Rifts);
 
-        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
+        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.RootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
 
         foreach (string filePath in filePaths)
         {
@@ -120,14 +120,14 @@ public class Rifts
 
             Dictionary<string, string> languageKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString) ?? throw new Exception($"Failed to load following locres file: {langKey}.");
 
-            var objectString = JsonConvert.SerializeObject(parsedRiftsDB);
-            Dictionary<string, Rift> localizedRiftsDB = JsonConvert.DeserializeObject<Dictionary<string, Rift>>(objectString) ?? [];
+            var objectString = JsonConvert.SerializeObject(parsedRiftsDb);
+            Dictionary<string, Rift> localizedRiftsDb = JsonConvert.DeserializeObject<Dictionary<string, Rift>>(objectString) ?? [];
 
-            Helpers.LocalizeDB(localizedRiftsDB, LocalizationData, languageKeys, langKey);
+            Helpers.LocalizeDb(localizedRiftsDb, LocalizationData, languageKeys, langKey);
 
-            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Rifts.json");
+            string outputPath = Path.Combine(GlobalVariables.PathToParsedData, GlobalVariables.VersionWithBranch, langKey, "Rifts.json");
 
-            FileWriter.SaveParsedDB(localizedRiftsDB, outputPath, Logger.ELogExtraTag.Rifts);
+            FileWriter.SaveParsedDb(localizedRiftsDb, outputPath, Logger.ELogExtraTag.Rifts);
         }
     }
 }

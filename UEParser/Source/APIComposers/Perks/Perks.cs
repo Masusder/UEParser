@@ -14,25 +14,25 @@ namespace UEParser.APIComposers;
 
 public class Perks
 {
-    private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> localizationData = [];
+    private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
 
-    public static async Task InitializePerksDB(CancellationToken token)
+    public static async Task InitializePerksDb(CancellationToken token)
     {
         await Task.Run(() =>
         {
-            Dictionary<string, Perk> parsedPerksDB = [];
+            Dictionary<string, Perk> parsedPerksDb = [];
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Perks);
 
-            ParsePerks(parsedPerksDB, token);
+            ParsePerks(parsedPerksDb, token);
 
-            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedPerksDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Perks);
+            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedPerksDb.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Perks);
 
-            ParseLocalizationAndSave(parsedPerksDB, token);
+            ParseLocalizationAndSave(parsedPerksDb, token);
         }, token);
     }
 
-    public static void ParsePerks(Dictionary<string, Perk> parsedPerksDB, CancellationToken token)
+    public static void ParsePerks(Dictionary<string, Perk> parsedPerksDb, CancellationToken token)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("PerkDB.json");
 
@@ -65,7 +65,7 @@ public class Perks
                 }
 
                 string roleRaw = item.Value["Role"];
-                string role = StringUtils.StringSplitVE(roleRaw);
+                string role = StringUtils.StringSplitVe(roleRaw);
 
                 List<LocalizationEntry> description = PerkUtils.ParsePerksDescription(item.Value);
 
@@ -98,7 +98,7 @@ public class Perks
                     ["Description"] = description
                 };
 
-                localizationData.TryAdd(perkId, localizationModel);
+                LocalizationData.TryAdd(perkId, localizationModel);
 
                 Perk model = new()
                 {
@@ -113,16 +113,16 @@ public class Perks
                     Tunables = tunables,
                 };
 
-                parsedPerksDB.Add(perkId, model);
+                parsedPerksDb.Add(perkId, model);
             }
         }
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, Perk> parsedPerksDB, CancellationToken token)
+    private static void ParseLocalizationAndSave(Dictionary<string, Perk> parsedPerksDb, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Perks);
 
-        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
+        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.RootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
 
         foreach (string filePath in filePaths)
         {
@@ -134,15 +134,15 @@ public class Perks
 
             Dictionary<string, string> languageKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString) ?? throw new Exception($"Failed to load following locres file: {langKey}.");
 
-            var objectString = JsonConvert.SerializeObject(parsedPerksDB);
-            Dictionary<string, Perk> localizedPerksDB = JsonConvert.DeserializeObject<Dictionary<string, Perk>>(objectString) ?? [];
+            var objectString = JsonConvert.SerializeObject(parsedPerksDb);
+            Dictionary<string, Perk> localizedPerksDb = JsonConvert.DeserializeObject<Dictionary<string, Perk>>(objectString) ?? [];
 
-            Helpers.LocalizeDB(localizedPerksDB, localizationData, languageKeys, langKey);
-            PerkUtils.FormatDescriptionTunables(localizedPerksDB, langKey);
+            Helpers.LocalizeDb(localizedPerksDb, LocalizationData, languageKeys, langKey);
+            PerkUtils.FormatDescriptionTunables(localizedPerksDb, langKey);
 
-            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Perks.json");
+            string outputPath = Path.Combine(GlobalVariables.PathToParsedData, GlobalVariables.VersionWithBranch, langKey, "Perks.json");
 
-            FileWriter.SaveParsedDB(localizedPerksDB, outputPath, Logger.ELogExtraTag.Perks);
+            FileWriter.SaveParsedDb(localizedPerksDb, outputPath, Logger.ELogExtraTag.Perks);
         }
     }
 }

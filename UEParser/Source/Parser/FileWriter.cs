@@ -19,7 +19,7 @@ namespace UEParser.Parser;
 
 public class FileWriter
 {
-    public static void SaveParsedDB<T>(Dictionary<string, T> data, string path, Logger.ELogExtraTag extraTag)
+    public static void SaveParsedDb<T>(Dictionary<string, T> data, string path, Logger.ELogExtraTag extraTag)
     {
         try
         {
@@ -59,7 +59,7 @@ public class FileWriter
         if (string.IsNullOrWhiteSpace(fileName))
             throw new ArgumentException("File name cannot be null or empty.", nameof(fileName));
 
-        string baseDirectory = Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "API");
+        string baseDirectory = Path.Combine(GlobalVariables.PathToKraken, GlobalVariables.VersionWithBranch, "API");
 
         if (!Directory.Exists(baseDirectory))
         {

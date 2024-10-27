@@ -15,23 +15,23 @@ public class Journals
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
 
-    public static async Task InitializeJournalsDB(CancellationToken token)
+    public static async Task InitializeJournalsDb(CancellationToken token)
     {
         await Task.Run(() =>
         {
-            Dictionary<string, Journal> parsedJournalsDB = [];
+            Dictionary<string, Journal> parsedJournalsDb = [];
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Journals);
 
-            ParseJournals(parsedJournalsDB, token);
+            ParseJournals(parsedJournalsDb, token);
 
-            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedJournalsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Journals);
+            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedJournalsDb.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Journals);
 
-            ParseLocalizationAndSave(parsedJournalsDB, token);
+            ParseLocalizationAndSave(parsedJournalsDb, token);
         }, token);
     }
 
-    private static void ParseJournals(Dictionary<string, Journal> parsedJournalsDB, CancellationToken token)
+    private static void ParseJournals(Dictionary<string, Journal> parsedJournalsDb, CancellationToken token)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("ArchiveJournalDB.json");
 
@@ -141,16 +141,16 @@ public class Journals
 
                 LocalizationData.TryAdd(tomeIdTitleCase, localizationModel);
 
-                parsedJournalsDB.Add(tomeIdTitleCase, model);
+                parsedJournalsDb.Add(tomeIdTitleCase, model);
             }
         }
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, Journal> parsedJournalsDB, CancellationToken token)
+    private static void ParseLocalizationAndSave(Dictionary<string, Journal> parsedJournalsDb, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Journals);
 
-        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
+        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.RootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
 
         foreach (string filePath in filePaths)
         {
@@ -162,16 +162,16 @@ public class Journals
 
             Dictionary<string, string> languageKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString) ?? throw new Exception($"Failed to load following locres file: {langKey}.");
 
-            var objectString = JsonConvert.SerializeObject(parsedJournalsDB);
-            Dictionary<string, Journal> localizedJournalsDB = JsonConvert.DeserializeObject<Dictionary<string, Journal>>(objectString) ?? [];
+            var objectString = JsonConvert.SerializeObject(parsedJournalsDb);
+            Dictionary<string, Journal> localizedJournalsDb = JsonConvert.DeserializeObject<Dictionary<string, Journal>>(objectString) ?? [];
 
-            Helpers.LocalizeDB(localizedJournalsDB, LocalizationData, languageKeys, langKey);
+            Helpers.LocalizeDb(localizedJournalsDb, LocalizationData, languageKeys, langKey);
 
-            JournalUtils.PopulateTomeNames(localizedJournalsDB, langKey);
+            JournalUtils.PopulateTomeNames(localizedJournalsDb, langKey);
 
-            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Journals.json");
+            string outputPath = Path.Combine(GlobalVariables.PathToParsedData, GlobalVariables.VersionWithBranch, langKey, "Journals.json");
 
-            FileWriter.SaveParsedDB(localizedJournalsDB, outputPath, Logger.ELogExtraTag.Journals);
+            FileWriter.SaveParsedDb(localizedJournalsDb, outputPath, Logger.ELogExtraTag.Journals);
         }
     }
 }

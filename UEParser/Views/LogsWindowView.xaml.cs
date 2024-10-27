@@ -21,8 +21,8 @@ public partial class LogsWindowView : UserControl
         DataContext = LogsWindowViewModel.Instance;
 
         var config = ConfigurationService.Config;
-        string versionWithBranch = GlobalVariables.versionWithBranch;
-        string comparisonVersionWithBranch = GlobalVariables.compareVersionWithBranch;
+        string versionWithBranch = GlobalVariables.VersionWithBranch;
+        string comparisonVersionWithBranch = GlobalVariables.CompareVersionWithBranch;
         string buildVersionNumber = string.IsNullOrEmpty(config.Core.BuildVersionNumber) ? "---" : config.Core.BuildVersionNumber;
 
         if (string.IsNullOrEmpty(versionWithBranch) || versionWithBranch.StartsWith('_'))

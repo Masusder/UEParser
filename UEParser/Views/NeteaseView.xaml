@@ -2,7 +2,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:i="https://github.com/projektanker/icons.avalonia"
              xmlns:convert="clr-namespace:UEParser.Converters"
              xmlns:vm="clr-namespace:UEParser.ViewModels"
              mc:Ignorable="d"
@@ -10,71 +9,83 @@
              d:DesignHeight="450"
              d:DesignWidth="700"
              x:DataType="vm:NeteaseViewModel">
-  <UserControl.Resources>
-    <convert:InverseBooleanConverter x:Key="InverseBooleanConverter" />
-  </UserControl.Resources>
-  <UserControl.Styles>
-    <Style Selector="ProgressBar">
-      <Setter Property="Height" Value="25"/>
-      <Setter Property="Background" Value="LightGray"/>
-      <Setter Property="BorderBrush" Value="Transparent"/>
-      <Setter Property="CornerRadius" Value="12"/>
-      <Setter Property="Foreground">
-        <Setter.Value>
-          <LinearGradientBrush StartPoint="0,0" EndPoint="480,0">
-            <GradientStop Color="Dodgerblue" Offset="0"/>
-            <GradientStop Color="#00ffd5" Offset="1"/>
-          </LinearGradientBrush>
-        </Setter.Value>
-      </Setter>
-      <Setter Property="Transitions">
-        <Setter.Value>
-          <Transitions>
-            <DoubleTransition Property="Value" Duration="0:0:0.5" />
-          </Transitions>
-        </Setter.Value>
-      </Setter>
-    </Style>
-  </UserControl.Styles>
-  <StackPanel Margin="20"
-              Spacing="15"
-              VerticalAlignment="Center">
-    <Image Source="avares://UEParser/Resources/NetEase_Logo.png" Width="129" Height="128" >
-      <Image.Effect>
-        <DropShadowDirectionEffect Color="Black" Direction="0" ShadowDepth="0" Opacity="0.5"/>
-      </Image.Effect>
-    </Image>
-    <TextBlock HorizontalAlignment="Center"
-           VerticalAlignment="Center"
-           TextAlignment="Center"
-           Text="NetEase Manager"
-           FontWeight="700"
-           FontSize="32"
-           Foreground="White" />
+    <UserControl.Resources>
+        <convert:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+    </UserControl.Resources>
+    <UserControl.Styles>
+        <Style Selector="ProgressBar">
+            <Setter Property="Height" Value="25" />
+            <Setter Property="Background" Value="LightGray" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Foreground">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="480,0">
+                        <GradientStop Color="Dodgerblue" Offset="0" />
+                        <GradientStop Color="#00ffd5" Offset="1" />
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Transitions">
+                <Setter.Value>
+                    <Transitions>
+                        <DoubleTransition Property="Value" Duration="0:0:0.5" />
+                    </Transitions>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Styles>
+    <StackPanel Margin="20"
+                Spacing="15"
+                VerticalAlignment="Center">
+        <Image Source="avares://UEParser/Resources/NetEase_Logo.png" Width="129" Height="128">
+            <Image.Effect>
+                <DropShadowDirectionEffect Color="Black" Direction="0" ShadowDepth="0" Opacity="0.5" />
+            </Image.Effect>
+        </Image>
+        <TextBlock HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   TextAlignment="Center"
+                   Text="NetEase Manager"
+                   FontWeight="700"
+                   FontSize="32"
+                   Foreground="White" />
 
-    <StackPanel Orientation="Vertical" IsVisible="{Binding IsDownloading}" Spacing="5">
-      <TextBlock Text="Total Download Size:" FontWeight="Black" HorizontalAlignment="Center" FontSize="14" />
-      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-        <TextBlock Text="{Binding CombinedCurrentSize}"  Margin="0,0,5,0" FontSize="14" />
-        <TextBlock Text="/"  FontSize="14" />
-        <TextBlock Text="{Binding TotalMaxSize}" Margin="5,0,0,0" FontSize="14" />
-      </StackPanel>
-      <TextBlock Text="{Binding FileName}" FontWeight="Black" HorizontalAlignment="Center" FontSize="16" />
-      <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-        <TextBlock Text="{Binding CurrentSize}" FontSize="14" Margin="0,0,5,0"/>
-        <TextBlock Text="/" FontSize="14"/>
-        <TextBlock Text="{Binding MaxSize}" FontSize="14" Margin="5,0,0,0"/>
-        <TextBlock Padding="10, 0, 0, 0" Foreground="AntiqueWhite" Text="{Binding ProgressPercentage, StringFormat='({0:F2}%)'}" FontSize="14" HorizontalAlignment="Center"/>
-      </StackPanel>
-      <ProgressBar Minimum="0" Maximum="100" MaxWidth="400" Value="{Binding ProgressPercentage}" Height="7.5" />
+        <StackPanel Orientation="Vertical" IsVisible="{Binding IsDownloading}" Spacing="5">
+            <TextBlock Text="Total Download Size:" FontWeight="Black" HorizontalAlignment="Center" FontSize="14" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBlock Text="{Binding CombinedCurrentSize}" Margin="0,0,5,0" FontSize="14" />
+                <TextBlock Text="/" FontSize="14" />
+                <TextBlock Text="{Binding TotalMaxSize}" Margin="5,0,0,0" FontSize="14" />
+            </StackPanel>
+            <TextBlock Text="{Binding FileName}" FontWeight="Black" HorizontalAlignment="Center" FontSize="16" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBlock Text="{Binding CurrentSize}" FontSize="14" Margin="0,0,5,0" />
+                <TextBlock Text="/" FontSize="14" />
+                <TextBlock Text="{Binding MaxSize}" FontSize="14" Margin="5,0,0,0" />
+                <TextBlock Padding="10, 0, 0, 0" Foreground="AntiqueWhite"
+                           Text="{Binding ProgressPercentage, StringFormat='({0:F2}%)'}" FontSize="14"
+                           HorizontalAlignment="Center" />
+            </StackPanel>
+            <ProgressBar Minimum="0" Maximum="100" MaxWidth="400" Value="{Binding ProgressPercentage}" Height="7.5" />
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal"
+                    Spacing="7.5"
+                    HorizontalAlignment="Center">
+            <Button Content="Download Latest Mobile Content"
+                    IsVisible="{Binding IsDownloading, Converter={StaticResource InverseBooleanConverter}}"
+                    Command="{Binding DownloadLatestContentCommand}"
+                    HorizontalAlignment="Center"
+                    Cursor="Hand" />
+
+            <Button Content="Apply Texture Streaming Patch"
+                    IsVisible="{Binding IsDownloading, Converter={StaticResource InverseBooleanConverter}}"
+                    Command="{Binding TextureStreamingPatchCommand}"
+                    HorizontalAlignment="Center"
+                    Cursor="Hand"
+                    ToolTip.Tip="Apply this patch if textures in the downloaded PAK files appear low resolution. Ensure both Regular and Optional PAK files are downloaded for the patch to work." />
+        </StackPanel>
+
     </StackPanel>
-
-    <Button Content="Download Latest Mobile Content"
-            IsVisible="{Binding IsDownloading, Converter={StaticResource InverseBooleanConverter}}"
-            Command="{Binding DownloadLatestContentCommand}"
-            Height="30"
-            HorizontalAlignment="Center"
-            Cursor="Hand"/>
-
-  </StackPanel>
 </UserControl>

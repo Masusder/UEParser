@@ -13,25 +13,25 @@ namespace UEParser.APIComposers;
 
 public class Characters
 {
-    private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> localizationData = [];
+    private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
 
-    public static async Task InitializeCharactersDB(CancellationToken token)
+    public static async Task InitializeCharactersDb(CancellationToken token)
     {
         await Task.Run(() =>
         {
-            Dictionary<string, Character> parsedCharactersDB = [];
+            Dictionary<string, Character> parsedCharactersDb = [];
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Characters);
 
-            parsedCharactersDB = ParseCharacters(parsedCharactersDB, token);
+            parsedCharactersDb = ParseCharacters(parsedCharactersDb, token);
 
-            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedCharactersDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Characters);
+            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedCharactersDb.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Characters);
 
-            ParseLocalizationAndSave(parsedCharactersDB, token);
+            ParseLocalizationAndSave(parsedCharactersDb, token);
         }, token);
     }
 
-    private static Dictionary<string, Character> ParseCharacters(Dictionary<string, Character> parsedCharactersDB, CancellationToken token)
+    private static Dictionary<string, Character> ParseCharacters(Dictionary<string, Character> parsedCharactersDb, CancellationToken token)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("CharacterDescriptionDB.json");
 
@@ -57,13 +57,13 @@ public class Characters
                 }
 
                 string roleInput = item.Value["Role"];
-                string roleOutput = StringUtils.StringSplitVE(roleInput);
+                string roleOutput = StringUtils.StringSplitVe(roleInput);
 
                 string genderInput = item.Value["Gender"];
-                string genderOutput = StringUtils.StringSplitVE(genderInput);
+                string genderOutput = StringUtils.StringSplitVe(genderInput);
 
                 string difficultyInput = item.Value["Difficulty"];
-                string difficultyOutput = StringUtils.StringSplitVE(difficultyInput);
+                string difficultyOutput = StringUtils.StringSplitVe(difficultyInput);
 
                 string iconFilePath = item.Value["IconFilePath"];
                 string iconFilePathFixed = StringUtils.AddRootDirectory(iconFilePath, "/images/");
@@ -102,7 +102,7 @@ public class Characters
                     ]
                 };
 
-                localizationData.TryAdd(characterIndex, localizationModel);
+                LocalizationData.TryAdd(characterIndex, localizationModel);
 
                 Character model = new()
                 {
@@ -119,18 +119,18 @@ public class Characters
                     Id = characterId
                 };
 
-                parsedCharactersDB[characterIndex] = model;
+                parsedCharactersDb[characterIndex] = model;
             }
         }
 
-        return parsedCharactersDB;
+        return parsedCharactersDb;
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, Character> parsedCharactersDB, CancellationToken token)
+    private static void ParseLocalizationAndSave(Dictionary<string, Character> parsedCharactersDb, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Characters);
 
-        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
+        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.RootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
 
         foreach (string filePath in filePaths)
         {
@@ -143,14 +143,14 @@ public class Characters
 
             Dictionary<string, string> languageKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString) ?? throw new Exception($"Failed to load following locres file: {langKey}.");
 
-            var objectString = JsonConvert.SerializeObject(parsedCharactersDB);
-            Dictionary<string, Character> localizedCharactersDB = JsonConvert.DeserializeObject<Dictionary<string, Character>>(objectString) ?? [];
+            var objectString = JsonConvert.SerializeObject(parsedCharactersDb);
+            Dictionary<string, Character> localizedCharactersDb = JsonConvert.DeserializeObject<Dictionary<string, Character>>(objectString) ?? [];
 
-            Helpers.LocalizeDB(localizedCharactersDB, localizationData, languageKeys, langKey);
+            Helpers.LocalizeDb(localizedCharactersDb, LocalizationData, languageKeys, langKey);
 
-            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Characters.json");
+            string outputPath = Path.Combine(GlobalVariables.PathToParsedData, GlobalVariables.VersionWithBranch, langKey, "Characters.json");
 
-            FileWriter.SaveParsedDB(localizedCharactersDB, outputPath, Logger.ELogExtraTag.Characters);
+            FileWriter.SaveParsedDb(localizedCharactersDb, outputPath, Logger.ELogExtraTag.Characters);
         }
     }
 }

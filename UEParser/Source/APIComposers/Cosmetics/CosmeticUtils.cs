@@ -222,7 +222,7 @@ public class CosmeticUtils
 
     public static int? CharacterStringToIndex(string characterString)
     {
-        var charactersData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "characterIds.json"));
+        var charactersData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.RootDir, "Dependencies", "HelperComponents", "characterIds.json"));
 
         int? characterIndex = charactersData?[characterString];
 
@@ -252,9 +252,9 @@ public class CosmeticUtils
         }
     }
 
-    public static void AddAmountToCurrencyPacks(Dictionary<string, object> localizedCosmeticsDB)
+    public static void AddAmountToCurrencyPacks(Dictionary<string, object> localizedCosmeticsDb)
     {
-        foreach (var item in localizedCosmeticsDB)
+        foreach (var item in localizedCosmeticsDb)
         {
             string rowId = item.Key;
             string[] currencyPacks = ["cellsPack_25", "cellsPack_50", "cellsPack_75"];

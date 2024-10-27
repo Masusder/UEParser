@@ -29,9 +29,9 @@ public partial class StringUtils
     }
 
     // Convert HTML tags using custom values
-    public static string ConvertHTMLTags(string input)
+    public static string ConvertHtmlTags(string input)
     {
-        string htmlTagConvertersFile = Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "tagConverters.json");
+        string htmlTagConvertersFile = Path.Combine(GlobalVariables.RootDir, "Dependencies", "HelperComponents", "tagConverters.json");
 
         if (!File.Exists(htmlTagConvertersFile)) throw new Exception("Not found file with HTML Tag Converters.");
 
@@ -51,7 +51,7 @@ public partial class StringUtils
 
     public static string StripExtractedAssetsDir(string fullPath)
     {
-        string pathToExtractedAssets = GlobalVariables.pathToExtractedAssets;
+        string pathToExtractedAssets = GlobalVariables.PathToExtractedAssets;
 
         // Check if fullPath starts with pathToExtractedAssets
         if (fullPath.StartsWith(pathToExtractedAssets, StringComparison.OrdinalIgnoreCase))
@@ -97,7 +97,7 @@ public partial class StringUtils
 
     public static string StripRootDir(string fullPath)
     {
-        string rootDir = GlobalVariables.rootDir;
+        string rootDir = GlobalVariables.RootDir;
 
         // Check if fullPath starts with rootDir
         if (fullPath.StartsWith(rootDir, StringComparison.OrdinalIgnoreCase))
@@ -135,11 +135,11 @@ public partial class StringUtils
     }
 
     [GeneratedRegex("VE_(.*)$")]
-    private static partial Regex SplitVERegex();
-    public static string StringSplitVE(string input)
+    private static partial Regex SplitVeRegex();
+    public static string StringSplitVe(string input)
     {
         // Split the input string using "VE_" as the separator
-        Match match = SplitVERegex().Match(input);
+        Match match = SplitVeRegex().Match(input);
         if (match.Success)
         {
             // Return the substring after "VE_"
@@ -193,11 +193,11 @@ public partial class StringUtils
     }
 
     // I hate this
-    public static string ModifyPath(string path, string replacement, bool isOutsideDBDCharacters = false, int characterIndex = -1)
+    public static string ModifyPath(string path, string replacement, bool isOutsideDbdCharacters = false, int characterIndex = -1)
     {
-        if (!isOutsideDBDCharacters)
+        if (!isOutsideDbdCharacters)
         {
-            isOutsideDBDCharacters = IsOutsidePluginsCharactersDir(characterIndex);
+            isOutsideDbdCharacters = IsOutsidePluginsCharactersDir(characterIndex);
         }
 
         // Check if the delimiter exists in the original path
@@ -224,7 +224,7 @@ public partial class StringUtils
                 modifiedPath = fixedPath.Insert(dynamicPartIndex + 1, "Content/");
             }
 
-            if (isOutsideDBDCharacters)
+            if (isOutsideDbdCharacters)
             {
                 modifiedPath = modifiedPath.TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
                 modifiedPath = Path.Combine("/DeadByDaylight/Plugins/Runtime/Bhvr/DBDCharacters", modifiedPath);

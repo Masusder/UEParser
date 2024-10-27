@@ -12,16 +12,16 @@ namespace UEParser.APIComposers;
 
 public class DLCUtils
 {
-    public static async Task PopulateSteamAPIData(Dictionary<string, DLC> localizedDlcsDB, string langKey)
+    public static async Task PopulateSteamAPIData(Dictionary<string, DLC> localizedDlcsDb, string langKey)
     {
-        foreach (var item in localizedDlcsDB)
+        foreach (var item in localizedDlcsDb)
         {
             string steamId = item.Value.SteamId;
             string dlcId = item.Key;
 
             await SteamAPI.FetchDlcDetails(steamId, dlcId, langKey);
 
-            string dlcDetailsFilePath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "DLC", langKey, $"{dlcId}.json");
+            string dlcDetailsFilePath = Path.Combine(GlobalVariables.RootDir, "Dependencies", "HelperComponents", "DLC", langKey, $"{dlcId}.json");
 
             if (!File.Exists(dlcDetailsFilePath)) throw new Exception("Not found DLC details file.");
 

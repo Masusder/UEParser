@@ -32,7 +32,7 @@ public class Mappings
 
         string versionHeaderWithBranch = Helpers.ConstructVersionHeaderWithBranch();
 
-        string mappingsDirectory = Path.Combine(GlobalVariables.rootDir, "Dependencies", "Mappings", versionHeaderWithBranch);
+        string mappingsDirectory = Path.Combine(GlobalVariables.RootDir, "Dependencies", "Mappings", versionHeaderWithBranch);
         string mappingsOutputPath = Path.Combine(mappingsDirectory, "Mappings.usmap");
 
         Directory.CreateDirectory(mappingsDirectory);
@@ -56,7 +56,7 @@ public class Mappings
     public static bool CheckIfMappingsExist()
     {
         string versionHeaderWithBranch = Helpers.ConstructVersionHeaderWithBranch();
-        string mappingsOutputPath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "Mappings", versionHeaderWithBranch, "Mappings.usmap");
+        string mappingsOutputPath = Path.Combine(GlobalVariables.RootDir, "Dependencies", "Mappings", versionHeaderWithBranch, "Mappings.usmap");
 
         if (File.Exists(mappingsOutputPath))
         {

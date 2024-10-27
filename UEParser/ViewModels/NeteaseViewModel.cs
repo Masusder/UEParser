@@ -1,12 +1,15 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Windows.Input;
+using System.IO.Compression;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 using ReactiveUI;
 using UEParser.Utils;
 using UEParser.Views;
 using UEParser.Network.Netease;
+using UEParser.Network;
 using UEParser.Services;
 using UEParser.Netease;
 
@@ -15,6 +18,7 @@ namespace UEParser.ViewModels;
 public class NeteaseViewModel : ReactiveObject
 {
     #region Properties
+
     private string? _fileName;
     private string? _currentSize;
     private string? _combinedCurrentSize;
@@ -81,12 +85,14 @@ public class NeteaseViewModel : ReactiveObject
             }
         }
     }
+
     #endregion
 
     public NeteaseViewModel()
     {
         IsDownloading = false;
         DownloadLatestContentCommand = ReactiveCommand.Create(DownloadLatestContent);
+        TextureStreamingPatchCommand = ReactiveCommand.CreateFromTask<Window>(TextureStreamingPatch);
         ProgressPercentage = 0;
         FileName = "";
         CombinedCurrentSize = "0 B";
@@ -97,9 +103,12 @@ public class NeteaseViewModel : ReactiveObject
     }
 
     #region Commands
-    public ICommand DownloadLatestContentCommand { get; }
 
-    private NeteaseFileDialogView? FileDialog;
+    public ICommand DownloadLatestContentCommand { get; }
+    public ICommand TextureStreamingPatchCommand { get; }
+
+    private NeteaseFileDialogView? _fileDialog;
+
     private async Task DownloadLatestContent()
     {
         try
@@ -109,15 +118,15 @@ public class NeteaseViewModel : ReactiveObject
 
             var parsedManifest = await NeteaseAPI.BruteForceLatestManifest();
 
-            if (FileDialog == null || !FileDialog.IsVisible)
+            if (_fileDialog is not { IsVisible: true })
             {
-                FileDialog = new NeteaseFileDialogView();
-                FileDialog.Load(parsedManifest.FileDataList, parsedManifest.Version);
-                FileDialog.Show();
+                _fileDialog = new NeteaseFileDialogView();
+                _fileDialog.Load(parsedManifest.FileDataList, parsedManifest.Version);
+                _fileDialog.Show();
             }
             else
             {
-                FileDialog.Activate();
+                _fileDialog.Activate();
             }
         }
         catch (Exception ex)
@@ -130,12 +139,77 @@ public class NeteaseViewModel : ReactiveObject
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
     }
+
+    private static async Task TextureStreamingPatch(Window owner)
+    {
+        try
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
+            LogsWindowViewModel.Instance.AddLog("Processing texture streaming patch..", Logger.LogTags.Info);
+
+            var config = ConfigurationService.Config;
+            await DownloadTextureStreamingPatchDependencies(); // We need Repak and UnrealPak
+
+            var neteaseOutputDirectory = Path.Combine(GlobalVariables.PathToNetease,
+                config.Netease.Platform.ToString().ToLower());
+
+            if (!Directory.Exists(neteaseOutputDirectory))
+                throw new Exception(
+                    "Netease output directory does not exist. Make sure to download NetEase content first.");
+
+            var availableVersions = Directory.GetDirectories(neteaseOutputDirectory)
+                .Select(Path.GetFileName)
+                .Where(version => version != null)
+                .Select(version => version!)
+                .ToArray();
+
+            if (availableVersions.Length == 0)
+                throw new Exception("No available versions found. Make sure to download NetEase content first.");
+
+            var version = await NeteaseVersionSelectionDialog.ShowDialogCustom(availableVersions);
+            if (string.IsNullOrEmpty(version))
+            {
+                LogsWindowViewModel.Instance.AddLog("Version selection was canceled.", Logger.LogTags.Warning);
+                return;
+            }
+
+            LogsWindowViewModel.Instance.AddLog($"Selected version: {version}", Logger.LogTags.Info);
+
+            var paksOutputPath = Path.Combine(neteaseOutputDirectory, version);
+
+            await Task.Run(() =>
+            {
+                ContentManager.UnpackPakFiles(paksOutputPath);
+                ContentManager.RepackPakFiles(Path.Combine(paksOutputPath, "UEPakOutput"), paksOutputPath);
+            });
+
+            LogsWindowViewModel.Instance.AddLog(
+                "Finished texture streaming patch, all paks have been combined into one.", Logger.LogTags.Success);
+        }
+        catch (Exception ex)
+        {
+            LogsWindowViewModel.Instance.AddLog($"Failed to patch pakchunks: {ex}", Logger.LogTags.Error);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+        }
+        finally
+        {
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
+        }
+    }
+
     #endregion
 
     #region Callbacks
+
     private async void OnDownloadContentReceived(DownloadContentMessage message)
     {
-        CancellationToken token = CancellationTokenService.Instance.Token;
+        if (IsDownloading)
+        {
+            LogsWindowViewModel.Instance.AddLog("Download is already in progress.", Logger.LogTags.Warning);
+            return;
+        }
+
+        var token = CancellationTokenService.Instance.Token;
 
         try
         {
@@ -148,7 +222,7 @@ public class NeteaseViewModel : ReactiveObject
 
             TotalMaxSize = StringUtils.FormatBytes(
                 filesToProcess.Where(file => file.IsSelected)
-                              .Sum(file => file.FileSize)
+                    .Sum(file => file.FileSize)
             );
 
             var contentDownloader = new ContentDownloader(this);
@@ -161,7 +235,8 @@ public class NeteaseViewModel : ReactiveObject
                 config.Netease.ContentConfig.LatestContentVersion = message.Version;
                 await ConfigurationService.SaveConfiguration();
 
-                await contentDownloader.ConstructFilePathAndDownloadAsync(file, message.Version, config.Netease.Platform.ToString(), token);
+                await contentDownloader.ConstructFilePathAndDownloadAsync(file, message.Version,
+                    config.Netease.Platform.ToString(), token);
             }
 
             LogsWindowViewModel.Instance.AddLog("Finished downloading content.", Logger.LogTags.Success);
@@ -186,13 +261,64 @@ public class NeteaseViewModel : ReactiveObject
             _combinedCurrentSizeInBytes = 0;
         }
     }
+
     #endregion
 
     #region Utils
+
+    private static async Task DownloadTextureStreamingPatchDependencies()
+    {
+        var repakPath = GlobalVariables.RepakPath;
+        var unrealPakPath = GlobalVariables.UnrealPakPath;
+
+        if (!File.Exists(repakPath))
+        {
+            const string repakDownloadUrl = GlobalVariables.DbdinfoBaseUrl + "UEParser/repak.exe";
+            await DownloadDependency(repakDownloadUrl, repakPath, "Repak", false);
+        }
+
+        if (!File.Exists(unrealPakPath))
+        {
+            const string unrealPakDownloadUrl = GlobalVariables.DbdinfoBaseUrl + "UEParser/UnrealPak.zip";
+            await DownloadDependency(unrealPakDownloadUrl, unrealPakPath, "UnrealPak", true);
+        }
+    }
+
+    private static async Task DownloadDependency(string url, string targetFilePath, string dependencyName,
+        bool isZip = false)
+    {
+        try
+        {
+            var filePath = isZip ? Path.ChangeExtension(targetFilePath, ".zip") : targetFilePath;
+
+            var directory = Path.GetDirectoryName(targetFilePath)!;
+            Directory.CreateDirectory(directory);
+
+            var fileBytes = await NetAPI.FetchFileBytesAsync(url);
+            await File.WriteAllBytesAsync(filePath, fileBytes);
+
+            LogsWindowViewModel.Instance.AddLog($"Successfully downloaded {dependencyName} dependency.",
+                Logger.LogTags.Success);
+
+            if (isZip)
+            {
+                ZipFile.ExtractToDirectory(filePath, GlobalVariables.DotDataDir);
+                File.Delete(filePath);
+            }
+        }
+        catch (Exception ex)
+        {
+            LogsWindowViewModel.Instance.AddLog($"Error downloading {dependencyName}: {ex.Message}",
+                Logger.LogTags.Error);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+        }
+    }
+
     public void AddToCombinedSize(long bytesRead)
     {
         _combinedCurrentSizeInBytes += bytesRead;
         CombinedCurrentSize = StringUtils.FormatBytes(_combinedCurrentSizeInBytes);
     }
+
     #endregion
 }

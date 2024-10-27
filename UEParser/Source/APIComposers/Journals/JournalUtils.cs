@@ -7,11 +7,11 @@ namespace UEParser.APIComposers;
 
 public class JournalUtils
 {
-    public static void PopulateTomeNames(Dictionary<string, Journal> localizedJournalsDB, string langKey)
+    public static void PopulateTomeNames(Dictionary<string, Journal> localizedJournalsDb, string langKey)
     {
-        Dictionary<string, Tome> tomesData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Tome>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Tomes.json"));
+        Dictionary<string, Tome> tomesData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Tome>>(Path.Combine(GlobalVariables.PathToParsedData, GlobalVariables.VersionWithBranch, langKey, "Tomes.json"));
 
-        foreach (var journalTome in localizedJournalsDB)
+        foreach (var journalTome in localizedJournalsDb)
         {
             string journalTomeId = journalTome.Key;
             string tomeName = tomesData[journalTomeId].Name;

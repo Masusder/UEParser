@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace UEParser.Utils;
 
-public class CommandUtils
+public abstract class CommandUtils
 {
     public class CommandModel
     {
@@ -19,7 +19,7 @@ public class CommandUtils
 
         foreach (var command in commands)
         {
-            tasks.Add(Task.Run(() => ExecuteCommand(command.Argument, command.PathToExe, GlobalVariables.rootDir)));
+            tasks.Add(Task.Run(() => ExecuteCommand(command.Argument, command.PathToExe, GlobalVariables.RootDir)));
         }
 
         await Task.WhenAll(tasks);
@@ -38,7 +38,7 @@ public class CommandUtils
                 CreateNoWindow = true
             };
 
-            using Process? process = Process.Start(processInfo) ?? throw new Exception($"Failed to start the process.");
+            using var process = Process.Start(processInfo) ?? throw new Exception($"Failed to start the process.");
 
             process?.WaitForExit();
         }

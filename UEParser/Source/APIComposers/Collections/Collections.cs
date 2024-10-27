@@ -15,25 +15,25 @@ namespace UEParser.APIComposers;
 public class Collections
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
-    private static readonly dynamic CollectionsData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "collections.json")) ?? throw new Exception("Failed to load collections data.");
+    private static readonly dynamic CollectionsData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.PathToKraken, GlobalVariables.VersionWithBranch, "CDN", "collections.json")) ?? throw new Exception("Failed to load collections data.");
 
-    public static async Task InitializeCollectionsDB(CancellationToken token)
+    public static async Task InitializeCollectionsDb(CancellationToken token)
     {
         await Task.Run(() =>
         {
-            Dictionary<string, Collection> parsedCollectionsDB = [];
+            Dictionary<string, Collection> parsedCollectionsDb = [];
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Collections);
 
-            ParseCollections(parsedCollectionsDB, token);
+            ParseCollections(parsedCollectionsDb, token);
 
-            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedCollectionsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Collections);
+            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedCollectionsDb.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Collections);
 
-            ParseLocalizationAndSave(parsedCollectionsDB, token);
+            ParseLocalizationAndSave(parsedCollectionsDb, token);
         }, token);
     }
 
-    private static void ParseCollections(Dictionary<string, Collection> parsedCollectionsDB, CancellationToken token)
+    private static void ParseCollections(Dictionary<string, Collection> parsedCollectionsDb, CancellationToken token)
     {
         // CollectionsDB exists locally but shouldn't be used!
         //string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("CollectionDB.json");
@@ -86,16 +86,16 @@ public class Collections
                 VisibleBeforeStartDate = visibleBeforeStartDate
             };
 
-            parsedCollectionsDB.Add(collectionId, model);
+            parsedCollectionsDb.Add(collectionId, model);
         }
 
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, Collection> parsedCollectionsDB, CancellationToken token)
+    private static void ParseLocalizationAndSave(Dictionary<string, Collection> parsedCollectionsDb, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Collections);
 
-        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
+        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.RootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
 
         var collectionsDictionary = CollectionUtils.CreateCollectionsDictionary(CollectionsData);
 
@@ -106,14 +106,14 @@ public class Collections
             string fileName = Path.GetFileName(filePath);
             string langKey = StringUtils.LangSplit(fileName);
 
-            var objectString = JsonConvert.SerializeObject(parsedCollectionsDB);
-            Dictionary<string, Collection> localizedCollectionsDB = JsonConvert.DeserializeObject<Dictionary<string, Collection>>(objectString) ?? [];
+            var objectString = JsonConvert.SerializeObject(parsedCollectionsDb);
+            Dictionary<string, Collection> localizedCollectionsDb = JsonConvert.DeserializeObject<Dictionary<string, Collection>>(objectString) ?? [];
 
-            CollectionUtils.PopulateLocalizationFromApi(localizedCollectionsDB, langKey, collectionsDictionary, CollectionsData);
+            CollectionUtils.PopulateLocalizationFromApi(localizedCollectionsDb, langKey, collectionsDictionary, CollectionsData);
 
-            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Collections.json");
+            string outputPath = Path.Combine(GlobalVariables.PathToParsedData, GlobalVariables.VersionWithBranch, langKey, "Collections.json");
 
-            FileWriter.SaveParsedDB(localizedCollectionsDB, outputPath, Logger.ELogExtraTag.Collections);
+            FileWriter.SaveParsedDb(localizedCollectionsDb, outputPath, Logger.ELogExtraTag.Collections);
         }
     }
 }

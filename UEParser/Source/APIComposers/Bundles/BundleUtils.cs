@@ -107,26 +107,26 @@ public class BundleUtils
         return transformedString;
     }
 
-    public static Dictionary<string, int> CreateBundlesDictionary(dynamic CatalogData)
+    public static Dictionary<string, int> CreateBundlesDictionary(dynamic catalogData)
     {
         Dictionary<string, int> bundlesDictionary = [];
 
-        for (int i = 0; i < CatalogData.Count; i++)
+        for (int i = 0; i < catalogData.Count; i++)
         {
-            string id = CatalogData[i].id;
+            string id = catalogData[i].id;
             bundlesDictionary[id] = i;
         }
 
         return bundlesDictionary;
     }
 
-    public static void PopulateLocalizationFromApi(Dictionary<string, Bundle> localizedBundlesDB, string langKey, Dictionary<string, int> catalogDictionary, dynamic CatalogData)
+    public static void PopulateLocalizationFromApi(Dictionary<string, Bundle> localizedBundlesDb, string langKey, Dictionary<string, int> catalogDictionary, dynamic catalogData)
     {
-        foreach (var bundle in localizedBundlesDB)
+        foreach (var bundle in localizedBundlesDb)
         {
             int matchingIndex = catalogDictionary[bundle.Value.Id];
 
-            var bundleTitle = CatalogData[matchingIndex]["metaData"]["specialPackTitle"][langKey];
+            var bundleTitle = catalogData[matchingIndex]["metaData"]["specialPackTitle"][langKey];
 
             bundle.Value.SpecialPackTitle = bundleTitle;
         }

@@ -5,7 +5,7 @@ namespace UEParser;
 
 public class Logger
 {
-    private static readonly string LogDirectoryPath = Path.Combine(GlobalVariables.rootDir, "Output", "Logs");
+    private static readonly string LogDirectoryPath = Path.Combine(GlobalVariables.RootDir, "Output", "Logs");
     private static readonly object LogLock = new();
     private static readonly string LogFilePath;
 

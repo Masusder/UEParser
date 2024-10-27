@@ -16,23 +16,23 @@ public class Addons
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
 
-    public static async Task InitializeAddonsDB(CancellationToken token)
+    public static async Task InitializeAddonsDb(CancellationToken token)
     {
         await Task.Run(() =>
         {
-            Dictionary<string, Addon> parsedAddonsDB = [];
+            Dictionary<string, Addon> parsedAddonsDb = [];
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Addons);
 
-            ParseAddons(parsedAddonsDB, token);
+            ParseAddons(parsedAddonsDb, token);
 
-            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedAddonsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Addons);
+            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedAddonsDb.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Addons);
 
-            ParseLocalizationAndSave(parsedAddonsDB, token);
+            ParseLocalizationAndSave(parsedAddonsDb, token);
         }, token);
     }
 
-    private static readonly string[] ignoreAddons =
+    private static readonly string[] IgnoreAddons =
     [
         "Addon_Firecracker_BlackPowder",
         "Addon_Firecracker_BuckShot",
@@ -46,7 +46,7 @@ public class Addons
         "Addon_GasBomb_20a",
         "Addon_GasBomb_20b"
     ];
-    private static void ParseAddons(Dictionary<string, Addon> parsedAddonsDB, CancellationToken token)
+    private static void ParseAddons(Dictionary<string, Addon> parsedAddonsDb, CancellationToken token)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("ItemAddonDB.json");
 
@@ -65,7 +65,7 @@ public class Addons
 
                 string addonId = item.Name;
 
-                if (ignoreAddons.Contains(addonId)) continue;
+                if (IgnoreAddons.Contains(addonId)) continue;
 
                 string typeRaw = item.Value["Type"];
                 string type = StringUtils.DoubleDotsSplit(typeRaw);
@@ -74,10 +74,10 @@ public class Addons
                 string itemType = StringUtils.DoubleDotsSplit(itemTypeRaw);
 
                 string abilityRaw = item.Value["RequiredKillerAbility"];
-                string ability = StringUtils.StringSplitVE(abilityRaw);
+                string ability = StringUtils.StringSplitVe(abilityRaw);
 
                 string roleRaw = item.Value["Role"];
-                string role = StringUtils.StringSplitVE(roleRaw);
+                string role = StringUtils.StringSplitVe(roleRaw);
 
                 string rarityRaw = item.Value["Rarity"];
                 string rarity = StringUtils.DoubleDotsSplit(rarityRaw);
@@ -120,16 +120,16 @@ public class Addons
                     Image = iconPath
                 };
 
-                parsedAddonsDB.Add(addonId, model);
+                parsedAddonsDb.Add(addonId, model);
             }
         }
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, Addon> parsedAddonsDB, CancellationToken token)
+    private static void ParseLocalizationAndSave(Dictionary<string, Addon> parsedAddonsDb, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Addons);
 
-        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
+        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.RootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
 
         foreach (string filePath in filePaths)
         {
@@ -141,14 +141,14 @@ public class Addons
 
             Dictionary<string, string> languageKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString) ?? throw new Exception($"Failed to load following locres file: {langKey}.");
 
-            var objectString = JsonConvert.SerializeObject(parsedAddonsDB);
-            Dictionary<string, Addon> localizedAddonsDB = JsonConvert.DeserializeObject<Dictionary<string, Addon>>(objectString) ?? [];
+            var objectString = JsonConvert.SerializeObject(parsedAddonsDb);
+            Dictionary<string, Addon> localizedAddonsDb = JsonConvert.DeserializeObject<Dictionary<string, Addon>>(objectString) ?? [];
 
-            Helpers.LocalizeDB(localizedAddonsDB, LocalizationData, languageKeys, langKey);
+            Helpers.LocalizeDb(localizedAddonsDb, LocalizationData, languageKeys, langKey);
 
-            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Addons.json");
+            string outputPath = Path.Combine(GlobalVariables.PathToParsedData, GlobalVariables.VersionWithBranch, langKey, "Addons.json");
 
-            FileWriter.SaveParsedDB(localizedAddonsDB, outputPath, Logger.ELogExtraTag.Addons);
+            FileWriter.SaveParsedDb(localizedAddonsDb, outputPath, Logger.ELogExtraTag.Addons);
         }
     }
 }

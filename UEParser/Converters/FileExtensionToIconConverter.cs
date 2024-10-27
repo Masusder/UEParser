@@ -7,7 +7,7 @@ namespace UEParser.Converters;
 
 public class FileExtensionToIconConverter : IValueConverter
 {
-    private readonly Dictionary<string, string> IconMapping = new()
+    private readonly Dictionary<string, string> _iconMapping = new()
     {
         { "pak", "fa-solid fa-box" },
         { "ushaderbytecodeindex", "fa-solid fa-tag" },
@@ -20,7 +20,7 @@ public class FileExtensionToIconConverter : IValueConverter
     {
         if (value is string extension)
         {
-            if (IconMapping.TryGetValue(extension, out var iconPath))
+            if (_iconMapping.TryGetValue(extension, out var iconPath))
             {
                 return iconPath;
             }

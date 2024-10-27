@@ -147,11 +147,11 @@ public class TomeUtils
         return coordinates;
     }
 
-    private static Dictionary<string, string> CreatePerksDictionary(Dictionary<string, Perk> PerksData)
+    private static Dictionary<string, string> CreatePerksDictionary(Dictionary<string, Perk> perksData)
     {
         var perksDictionary = new Dictionary<string, string>();
 
-        foreach (var item in PerksData)
+        foreach (var item in perksData)
         {
             string keyLower = item.Key.ToLower();
             perksDictionary[keyLower] = item.Key;
@@ -160,10 +160,10 @@ public class TomeUtils
         return perksDictionary;
     }
 
-    public static void FormatDescriptionParameters(Dictionary<string, Tome> localizedTomesDB, Dictionary<string, int> CharacterIds, Dictionary<string, Character> CharactersData, Dictionary<string, Perk> PerksData, TagConverters HTMLTagConverters, Dictionary<string, CharacterClass> CharacterClassesData)
+    public static void FormatDescriptionParameters(Dictionary<string, Tome> localizedTomesDb, Dictionary<string, int> characterIds, Dictionary<string, Character> charactersData, Dictionary<string, Perk> perksData, TagConverters htmlTagConverters, Dictionary<string, CharacterClass> characterClassesData)
     {
-        var perksDictionary = CreatePerksDictionary(PerksData);
-        foreach (var item in localizedTomesDB)
+        var perksDictionary = CreatePerksDictionary(perksData);
+        foreach (var item in localizedTomesDb)
         {
             if (item.Value.Levels == null) continue;
 
@@ -182,7 +182,7 @@ public class TomeUtils
                     JArray? descriptionParametersArray = node.Value.DescriptionParams;
                     List<dynamic>? descriptionParameters = descriptionParametersArray?.Select(x => (dynamic)x).ToList();
 
-                    foreach (var tag in HTMLTagConverters.HTMLTagConverters)
+                    foreach (var tag in htmlTagConverters.HTMLTagConverters)
                     {
                         nodeDescription = nodeDescription.Replace(tag.Key, tag.Value);
                     }
@@ -199,28 +199,28 @@ public class TomeUtils
                             if (paramString.StartsWith("class::"))
                             {
                                 var characterClassId = StringUtils.DoubleDotsSplit(paramString);
-                                if (CharacterClassesData.TryGetValue(characterClassId, out CharacterClass? value))
+                                if (characterClassesData.TryGetValue(characterClassId, out CharacterClass? value))
                                 {
                                     string characterClassName = value.Name;
                                     descriptionParameters[i] = characterClassName;
                                 }
                             }
 
-                            if (CharacterIds.ContainsKey(paramString.ToLower()))
+                            if (characterIds.ContainsKey(paramString.ToLower()))
                             {
-                                var characterId = CharacterIds[paramString.ToLower()];
+                                var characterId = characterIds[paramString.ToLower()];
                                 string? characterString = characterId.ToString();
 
                                 if (characterString != null)
                                 {
-                                    string characterName = CharactersData[characterString].Name;
+                                    string characterName = charactersData[characterString].Name;
                                     descriptionParameters[i] = characterName;
                                 }
                             }
 
                             if (perksDictionary.TryGetValue(paramString.ToLower(), out string? matchingString))
                             {
-                                string? perkName = PerksData[matchingString].Name;
+                                string? perkName = perksData[matchingString].Name;
                                 if (perkName != null)
                                 {
                                     descriptionParameters[i] = perkName;

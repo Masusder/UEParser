@@ -17,29 +17,29 @@ namespace UEParser.APIComposers;
 public class Tomes
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
-    private static readonly Dictionary<string, object> CosmeticsData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, object>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, "en", "Cosmetics.json")) ?? throw new Exception("Failed to load cosmetics data.");
-    private static readonly Dictionary<string, object> QuestNodeDatabase = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, object>>(Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "questNodeDatabase.json")) ?? throw new Exception("Failed to load quest node database.");
-    private static readonly Dictionary<string, object> QuestObjectiveDatabase = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, object>>(Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "questObjectiveDatabase.json")) ?? throw new Exception("Failed to load quest objective database.");
-    private static readonly Dictionary<string, int> CharacterIds = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, int>>(Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "characterIds.json")) ?? throw new Exception("Failed to load Characters ID table.");
-    private static readonly TagConverters HTMLTagConverters = FileUtils.LoadJsonFileWithTypeCheck<TagConverters>(Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "tagConverters.json")) ?? throw new Exception("Failed to load html tag converters.");
+    private static readonly Dictionary<string, object> CosmeticsData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, object>>(Path.Combine(GlobalVariables.PathToParsedData, GlobalVariables.VersionWithBranch, "en", "Cosmetics.json")) ?? throw new Exception("Failed to load cosmetics data.");
+    private static readonly Dictionary<string, object> QuestNodeDatabase = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, object>>(Path.Combine(GlobalVariables.RootDir, "Dependencies", "HelperComponents", "questNodeDatabase.json")) ?? throw new Exception("Failed to load quest node database.");
+    private static readonly Dictionary<string, object> QuestObjectiveDatabase = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, object>>(Path.Combine(GlobalVariables.RootDir, "Dependencies", "HelperComponents", "questObjectiveDatabase.json")) ?? throw new Exception("Failed to load quest objective database.");
+    private static readonly Dictionary<string, int> CharacterIds = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, int>>(Path.Combine(GlobalVariables.RootDir, "Dependencies", "HelperComponents", "characterIds.json")) ?? throw new Exception("Failed to load Characters ID table.");
+    private static readonly TagConverters HTMLTagConverters = FileUtils.LoadJsonFileWithTypeCheck<TagConverters>(Path.Combine(GlobalVariables.RootDir, "Dependencies", "HelperComponents", "tagConverters.json")) ?? throw new Exception("Failed to load html tag converters.");
 
-    public static async Task InitializeTomesDB(CancellationToken token)
+    public static async Task InitializeTomesDb(CancellationToken token)
     {
         await Task.Run(() =>
         {
-            Dictionary<string, Tome> parsedTomesDB = [];
+            Dictionary<string, Tome> parsedTomesDb = [];
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Tomes);
 
-            ParseTomes(parsedTomesDB, token);
+            ParseTomes(parsedTomesDb, token);
 
-            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedTomesDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Tomes);
+            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedTomesDb.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Tomes);
 
-            ParseLocalizationAndSave(parsedTomesDB, token);
+            ParseLocalizationAndSave(parsedTomesDb, token);
         }, token);
     }
 
-    private static void ParseTomes(Dictionary<string, Tome> parsedTomesDB, CancellationToken token)
+    private static void ParseTomes(Dictionary<string, Tome> parsedTomesDb, CancellationToken token)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("ArchiveDB.json");
 
@@ -68,7 +68,7 @@ public class Tomes
                 string tomeId = item.Name;
                 string tomeIdTitleCase = StringUtils.TomeToTitleCase(tomeId);
 
-                string pathToTomeFile = Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "Tomes", $"{tomeIdTitleCase}.json");
+                string pathToTomeFile = Path.Combine(GlobalVariables.PathToKraken, GlobalVariables.VersionWithBranch, "CDN", "Tomes", $"{tomeIdTitleCase}.json");
                 if (!File.Exists(pathToTomeFile))
                 {
                     LogsWindowViewModel.Instance.AddLog("Not found Tome data. Make sure to update API first.", Logger.LogTags.Error);
@@ -112,7 +112,7 @@ public class Tomes
                     NewTomePopup = tomeData.GetValue(tomeId, StringComparison.OrdinalIgnoreCase)["newTomePopup"]
                 };
 
-                parsedTomesDB.Add(tomeIdTitleCase, model);
+                parsedTomesDb.Add(tomeIdTitleCase, model);
             }
         }
     }
@@ -237,7 +237,7 @@ public class Tomes
         string iconPath = StringUtils.AddRootDirectory(iconPathRaw, "/images/");
 
         string playerRoleRaw = clientValue["PlayerRole"];
-        string playerRole = StringUtils.StringSplitVE(playerRoleRaw);
+        string playerRole = StringUtils.StringSplitVe(playerRoleRaw);
 
         string? objectiveDescriptionKey;
         string? objectiveDescriptionSourceString;
@@ -334,11 +334,11 @@ public class Tomes
         return nodeModel;
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, Tome> parsedTomesDB, CancellationToken token)
+    private static void ParseLocalizationAndSave(Dictionary<string, Tome> parsedTomesDb, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Tomes);
 
-        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
+        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.RootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
 
         foreach (string filePath in filePaths)
         {
@@ -350,20 +350,20 @@ public class Tomes
 
             Dictionary<string, string> languageKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString) ?? throw new Exception($"Failed to load following locres file: {langKey}.");
 
-            var objectString = JsonConvert.SerializeObject(parsedTomesDB);
-            Dictionary<string, Tome> localizedTomesDB = JsonConvert.DeserializeObject<Dictionary<string, Tome>>(objectString) ?? [];
+            var objectString = JsonConvert.SerializeObject(parsedTomesDb);
+            Dictionary<string, Tome> localizedTomesDb = JsonConvert.DeserializeObject<Dictionary<string, Tome>>(objectString) ?? [];
 
-            Helpers.LocalizeDB(localizedTomesDB, LocalizationData, languageKeys, langKey);
+            Helpers.LocalizeDb(localizedTomesDb, LocalizationData, languageKeys, langKey);
 
-            var charactersData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Character>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Characters.json"));
-            var perksData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Perk>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Perks.json"));
-            var characterClassesData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, CharacterClass>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "CharacterClasses.json"));
+            var charactersData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Character>>(Path.Combine(GlobalVariables.PathToParsedData, GlobalVariables.VersionWithBranch, langKey, "Characters.json"));
+            var perksData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Perk>>(Path.Combine(GlobalVariables.PathToParsedData, GlobalVariables.VersionWithBranch, langKey, "Perks.json"));
+            var characterClassesData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, CharacterClass>>(Path.Combine(GlobalVariables.PathToParsedData, GlobalVariables.VersionWithBranch, langKey, "CharacterClasses.json"));
 
-            TomeUtils.FormatDescriptionParameters(localizedTomesDB, CharacterIds, charactersData, perksData, HTMLTagConverters, characterClassesData);
+            TomeUtils.FormatDescriptionParameters(localizedTomesDb, CharacterIds, charactersData, perksData, HTMLTagConverters, characterClassesData);
 
-            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Tomes.json");
+            string outputPath = Path.Combine(GlobalVariables.PathToParsedData, GlobalVariables.VersionWithBranch, langKey, "Tomes.json");
 
-            FileWriter.SaveParsedDB(localizedTomesDB, outputPath, Logger.ELogExtraTag.Tomes);
+            FileWriter.SaveParsedDb(localizedTomesDb, outputPath, Logger.ELogExtraTag.Tomes);
         }
     }
 }

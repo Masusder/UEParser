@@ -10,10 +10,10 @@ public partial class Helpers
 {
     public static void CombineCharacterBlueprints()
     {
-        string outputPath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "characterBlueprintsLinkage.json");
+        string outputPath = Path.Combine(GlobalVariables.RootDir, "Dependencies", "HelperComponents", "characterBlueprintsLinkage.json");
 
-        var characters = TraverseCharacterDescriptionDB();
-        var cosmetics = TraverseCharacterDescriptionOverrideDB();
+        var characters = TraverseCharacterDescriptionDb();
+        var cosmetics = TraverseCharacterDescriptionOverrideDb();
 
         var characterBlueprints = new CharacterBlueprintsModel
         {
@@ -26,7 +26,7 @@ public partial class Helpers
         File.WriteAllText(outputPath, data);
     }
 
-    private static Dictionary<string, CharacterData> TraverseCharacterDescriptionDB()
+    private static Dictionary<string, CharacterData> TraverseCharacterDescriptionDb()
     {
         string[] filePaths = FindFilePathsInExtractedAssetsCaseInsensitive("CharacterDescriptionDB.json");
 
@@ -57,7 +57,7 @@ public partial class Helpers
         return characters;
     }
 
-    private static Dictionary<string, CosmeticData> TraverseCharacterDescriptionOverrideDB()
+    private static Dictionary<string, CosmeticData> TraverseCharacterDescriptionOverrideDb()
     {
         string[] filePaths = FindFilePathsInExtractedAssetsCaseInsensitive("CharacterDescriptionOverrideDB.json");
 

@@ -14,27 +14,27 @@ public class CollectionUtils
         return transformedString;
     }
 
-    public static Dictionary<string, int> CreateCollectionsDictionary(dynamic CollectionsData)
+    public static Dictionary<string, int> CreateCollectionsDictionary(dynamic collectionsData)
     {
         Dictionary<string, int> collectionsDictionary = [];
 
-        for (int i = 0; i < CollectionsData.collections.Count; i++)
+        for (int i = 0; i < collectionsData.collections.Count; i++)
         {
-            string collectionId = CollectionsData.collections[i].collectionId;
+            string collectionId = collectionsData.collections[i].collectionId;
             collectionsDictionary[collectionId] = i;
         }
 
         return collectionsDictionary;
     }
 
-    public static void PopulateLocalizationFromApi(Dictionary<string, Collection> localizedCollectionsDB, string langKey, Dictionary<string, int> collectionsDictionary, dynamic CollectionsData)
+    public static void PopulateLocalizationFromApi(Dictionary<string, Collection> localizedCollectionsDb, string langKey, Dictionary<string, int> collectionsDictionary, dynamic collectionsData)
     {
-        foreach (var collection in localizedCollectionsDB)
+        foreach (var collection in localizedCollectionsDb)
         {
             int matchingIndex = collectionsDictionary[collection.Value.CollectionId];
 
-            var collectionTitle = CollectionsData.collections[matchingIndex].collectionTitle[langKey];
-            var collectionSubTitle = CollectionsData.collections[matchingIndex].collectionSubtitle[langKey];
+            var collectionTitle = collectionsData.collections[matchingIndex].collectionTitle[langKey];
+            var collectionSubTitle = collectionsData.collections[matchingIndex].collectionSubtitle[langKey];
 
             collection.Value.CollectionTitle = collectionTitle;
             collection.Value.CollectionSubtitle = collectionSubTitle;

@@ -12,7 +12,7 @@ namespace UEParser.Network;
 
 public class NetAPI
 {
-    private static readonly string cookieFilePath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "cookies.json");
+    private static readonly string cookieFilePath = Path.Combine(GlobalVariables.RootDir, "Dependencies", "cookies.json");
     private static readonly CookieContainer cookieContainer = new();
     private static HttpClientHandler handler = new()
     {

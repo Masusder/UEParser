@@ -16,33 +16,33 @@ namespace UEParser.APIComposers;
 public class Bundles
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
-    private static readonly dynamic CatalogData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "catalog.json")) ?? throw new Exception("Failed to load catalog data.");
-    private static readonly Dictionary<string, DLC> DlcsData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, DLC>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, "en", "DLC.json")) ?? throw new Exception("Failed to load parsed DLC data.");
-    private static readonly Dictionary<string, Character> CharactersData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Character>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, "en", "Characters.json")) ?? throw new Exception("Failed to load parsed Characters data.");
+    private static readonly dynamic CatalogData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.PathToKraken, GlobalVariables.VersionWithBranch, "CDN", "catalog.json")) ?? throw new Exception("Failed to load catalog data.");
+    private static readonly Dictionary<string, DLC> DlcsData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, DLC>>(Path.Combine(GlobalVariables.PathToParsedData, GlobalVariables.VersionWithBranch, "en", "DLC.json")) ?? throw new Exception("Failed to load parsed DLC data.");
+    private static readonly Dictionary<string, Character> CharactersData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Character>>(Path.Combine(GlobalVariables.PathToParsedData, GlobalVariables.VersionWithBranch, "en", "Characters.json")) ?? throw new Exception("Failed to load parsed Characters data.");
 
-    public static async Task InitializeBundlesDB(CancellationToken token)
+    public static async Task InitializeBundlesDb(CancellationToken token)
     {
         await Task.Run(() =>
         {
-            Dictionary<string, Bundle> parsedBundlesDB = [];
+            Dictionary<string, Bundle> parsedBundlesDb = [];
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Bundles);
 
-            ParseBundles(parsedBundlesDB, token);
+            ParseBundles(parsedBundlesDb, token);
 
-            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedBundlesDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Bundles);
+            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedBundlesDb.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Bundles);
 
-            ParseLocalizationAndSave(parsedBundlesDB, token);
+            ParseLocalizationAndSave(parsedBundlesDb, token);
         }, token);
     }
 
-    private static readonly string[] ignoreDlcs =
+    private static readonly string[] IgnoreDlcs =
     [
         "80suitcase",
         "bloodstainedSack",
         "headCase"
     ];
-    private static void ParseBundles(Dictionary<string, Bundle> parsedBundlesDB, CancellationToken token)
+    private static void ParseBundles(Dictionary<string, Bundle> parsedBundlesDb, CancellationToken token)
     {
         foreach (var item in CatalogData)
         {
@@ -148,16 +148,16 @@ public class Bundles
                     Type = prettyType
                 };
 
-                parsedBundlesDB.Add(bundleId, model);
+                parsedBundlesDb.Add(bundleId, model);
             }
         }
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, Bundle> parsedBundlesDB, CancellationToken token)
+    private static void ParseLocalizationAndSave(Dictionary<string, Bundle> parsedBundlesDb, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Bundles);
 
-        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
+        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.RootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
 
         var catalogDictionary = BundleUtils.CreateBundlesDictionary(CatalogData);
 
@@ -168,14 +168,14 @@ public class Bundles
             string fileName = Path.GetFileName(filePath);
             string langKey = StringUtils.LangSplit(fileName);
 
-            var objectString = JsonConvert.SerializeObject(parsedBundlesDB);
-            Dictionary<string, Bundle> localizedBundlesDB = JsonConvert.DeserializeObject<Dictionary<string, Bundle>>(objectString) ?? [];
+            var objectString = JsonConvert.SerializeObject(parsedBundlesDb);
+            Dictionary<string, Bundle> localizedBundlesDb = JsonConvert.DeserializeObject<Dictionary<string, Bundle>>(objectString) ?? [];
 
-            BundleUtils.PopulateLocalizationFromApi(localizedBundlesDB, langKey, catalogDictionary, CatalogData);
+            BundleUtils.PopulateLocalizationFromApi(localizedBundlesDb, langKey, catalogDictionary, CatalogData);
 
-            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Bundles.json");
+            string outputPath = Path.Combine(GlobalVariables.PathToParsedData, GlobalVariables.VersionWithBranch, langKey, "Bundles.json");
 
-            FileWriter.SaveParsedDB(localizedBundlesDB, outputPath, Logger.ELogExtraTag.Bundles);
+            FileWriter.SaveParsedDb(localizedBundlesDb, outputPath, Logger.ELogExtraTag.Bundles);
         }
     }
 }

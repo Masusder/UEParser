@@ -12,12 +12,12 @@ namespace UEParser.AssetRegistry.Wwise;
 public partial class WwiseRegister
 {
 #pragma warning disable IDE0044
-    private static ConcurrentDictionary<string, AudioInfo> AudioInfoDictionary = [];
+    private static ConcurrentDictionary<string, AudioInfo> _audioInfoDictionary = [];
 #pragma warning restore IDE0044
     // TODO: Can be potentially used to handle unused audio
     private readonly static HashSet<string> WemFilesCollection = [];
 
-    private static readonly string filesRegisterDirectoryPath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "FilesRegister");
+    private static readonly string FilesRegisterDirectoryPath = Path.Combine(GlobalVariables.RootDir, "Dependencies", "FilesRegister");
     public static readonly string PathToAudioRegister;
 
     public class AudioInfo(string hash, long size)
@@ -33,16 +33,16 @@ public partial class WwiseRegister
 
     private static string ConstructPathToAudioRegister(bool isComparisonVersion = false)
     {
-        string versionWithBranch = isComparisonVersion ? GlobalVariables.compareVersionWithBranch : GlobalVariables.versionWithBranch;
+        string versionWithBranch = isComparisonVersion ? GlobalVariables.CompareVersionWithBranch : GlobalVariables.VersionWithBranch;
         string audioRegisterName = $"Core_{versionWithBranch}_FilesRegister.uinfo";
-        return Path.Combine(filesRegisterDirectoryPath, audioRegisterName);
+        return Path.Combine(FilesRegisterDirectoryPath, audioRegisterName);
     }
 
     // Multi thread method
     public static void UpdateAudioRegister(string fileName, string hash, long size)
     {
         // Update or add a new AudioInfo entry in a thread-safe manner
-        AudioInfoDictionary.AddOrUpdate(
+        _audioInfoDictionary.AddOrUpdate(
             fileName,
             new AudioInfo(hash, size), // Value to add if the key doesn't exist
             (key, existingValue) => new AudioInfo(hash, size) // Value to update if the key does exist
@@ -112,7 +112,7 @@ public partial class WwiseRegister
 
     public static void PopulateAudioRegister()
     {
-        string pathToTemporaryWwise = GlobalVariables.pathToTemporaryWwise;
+        string pathToTemporaryWwise = GlobalVariables.PathToTemporaryWwise;
 
         if (!Directory.Exists(pathToTemporaryWwise))
         {
@@ -144,7 +144,7 @@ public partial class WwiseRegister
         });
     }
 
-    private const string SHA256Empty = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"; // SHA256 for empty data
+    private const string Sha256Empty = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"; // SHA256 for empty data
     // We will calculate .txtp hash based on collection of included wem files
     private static string CalculateHashForMultipleFiles(string[] filePaths)
     {
@@ -168,7 +168,7 @@ public partial class WwiseRegister
 
         if (hashBytes.Length == 0)
         {
-            return SHA256Empty;
+            return Sha256Empty;
         }
 
         return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
@@ -193,7 +193,7 @@ public partial class WwiseRegister
     public static void SaveAudioInfoDictionary()
     {
         var (assets, _) = RegistryManager.ReadFromUInfoFile(PathToAudioRegister);
-        RegistryManager.WriteToUInfoFile(PathToAudioRegister, assets, AudioInfoDictionary);
+        RegistryManager.WriteToUInfoFile(PathToAudioRegister, assets, _audioInfoDictionary);
 
         LogsWindowViewModel.Instance.AddLog("Saved audio register.", Logger.LogTags.Info);
     }

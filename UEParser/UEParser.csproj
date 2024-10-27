@@ -21,6 +21,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <LongPathAware>true</LongPathAware>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <EnableXamlCompilation>true</EnableXamlCompilation>
   </PropertyGroup>
 
   <ItemGroup>
@@ -59,6 +60,7 @@
     <AvaloniaXaml Include="Views\DownloadRegisterView.xaml" />
     <AvaloniaXaml Include="Views\NeteaseView.xaml" />
     <AvaloniaXaml Include="Views\NeteaseFileDialogView.xaml" />
+    <AvaloniaXaml Include="Views\NeteaseVersionSelectionDialog.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -99,6 +101,9 @@
       <Generator>MSBuild:Compile</Generator>
     </None>
     <None Update="Views\NeteaseFileDialogView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="Views\NeteaseVersionSelectionDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
   </ItemGroup>

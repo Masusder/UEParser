@@ -26,7 +26,7 @@ public partial class ParsingControllersView : UserControl
         AvaloniaXamlLoader.Load(this);
     }
 
-    private static readonly char[] separator = [';'];
+    private static readonly char[] Separator = [';'];
     private void Button_PointerEnter(object sender, PointerEventArgs e)
     {
         if (sender is not Button button)
@@ -64,12 +64,12 @@ public partial class ParsingControllersView : UserControl
                 descriptionText.Inlines?.Add(new LineBreak());
 
                 // Split requirements by ;
-                var requirementsArray = buttonInfo.Requirements.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+                var requirementsArray = buttonInfo.Requirements.Split(Separator, StringSplitOptions.RemoveEmptyEntries);
 
                 // Add each requirement
                 foreach (var requirement in requirementsArray)
                 {
-                    descriptionText.Inlines?.Add(new Run { Text = $"• {requirement.Trim()}", Foreground = Avalonia.Media.Brushes.AntiqueWhite, FontSize = 12 });
+                    descriptionText.Inlines?.Add(new Run { Text = $"ï¿½ {requirement.Trim()}", Foreground = Avalonia.Media.Brushes.AntiqueWhite, FontSize = 12 });
                     descriptionText.Inlines?.Add(new LineBreak());
                 }
 

@@ -90,7 +90,7 @@ public class APIViewModel
 
     private void ConstructFullVersion()
     {
-        string fullVersion = $"Selected version: {GlobalVariables.versionWithBranch}";
+        string fullVersion = $"Selected version: {GlobalVariables.VersionWithBranch}";
         Version = fullVersion;
     }
 

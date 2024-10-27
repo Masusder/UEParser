@@ -67,7 +67,7 @@ public class MainWindowViewModel : INotifyPropertyChanged
 
     private void OpenSettingsWindow()
     {
-        if (_settingsWindow == null || !_settingsWindow.IsVisible)
+        if (_settingsWindow is not { IsVisible: true })
         {
             _settingsWindow = new SettingsView();
             _settingsWindow.Closed += OnSettingsWindowClosed;

@@ -16,30 +16,30 @@ namespace UEParser.APIComposers;
 public class Cosmetics
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
-    private static readonly dynamic CatalogData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "catalog.json")) ?? throw new Exception("Failed to load catalog data.");
-    private static readonly Dictionary<string, Rift> RiftData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Rift>>(Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, "en", "Rifts.json")) ?? throw new Exception("Failed to load rifts data.");
+    private static readonly dynamic CatalogData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.PathToKraken, GlobalVariables.VersionWithBranch, "CDN", "catalog.json")) ?? throw new Exception("Failed to load catalog data.");
+    private static readonly Dictionary<string, Rift> RiftData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Rift>>(Path.Combine(GlobalVariables.PathToParsedData, GlobalVariables.VersionWithBranch, "en", "Rifts.json")) ?? throw new Exception("Failed to load rifts data.");
     private static readonly Dictionary<string, int> CatalogDictionary = CosmeticUtils.CreateCatalogDictionary(CatalogData);
 
-    public static async Task InitializeCosmeticsDB(CancellationToken token)
+    public static async Task InitializeCosmeticsDb(CancellationToken token)
     {
         await Task.Run(() =>
         {
-            Dictionary<string, object> parsedCosmeticsDB = [];
+            Dictionary<string, object> parsedCosmeticsDb = [];
 
             LogsWindowViewModel.Instance.AddLog("Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Cosmetics);
 
-            parsedCosmeticsDB = ParseOutfits(parsedCosmeticsDB, token);
-            parsedCosmeticsDB = ParseCustomizationItems(parsedCosmeticsDB, token);
-            parsedCosmeticsDB = AssignRiftData(parsedCosmeticsDB);
-            parsedCosmeticsDB = AppendStaticCurrencies(parsedCosmeticsDB);
+            parsedCosmeticsDb = ParseOutfits(parsedCosmeticsDb, token);
+            parsedCosmeticsDb = ParseCustomizationItems(parsedCosmeticsDb, token);
+            parsedCosmeticsDb = AssignRiftData(parsedCosmeticsDb);
+            parsedCosmeticsDb = AppendStaticCurrencies(parsedCosmeticsDb);
 
-            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedCosmeticsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Cosmetics);
+            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedCosmeticsDb.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Cosmetics);
 
-            ParseLocalizationAndSave(parsedCosmeticsDB, token);
+            ParseLocalizationAndSave(parsedCosmeticsDb, token);
         }, token);
     }
 
-    public static Dictionary<string, object> ParseOutfits(Dictionary<string, object> parsedCosmeticsDB, CancellationToken token)
+    public static Dictionary<string, object> ParseOutfits(Dictionary<string, object> parsedCosmeticsDb, CancellationToken token)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("OutfitDB.json");
 
@@ -156,15 +156,15 @@ public class Cosmetics
                         Prices = prices
                     };
 
-                    parsedCosmeticsDB.TryAdd(cosmeticId, model);
+                    parsedCosmeticsDb.TryAdd(cosmeticId, model);
                 }
             }
         }
 
-        return parsedCosmeticsDB;
+        return parsedCosmeticsDb;
     }
 
-    private static readonly string[] customizationItemsToIgnore =
+    private static readonly string[] CustomizationItemsToIgnore =
     [
         "NK_Torso01_Mods",
         "CM_Torso04_Mods",
@@ -174,7 +174,7 @@ public class Cosmetics
         "Default_Badge",
         "Default_Banner"
     ];
-    private static Dictionary<string, object> ParseCustomizationItems(Dictionary<string, object> parsedCosmeticsDB, CancellationToken token)
+    private static Dictionary<string, object> ParseCustomizationItems(Dictionary<string, object> parsedCosmeticsDb, CancellationToken token)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("CustomizationItemDB.json");
 
@@ -195,7 +195,7 @@ public class Cosmetics
 
                 string cosmeticId = item.Name;
 
-                if (customizationItemsToIgnore.Contains(cosmeticId)) continue;
+                if (CustomizationItemsToIgnore.Contains(cosmeticId)) continue;
 
                 string cosmeticIdLower = cosmeticId.ToLower();
 
@@ -243,7 +243,7 @@ public class Cosmetics
                 }
 
                 string roleString = item.Value["AssociatedRole"];
-                string role = StringUtils.StringSplitVE(roleString);
+                string role = StringUtils.StringSplitVe(roleString);
 
                 string inclusionVersionRaw = item.Value["InclusionVersion"];
                 string inclusionVersion = CosmeticUtils.TrimInclusionVersion(inclusionVersionRaw);
@@ -325,14 +325,14 @@ public class Cosmetics
                     Prices = prices
                 };
 
-                parsedCosmeticsDB.TryAdd(cosmeticId, model);
+                parsedCosmeticsDb.TryAdd(cosmeticId, model);
             }
         }
 
-        return parsedCosmeticsDB;
+        return parsedCosmeticsDb;
     }
 
-    private static Dictionary<string, object> AssignRiftData(Dictionary<string, object> parsedCosmeticsDB)
+    private static Dictionary<string, object> AssignRiftData(Dictionary<string, object> parsedCosmeticsDb)
     {
         Dictionary<string, string> riftCosmeticsList = [];
 
@@ -370,7 +370,7 @@ public class Cosmetics
             }
         }
 
-        foreach (var item in parsedCosmeticsDB)
+        foreach (var item in parsedCosmeticsDb)
         {
             if (item.Value is Outfit riftCosmetic)
             {
@@ -388,12 +388,12 @@ public class Cosmetics
             }
         }
 
-        return parsedCosmeticsDB;
+        return parsedCosmeticsDb;
     }
 
     // Currencies should be separated from cosmetics
     // but this makes it easier to populate Rifts data
-    private static Dictionary<string, object> AppendStaticCurrencies(Dictionary<string, object> parsedCosmeticsDB)
+    private static Dictionary<string, object> AppendStaticCurrencies(Dictionary<string, object> parsedCosmeticsDb)
     {
         void AddCurrencyWithLocalization(string id, string nameKey, string iconFilePath)
         {
@@ -406,7 +406,7 @@ public class Cosmetics
                 IconFilePathList = iconFilePath,
                 TomeId = null
             };
-            parsedCosmeticsDB.Add(id, currency);
+            parsedCosmeticsDb.Add(id, currency);
 
             Dictionary<string, List<LocalizationEntry>> localizationModel = new()
             {
@@ -434,14 +434,14 @@ public class Cosmetics
         AddCurrencyWithLocalization("AnniversaryEventCurrency", "CURRENCY_AnniversaryEventCurrency_NAME", "/images/Currency/AnniversaryEventCurrency_Icon.png");
         AddCurrencyWithLocalization("Shards", "Shards", "/images/Currency/Shards_Icon.png");
 
-        return parsedCosmeticsDB;
+        return parsedCosmeticsDb;
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, object> parsedCosmeticsDB, CancellationToken token)
+    private static void ParseLocalizationAndSave(Dictionary<string, object> parsedCosmeticsDb, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Cosmetics);
 
-        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
+        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.RootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
 
         foreach (string filePath in filePaths)
         {
@@ -453,16 +453,16 @@ public class Cosmetics
 
             Dictionary<string, string> languageKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString) ?? throw new Exception($"Failed to load following locres file: {langKey}.");
 
-            var objectString = JsonConvert.SerializeObject(parsedCosmeticsDB);
-            Dictionary<string, object> localizedCosmeticsDB = JsonConvert.DeserializeObject<Dictionary<string, object>>(objectString) ?? [];
+            var objectString = JsonConvert.SerializeObject(parsedCosmeticsDb);
+            Dictionary<string, object> localizedCosmeticsDb = JsonConvert.DeserializeObject<Dictionary<string, object>>(objectString) ?? [];
 
-            Helpers.LocalizeDB(localizedCosmeticsDB, LocalizationData, languageKeys, langKey);
+            Helpers.LocalizeDb(localizedCosmeticsDb, LocalizationData, languageKeys, langKey);
 
-            CosmeticUtils.AddAmountToCurrencyPacks(localizedCosmeticsDB);
+            CosmeticUtils.AddAmountToCurrencyPacks(localizedCosmeticsDb);
 
-            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Cosmetics.json");
+            string outputPath = Path.Combine(GlobalVariables.PathToParsedData, GlobalVariables.VersionWithBranch, langKey, "Cosmetics.json");
 
-            FileWriter.SaveParsedDB(localizedCosmeticsDB, outputPath, Logger.ELogExtraTag.Cosmetics);
+            FileWriter.SaveParsedDb(localizedCosmeticsDb, outputPath, Logger.ELogExtraTag.Cosmetics);
         }
     }
 }

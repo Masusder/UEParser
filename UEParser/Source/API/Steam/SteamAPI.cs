@@ -35,7 +35,7 @@ public class SteamAPI
 
         if (!string.IsNullOrEmpty(steamId))
         {
-            string dlcDirectory = Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "DLC", languageCode);
+            string dlcDirectory = Path.Combine(GlobalVariables.RootDir, "Dependencies", "HelperComponents", "DLC", languageCode);
             Directory.CreateDirectory(dlcDirectory);
             string dlcFilePath = Path.Combine(dlcDirectory, $"{dlcId}.json");
 

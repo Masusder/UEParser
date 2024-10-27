@@ -35,7 +35,7 @@ public class Initialize
             LogsWindowViewModel.Instance.AddLog("Looking for new S3 Bucket Access Keys.", Logger.LogTags.Info);
             await S3AccessKeys.CheckKeys(); // Check if there's any new S3AccessKeys (method needs to be invoked after 'ParseGameAssets')
             LogsWindowViewModel.Instance.AddLog("Creating helper components to speed up parsing process.", Logger.LogTags.Info);
-            Helpers.CreateArchiveQuestObjectiveDB();
+            Helpers.CreateArchiveQuestObjectiveDb();
             Helpers.CreateQuestNodeDatabase();
             Helpers.CreateTagConverters();
             Helpers.CombineCharacterBlueprints();
@@ -117,19 +117,19 @@ public class Initialize
 
     private static void CreateDefaultDirectories()
     {
-        Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents"));
-        Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"));
-        Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Mappings"));
-        Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Dependencies", "FilesRegister"));
-        Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAssets"));
-        Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAudio"));
-        Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output"));
-        Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output", "Logs"));
-        Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output", "Kraken"));
-        Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output", "ExtractedAssets"));
-        Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output", "ParsedData"));
-        Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output", "ModelsData"));
-        Directory.CreateDirectory(Path.Combine(GlobalVariables.rootDir, "Output", "DynamicAssets"));
+        Directory.CreateDirectory(Path.Combine(GlobalVariables.RootDir, "Dependencies", "HelperComponents"));
+        Directory.CreateDirectory(Path.Combine(GlobalVariables.RootDir, "Dependencies", "Locres"));
+        Directory.CreateDirectory(Path.Combine(GlobalVariables.RootDir, "Dependencies", "Mappings"));
+        Directory.CreateDirectory(Path.Combine(GlobalVariables.RootDir, "Dependencies", "FilesRegister"));
+        Directory.CreateDirectory(Path.Combine(GlobalVariables.RootDir, "Dependencies", "ExtractedAssets"));
+        Directory.CreateDirectory(Path.Combine(GlobalVariables.RootDir, "Dependencies", "ExtractedAudio"));
+        Directory.CreateDirectory(Path.Combine(GlobalVariables.RootDir, "Output"));
+        Directory.CreateDirectory(Path.Combine(GlobalVariables.RootDir, "Output", "Logs"));
+        Directory.CreateDirectory(Path.Combine(GlobalVariables.RootDir, "Output", "Kraken"));
+        Directory.CreateDirectory(Path.Combine(GlobalVariables.RootDir, "Output", "ExtractedAssets"));
+        Directory.CreateDirectory(Path.Combine(GlobalVariables.RootDir, "Output", "ParsedData"));
+        Directory.CreateDirectory(Path.Combine(GlobalVariables.RootDir, "Output", "ModelsData"));
+        Directory.CreateDirectory(Path.Combine(GlobalVariables.RootDir, "Output", "DynamicAssets"));
     }
 
     private static bool ReadVersion(string savedVersion)

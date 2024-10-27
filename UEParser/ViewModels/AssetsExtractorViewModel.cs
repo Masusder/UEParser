@@ -114,7 +114,7 @@ public class AssetsExtractorViewModel : ReactiveObject
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
             LogsWindowViewModel.Instance.AddLog("Starting UI extraction..", Logger.LogTags.Info);
 
-            await AssetsManager.ParseUI(token);
+            await AssetsManager.ParseUi(token);
 
             LogsWindowViewModel.Instance.AddLog("Finished extracting UI.", Logger.LogTags.Success);
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
@@ -192,21 +192,21 @@ public class AssetsExtractorViewModel : ReactiveObject
             CanExtract = true;
 
             // Cleanup: Delete temporary directory upon task completion
-            if (Directory.Exists(GlobalVariables.tempDir))
+            if (Directory.Exists(GlobalVariables.TempDir))
             {
-                try { Directory.Delete(GlobalVariables.tempDir, true); }
+                try { Directory.Delete(GlobalVariables.TempDir, true); }
                 catch (Exception ex) { LogsWindowViewModel.Instance.AddLog($"Failed to delete temporary directory: {ex.Message}", Logger.LogTags.Error); }
             }
         }
     }
 
-    private const string packageDataDirectory = "DeadByDaylight/Content/Data";
-    private const string packageCharactersDirectory = "DeadByDaylight/Content/Characters";
-    private const string packageMeshesDirectory = "DeadByDaylight/Content/Meshes";
-    private const string packageEffectsDirectory = "DeadByDaylight/Content/Effects";
-    private const string packagePluginsDirectory = "DeadByDaylight/Plugins";
-    private const string packageLocalizationDirectory = "DeadByDaylight/Content/Localization";
-    private const string packageWwiseDirectory = "DeadByDaylight/Content/WwiseAudio";
+    private const string PackageDataDirectory = "DeadByDaylight/Content/Data";
+    private const string PackageCharactersDirectory = "DeadByDaylight/Content/Characters";
+    private const string PackageMeshesDirectory = "DeadByDaylight/Content/Meshes";
+    private const string PackageEffectsDirectory = "DeadByDaylight/Content/Effects";
+    private const string PackagePluginsDirectory = "DeadByDaylight/Plugins";
+    private const string PackageLocalizationDirectory = "DeadByDaylight/Content/Localization";
+    private const string PackageWwiseDirectory = "DeadByDaylight/Content/WwiseAudio";
     private async Task CheckMissingAssets(CancellationToken token)
     {
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
@@ -219,17 +219,17 @@ public class AssetsExtractorViewModel : ReactiveObject
             await Task.Run(async () =>
         {
             var fileRegisterDictionary = FilesRegister.MountFileRegisterDictionary();
-            string pathToExtractedAssets = GlobalVariables.pathToExtractedAssets;
+            string pathToExtractedAssets = GlobalVariables.PathToExtractedAssets;
 
             var directoriesToMatch = new List<string>
             {
-                packageDataDirectory,
-                packageCharactersDirectory,
-                packageMeshesDirectory,
-                packageEffectsDirectory,
-                packagePluginsDirectory,
-                packageLocalizationDirectory,
-                packageWwiseDirectory
+                PackageDataDirectory,
+                PackageCharactersDirectory,
+                PackageMeshesDirectory,
+                PackageEffectsDirectory,
+                PackagePluginsDirectory,
+                PackageLocalizationDirectory,
+                PackageWwiseDirectory
             };
 
             List<string> missingAssetsList = [];
@@ -255,7 +255,7 @@ public class AssetsExtractorViewModel : ReactiveObject
                 }
             }
 
-            var fatalCrashAssets = GlobalVariables.fatalCrashAssets;
+            var fatalCrashAssets = GlobalVariables.FatalCrashAssets;
 
             // Remove any strings from missingAssetsList that are in fatalCrashAssets
             missingAssetsList.RemoveAll(asset => fatalCrashAssets.Contains(asset));

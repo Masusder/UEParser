@@ -15,27 +15,27 @@ internal class Maps
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
 
-    public static async Task InitializeMapsDB(CancellationToken token)
+    public static async Task InitializeMapsDb(CancellationToken token)
     {
         await Task.Run(() =>
         {
-            Dictionary<string, Map> parsedMapsDB = [];
+            Dictionary<string, Map> parsedMapsDb = [];
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Maps);
 
-            ParseMaps(parsedMapsDB, token);
+            ParseMaps(parsedMapsDb, token);
 
-            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedMapsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Maps);
+            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedMapsDb.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Maps);
 
-            ParseLocalizationAndSave(parsedMapsDB, token);
+            ParseLocalizationAndSave(parsedMapsDb, token);
         }, token);
     }
 
-    private static void ParseMaps(Dictionary<string, Map> parsedMapsDB, CancellationToken token)
+    private static void ParseMaps(Dictionary<string, Map> parsedMapsDb, CancellationToken token)
     {
         // There's also limited gamemode maps, but we don't want these
         // If you for some reason need them comment out helper method
-        string[] filePaths = [Path.Combine(GlobalVariables.pathToExtractedAssets, "DeadByDaylight", "Content", "Data", "ProceduralMaps.json")];
+        string[] filePaths = [Path.Combine(GlobalVariables.PathToExtractedAssets, "DeadByDaylight", "Content", "Data", "ProceduralMaps.json")];
         //Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("ProceduralMaps.json");
 
         foreach (string filePath in filePaths)
@@ -101,16 +101,16 @@ internal class Maps
                     Thumbnail = thumbnailPath
                 };
 
-                parsedMapsDB.Add(mapId, model);
+                parsedMapsDb.Add(mapId, model);
             }
         }
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, Map> parsedMapsDB, CancellationToken token)
+    private static void ParseLocalizationAndSave(Dictionary<string, Map> parsedMapsDb, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Maps);
 
-        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
+        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.RootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
 
         foreach (string filePath in filePaths)
         {
@@ -122,14 +122,14 @@ internal class Maps
 
             Dictionary<string, string> languageKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString) ?? throw new Exception($"Failed to load following locres file: {langKey}.");
 
-            var objectString = JsonConvert.SerializeObject(parsedMapsDB);
-            Dictionary<string, Map> localizedMapsDB = JsonConvert.DeserializeObject<Dictionary<string, Map>>(objectString) ?? [];
+            var objectString = JsonConvert.SerializeObject(parsedMapsDb);
+            Dictionary<string, Map> localizedMapsDb = JsonConvert.DeserializeObject<Dictionary<string, Map>>(objectString) ?? [];
 
-            Helpers.LocalizeDB(localizedMapsDB, LocalizationData, languageKeys, langKey);
+            Helpers.LocalizeDb(localizedMapsDb, LocalizationData, languageKeys, langKey);
 
-            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Maps.json");
+            string outputPath = Path.Combine(GlobalVariables.PathToParsedData, GlobalVariables.VersionWithBranch, langKey, "Maps.json");
 
-            FileWriter.SaveParsedDB(localizedMapsDB, outputPath, Logger.ELogExtraTag.Maps);
+            FileWriter.SaveParsedDb(localizedMapsDb, outputPath, Logger.ELogExtraTag.Maps);
         }
     }
 }

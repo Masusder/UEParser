@@ -80,9 +80,9 @@ public class PerkUtils
         return finalArray;
     }
 
-    public static void FormatDescriptionTunables(Dictionary<string, Perk> localizedPerksDB, string langKey)
+    public static void FormatDescriptionTunables(Dictionary<string, Perk> localizedPerksDb, string langKey)
     {
-        foreach (var item in localizedPerksDB)
+        foreach (var item in localizedPerksDb)
         {
             string perkId = item.Key;
             string description = item.Value.Description;

@@ -128,7 +128,7 @@ public class S3Service
         string formattedBytes = StringUtils.FormatBytes(e.TransferredBytes);
         string formattedTotalBytes = StringUtils.FormatBytes(e.TotalBytes);
 
-        string strippedUploadDirectory = StringUtils.StripDynamicDirectory(uploadDirectory, GlobalVariables.rootDir);
+        string strippedUploadDirectory = StringUtils.StripDynamicDirectory(uploadDirectory, GlobalVariables.RootDir);
         var logMessage = $"Uploading from directory: {strippedUploadDirectory}\n" +
                  $"• Total number of files to upload: {e.TotalNumberOfFiles} ({formattedTotalBytes} total)\n" +
                  $"• Number of files uploaded: {e.NumberOfFilesUploaded} ({percentage:F2}%)\n" +

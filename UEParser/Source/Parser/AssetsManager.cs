@@ -30,40 +30,40 @@ namespace UEParser.Parser;
 
 public class AssetsManager
 {
-    private const string packagePathToPaks = "DeadByDaylight/Content/Paks";
+    private const string PackagePathToPaks = "DeadByDaylight/Content/Paks";
 
-    private static DefaultFileProvider? provider;
-    private static readonly object lockObject = new();
+    private static DefaultFileProvider? _provider;
+    private static readonly object LockObject = new();
 
     public static DefaultFileProvider Provider
     {
         get
         {
-            if (provider == null)
+            if (_provider == null)
             {
-                lock (lockObject)
+                lock (LockObject)
                 {
-                    if (provider == null)
+                    if (_provider == null)
                     {
                         InitializeCUE4Parse();
                     }
                 }
             }
-            return provider!;
+            return _provider!;
         }
     }
 
     public static void InitializeCUE4Parse()
     {
-        if (provider != null)
+        if (_provider != null)
         {
             // Provider is already initialized
             return;
         }
 
-        lock (lockObject)
+        lock (LockObject)
         {
-            if (provider != null)
+            if (_provider != null)
             {
                 // Double-check to ensure provider is still null inside the lock
                 return;
@@ -74,9 +74,9 @@ public class AssetsManager
             string pathToGameDirectory = config.Core.PathToGameDirectory;
             if (pathToGameDirectory != null)
             {
-                string pathToPaks = Path.Combine(pathToGameDirectory, packagePathToPaks);
+                string pathToPaks = Path.Combine(pathToGameDirectory, PackagePathToPaks);
 
-                var oodleDirectory = Path.Combine(GlobalVariables.rootDir, ".data");
+                var oodleDirectory = Path.Combine(GlobalVariables.RootDir, ".data");
                 var oodlePath = Path.Combine(oodleDirectory, OodleHelper.OODLE_DLL_NAME);
 
                 var mappingsPath = config.Core.MappingsPath;
@@ -92,21 +92,21 @@ public class AssetsManager
 
                 OodleHelper.Initialize(oodlePath);
 
-                provider = new DefaultFileProvider(pathToPaks, SearchOption.TopDirectoryOnly, true, new VersionContainer(EGame.GAME_DeadByDaylight))
+                _provider = new DefaultFileProvider(pathToPaks, SearchOption.TopDirectoryOnly, true, new VersionContainer(EGame.GAME_DeadByDaylight))
                 {
                     MappingsContainer = new FileUsmapTypeMappingsProvider(mappingsPath)
                 };
 
-                provider.CustomEncryption = provider.Versions.Game switch
+                _provider.CustomEncryption = _provider.Versions.Game switch
                 {
                     EGame.GAME_DeadByDaylight => DBDAes.DbDDecrypt,
                     _ => DBDAes.DbDDecrypt
                 };
 
-                provider.Initialize(); // will scan local files and read them to know what it has to deal with (PAK/UTOC/UCAS/UASSET/UMAP)
-                provider.SubmitKey(new FGuid(), new FAesKey(config.Core.AesKey)); // decrypt basic info (1 guid - 1 key)
+                _provider.Initialize(); // will scan local files and read them to know what it has to deal with (PAK/UTOC/UCAS/UASSET/UMAP)
+                _provider.SubmitKey(new FGuid(), new FAesKey(config.Core.AesKey)); // decrypt basic info (1 guid - 1 key)
 
-                provider.LoadLocalization(ELanguage.English);
+                _provider.LoadLocalization(ELanguage.English);
             }
             else
             {
@@ -117,20 +117,20 @@ public class AssetsManager
         }
     }
 
-    private static readonly string[] extensionsToSkip = ["ubulk", "uexp", "ufont"];
-    private static readonly string outputRootDirectory = Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAssets");
-    private const string packageDataDirectory = "DeadByDaylight/Content/Data";
-    private const string packageCustomizationDirectory = "DeadByDaylight/Content/UI/UMGAssets/Icons/Customization";
-    private const string packageUMGAssetsDirectory = "DeadByDaylight/Content/UI/UMGAssets";
-    private const string packageUIDirectory = "DeadByDaylight/Content/UI/UMGAssets/Icons";
-    private const string packageCharactersDirectory = "DeadByDaylight/Content/Characters";
-    private const string packageMeshesDirectory = "DeadByDaylight/Content/Meshes";
-    private const string packageEffectsDirectory = "DeadByDaylight/Content/Effects";
-    private const string packagePluginsDirectory = "DeadByDaylight/Plugins";
-    private const string packageConfigDirectory = "DeadByDaylight/Config";
-    private const string packageLocalizationDirectory = "DeadByDaylight/Content/Localization";
-    private const string packageWwiseDirectory = "DeadByDaylight/Content/WwiseAudio";
-    private const string packageAssetsRegistryFile = "DeadByDaylight/AssetRegistry.bin";
+    private static readonly string[] ExtensionsToSkip = ["ubulk", "uexp", "ufont"];
+    private static readonly string OutputRootDirectory = Path.Combine(GlobalVariables.RootDir, "Dependencies", "ExtractedAssets");
+    private const string PackageDataDirectory = "DeadByDaylight/Content/Data";
+    private const string PackageCustomizationDirectory = "DeadByDaylight/Content/UI/UMGAssets/Icons/Customization";
+    private const string PackageUMGAssetsDirectory = "DeadByDaylight/Content/UI/UMGAssets";
+    private const string PackageUIDirectory = "DeadByDaylight/Content/UI/UMGAssets/Icons";
+    private const string PackageCharactersDirectory = "DeadByDaylight/Content/Characters";
+    private const string PackageMeshesDirectory = "DeadByDaylight/Content/Meshes";
+    private const string PackageEffectsDirectory = "DeadByDaylight/Content/Effects";
+    private const string PackagePluginsDirectory = "DeadByDaylight/Plugins";
+    private const string PackageConfigDirectory = "DeadByDaylight/Config";
+    private const string PackageLocalizationDirectory = "DeadByDaylight/Content/Localization";
+    private const string PackageWwiseDirectory = "DeadByDaylight/Content/WwiseAudio";
+    private const string PackageAssetsRegistryFile = "DeadByDaylight/AssetRegistry.bin";
     public static async Task ParseGameAssets()
     {
         await Task.Run(() =>
@@ -148,30 +148,30 @@ public class AssetsManager
                     try
                     {
                         string pathWithoutExtension = file.PathWithoutExtension;
-                        if (GlobalVariables.fatalCrashAssets.Contains(pathWithoutExtension)) continue;
+                        if (GlobalVariables.FatalCrashAssets.Contains(pathWithoutExtension)) continue;
 
                         string extension = file.Extension;
-                        if (extensionsToSkip.Contains(extension)) continue;
+                        if (ExtensionsToSkip.Contains(extension)) continue;
 
                         string pathWithExtension = file.Path;
                         long size = file.Size;
 
-                        bool isInUIDirectory = pathWithExtension.Contains(packageCustomizationDirectory);
-                        bool isInDataDirectory = pathWithExtension.Contains(packageDataDirectory);
-                        bool isInCharactersDirectory = pathWithExtension.Contains(packageCharactersDirectory);
-                        bool isInMeshesDirectory = pathWithExtension.Contains(packageMeshesDirectory);
-                        bool isInEffectsDirectory = pathWithExtension.Contains(packageEffectsDirectory);
-                        bool isInPluginsDirectory = pathWithExtension.Contains(packagePluginsDirectory);
-                        bool isInConfigDirectory = pathWithExtension.Contains(packageConfigDirectory);
-                        bool isInLocalizationDirectory = pathWithExtension.Contains(packageLocalizationDirectory);
-                        bool isInWwiseDirectory = pathWithExtension.Contains(packageWwiseDirectory);
-                        bool isAssetsRegistry = pathWithExtension.Contains(packageAssetsRegistryFile);
+                        bool isInUiDirectory = pathWithExtension.Contains(PackageCustomizationDirectory);
+                        bool isInDataDirectory = pathWithExtension.Contains(PackageDataDirectory);
+                        bool isInCharactersDirectory = pathWithExtension.Contains(PackageCharactersDirectory);
+                        bool isInMeshesDirectory = pathWithExtension.Contains(PackageMeshesDirectory);
+                        bool isInEffectsDirectory = pathWithExtension.Contains(PackageEffectsDirectory);
+                        bool isInPluginsDirectory = pathWithExtension.Contains(PackagePluginsDirectory);
+                        bool isInConfigDirectory = pathWithExtension.Contains(PackageConfigDirectory);
+                        bool isInLocalizationDirectory = pathWithExtension.Contains(PackageLocalizationDirectory);
+                        bool isInWwiseDirectory = pathWithExtension.Contains(PackageWwiseDirectory);
+                        bool isAssetsRegistry = pathWithExtension.Contains(PackageAssetsRegistryFile);
 
                         bool fileDataChanged = UpdateFileInfoIfNeeded(pathWithoutExtension, extension, size);
 
                         if (!fileDataChanged && !isInConfigDirectory) continue;
 
-                        if (!isInUIDirectory &&
+                        if (!isInUiDirectory &&
                             !isInDataDirectory &&
                             !isInCharactersDirectory &&
                             !isInMeshesDirectory &&
@@ -185,7 +185,7 @@ public class AssetsManager
                             continue;
                         }
 
-                        string exportPath = Path.Combine(outputRootDirectory, pathWithoutExtension);
+                        string exportPath = Path.Combine(OutputRootDirectory, pathWithoutExtension);
 
                         switch (extension)
                         {
@@ -307,16 +307,16 @@ public class AssetsManager
                     string pathWithoutExtension = file.PathWithoutExtension;
                     if (!newAssets.ContainsKey(pathWithoutExtension) && !modifiedAssets.ContainsKey(pathWithoutExtension)) continue;
 
-                    if (GlobalVariables.fatalCrashAssets.Contains(pathWithoutExtension)) continue;
+                    if (GlobalVariables.FatalCrashAssets.Contains(pathWithoutExtension)) continue;
 
                     string extension = file.Extension;
-                    if (extensionsToSkip.Contains(extension)) continue;
+                    if (ExtensionsToSkip.Contains(extension)) continue;
 
                     string pathWithExtension = file.Path;
                     long size = file.Size;
 
                     string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch();
-                    string outputDirectory = Path.Combine(GlobalVariables.rootDir, "Output", "ExtractedAssets", "Meshes", versionWithBranch);
+                    string outputDirectory = Path.Combine(GlobalVariables.RootDir, "Output", "ExtractedAssets", "Meshes", versionWithBranch);
                     string outputPathWithoutExtension = Path.Combine(outputDirectory, pathWithoutExtension);
                     string outputPath = Path.ChangeExtension(outputPathWithoutExtension, "psk");
 
@@ -393,16 +393,16 @@ public class AssetsManager
                     string pathWithoutExtension = file.PathWithoutExtension;
                     if (!newAssets.ContainsKey(pathWithoutExtension) && !modifiedAssets.ContainsKey(pathWithoutExtension)) continue;
 
-                    if (GlobalVariables.fatalCrashAssets.Contains(pathWithoutExtension)) continue;
+                    if (GlobalVariables.FatalCrashAssets.Contains(pathWithoutExtension)) continue;
 
                     string extension = file.Extension;
-                    if (extensionsToSkip.Contains(extension)) continue;
+                    if (ExtensionsToSkip.Contains(extension)) continue;
 
                     string pathWithExtension = file.Path;
                     long size = file.Size;
 
                     string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch();
-                    string outputDirectory = Path.Combine(GlobalVariables.rootDir, "Output", "ExtractedAssets", "Animations", versionWithBranch);
+                    string outputDirectory = Path.Combine(GlobalVariables.RootDir, "Output", "ExtractedAssets", "Animations", versionWithBranch);
                     string outputPathWithoutExtension = Path.Combine(outputDirectory, pathWithoutExtension);
                     string outputPath = Path.ChangeExtension(outputPathWithoutExtension, "psa");
 
@@ -480,18 +480,18 @@ public class AssetsManager
                     string pathWithoutExtension = file.PathWithoutExtension;
                     if (!newAssets.ContainsKey(pathWithoutExtension) && !modifiedAssets.ContainsKey(pathWithoutExtension)) continue;
 
-                    if (GlobalVariables.fatalCrashAssets.Contains(pathWithoutExtension)) continue;
+                    if (GlobalVariables.FatalCrashAssets.Contains(pathWithoutExtension)) continue;
 
                     string extension = file.Extension;
-                    if (extensionsToSkip.Contains(extension)) continue;
+                    if (ExtensionsToSkip.Contains(extension)) continue;
 
                     string pathWithExtension = file.Path;
-                    bool isInUIDirectory = pathWithExtension.Contains(packageUMGAssetsDirectory);
-                    if (isInUIDirectory) continue;
+                    bool isInUiDirectory = pathWithExtension.Contains(PackageUMGAssetsDirectory);
+                    if (isInUiDirectory) continue;
                     long size = file.Size;
 
                     string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch();
-                    string outputDirectory = Path.Combine(GlobalVariables.rootDir, "Output", "ExtractedAssets", "Textures", versionWithBranch);
+                    string outputDirectory = Path.Combine(GlobalVariables.RootDir, "Output", "ExtractedAssets", "Textures", versionWithBranch);
                     string outputPathWithoutExtension = Path.Combine(outputDirectory, pathWithoutExtension);
                     string outputPath = Path.ChangeExtension(outputPathWithoutExtension, "png");
 
@@ -537,7 +537,7 @@ public class AssetsManager
         }, token);
     }
 
-    public static async Task ParseUI(CancellationToken token)
+    public static async Task ParseUi(CancellationToken token)
     {
         await Task.Run(() =>
         {
@@ -560,19 +560,19 @@ public class AssetsManager
                     string pathWithoutExtension = file.PathWithoutExtension;
                     if (!newAssets.ContainsKey(pathWithoutExtension) && !modifiedAssets.ContainsKey(pathWithoutExtension)) continue;
 
-                    if (GlobalVariables.fatalCrashAssets.Contains(pathWithoutExtension)) continue;
+                    if (GlobalVariables.FatalCrashAssets.Contains(pathWithoutExtension)) continue;
 
                     string extension = file.Extension;
-                    if (extensionsToSkip.Contains(extension)) continue;
+                    if (ExtensionsToSkip.Contains(extension)) continue;
 
                     string pathWithExtension = file.Path;
-                    bool isInUIDirectory = pathWithExtension.Contains(packageUIDirectory);
-                    if (!isInUIDirectory) continue;
+                    bool isInUiDirectory = pathWithExtension.Contains(PackageUIDirectory);
+                    if (!isInUiDirectory) continue;
 
                     long size = file.Size;
 
                     string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch();
-                    string outputDirectory = Path.Combine(GlobalVariables.rootDir, "Output", "ExtractedAssets", "UI", versionWithBranch);
+                    string outputDirectory = Path.Combine(GlobalVariables.RootDir, "Output", "ExtractedAssets", "UI", versionWithBranch);
                     string outputPathWithoutExtension = Path.Combine(outputDirectory, pathWithoutExtension);
 
                     string outputPathWithoutExtensionDirectory = Path.GetDirectoryName(outputPathWithoutExtension)!;
@@ -684,16 +684,16 @@ public class AssetsManager
                 {
                     string pathWithoutExtension = file.PathWithoutExtension;
 
-                    if (GlobalVariables.fatalCrashAssets.Contains(pathWithoutExtension)) continue;
+                    if (GlobalVariables.FatalCrashAssets.Contains(pathWithoutExtension)) continue;
                     if (!missingAssetsList.Contains(pathWithoutExtension)) continue;
 
                     string extension = file.Extension;
-                    if (extensionsToSkip.Contains(extension)) continue;
+                    if (ExtensionsToSkip.Contains(extension)) continue;
 
                     string pathWithExtension = file.Path;
                     long size = file.Size;
 
-                    string exportPath = Path.Combine(outputRootDirectory, pathWithoutExtension);
+                    string exportPath = Path.Combine(OutputRootDirectory, pathWithoutExtension);
 
                     switch (extension)
                     {
@@ -807,27 +807,27 @@ public class AssetsManager
         // Load fileInfoDictionary from FilesRegister class
         Dictionary<string, FilesRegister.FileInfo> fileInfoDictionary = FilesRegister.MountFileRegisterDictionary();
 
-        if (!Directory.Exists(outputRootDirectory))
+        if (!Directory.Exists(OutputRootDirectory))
         {
             LogsWindowViewModel.Instance.AddLog("Output directory does not exist.", Logger.LogTags.Error);
             return;
         }
 
-        string[] allFiles = Directory.GetFiles(outputRootDirectory, "*", SearchOption.AllDirectories);
+        string[] allFiles = Directory.GetFiles(OutputRootDirectory, "*", SearchOption.AllDirectories);
 
         List<string> listOfDeletedFiles = [];
         foreach (string file in allFiles)
         {
-            string relativePath = StringUtils.GetRelativePathWithoutExtension(file, outputRootDirectory);
+            string relativePath = StringUtils.GetRelativePathWithoutExtension(file, OutputRootDirectory);
 
-            // Check if the relativePath includes "Data" or is in Wwise dir, as I only want to cleanup datatables and audio
+            // Check if the relativePath includes "Data" or is in Wwise dir, as I only want to clean up datatables and audio
             if (!relativePath.Contains("Data", StringComparison.OrdinalIgnoreCase) &&
-                !relativePath.Contains(packageWwiseDirectory, StringComparison.OrdinalIgnoreCase))
+                !relativePath.Contains(PackageWwiseDirectory, StringComparison.OrdinalIgnoreCase))
             {
                 continue;
             }
 
-            // Convert relativePath to lowercase for case insensitive comparison
+            // Convert relativePath to lowercase for case-insensitive comparison
             string lowerRelativePath = relativePath.ToLowerInvariant();
 
             if (!fileInfoDictionary.Keys.Any(key => key.Equals(lowerRelativePath, StringComparison.InvariantCultureIgnoreCase)))

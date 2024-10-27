@@ -15,13 +15,13 @@ namespace UEParser.Parser.Wwise;
 
 public partial class WwiseFileHandler
 {
-    private static readonly string TemporaryDirectory = Path.Combine(GlobalVariables.pathToExtractedAudio, "WwiseTemporary");
-    private static readonly string WwiseStructured = Path.Combine(GlobalVariables.pathToExtractedAudio, "WwiseStructured");
-    private static readonly string PathToUEAssetsRegistry = Path.Combine(GlobalVariables.pathToExtractedAssets, "DeadByDaylight", "AssetRegistry.json");
+    private static readonly string TemporaryDirectory = Path.Combine(GlobalVariables.PathToExtractedAudio, "WwiseTemporary");
+    private static readonly string WwiseStructured = Path.Combine(GlobalVariables.PathToExtractedAudio, "WwiseStructured");
+    private static readonly string PathToUEAssetsRegistry = Path.Combine(GlobalVariables.PathToExtractedAssets, "DeadByDaylight", "AssetRegistry.json");
 
     public static void MoveCompressedAudio(CancellationToken token)
     {
-        string pathToExtractedWwiseDirectory = Path.Combine(GlobalVariables.pathToExtractedAssets, "DeadByDaylight", "Content", "WwiseAudio", "Cooked");
+        string pathToExtractedWwiseDirectory = Path.Combine(GlobalVariables.PathToExtractedAssets, "DeadByDaylight", "Content", "WwiseAudio", "Cooked");
 
         string[] fileExtensions = [
             "*.bnk",
@@ -80,10 +80,10 @@ public partial class WwiseFileHandler
     private static void ProvideWwnamesFile()
     {
         if (!File.Exists(PathToUEAssetsRegistry)) throw new Exception("Not found Unreal Engine assets registry.");
-        if (!File.Exists(GlobalVariables.preGeneratedWwnames)) throw new Exception("Not found pre-generated Wwnames.");
+        if (!File.Exists(GlobalVariables.PreGeneratedWwnames)) throw new Exception("Not found pre-generated Wwnames.");
 
         string wwnamesPath = Path.Combine(TemporaryDirectory, "wwnames.txt");
-        File.Copy(GlobalVariables.preGeneratedWwnames, wwnamesPath, true);
+        File.Copy(GlobalVariables.PreGeneratedWwnames, wwnamesPath, true);
 
         static void AppendUEAssetRegistry(string wwnamesPath)
         {
@@ -96,9 +96,9 @@ public partial class WwiseFileHandler
 
         static void AppendNamesFromDatatables(string wwnamesPath)
         {
-            string[] customizationItemsDB = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("CustomizationItemDB.json");
-            string[] outfitDB = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("OutfitDB.json");
-            string[] dataTablesArray = [.. customizationItemsDB, .. outfitDB];
+            string[] customizationItemsDb = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("CustomizationItemDB.json");
+            string[] outfitDb = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("OutfitDB.json");
+            string[] dataTablesArray = [.. customizationItemsDb, .. outfitDb];
 
             HashSet<string> dbNames = [];
             foreach (var dbPath in dataTablesArray)
@@ -132,7 +132,7 @@ public partial class WwiseFileHandler
 
         ProvideWwnamesFile(); // Neccessary for reversing audio names
 
-        string arguments = $"\"{GlobalVariables.wwiserPath}\" \"{bnkFilesDirectory}\" \"{bnkFilesSubDirectories}\" -g --txtp-wemdir \"{TemporaryDirectory}\" --txtp-lang en fr jp";
+        string arguments = $"\"{GlobalVariables.WwiserPath}\" \"{bnkFilesDirectory}\" \"{bnkFilesSubDirectories}\" -g --txtp-wemdir \"{TemporaryDirectory}\" --txtp-lang en fr jp";
 
         if (!IsPythonInstalled()) throw new Exception("Python is not installed or not accessible from the command line, which is required for audio extraction to work.");
 
@@ -274,8 +274,8 @@ public partial class WwiseFileHandler
 
     public static void ReverseAudioStructure(Dictionary<string, long> associatedAudioEventIds, Dictionary<long, AudioEventsLinkageData> audioEventsLinkage)
     {
-        const int OffsetAttempt1 = 1;
-        const int OffsetAttempt2 = 2;
+        const int offsetAttempt1 = 1;
+        const int offsetAttempt2 = 2;
         foreach (var audioEvent in associatedAudioEventIds)
         {
             bool matchFound = false;
@@ -285,11 +285,11 @@ public partial class WwiseFileHandler
                 long audioEventValue = audioEvent.Value;
                 if (attempt == 1)
                 {
-                    audioEventValue -= OffsetAttempt1;
+                    audioEventValue -= offsetAttempt1;
                 }
                 else if (attempt == 2)
                 {
-                    audioEventValue -= OffsetAttempt2;
+                    audioEventValue -= offsetAttempt2;
                 }
 
                 if (audioEventsLinkage.TryGetValue(audioEventValue, out AudioEventsLinkageData? audioEventData))
@@ -303,7 +303,7 @@ public partial class WwiseFileHandler
 
                     Directory.CreateDirectory(Path.GetDirectoryName(finalPath) ?? string.Empty);
 
-                    string wavFilePath = Path.Combine(GlobalVariables.tempDir, Path.ChangeExtension(reversedFileName, ".wav"));
+                    string wavFilePath = Path.Combine(GlobalVariables.TempDir, Path.ChangeExtension(reversedFileName, ".wav"));
                     if (File.Exists(wavFilePath))
                     {
                         File.Move(wavFilePath, finalPath, overwrite: true);
@@ -320,7 +320,7 @@ public partial class WwiseFileHandler
         }
     }
 
-    private static readonly string[] suppressedTxtpFiles = [
+    private static readonly string[] SuppressedTxtpFiles = [
         "AudioEvent_Masquerade_Charge_Loop [AudioSwitchMasqueradeState=Charged] {m}.txtp",
         "AudioEvent_Masquerade_Charge_Loop [AudioSwitchMasqueradeState=Idle] {m}.txtp",
         "AudioEvent_K23_Comet_Status_Start_InGame [AudioSwitchKillerStatus=Crazy] {r} {m}.txtp",
@@ -328,7 +328,7 @@ public partial class WwiseFileHandler
     ];
     public static void ConvertTxtpToWav(CancellationToken token)
     {
-        Directory.CreateDirectory(GlobalVariables.tempDir);
+        Directory.CreateDirectory(GlobalVariables.TempDir);
 
         // We need to copy all txtp files to shorter file path
         Directory.EnumerateFiles(TemporaryDirectory, "*.txtp", SearchOption.AllDirectories)
@@ -337,10 +337,10 @@ public partial class WwiseFileHandler
         {
             token.ThrowIfCancellationRequested();
 
-            File.Copy(txtpFile, Path.Combine(GlobalVariables.tempDir, Path.GetFileName(txtpFile)), overwrite: true);
+            File.Copy(txtpFile, Path.Combine(GlobalVariables.TempDir, Path.GetFileName(txtpFile)), overwrite: true);
         });
 
-        var txtpFiles = Directory.GetFiles(GlobalVariables.tempDir, "*.txtp", SearchOption.TopDirectoryOnly);
+        var txtpFiles = Directory.GetFiles(GlobalVariables.TempDir, "*.txtp", SearchOption.TopDirectoryOnly);
 
         var audioToParse = WwiseRegister.RetrieveAudioToParse(txtpFiles);
 
@@ -357,19 +357,19 @@ public partial class WwiseFileHandler
                 // Construct the output .wav file path
                 // We need directory close to the root
                 // Otherwise audio might fail to convert due to path length limit
-                string outputFilePath = Path.Combine(GlobalVariables.tempDir, Path.ChangeExtension(Path.GetFileName(filePath), ".wav"));
+                string outputFilePath = Path.Combine(GlobalVariables.TempDir, Path.ChangeExtension(Path.GetFileName(filePath), ".wav"));
                 if (File.Exists(outputFilePath)) return;
 
                 // Prepare the arguments for the vgmstream-cli command
                 string arguments = $"-i -o \"{outputFilePath}\" \"{filePath}\"";
 
                 // Convert txtp files to wav audio format
-                CommandUtils.ExecuteCommand(arguments, GlobalVariables.vgmStreamCliPath, GlobalVariables.rootDir);
+                CommandUtils.ExecuteCommand(arguments, GlobalVariables.VgmStreamCliPath, GlobalVariables.RootDir);
 
                 string txtpFileName = Path.GetFileName(filePath);
 
                 // Some warnings for specific txtp files are suppressed since I don't know how to fix them :c
-                if (!File.Exists(outputFilePath) && !suppressedTxtpFiles.Contains(txtpFileName))
+                if (!File.Exists(outputFilePath) && !SuppressedTxtpFiles.Contains(txtpFileName))
                 {
                     LogsWindowViewModel.Instance.AddLog($"Conversion failed for: {filePath.Replace(Path.Combine(TemporaryDirectory, "txtp"), "").TrimStart(Path.AltDirectorySeparatorChar).TrimStart(Path.PathSeparator).TrimStart(Path.DirectorySeparatorChar)}", Logger.LogTags.Warning);
                 }
@@ -407,7 +407,7 @@ public partial class WwiseFileHandler
             CommandUtils.CommandModel model = new()
             {
                 Argument = command,
-                PathToExe = GlobalVariables.bnkExtractorPath
+                PathToExe = GlobalVariables.BnkExtractorPath
 
             };
             commands.Add(model);
@@ -487,7 +487,7 @@ public partial class WwiseFileHandler
             try
             {
                 string relativePath = StringUtils.StripDynamicDirectory(tempWavPath, WwiseStructured);
-                string finalWavPath = Path.Combine(GlobalVariables.rootDir, "Output", "ExtractedAssets", "Audio", GlobalVariables.versionWithBranch, relativePath);
+                string finalWavPath = Path.Combine(GlobalVariables.RootDir, "Output", "ExtractedAssets", "Audio", GlobalVariables.VersionWithBranch, relativePath);
 
                 Directory.CreateDirectory(Path.GetDirectoryName(finalWavPath)!);
 
@@ -512,7 +512,7 @@ public partial class WwiseFileHandler
     // We need to handle them manually
     public static void RenameAndMoveTruncatedTxtpFiles()
     {
-        string[] txtpFiles = Directory.GetFiles(GlobalVariables.pathToExtractedAudio, "*.txtp");
+        string[] txtpFiles = Directory.GetFiles(GlobalVariables.PathToExtractedAudio, "*.txtp");
 
         if (txtpFiles.Length == 0) return;
 
@@ -560,7 +560,7 @@ public partial class WwiseFileHandler
 
     public static void CleanExtractedAudioDir()
     {
-        string directoryPath = GlobalVariables.pathToExtractedAudio;
+        string directoryPath = GlobalVariables.PathToExtractedAudio;
         if (Directory.Exists(directoryPath))
         {
             try

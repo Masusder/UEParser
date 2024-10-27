@@ -47,11 +47,11 @@ public sealed partial class SettingsViewModel : INotifyPropertyChanged
     }
     #endregion
 
-    private bool _updateApiDuringInitialization;
-    public bool UpdateApiDuringInitialization
+    private bool _updateAPIDuringInitialization;
+    public bool UpdateAPIDuringInitialization
     {
-        get => _updateApiDuringInitialization;
-        set => SetProperty(ref _updateApiDuringInitialization, value);
+        get => _updateAPIDuringInitialization;
+        set => SetProperty(ref _updateAPIDuringInitialization, value);
     }
 
     private bool _forceKrakenUpdate;
@@ -237,7 +237,7 @@ public sealed partial class SettingsViewModel : INotifyPropertyChanged
         #endregion
 
         #region Booleans
-        UpdateApiDuringInitialization = config.Global.UpdateAPIDuringInitialization;
+        UpdateAPIDuringInitialization = config.Global.UpdateAPIDuringInitialization;
         ForceKrakenUpdate = config.Core.ApiConfig.ForceKrakenUpdate;
         #endregion
 
@@ -329,7 +329,7 @@ public sealed partial class SettingsViewModel : INotifyPropertyChanged
             config.Sensitive.SteamPassword = SteamPassword;
 
             // Booleans
-            config.Global.UpdateAPIDuringInitialization = UpdateApiDuringInitialization;
+            config.Global.UpdateAPIDuringInitialization = UpdateAPIDuringInitialization;
             config.Core.ApiConfig.ForceKrakenUpdate = ForceKrakenUpdate;
 
             // Other

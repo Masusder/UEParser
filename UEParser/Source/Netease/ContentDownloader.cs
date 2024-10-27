@@ -12,12 +12,10 @@ namespace UEParser.Netease;
 
 public class ContentDownloader(NeteaseViewModel viewModel)
 {
-    private readonly NeteaseViewModel ViewModel = viewModel;
-
     public async Task ConstructFilePathAndDownloadAsync(ManifestFileData fileData, string version, string platform, CancellationToken token)
     {
-        string url = FormNeteaseDownloadUrl(version, fileData.FilePathWithExtension);
-        string exportPath = Path.Combine(GlobalVariables.pathToNetease, platform, version, $"{fileData.FilePath}.{fileData.FileExtension}");
+        var url = FormNeteaseDownloadUrl(version, fileData.FilePathWithExtension);
+        var exportPath = Path.Combine(GlobalVariables.PathToNetease, platform, version, $"{fileData.FilePath}.{fileData.FileExtension}");
         Directory.CreateDirectory(Path.GetDirectoryName(exportPath)!);
 
         if (CheckLocalFile(exportPath)) return;
@@ -31,8 +29,8 @@ public class ContentDownloader(NeteaseViewModel viewModel)
         var response = await httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token);
         var totalBytes = response.Content.Headers.ContentLength ?? 0;
 
-        ViewModel.MaxSize = StringUtils.FormatBytes(totalBytes);
-        ViewModel.FileName = fileData.FilePathWithExtension;
+        viewModel.MaxSize = StringUtils.FormatBytes(totalBytes);
+        viewModel.FileName = fileData.FilePathWithExtension;
 
         FileStream? fileStream = null;
         try
@@ -49,9 +47,9 @@ public class ContentDownloader(NeteaseViewModel viewModel)
                 await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead), token);
                 totalRead += bytesRead;
 
-                ViewModel.CurrentSize = StringUtils.FormatBytes(totalRead);
-                ViewModel.ProgressPercentage = (double)totalRead / totalBytes * 100;
-                ViewModel.AddToCombinedSize(bytesRead);
+                viewModel.CurrentSize = StringUtils.FormatBytes(totalRead);
+                viewModel.ProgressPercentage = (double)totalRead / totalBytes * 100;
+                viewModel.AddToCombinedSize(bytesRead);
             }
 
             await fileStream.FlushAsync(token);
@@ -70,10 +68,10 @@ public class ContentDownloader(NeteaseViewModel viewModel)
     }
 
     #region Utils
-    private static string FormNeteaseDownloadUrl(string version, string FilePathWithExtension)
+    private static string FormNeteaseDownloadUrl(string version, string filePathWithExtension)
     {
         var config = ConfigurationService.Config;
-        string endpoint = string.Format(config.Netease.ContentConfig.NeteaseContentCdnEndpoint, config.Netease.Platform.ToString(), version, FilePathWithExtension);
+        string endpoint = string.Format(config.Netease.ContentConfig.NeteaseContentCdnEndpoint, config.Netease.Platform.ToString(), version, filePathWithExtension);
         string url = string.Format(config.Netease.ContentConfig.NeteaseContentCdnBaseUrl, GlobalVariables.PlatformType) + endpoint;
 
         return url;
@@ -83,7 +81,7 @@ public class ContentDownloader(NeteaseViewModel viewModel)
     {
         if (File.Exists(filePath))
         {
-            LogsWindowViewModel.Instance.AddLog("File already exists. Delete the file if you wish to download it again.", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.AddLog("File already exists. Delete the file if you wish to download it again.", Logger.LogTags.Warning);
             return true;
         }
 

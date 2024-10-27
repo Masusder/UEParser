@@ -16,23 +16,23 @@ public class Items
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
 
-    public static async Task InitializeItemsDB(CancellationToken token)
+    public static async Task InitializeItemsDb(CancellationToken token)
     {
         await Task.Run(() =>
         {
-            Dictionary<string, Item> parsedItemsDB = [];
+            Dictionary<string, Item> parsedItemsDb = [];
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Items);
 
-            ParseItems(parsedItemsDB, token);
+            ParseItems(parsedItemsDb, token);
 
-            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedItemsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Items);
+            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedItemsDb.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Items);
 
-            ParseLocalizationAndSave(parsedItemsDB, token);
+            ParseLocalizationAndSave(parsedItemsDb, token);
         }, token);
     }
 
-    private static readonly string[] ignoreItems =
+    private static readonly string[] IgnoreItems =
     [
         "Item_Blighted_Serum",
         "Item_Camper_OnryoTape",
@@ -40,7 +40,7 @@ public class Items
         "Item_Camper_K33Turret",
         "Father_Key_Card"
     ];
-    private static void ParseItems(Dictionary<string, Item> parsedItemsDB, CancellationToken token)
+    private static void ParseItems(Dictionary<string, Item> parsedItemsDb, CancellationToken token)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("ItemDB.json");
 
@@ -59,7 +59,7 @@ public class Items
 
                 string itemId = item.Name;
 
-                if (ignoreItems.Contains(itemId)) continue;
+                if (IgnoreItems.Contains(itemId)) continue;
 
                 string iconPathRaw = item.Value["UIData"]["IconFilePathList"][0];
                 string iconPath = StringUtils.AddRootDirectory(iconPathRaw, "/images/");
@@ -85,10 +85,10 @@ public class Items
                 }
 
                 string abilityRaw = item.Value["RequiredKillerAbility"];
-                string ability = StringUtils.StringSplitVE(abilityRaw);
+                string ability = StringUtils.StringSplitVe(abilityRaw);
 
                 string roleRaw = item.Value["Role"];
-                string role = StringUtils.StringSplitVE(roleRaw);
+                string role = StringUtils.StringSplitVe(roleRaw);
 
                 string itemTypeRaw = item.Value["ItemType"];
                 string itemType = StringUtils.DoubleDotsSplit(itemTypeRaw);
@@ -143,16 +143,16 @@ public class Items
                     IsBotSupported = item.Value["IsBotSupported"]
                 };
 
-                parsedItemsDB.Add(itemId, model);
+                parsedItemsDb.Add(itemId, model);
             }
         }
     }
 
-    private static void ParseLocalizationAndSave(Dictionary<string, Item> parsedItemsDB, CancellationToken token)
+    private static void ParseLocalizationAndSave(Dictionary<string, Item> parsedItemsDb, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Items);
 
-        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
+        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.RootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
 
         foreach (string filePath in filePaths)
         {
@@ -164,14 +164,14 @@ public class Items
 
             Dictionary<string, string> languageKeys = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString) ?? throw new Exception($"Failed to load following locres file: {langKey}.");
 
-            var objectString = JsonConvert.SerializeObject(parsedItemsDB);
-            Dictionary<string, Item> localizedItemsDB = JsonConvert.DeserializeObject<Dictionary<string, Item>>(objectString) ?? [];
+            var objectString = JsonConvert.SerializeObject(parsedItemsDb);
+            Dictionary<string, Item> localizedItemsDb = JsonConvert.DeserializeObject<Dictionary<string, Item>>(objectString) ?? [];
 
-            Helpers.LocalizeDB(localizedItemsDB, LocalizationData, languageKeys, langKey);
+            Helpers.LocalizeDb(localizedItemsDb, LocalizationData, languageKeys, langKey);
 
-            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "Items.json");
+            string outputPath = Path.Combine(GlobalVariables.PathToParsedData, GlobalVariables.VersionWithBranch, langKey, "Items.json");
 
-            FileWriter.SaveParsedDB(localizedItemsDB, outputPath, Logger.ELogExtraTag.Items);
+            FileWriter.SaveParsedDb(localizedItemsDb, outputPath, Logger.ELogExtraTag.Items);
         }
     }
 }

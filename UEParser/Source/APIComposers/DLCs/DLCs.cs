@@ -16,23 +16,23 @@ public class DLCs
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
 
-    public static async Task InitializeDlcsDB(CancellationToken token)
+    public static async Task InitializeDlcsDb(CancellationToken token)
     {
         await Task.Run(async () =>
         {
-            Dictionary<string, DLC> parsedDlcsDB = [];
+            Dictionary<string, DLC> parsedDlcsDb = [];
 
             LogsWindowViewModel.Instance.AddLog($"Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.DLC);
 
-            ParseDLCs(parsedDlcsDB, token);
+            ParseDLCs(parsedDlcsDb, token);
 
-            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedDlcsDB.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.DLC);
+            LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedDlcsDb.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.DLC);
 
-            await ParseLocalizationAndSave(parsedDlcsDB, token);
+            await ParseLocalizationAndSave(parsedDlcsDb, token);
         }, token);
     }
 
-    private static readonly string[] ignoreSteamIds =
+    private static readonly string[] IgnoreSteamIds =
     [
         "1",
         "-1",
@@ -44,7 +44,7 @@ public class DLCs
         "555440",
         "499080"
     ];
-    private static void ParseDLCs(Dictionary<string, DLC> parsedDlcsDB, CancellationToken token)
+    private static void ParseDLCs(Dictionary<string, DLC> parsedDlcsDb, CancellationToken token)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("DlcDB.json");
 
@@ -65,7 +65,7 @@ public class DLCs
 
                 string steamId = item.Value["DlcIdSteam"];
 
-                if (ignoreSteamIds.Contains(steamId)) continue;
+                if (IgnoreSteamIds.Contains(steamId)) continue;
 
                 string bannerImageRaw = item.Value["BannerImage"]["AssetPathName"];
                 string bannerImage = StringUtils.TransformImagePathSpecialPacks(bannerImageRaw);
@@ -93,16 +93,16 @@ public class DLCs
                     Screenshots = null
                 };
 
-                parsedDlcsDB.Add(dlcId, model);
+                parsedDlcsDb.Add(dlcId, model);
             }
         }
     }
 
-    private static async Task ParseLocalizationAndSave(Dictionary<string, DLC> parsedDlcsDB, CancellationToken token)
+    private static async Task ParseLocalizationAndSave(Dictionary<string, DLC> parsedDlcsDb, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.DLC);
 
-        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
+        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.RootDir, "Dependencies", "Locres"), "*.json", SearchOption.TopDirectoryOnly);
 
         foreach (string filePath in filePaths)
         {
@@ -111,14 +111,14 @@ public class DLCs
             string fileName = Path.GetFileName(filePath);
             string langKey = StringUtils.LangSplit(fileName);
 
-            var objectString = JsonConvert.SerializeObject(parsedDlcsDB);
-            Dictionary<string, DLC> localizedDlcsDB = JsonConvert.DeserializeObject<Dictionary<string, DLC>>(objectString) ?? [];
+            var objectString = JsonConvert.SerializeObject(parsedDlcsDb);
+            Dictionary<string, DLC> localizedDlcsDb = JsonConvert.DeserializeObject<Dictionary<string, DLC>>(objectString) ?? [];
 
-            await DLCUtils.PopulateSteamAPIData(localizedDlcsDB, langKey);
+            await DLCUtils.PopulateSteamAPIData(localizedDlcsDb, langKey);
 
-            string outputPath = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch, langKey, "DLC.json");
+            string outputPath = Path.Combine(GlobalVariables.PathToParsedData, GlobalVariables.VersionWithBranch, langKey, "DLC.json");
 
-            FileWriter.SaveParsedDB(localizedDlcsDB, outputPath, Logger.ELogExtraTag.DLC);
+            FileWriter.SaveParsedDb(localizedDlcsDb, outputPath, Logger.ELogExtraTag.DLC);
         }
     }
 }

@@ -19,7 +19,7 @@ public partial class Helpers
 {
     public static string[] FindFilePathsInExtractedAssetsCaseInsensitive(string fileToFind)
     {
-        return Directory.GetFiles(Path.Combine(GlobalVariables.pathToExtractedAssets), "*", SearchOption.AllDirectories)
+        return Directory.GetFiles(Path.Combine(GlobalVariables.PathToExtractedAssets), "*", SearchOption.AllDirectories)
             .Where(file => string.Equals(Path.GetFileName(file), fileToFind, StringComparison.OrdinalIgnoreCase))
             .ToArray();
     }
@@ -42,7 +42,7 @@ public partial class Helpers
 
     public static List<string> ListPathsFromModelsMapping()
     {
-        string pathToModelsDataDirectory = Path.Combine(GlobalVariables.rootDir, "Output", "ModelsData", GlobalVariables.versionWithBranch);
+        string pathToModelsDataDirectory = Path.Combine(GlobalVariables.RootDir, "Output", "ModelsData", GlobalVariables.VersionWithBranch);
 
         List<string> paths = [];
 
@@ -116,8 +116,8 @@ public partial class Helpers
     public static void CreateCharacterTable()
     {
         string versionWithBranch = ConstructVersionHeaderWithBranch();
-        string catalogPath = Path.Combine(GlobalVariables.pathToKraken, versionWithBranch, "CDN", "catalog.json");
-        string outputPath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "characterIds.json");
+        string catalogPath = Path.Combine(GlobalVariables.PathToKraken, versionWithBranch, "CDN", "catalog.json");
+        string outputPath = Path.Combine(GlobalVariables.RootDir, "Dependencies", "HelperComponents", "characterIds.json");
         string catalog = File.ReadAllText(catalogPath);
         List<Dictionary<string, dynamic>>? catalogJson = JsonConvert.DeserializeObject<List<Dictionary<string, dynamic>>>(catalog);
 
@@ -151,7 +151,7 @@ public partial class Helpers
     // For our purpose we use custom values, this can be configured to whatever you need inside 'Dependencies/HelperComponents/tagConverters.json'
     public static void CreateTagConverters()
     {
-        string outputPathDirectory = Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents");
+        string outputPathDirectory = Path.Combine(GlobalVariables.RootDir, "Dependencies", "HelperComponents");
         string outputPath = Path.Combine(outputPathDirectory, "tagConverters.json");
 
         Directory.CreateDirectory(outputPathDirectory);
@@ -186,7 +186,7 @@ public partial class Helpers
     #endregion
 
     #region Localization Helpers
-    private static readonly string[] itemsWithoutLocalization = [
+    private static readonly string[] ItemsWithoutLocalization = [
         "C_Head01",
         "D_Head01",
         "J_Head01",
@@ -208,13 +208,13 @@ public partial class Helpers
     ];
     // Dynamic localization method
     // Supports localzation of nested data - ex. 'Levels.0.Nodes.node_T19_L1_01.Name'
-    public static void LocalizeDB<T>(
-        Dictionary<string, T> localizedDB,
+    public static void LocalizeDb<T>(
+        Dictionary<string, T> localizedDb,
         Dictionary<string, Dictionary<string, List<LocalizationEntry>>> localizationData,
         Dictionary<string, string> languageKeys,
         string langKey)
     {
-        foreach (var item in localizedDB)
+        foreach (var item in localizedDb)
         {
             string id = item.Key;
 
@@ -247,7 +247,7 @@ public partial class Helpers
                         }
                         else
                         {
-                            if (!itemsWithoutLocalization.Contains(id))
+                            if (!ItemsWithoutLocalization.Contains(id))
                             {
                                 LogsWindowViewModel.Instance.AddLog($"Missing localization string -> LangKey: '{langKey}', Property: '{entry.Key}', StringKey: '{localizationEntry.Key}', RowId: '{id}', FallbackString: '{localizationEntry.SourceString}'", Logger.LogTags.Warning);
                             }
@@ -256,7 +256,7 @@ public partial class Helpers
                         }
                     }
 
-                    UpdateNestedValue(localizedDB, id, splitKeys, localizedStrings);
+                    UpdateNestedValue(localizedDb, id, splitKeys, localizedStrings);
                 }
                 else if (entry.Value.Count == 1)
                 {
@@ -265,7 +265,7 @@ public partial class Helpers
 
                     if (localizationKey == null)
                     {
-                        if (!itemsWithoutLocalization.Contains(id))
+                        if (!ItemsWithoutLocalization.Contains(id))
                         {
                             LogsWindowViewModel.Instance.AddLog($"Null localization key -> LangKey: '{langKey}', Property: '{entry.Key}', RowId: '{id}', FallbackString: 'null'", Logger.LogTags.Warning);
                         }
@@ -277,7 +277,7 @@ public partial class Helpers
                     }
                     else
                     {
-                        if (!itemsWithoutLocalization.Contains(id))
+                        if (!ItemsWithoutLocalization.Contains(id))
                         {
                             LogsWindowViewModel.Instance.AddLog($"Missing localization string -> LangKey: '{langKey}', Property: '{entry.Key}', StringKey: '{entry.Value[0].Key}', RowId: '{id}', FallbackString: '{entry.Value[0].SourceString}'", Logger.LogTags.Warning);
                         }
@@ -285,7 +285,7 @@ public partial class Helpers
                         localizedString = entry.Value[0].SourceString;
                     }
 
-                    UpdateNestedValue(localizedDB, id, splitKeys, localizedString);
+                    UpdateNestedValue(localizedDb, id, splitKeys, localizedString);
                 }
             }
         }

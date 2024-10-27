@@ -64,13 +64,13 @@ public class DownloadRegisterViewModel : ReactiveObject
         {
             // Registries are stored and downloaded from DBDInfo cloud storage
             string registerName = $"Core_{register}_FilesRegister.uinfo";
-            string downloadUrl = GlobalVariables.dbdinfoBaseUrl + $"UEParser/{register}/{registerName}";
+            string downloadUrl = GlobalVariables.DbdinfoBaseUrl + $"UEParser/{register}/{registerName}";
 
             try
             {
                 byte[] fileBytes = await NetAPI.FetchFileBytesAsync(downloadUrl);
 
-                File.WriteAllBytes(Path.Combine(GlobalVariables.rootDir, "Dependencies", "FilesRegister", registerName), fileBytes);
+                File.WriteAllBytes(Path.Combine(GlobalVariables.RootDir, "Dependencies", "FilesRegister", registerName), fileBytes);
                 LogsWindowViewModel.Instance.AddLog($"Downloaded file registry for {register} version.", Logger.LogTags.Success);
             }
             catch (Exception ex)
@@ -124,7 +124,7 @@ public class DownloadRegisterViewModel : ReactiveObject
     private static async Task<string[]> FetchAvailableRegisters()
     {
         // Get available registries manifest from DBDInfo API
-        string manifestUrl = GlobalVariables.dbdinfoBaseUrl + "api/file-register-manifest";
+        string manifestUrl = GlobalVariables.DbdinfoBaseUrl + "api/file-register-manifest";
         var response = await NetAPI.FetchUrl(manifestUrl);
 
         if (!response.Success)

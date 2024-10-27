@@ -114,7 +114,7 @@ public class UpdateManagerViewModel : ReactiveObject
                 int convertedAudioCount = 0;
                 await DownloadFfmpegDependency(); // FFmpeg isn't included in UEParser build due to its size and the fact it might be useful in rare cases
 
-                string extractedAudioPath = Path.Combine(GlobalVariables.rootDir, "Output", "ExtractedAssets", "Audio", GlobalVariables.versionWithBranch);
+                string extractedAudioPath = Path.Combine(GlobalVariables.RootDir, "Output", "ExtractedAssets", "Audio", GlobalVariables.VersionWithBranch);
                 string[] wavFiles = Directory.GetFiles(extractedAudioPath, "*.wav", SearchOption.AllDirectories);
 
                 LogsWindowViewModel.Instance.AddLog($"Detected total of {wavFiles.Length} files to convert.", Logger.LogTags.Info);
@@ -130,7 +130,7 @@ public class UpdateManagerViewModel : ReactiveObject
 
                     string arguments = $"-i \"{file}\" -c:a libvorbis \"{outputFilePath}\" -y";
 
-                    CommandUtils.ExecuteCommand(arguments, GlobalVariables.ffmpegPath, GlobalVariables.rootDir);
+                    CommandUtils.ExecuteCommand(arguments, GlobalVariables.FfmpegPath, GlobalVariables.RootDir);
                     convertedAudioCount++;
 
                     if (File.Exists(outputFilePath) && !FileUtils.IsFileLocked(file))
@@ -160,21 +160,21 @@ public class UpdateManagerViewModel : ReactiveObject
 
     private static async Task DownloadFfmpegDependency()
     {
-        if (File.Exists(GlobalVariables.ffmpegPath))
+        if (File.Exists(GlobalVariables.FfmpegPath))
         {
             return;
         }
 
         LogsWindowViewModel.Instance.AddLog("Please wait, downloading FFmpeg dependency..", Logger.LogTags.Info);
 
-        string ffmpegDownloadUrl = GlobalVariables.dbdinfoBaseUrl + $"UEParser/ffmpeg.exe";
+        string ffmpegDownloadUrl = GlobalVariables.DbdinfoBaseUrl + $"UEParser/ffmpeg.exe";
 
         try
         {
             byte[] fileBytes = await NetAPI.FetchFileBytesAsync(ffmpegDownloadUrl);
 
-            File.WriteAllBytes(GlobalVariables.ffmpegPath, fileBytes);
-            LogsWindowViewModel.Instance.AddLog($"Succesffully downloaded FFmpeg dependency.", Logger.LogTags.Success);
+            await File.WriteAllBytesAsync(GlobalVariables.FfmpegPath, fileBytes);
+            LogsWindowViewModel.Instance.AddLog($"Successfully downloaded FFmpeg dependency.", Logger.LogTags.Success);
         }
         catch (Exception ex)
         {
@@ -184,11 +184,11 @@ public class UpdateManagerViewModel : ReactiveObject
     }
 
     // Assets validation in the bucket
-    // basically I wanna know if there's any assets that are present in models mappings
+    // basically I want to know if there's any assets that are present in models mappings
     // but are missing in the S3 bucket or if assets use incorrect path case
     // which needs to be checked as dbd uses case-insensitive paths while
     // I need to take into account case-sensitivity
-    public static async Task ValidateAssetsInBucket()
+    private static async Task ValidateAssetsInBucket()
     {
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
 
@@ -336,7 +336,7 @@ public class UpdateManagerViewModel : ReactiveObject
         });
     }
 
-    public static async Task ConvertUEModels()
+    private static async Task ConvertUEModels()
     {
         LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Running);
 
@@ -346,12 +346,12 @@ public class UpdateManagerViewModel : ReactiveObject
             {
                 var config = ConfigurationService.Config;
                 string blenderPath = config.Global.BlenderPath;
-                string rootDirectory = GlobalVariables.rootDir;
-                string inputDirectory = Path.Combine(GlobalVariables.rootDir, "Output", "ExtractedAssets", "Meshes", GlobalVariables.versionWithBranch);
-                string inputMappingDirectory = Path.Combine(GlobalVariables.rootDir, "Output", "ModelsData", GlobalVariables.versionWithBranch);
-                string outputDirectory = Path.Combine(GlobalVariables.rootDir, "Output", "ConvertedModels", GlobalVariables.versionWithBranch);
+                string rootDirectory = GlobalVariables.RootDir;
+                string inputDirectory = Path.Combine(GlobalVariables.RootDir, "Output", "ExtractedAssets", "Meshes", GlobalVariables.VersionWithBranch);
+                string inputMappingDirectory = Path.Combine(GlobalVariables.RootDir, "Output", "ModelsData", GlobalVariables.VersionWithBranch);
+                string outputDirectory = Path.Combine(GlobalVariables.RootDir, "Output", "ConvertedModels", GlobalVariables.VersionWithBranch);
 
-                string command = ($"-b -P \"{GlobalVariables.modelsConverterScriptPath}\" " +
+                string command = ($"-b -P \"{GlobalVariables.ModelsConverterScriptPath}\" " +
                                 $"-- --root_directory \"{rootDirectory}\" " +
                                 $"--input_directory \"{inputDirectory + '\\'}\" " +
                                 $"--input_mapping_directory \"{inputMappingDirectory + '\\'}\" " +
@@ -422,7 +422,7 @@ public class UpdateManagerViewModel : ReactiveObject
 
                 S3Service s3Service = new(accessKey, secretKey, region);
 
-                string pathToParsedData = Path.Combine(GlobalVariables.pathToParsedData, GlobalVariables.versionWithBranch);
+                string pathToParsedData = Path.Combine(GlobalVariables.PathToParsedData, GlobalVariables.VersionWithBranch);
 
                 ChangeFilesIndentation(pathToParsedData, true);
 
@@ -458,7 +458,7 @@ public class UpdateManagerViewModel : ReactiveObject
                     throw new Exception("Bucket name is not set in settings");
                 }
 
-                string pathToModelsData = Path.Combine(GlobalVariables.pathToModelsData, GlobalVariables.versionWithBranch);
+                string pathToModelsData = Path.Combine(GlobalVariables.PathToModelsData, GlobalVariables.VersionWithBranch);
 
                 ChangeFilesIndentation(pathToModelsData, true);
 

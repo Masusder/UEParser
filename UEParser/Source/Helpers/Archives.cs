@@ -6,11 +6,11 @@ namespace UEParser;
 
 public partial class Helpers
 {
-    public static void CreateArchiveQuestObjectiveDB()
+    public static void CreateArchiveQuestObjectiveDb()
     {
-        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAssets"), "ArchiveQuestObjectiveDB.json", SearchOption.AllDirectories);
+        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.RootDir, "Dependencies", "ExtractedAssets"), "ArchiveQuestObjectiveDB.json", SearchOption.AllDirectories);
 
-        string outputPath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "questObjectiveDatabase.json");
+        string outputPath = Path.Combine(GlobalVariables.RootDir, "Dependencies", "HelperComponents", "questObjectiveDatabase.json");
 
         Dictionary<string, object> jsonObject = [];
 
@@ -38,9 +38,9 @@ public partial class Helpers
 
     public static void CreateQuestNodeDatabase()
     {
-        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAssets"), "ArchiveNodeDB.json", SearchOption.AllDirectories);
+        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.RootDir, "Dependencies", "ExtractedAssets"), "ArchiveNodeDB.json", SearchOption.AllDirectories);
 
-        string outputPath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "questNodeDatabase.json");
+        string outputPath = Path.Combine(GlobalVariables.RootDir, "Dependencies", "HelperComponents", "questNodeDatabase.json");
 
         Dictionary<string, object> jsonObject = [];
 

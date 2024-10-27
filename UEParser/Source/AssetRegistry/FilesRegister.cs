@@ -15,7 +15,7 @@ public class FilesRegister
     private static readonly object lockObject = new();
     private static bool isLoaded = false;
 
-    private static readonly string filesRegisterDirectoryPath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "FilesRegister");
+    private static readonly string filesRegisterDirectoryPath = Path.Combine(GlobalVariables.RootDir, "Dependencies", "FilesRegister");
     private static readonly string pathToFileRegister;
     public class FileInfo(string extension, long size)
     {

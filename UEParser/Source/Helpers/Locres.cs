@@ -11,7 +11,7 @@ public partial class Helpers
     public static void CreateLocresFiles()
     {
         // Search for locres files
-        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.rootDir, "Dependencies\\ExtractedAssets\\DeadByDaylight\\Content\\Localization\\DeadByDaylight\\"), "DeadByDaylight.json", SearchOption.AllDirectories);
+        string[] filePaths = Directory.GetFiles(Path.Combine(GlobalVariables.RootDir, "Dependencies\\ExtractedAssets\\DeadByDaylight\\Content\\Localization\\DeadByDaylight\\"), "DeadByDaylight.json", SearchOption.AllDirectories);
 
         List<string> localizationsList = new(filePaths);
 

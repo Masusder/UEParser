@@ -163,7 +163,7 @@ public class KrakenManager
 
     public static async Task DownloadDynamicContent()
     {
-        string dynamicContentFilePath = Path.Combine(GlobalVariables.pathToKraken, GlobalVariables.versionWithBranch, "CDN", "dynamicContent.json");
+        string dynamicContentFilePath = Path.Combine(GlobalVariables.PathToKraken, GlobalVariables.VersionWithBranch, "CDN", "dynamicContent.json");
 
         if (File.Exists(dynamicContentFilePath))
         {
@@ -181,7 +181,7 @@ public class KrakenManager
                 .Replace(Path.DirectorySeparatorChar, '/')
                 .Replace(Path.AltDirectorySeparatorChar, '/');
 
-                string assetOutputPath = Path.Combine(GlobalVariables.pathToDynamicAssets, GlobalVariables.versionWithBranch, modifiedPackagedPath);
+                string assetOutputPath = Path.Combine(GlobalVariables.PathToDynamicAssets, GlobalVariables.VersionWithBranch, modifiedPackagedPath);
 
                 bool fileExistsInPackagedAssets = FilesRegister.DoesFileExist(modifiedPackagedPathWithoutExtension);
 

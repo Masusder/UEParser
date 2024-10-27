@@ -30,7 +30,7 @@ public class ModelData
 
         string meshPath = "/assets" + modelDataPath.Replace(".json", ".glb");
 
-        string outputPath = Path.Combine(GlobalVariables.rootDir, "Output", "ModelsData", GlobalVariables.versionWithBranch + modelDataPath);
+        string outputPath = Path.Combine(GlobalVariables.RootDir, "Output", "ModelsData", GlobalVariables.VersionWithBranch + modelDataPath);
         var modelData = new Dictionary<string, UEModelData>();
 
         // Check if the file already exists
@@ -103,7 +103,7 @@ public class ModelData
 
     private static Dictionary<string, Materials> ParseMaterialsData(string modelDataPath, dynamic materialsMap, dynamic texturesMap, string cosmeticId, int characterIndex)
     {
-        string meshPath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAssets" + modelDataPath);
+        string meshPath = Path.Combine(GlobalVariables.RootDir, "Dependencies", "ExtractedAssets" + modelDataPath);
         dynamic meshData = FileUtils.LoadDynamicJson(meshPath);
 
         CharacterMaterialsOutput meshMaterialItems = FindCharacterMaterials(meshData);
@@ -127,7 +127,7 @@ public class ModelData
                 if (gameMaterialPath == "") continue;
 
                 string modifiedMaterialPath = StringUtils.ModifyPath(gameMaterialPath, "json", false, characterIndex);
-                string materialPath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAssets/" + modifiedMaterialPath);
+                string materialPath = Path.Combine(GlobalVariables.RootDir, "Dependencies", "ExtractedAssets/" + modifiedMaterialPath);
 
                 dynamic meshMaterialData = FileUtils.LoadDynamicJson(materialPath);
 
@@ -146,7 +146,7 @@ public class ModelData
                         {
                             string gameNewMaterialPath = materialMap.To.AssetPathName;
                             string gameNewMaterial = StringUtils.ModifyPath(gameNewMaterialPath, "json", false, characterIndex);
-                            string newMaterialPath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAssets" + gameNewMaterial);
+                            string newMaterialPath = Path.Combine(GlobalVariables.RootDir, "Dependencies", "ExtractedAssets" + gameNewMaterial);
 
                             meshMaterialData = FileUtils.LoadDynamicJson(newMaterialPath);
                         }
@@ -249,10 +249,10 @@ public class ModelData
                 string texturePath = StringUtils.RemoveDoubleSlashes("/assets/" + texturePathWithoutAssets);
 
                 string[] ignoreRecolorTexture = ["S25_Legs011_01"];
-                string[] texturesToIgnoreBC = [
+                string[] texturesToIgnoreBc = [
                     "/assets/DeadByDaylight/Content/Textures/Environment/Tiles/value_12.png",
                 ];
-                string[] texturesToIgnoreRC = [
+                string[] texturesToIgnoreRc = [
                     "/assets/DeadByDaylight/Content/Textures/Environment/Tiles/Black.png"
                 ]; // Add only if you're sure it's not needed in any cosmetics
 
@@ -260,7 +260,7 @@ public class ModelData
                 {
                     case "Diffuse":
                     case "Base Color Texture":
-                        if (!texturesToIgnoreBC.Contains(texturePath))
+                        if (!texturesToIgnoreBc.Contains(texturePath))
                         {
                             texturesModel.BaseColor = texturePath;
                         }
@@ -298,7 +298,7 @@ public class ModelData
                         texturesModel.BDE = texturePath;
                         break;
                     case "ColorMask_Tint":
-                        if (!ignoreRecolorTexture.Contains(cosmeticId) && !texturesToIgnoreRC.Contains(texturePath))
+                        if (!ignoreRecolorTexture.Contains(cosmeticId) && !texturesToIgnoreRc.Contains(texturePath))
                         {
                             texturesModel.RecolorTexture = texturePath;
                         }
@@ -438,7 +438,7 @@ public class ModelData
     {
         string characterIndexString = characterIndex.ToString();
 
-        string blueprintsPath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "HelperComponents", "characterBlueprintsLinkage.json");
+        string blueprintsPath = Path.Combine(GlobalVariables.RootDir, "Dependencies", "HelperComponents", "characterBlueprintsLinkage.json");
         dynamic blueprintsData = FileUtils.LoadDynamicJson(blueprintsPath);
 
         string? pathToGameBlueprint = null;
@@ -480,7 +480,7 @@ public class ModelData
 
         pathToGameBlueprint = StringUtils.ModifyPath(pathToGameBlueprint, "json", false, characterIndex);
 
-        dynamic skeletonBlueprintData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAssets" + pathToGameBlueprint));
+        dynamic skeletonBlueprintData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.RootDir, "Dependencies", "ExtractedAssets" + pathToGameBlueprint));
         string? gameSkeletonPath = FindCharacterMeshPath(skeletonBlueprintData);
 
         // These manual overrides should be resolved but I couldn't find any good solution
@@ -641,7 +641,7 @@ public class ModelData
                 else
                 {
                     string blueprintPath = StringUtils.ModifyPath(gameBlueprintPath, "json", false, characterIndex);
-                    string assetBlueprintPath = Path.Combine(GlobalVariables.rootDir, "Dependencies", "ExtractedAssets" + blueprintPath);
+                    string assetBlueprintPath = Path.Combine(GlobalVariables.RootDir, "Dependencies", "ExtractedAssets" + blueprintPath);
 
                     dynamic data = FileUtils.LoadDynamicJson(assetBlueprintPath);
 

@@ -17,8 +17,8 @@ public class StringResources
 
 public class ParsingControllersViewModel : ReactiveObject
 {
-    private static readonly Lazy<ParsingControllersViewModel> lazy = new(() => new());
-    public static ParsingControllersViewModel Instance => lazy.Value;
+    private static readonly Lazy<ParsingControllersViewModel> Lazy = new(() => new());
+    public static ParsingControllersViewModel Instance => Lazy.Value;
 
     public ICommand ParseEverythingCommand { get; }
     public ICommand ParseRiftsCommand { get; }
@@ -102,7 +102,7 @@ public class ParsingControllersViewModel : ReactiveObject
             IsParsing = true;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
 
-            await Rifts.InitializeRiftsDB(token);
+            await Rifts.InitializeRiftsDb(token);
 
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
@@ -134,7 +134,7 @@ public class ParsingControllersViewModel : ReactiveObject
             IsParsing = true;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
 
-            await Characters.InitializeCharactersDB(token);
+            await Characters.InitializeCharactersDb(token);
 
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
@@ -166,7 +166,7 @@ public class ParsingControllersViewModel : ReactiveObject
             IsParsing = true;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
 
-            await Cosmetics.InitializeCosmeticsDB(token);
+            await Cosmetics.InitializeCosmeticsDb(token);
 
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
@@ -198,7 +198,7 @@ public class ParsingControllersViewModel : ReactiveObject
             IsParsing = true;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
 
-            await Perks.InitializePerksDB(token);
+            await Perks.InitializePerksDb(token);
 
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
@@ -230,7 +230,7 @@ public class ParsingControllersViewModel : ReactiveObject
             IsParsing = true;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
 
-            await CharacterClasses.InitializeCharacterClassesDB(token);
+            await CharacterClasses.InitializeCharacterClassesDb(token);
 
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
@@ -262,7 +262,7 @@ public class ParsingControllersViewModel : ReactiveObject
             IsParsing = true;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
 
-            await Tomes.InitializeTomesDB(token);
+            await Tomes.InitializeTomesDb(token);
 
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
@@ -294,7 +294,7 @@ public class ParsingControllersViewModel : ReactiveObject
             IsParsing = true;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
 
-            await Addons.InitializeAddonsDB(token);
+            await Addons.InitializeAddonsDb(token);
 
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
@@ -326,7 +326,7 @@ public class ParsingControllersViewModel : ReactiveObject
             IsParsing = true;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
 
-            await Items.InitializeItemsDB(token);
+            await Items.InitializeItemsDb(token);
 
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
@@ -358,7 +358,7 @@ public class ParsingControllersViewModel : ReactiveObject
             IsParsing = true;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
 
-            await Offerings.InitializeOfferingsDB(token);
+            await Offerings.InitializeOfferingsDb(token);
 
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
@@ -390,7 +390,7 @@ public class ParsingControllersViewModel : ReactiveObject
             IsParsing = true;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
 
-            await Maps.InitializeMapsDB(token);
+            await Maps.InitializeMapsDb(token);
 
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
@@ -422,7 +422,7 @@ public class ParsingControllersViewModel : ReactiveObject
             IsParsing = true;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
 
-            await DLCs.InitializeDlcsDB(token);
+            await DLCs.InitializeDlcsDb(token);
 
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
@@ -454,7 +454,7 @@ public class ParsingControllersViewModel : ReactiveObject
             IsParsing = true;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
 
-            await Journals.InitializeJournalsDB(token);
+            await Journals.InitializeJournalsDb(token);
 
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
@@ -486,7 +486,7 @@ public class ParsingControllersViewModel : ReactiveObject
             IsParsing = true;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
 
-            await SpecialEvents.InitializeSpecialEventsDB(token);
+            await SpecialEvents.InitializeSpecialEventsDb(token);
 
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
@@ -518,7 +518,7 @@ public class ParsingControllersViewModel : ReactiveObject
             IsParsing = true;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
 
-            await Collections.InitializeCollectionsDB(token);
+            await Collections.InitializeCollectionsDb(token);
 
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }
@@ -550,7 +550,7 @@ public class ParsingControllersViewModel : ReactiveObject
             IsParsing = true;
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.RunningWithCancellation);
 
-            await Bundles.InitializeBundlesDB(token);
+            await Bundles.InitializeBundlesDb(token);
 
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Finished);
         }

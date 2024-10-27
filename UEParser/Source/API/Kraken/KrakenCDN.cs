@@ -39,7 +39,7 @@ public class KrakenCDN
 
         string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch();
 
-        string outputDir = Path.Combine(GlobalVariables.pathToKraken, versionWithBranch, "CDN");
+        string outputDir = Path.Combine(GlobalVariables.PathToKraken, versionWithBranch, "CDN");
         Directory.CreateDirectory(outputDir);
 
         string branch = config.Core.VersionData.Branch.ToString();
@@ -73,7 +73,7 @@ public class KrakenCDN
         string versionWithBranch = Helpers.ConstructVersionHeaderWithBranch();
 
         string outputDirNameString = outputDirName.ToString();
-        string outputDir = Path.Combine(GlobalVariables.pathToKraken, versionWithBranch, "CDN", outputDirNameString);
+        string outputDir = Path.Combine(GlobalVariables.PathToKraken, versionWithBranch, "CDN", outputDirNameString);
         Directory.CreateDirectory(outputDir);
 
         string branch = config.Core.VersionData.Branch.ToString();

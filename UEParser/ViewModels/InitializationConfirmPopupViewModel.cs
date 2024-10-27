@@ -51,7 +51,7 @@ public class InitializationConfirmPopupViewModel : ReactiveObject
 
     private static string SetVersion(bool isCompareVersion = false)
     {
-        string version = isCompareVersion ? GlobalVariables.compareVersionWithBranch : GlobalVariables.versionWithBranch;
+        string version = isCompareVersion ? GlobalVariables.CompareVersionWithBranch : GlobalVariables.VersionWithBranch;
 
         if (string.IsNullOrEmpty(version) || version.StartsWith('_'))
         {

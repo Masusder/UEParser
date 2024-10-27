@@ -322,7 +322,7 @@
               <ToggleSwitch
                   Name="UpdateApiDuringInitializationSwitch"
                   HorizontalAlignment="Center"
-                  IsChecked="{Binding UpdateApiDuringInitialization}" />
+                  IsChecked="{Binding UpdateAPIDuringInitialization}" />
             </StackPanel>
 
             <Border
