@@ -181,7 +181,9 @@ public class KrakenApiConfig
             { "storyStatus", "/archives/stories/get/story-status" },
             { "config", "/config" },
             { "currencies", "/wallet/currencies" },
-            { "getSpecialPacks", "/extensions/store/getSpecialPacks" }
+            { "getSpecialPacks", "/extensions/store/getSpecialPacks" },
+            { "news", "/extensions/news" },
+            { "getCatalogItems", "/extensions/store/getCatalogItems?types[]=pack&types[]=currencyPack&types[]=character&types[]=shrine&types[]=item&types[]=outfit&types[]=statuette&types[]=entitlement&types[]=promoPack&types[]=premiumItemPack&types[]=nonRenewableSubscription&types[]=specialPack" }
         };
         // Gotta Catch ’Em All
         S3AccessKeys = new()
@@ -362,6 +364,7 @@ public class KrakenApiConfig
             { "8.3.2_live", "Hqn3MOuoUmgV3tHEs+aGQ2h4okVd6VJeGnx7K+ltcGc=" },
             { "8.3.2_qa", "Q7togl29cDK8NzohvLOYZyfUwn9sDnFz2JzzAzM8lJk=" },
             { "8.3.2_stage", "PBcq6dBi5lwreqEPQFtO0uhg3zJ5Sy/mKzojoKOtURI=" },
+            { "8.4.0_ptb", "ovwdqi85Q9L+yanB1XAZiTNiORsaqJnDLQ4lWKcxfB0=" },
             // End of V3 encryption algorithm                                   
             // Start of test builds? Couldn't figure decryption
             { "9999.17.0", "pGJJqK8oYVFKVSZwynOFAGAYniIZd/ycyFBZc8L7HJk=" },

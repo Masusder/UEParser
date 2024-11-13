@@ -41,7 +41,9 @@ public class KrakenManager
             { "storyStatus", "Stories Status" },
             { "config", "Config" },
             { "currencies", "Currencies" },
-            { "getSpecialPacks", "Special Packs" }
+            { "getSpecialPacks", "Special Packs" },
+            { "news", "News" },
+            { "getCatalogItems", "Segmented Catalog" }
         };
 
         await KrakenAPI.BulkGetKrakenEndpoints(krakenEndpoints);
@@ -170,8 +172,10 @@ public class KrakenManager
             DynamicContent dynamicContentData = FileUtils.LoadJsonFileWithTypeCheck<DynamicContent>(dynamicContentFilePath);
 
             int numberOfDownloadedAssets = 0;
-            foreach (var (_, downloadStrategy, packagedPath, _, uri) in dynamicContentData.Entries)
+            foreach (var (_, downloadStrategy, packagedPath, schema, uri) in dynamicContentData.Entries)
             {
+                if (schema != "s3verbin://") continue; // Download only from versioned binary schema
+
                 string extension = Path.GetExtension(uri).TrimStart('.');
                 string modifiedPackagedPath = StringUtils.ModifyPath(packagedPath, extension).TrimStart('/');
                 string modifiedPackagedPathWithoutExtension = Path.Combine(

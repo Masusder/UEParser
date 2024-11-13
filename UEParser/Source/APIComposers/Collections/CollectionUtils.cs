@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UEParser.Models;
+using UEParser.ViewModels;
 
 namespace UEParser.APIComposers;
 
@@ -8,6 +9,12 @@ public class CollectionUtils
 {
     public static string TransformImagePath(string input)
     {
+        if (string.IsNullOrEmpty(input))
+        {
+            LogsWindowViewModel.Instance.AddLog($"Failed to transform image path - {input}", Logger.LogTags.Warning);
+            return input;
+        }
+
         string pattern = @"/Game/UI/UMGAssets/Icons/Banners/CollectionBanners/(.+)\.\1";
         string transformedString = Regex.Replace(input, pattern, "/images/UI/Icons/Banners/CollectionBanners/$1.png");
 

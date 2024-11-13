@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using UEParser.Models;
+using UEParser.ViewModels;
 
 namespace UEParser.APIComposers;
 
@@ -108,23 +109,40 @@ public class PerkUtils
             int tunablesArrayLength = tunables.Count;
             if (tunablesArrayLength > 0)
             {
-                // TODO: Revisit this regularly - it should technically be fixed on devs side every so often
-                if (langKey == "pl" && perkId == "S39P01") // Wrong index, {2}, should be {1}
+                try
                 {
-                    string fixedDescription = description.Replace("{2}", "{1}");
-                    string formattedDescription = string.Format(fixedDescription, [.. formattedTunables]);
-                    item.Value.Description = formattedDescription;
+                    // TODO: Revisit this regularly - it should technically be fixed on devs side every so often
+                    if (langKey == "pl" && perkId == "S39P01") // Wrong index, {2}, should be {1}
+                    {
+                        string fixedDescription = description.Replace("{2}", "{1}");
+                        string formattedDescription = string.Format(fixedDescription, [.. formattedTunables]);
+                        item.Value.Description = formattedDescription;
+                    }
+                    else if (perkId == "ZanshinTactics")
+                    {
+                        string fixedDescription = description.Replace("{2}", "");
+                        string formattedDescription = string.Format(fixedDescription, [.. formattedTunables]);
+                        item.Value.Description = formattedDescription;
+                    }
+                    else if (perkId == "K37P02")
+                    {
+                        string fixedDescription = description.Replace("{3}", "");
+                        string formattedDescription = string.Format(fixedDescription, [.. formattedTunables]);
+                    }
+                    else if (perkId == "S41P01")
+                    {
+                        string fixedDescription = description.Replace("{3}", "").Replace("{2}", "");
+                        string formattedDescription = string.Format(fixedDescription, [.. formattedTunables]);
+                    }
+                    else
+                    {
+                        string formattedDescription = string.Format(description, [.. formattedTunables]);
+                        item.Value.Description = formattedDescription;
+                    }
                 }
-                else if (perkId == "ZanshinTactics")
+                catch (Exception ex)
                 {
-                    string fixedDescription = description.Replace("{2}", "");
-                    string formattedDescription = string.Format(fixedDescription, [.. formattedTunables]);
-                    item.Value.Description = formattedDescription;
-                }
-                else
-                {
-                    string formattedDescription = string.Format(description, [.. formattedTunables]);
-                    item.Value.Description = formattedDescription;
+                    LogsWindowViewModel.Instance.AddLog($"Failed to parse perk description (most likely due to messed up translation) [perkId: {perkId}, lang: {langKey}]: {ex}", Logger.LogTags.Error);
                 }
             }
             else

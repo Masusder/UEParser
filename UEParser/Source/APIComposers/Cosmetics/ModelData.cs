@@ -119,12 +119,13 @@ public class ModelData
 
                 // Ignore materials that I don't need
                 string[] objectsToIgnore = ["lambert1", "lambert2", "lambert3", "lambert4", "Default_Material"];
+                string[] materialNamesToIgnore = ["lambert1", "lambert2", "lambert3", "lambert4", "Default_Material"];
 
                 if (objectsToIgnore.Contains(objectName)) continue;
 
                 string gameMaterialPath = FindObjectPath(material, meshMaterialItems.IsSkeletalMaterials);
 
-                if (gameMaterialPath == "") continue;
+                if (string.IsNullOrEmpty(gameMaterialPath)) continue;
 
                 string modifiedMaterialPath = StringUtils.ModifyPath(gameMaterialPath, "json", false, characterIndex);
                 string materialPath = Path.Combine(GlobalVariables.RootDir, "Dependencies", "ExtractedAssets/" + modifiedMaterialPath);
@@ -132,6 +133,8 @@ public class ModelData
                 dynamic meshMaterialData = FileUtils.LoadDynamicJson(materialPath);
 
                 string materialName = meshMaterialData[0].Name;
+
+                if (materialNamesToIgnore.Contains(materialName)) continue;
 
                 // Re-textured cosmetics change materials
                 if (materialsMap.Count > 0)

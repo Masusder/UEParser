@@ -181,10 +181,11 @@ public partial class StringUtils
     private static bool IsOutsidePluginsCharactersDir(int characterIndex)
     {
         List<int> killersSet = [
-            268435492
+            268435492,
+            268435493
         ];
         List<int> survivorsSet = [
-
+            44
         ];
 
         List<int> charactersSet = [.. killersSet, .. survivorsSet];

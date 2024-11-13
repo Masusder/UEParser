@@ -69,7 +69,7 @@ public partial class ParsingControllersView : UserControl
                 // Add each requirement
                 foreach (var requirement in requirementsArray)
                 {
-                    descriptionText.Inlines?.Add(new Run { Text = $"� {requirement.Trim()}", Foreground = Avalonia.Media.Brushes.AntiqueWhite, FontSize = 12 });
+                    descriptionText.Inlines?.Add(new Run { Text = $"• {requirement.Trim()}", Foreground = Avalonia.Media.Brushes.AntiqueWhite, FontSize = 12 });
                     descriptionText.Inlines?.Add(new LineBreak());
                 }
 

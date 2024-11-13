@@ -134,7 +134,11 @@ public partial class LogsWindowViewModel : ReactiveObject
 
     public void ChangeLogState(ELogState newState)
     {
-        LogState = newState;
+        Dispatcher.UIThread.Post(() =>
+        {
+            LogState = newState;
+            this.RaisePropertyChanged(nameof(LogState));
+        });
     }
 
     private static void OpenOutput()
