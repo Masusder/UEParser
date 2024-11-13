@@ -11,7 +11,7 @@ public class CollectionUtils
     {
         if (string.IsNullOrEmpty(input))
         {
-            LogsWindowViewModel.Instance.AddLog($"Failed to transform image path - {input}", Logger.LogTags.Warning);
+            LogsWindowViewModel.Instance.AddLog($"Failed to transform image path, input was empty or null.", Logger.LogTags.Warning);
             return input;
         }
 
