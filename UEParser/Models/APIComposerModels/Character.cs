@@ -54,7 +54,35 @@ public class Character
     public required string BackgroundImagePath { get; set; }
 
     /// <summary>
+    /// List of hints associated with the character.
+    /// </summary>
+    public required Hint[] Hints { get; set; }
+
+    /// <summary>
     /// Character Id (it should be noted that it's different from character index!)
     /// </summary>
     public required string Id { get; set; }
+}
+
+public class Hint
+{
+    /// <summary>
+    /// Role associated with the hint (e.g., Survivor, Killer).
+    /// </summary>
+    public required string Role { get; set; }
+
+    /// <summary>
+    /// Title of the hint.
+    /// </summary>
+    public required string Title { get; set; }
+
+    /// <summary>
+    /// Detailed description of the hint.
+    /// </summary>
+    public required string Description { get; set; }
+
+    /// <summary>
+    /// File path to the icon representing the hint.
+    /// </summary>
+    public required string IconPath { get; set; } 
 }

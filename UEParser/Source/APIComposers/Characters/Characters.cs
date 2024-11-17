@@ -102,6 +102,8 @@ public class Characters
                     ]
                 };
 
+                var hints = CharacterUtils.MapCharacterHints(characterIndex, localizationModel);
+
                 LocalizationData.TryAdd(characterIndex, localizationModel);
 
                 Character model = new()
@@ -114,6 +116,7 @@ public class Characters
                     Difficulty = difficultyOutput,
                     BackStory = backStory,
                     Biography = biography,
+                    Hints = hints,
                     IconFilePath = iconFilePathFixed,
                     BackgroundImagePath = backgroundImagePathFixed,
                     Id = characterId
