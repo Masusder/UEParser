@@ -380,6 +380,10 @@ public class Cosmetics
                     string tomeId = value;
                     riftCosmetic.TomeId = tomeId;
                 }
+                else if (riftCosmeticsList.TryGetValue(item.Key, out string? tomeId))
+                {
+                    riftCosmetic.TomeId = tomeId;
+                }
             }
             else if (riftCosmeticsList.TryGetValue(item.Key, out string? tomeId))
             {
