@@ -78,10 +78,9 @@ public class CoreConfig
 
         var defaultEventTomes = new HashSet<string>
         {
-            "Halloween2021", "Halloween2022", "Anniversary2022", "Anniversary2023",
-            "Winter2022", "Summer2023", "Halloween2023", "Winter2023",
+            "Halloween2021", "Halloween2022", "Anniversary2022", "Anniversary2023", "Summer2023", "Halloween2023",
             "DreadByDaylightZodiac", "Spring2024", "ChocolateBoxV1", "Anniversary2024", "CalamariV1",
-            "FireflyV1", "Halloween2024", "CalamariV2"
+            "FireflyV1", "Halloween2024", "CalamariV2", "Winter2024"
         };
 
         TomesList = defaultTomes;

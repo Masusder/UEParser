@@ -509,6 +509,11 @@ public class ModelData
         {
             gameSkeletonPath = "DeadByDaylight/Plugins/Runtime/Bhvr/DBDCharacters/K37/Content/ArtAssets/Models/K37_DSkeleton_REF_TrueForm.glb";
         }
+        string[] ultimateHoundMasterOverride = ["K38_Head006", "K38_Body006", "K38_W006"];
+        if (ultimateHoundMasterOverride.Contains(cosmeticId))
+        {
+            gameSkeletonPath = "DeadByDaylight/Plugins/Runtime/Bhvr/DBDCharacters/K38/Content/ArtAssets/Models/K38_DSkeleton_REF_006.glb";
+        }
         #endregion
 
         #region Bhvr's IDs mismatch
@@ -553,6 +558,7 @@ public class ModelData
         if (string.IsNullOrEmpty(gameSkeletonPath))
         {
             LogsWindowViewModel.Instance.AddLog($"Skeleton path for {cosmeticId} was null or empty, it needs to be provided manually.", Logger.LogTags.Debug);
+            return "";
         }
 #endif
 
