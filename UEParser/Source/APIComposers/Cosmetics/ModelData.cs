@@ -128,6 +128,13 @@ public class ModelData
                 if (string.IsNullOrEmpty(gameMaterialPath)) continue;
 
                 string modifiedMaterialPath = StringUtils.ModifyPath(gameMaterialPath, "json", false, characterIndex);
+
+                // TODO: only way to fix this hardcoded override, is to mount plugin dir with main content dir
+                if (gameMaterialPath == "/S45/ArtAssets/Materials/Outfit00/MI_Lashes00.0")
+                {
+                    modifiedMaterialPath = "/DeadByDaylight/Plugins/Runtime/Bhvr/DBDCharacters/S45/Content/ArtAssets/Materials/Outfit00/MI_Lashes00.json";
+                }
+
                 string materialPath = Path.Combine(GlobalVariables.RootDir, "Dependencies", "ExtractedAssets/" + modifiedMaterialPath);
 
                 dynamic meshMaterialData = FileUtils.LoadDynamicJson(materialPath);
