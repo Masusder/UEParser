@@ -1,0 +1,49 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:UEParser.ViewModels"
+        x:Class="UEParser.Views.GameVersionConfirmationView"
+        Width="600"
+        Height="190"
+        Title="UEParser - Confirm Version"
+        WindowStartupLocation="CenterOwner"
+        Icon="/Resources/UEParserLogo.ico"
+        x:DataType="vm:GameVersionConfirmationViewModel">
+  <StackPanel Margin="20">
+    <TextBlock Text="Do you want to change version with the one that was detected?"
+               FontSize="16"
+               HorizontalAlignment="Center" />
+
+    <StackPanel Margin="0,0,0,10"
+                HorizontalAlignment="Center"
+                Orientation="Horizontal"
+                Spacing="15">
+      <Border Background="#2D2D2D"
+              BorderBrush="#1AFFFFFF"
+              BorderThickness="1"
+              HorizontalAlignment="Center"
+              Padding="7.5 5"
+              CornerRadius="7.5"
+              Margin="0,10,0,10">
+        <StackPanel Width="135">
+                    <TextBlock HorizontalAlignment="Center">Detected Version</TextBlock>
+                    <TextBlock FontWeight="700"
+                               HorizontalAlignment="Center"
+                               Text="{Binding DetectedVersion}" />
+                </StackPanel>
+      </Border>
+    </StackPanel>
+
+    <StackPanel Orientation="Horizontal"
+                HorizontalAlignment="Center">
+      <Button Content="Yes"
+              Cursor="Hand"
+              Background="#7CB721"
+              Command="{Binding YesCommand}" />
+      <Button Content="No"
+              Cursor="Hand"
+              Background="#CC0000"
+              Command="{Binding NoCommand}"
+              Margin="10 0 0 0" />
+    </StackPanel>
+  </StackPanel>
+</Window>

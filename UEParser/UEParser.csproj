@@ -61,6 +61,7 @@
     <AvaloniaXaml Include="Views\NeteaseView.xaml" />
     <AvaloniaXaml Include="Views\NeteaseFileDialogView.xaml" />
     <AvaloniaXaml Include="Views\NeteaseVersionSelectionDialog.xaml" />
+    <AvaloniaXaml Include="Views\GameVersionConfirmationView.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -71,6 +72,9 @@
       <Generator>MSBuild:Compile</Generator>
     </None>
     <None Update="Views\DownloadRegisterView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="Views\GameVersionConfirmationView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
     <None Update="Views\HomeView.xaml">

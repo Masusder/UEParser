@@ -12,15 +12,14 @@ partial class S3AccessKeys
 {
     public static async Task CheckKeys()
     {
-        string iniFile = Path.Combine(GlobalVariables.RootDir, "Dependencies/ExtractedAssets/DeadByDaylight/Config/DefaultGame.ini");
-        if (!File.Exists(iniFile))
+        if (!File.Exists(GlobalVariables.DefaultGameIni))
         {
             LogsWindowViewModel.Instance.AddLog("Not found ini file that contains S3 Access Keys.", Logger.LogTags.Error);
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
             return;
         }
 
-        string iniFileData = File.ReadAllText(iniFile);
+        string iniFileData = File.ReadAllText(GlobalVariables.DefaultGameIni);
 
         Dictionary<string, string> s3AccessKeys = [];
         bool inAccessKeysSection = false;

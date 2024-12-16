@@ -4,10 +4,12 @@ using UEParser.Parser;
 using UEParser.Services;
 using UEParser.ViewModels;
 using UEParser.Network.Kraken;
+using UEParser.Utils;
+using System.Text.RegularExpressions;
 
 namespace UEParser;
 
-public class Initialize
+public partial class Initialize
 {
     public static async Task UpdateApp(bool hasVersionChanged, string buildVersion)
     {
@@ -167,8 +169,48 @@ public class Initialize
         await ConfigurationService.SaveConfiguration();
     }
 
-    // TODO: search for game version and branch in binary
-    public static void BinarySearchGameVersion()
+    [GeneratedRegex(@"ProjectVersion\s*=\s*([^\r\n]*)")]
+    private static partial Regex ProjectVersionRegex();
+    public static string? SearchGameVersion()
     {
+        if (!File.Exists(GlobalVariables.DefaultGameIni))
+        {
+            LogsWindowViewModel.Instance.AddLog("Not found default game ini file.", Logger.LogTags.Error);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            return null;
+        }
+
+        string fileContent = File.ReadAllText(GlobalVariables.DefaultGameIni);
+
+        var match = ProjectVersionRegex().Match(fileContent);
+
+        if (match.Success)
+        {
+            string gameVersion = match.Groups[1].Value.Trim();
+
+            if (StringUtils.IsValidVersion(gameVersion))
+            {
+                return gameVersion;
+            }
+            else
+            {
+                LogsWindowViewModel.Instance.AddLog("Invalid game version format.", Logger.LogTags.Warning);
+                return null;
+            }
+        }
+        else
+        {
+            LogsWindowViewModel.Instance.AddLog("Failed to find project game version.", Logger.LogTags.Warning);
+            return null;
+        }
+    }
+
+    public static bool IsGameVersionNew(string? gameVersion, string? configuredGameVersion)
+    {
+        if (string.IsNullOrEmpty(gameVersion)) return false;
+
+        if (gameVersion == configuredGameVersion) return false;
+
+        return true;
     }
 }

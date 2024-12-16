@@ -6,7 +6,6 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text.RegularExpressions;
 using System.Runtime.CompilerServices;
 using Avalonia;
 using Avalonia.Data;
@@ -17,6 +16,7 @@ using UEParser.Views;
 using UEParser.Models;
 using UEParser.Services;
 using UEParser.AssetRegistry;
+using UEParser.Utils;
 
 namespace UEParser.ViewModels;
 
@@ -90,7 +90,7 @@ public sealed partial class SettingsViewModel : INotifyPropertyChanged
         {
             if (SetProperty(ref _selectedCurrentVersion, value))
             {
-                if (!IsValidVersion(value))
+                if (!StringUtils.IsValidVersion(value))
                 {
                     throw new DataValidationException("Invalid version");
                 }
@@ -114,7 +114,7 @@ public sealed partial class SettingsViewModel : INotifyPropertyChanged
         {
             if (SetProperty(ref _selectedComparisonVersion, value))
             {
-                if (!IsValidVersion(value))
+                if (!StringUtils.IsValidVersion(value))
                 {
                     throw new DataValidationException("Invalid version");
                 }
@@ -270,7 +270,7 @@ public sealed partial class SettingsViewModel : INotifyPropertyChanged
 
         var canSave = this.WhenAnyValue(
             x => x.SelectedCurrentVersion,
-            IsValidVersion
+            StringUtils.IsValidVersion
         );
 
         SaveSettingsCommand = ReactiveCommand.CreateFromTask(SaveSettings, canSave);
@@ -368,16 +368,6 @@ public sealed partial class SettingsViewModel : INotifyPropertyChanged
     private void RemoveEventTome(string tome)
     {
         EventTomesList.Remove(tome);
-    }
-
-    [GeneratedRegex(@"^[0-9]+(\.[0-9]+)*$")]
-    private static partial Regex VersionRegex();
-    private static bool IsValidVersion(string? version)
-    {
-        if (string.IsNullOrWhiteSpace(version)) return true;
-
-        var regex = VersionRegex();
-        return regex.IsMatch(version);
     }
 
     private static void RestartApplication()

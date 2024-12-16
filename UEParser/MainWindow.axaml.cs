@@ -47,7 +47,26 @@ public partial class MainWindow : AppWindow
         var config = ConfigurationService.Config;
         bool updateAPIDuringInitialization = config.Global.UpdateAPIDuringInitialization;
 
-        if (updateAPIDuringInitialization)
+        string? currentGameVersion = Initialize.SearchGameVersion();
+        bool isGameVersionNew = Initialize.IsGameVersionNew(currentGameVersion, config.Core.VersionData.LatestVersionHeader);
+
+        if (!string.IsNullOrEmpty(currentGameVersion) && isGameVersionNew)
+        {
+            var gameVersionConfirmationView = new GameVersionConfirmationView(currentGameVersion);
+            var result = await gameVersionConfirmationView.ShowDialog<bool>(this);
+
+            if (result)
+            {
+                string? configuredLatestVersionHeader = config.Core.VersionData.LatestVersionHeader;
+                config.Core.VersionData.CompareVersionHeader = configuredLatestVersionHeader;
+                config.Core.VersionData.LatestVersionHeader = currentGameVersion;
+
+                await ConfigurationService.SaveConfiguration();
+                LogsWindowViewModel.Instance.AddLog($"Version has been successfully set to {currentGameVersion}, and comparison version to {configuredLatestVersionHeader}.", Logger.LogTags.Info);
+            }
+        }
+
+        if (updateAPIDuringInitialization && !hasVersionChanged)
         {
             LogsWindowViewModel.Instance.AddLog("You have set up the application to check for Kraken API updates during initialization.", Logger.LogTags.Info);
 

@@ -42,6 +42,7 @@ public static class GlobalVariables
     public static readonly string CompareVersionWithBranch = Helpers.ConstructVersionHeaderWithBranch(true);
     public const string DbdinfoBaseUrl = "https://dbd-info.com/";
     public const string PlatformType = "naxx2jp"; // Can also be "ena" but this is useless as its content is always behind "naxx2jp"
+    public static readonly string DefaultGameIni = Path.Combine(RootDir, "Dependencies", "ExtractedAssets", "DeadByDaylight", "Config", "DefaultGame.ini");
     #endregion
 
     // List of assets that cause fatal crash of the app and cannot be parsed!

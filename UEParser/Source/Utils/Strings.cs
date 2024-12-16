@@ -376,4 +376,14 @@ public partial class StringUtils
         else if (bytes < gigabyte) return $"{(double)bytes / megabyte:F2} MB";
         else return $"{(double)bytes / gigabyte:F2} GB";
     }
+
+    [GeneratedRegex(@"^[0-9]+(\.[0-9]+)*$")]
+    private static partial Regex VersionRegex();
+    public static bool IsValidVersion(string? version)
+    {
+        if (string.IsNullOrWhiteSpace(version)) return true;
+
+        var regex = VersionRegex();
+        return regex.IsMatch(version);
+    }
 }
