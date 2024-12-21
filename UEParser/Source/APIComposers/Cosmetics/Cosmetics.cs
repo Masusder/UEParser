@@ -30,7 +30,7 @@ public class Cosmetics
 
             parsedCosmeticsDb = ParseOutfits(parsedCosmeticsDb, token);
             parsedCosmeticsDb = ParseCustomizationItems(parsedCosmeticsDb, token);
-            parsedCosmeticsDb = AssignRiftData(parsedCosmeticsDb);
+            parsedCosmeticsDb = AssignAdditionalProperties(parsedCosmeticsDb);
             parsedCosmeticsDb = AppendStaticCurrencies(parsedCosmeticsDb);
 
             LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedCosmeticsDb.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Cosmetics);
@@ -177,7 +177,7 @@ public class Cosmetics
     private static Dictionary<string, object> ParseCustomizationItems(Dictionary<string, object> parsedCosmeticsDb, CancellationToken token)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("CustomizationItemDB.json");
-
+        
         foreach (string filePath in filePaths)
         {
             string packagePath = StringUtils.StripExtractedAssetsDir(filePath);
@@ -332,7 +332,7 @@ public class Cosmetics
         return parsedCosmeticsDb;
     }
 
-    private static Dictionary<string, object> AssignRiftData(Dictionary<string, object> parsedCosmeticsDb)
+    private static Dictionary<string, object> AssignAdditionalProperties(Dictionary<string, object> parsedCosmeticsDb)
     {
         Dictionary<string, string> riftCosmeticsList = [];
 
@@ -372,17 +372,23 @@ public class Cosmetics
 
         foreach (var item in parsedCosmeticsDb)
         {
-            if (item.Value is Outfit riftCosmetic)
+            if (item.Value is Outfit cosmetic)
             {
-                string matchingPieceId = riftCosmetic.OutfitItems[0].ToString();
+                string matchingPieceId = cosmetic.OutfitItems[0].ToString();
+
+                if (parsedCosmeticsDb[matchingPieceId] is CustomzatiomItem matchingPiece)
+                {
+                    cosmetic.Prefix = matchingPiece.Prefix;
+                }
+
                 if (riftCosmeticsList.TryGetValue(matchingPieceId, out string? value))
                 {
                     string tomeId = value;
-                    riftCosmetic.TomeId = tomeId;
+                    cosmetic.TomeId = tomeId;
                 }
                 else if (riftCosmeticsList.TryGetValue(item.Key, out string? tomeId))
                 {
-                    riftCosmetic.TomeId = tomeId;
+                    cosmetic.TomeId = tomeId;
                 }
             }
             else if (riftCosmeticsList.TryGetValue(item.Key, out string? tomeId))

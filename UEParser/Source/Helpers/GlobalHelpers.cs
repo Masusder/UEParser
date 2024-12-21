@@ -204,7 +204,21 @@ public partial class Helpers
         "Frm_Slaughterhouse",
         "Frm_Silo",
         "Frm_CornField",
-        "Frm_Barn"
+        "Frm_Barn",
+
+        "EC_BNR_01",
+        "EC_BNR_02",
+        "EC_BNR_03",
+        "EC_BNR_04",
+        "EC_BNR_05",
+        "EC_BDG_01",
+        "EC_BDG_02",
+        "EC_BDG_03",
+        "EC_BDG_04",
+        "EC_BDG_05",
+        "EC_BDG_06",
+        "EC_BDG_07",
+        "GE_BDG_11"
     ];
     // Dynamic localization method
     // Supports localzation of nested data - ex. 'Levels.0.Nodes.node_T19_L1_01.Name'
