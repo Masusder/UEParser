@@ -41,6 +41,7 @@ public partial class Initialize
             Helpers.CreateQuestNodeDatabase();
             Helpers.CreateTagConverters();
             Helpers.CombineCharacterBlueprints();
+            Helpers.CreateCustomizationCategoriesTable();
             LogsWindowViewModel.Instance.AddLog("Creating patched localization files to speed up parsing process.", Logger.LogTags.Info);
             Helpers.CreateLocresFiles(); // Create fixed localization to speed up parsing
             LogsWindowViewModel.Instance.AddLog("Saving new build version of Dead by Daylight.", Logger.LogTags.Info);

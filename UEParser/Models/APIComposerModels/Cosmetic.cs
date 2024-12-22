@@ -220,9 +220,14 @@ public class CustomzatiomItem
     public required string Role { get; set; }
 
     /// <summary>
-    /// Type of the cosmetic.
+    /// Represents the type of the cosmetic item.
     /// </summary>
     public required string Type { get; set; }
+
+    /// <summary>
+    /// Extends the <see cref="Type"/> property to include additional categorization.
+    /// </summary>
+    public required string Category { get; set; }
 
     /// <summary>
     /// Associated character index.

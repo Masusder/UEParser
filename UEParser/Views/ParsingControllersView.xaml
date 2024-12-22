@@ -181,7 +181,7 @@
                 <vm:StringResources x:Key="ButtonInfo"
                                     Title="Cosmetics"
                                     Description="Parse Cosmetics data and 3D Models."
-                                    Requirements="Updated API; Parsed Rifts">
+                                    Requirements="Updated API; Parsed Rifts; Parsed Characters">
                 </vm:StringResources>
               </ResourceDictionary>
             </Button.Resources>

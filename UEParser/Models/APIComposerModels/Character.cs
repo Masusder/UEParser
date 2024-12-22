@@ -54,6 +54,11 @@ public class Character
     public required string BackgroundImagePath { get; set; }
 
     /// <summary>
+    /// Customization categories overriden for the character.
+    /// </summary>
+    public required string[] CustomizationCategories { get; set; }
+
+    /// <summary>
     /// List of hints associated with the character.
     /// </summary>
     public required Hint[] Hints { get; set; }

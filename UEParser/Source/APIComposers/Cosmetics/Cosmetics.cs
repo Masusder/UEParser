@@ -10,20 +10,26 @@ using UEParser.Models;
 using UEParser.Parser;
 using UEParser.Utils;
 using UEParser.ViewModels;
+using UEParser.Services;
 
 namespace UEParser.APIComposers;
 
 public class Cosmetics
 {
     private static readonly Dictionary<string, Dictionary<string, List<LocalizationEntry>>> LocalizationData = [];
-    private static readonly dynamic CatalogData = FileUtils.LoadDynamicJson(Path.Combine(GlobalVariables.PathToKraken, GlobalVariables.VersionWithBranch, "CDN", "catalog.json")) ?? throw new Exception("Failed to load catalog data.");
-    private static readonly Dictionary<string, Rift> RiftData = FileUtils.LoadJsonFileWithTypeCheck<Dictionary<string, Rift>>(Path.Combine(GlobalVariables.PathToParsedData, GlobalVariables.VersionWithBranch, "en", "Rifts.json")) ?? throw new Exception("Failed to load rifts data.");
-    private static readonly Dictionary<string, int> CatalogDictionary = CosmeticUtils.CreateCatalogDictionary(CatalogData);
 
     public static async Task InitializeCosmeticsDb(CancellationToken token)
     {
         await Task.Run(() =>
         {
+            DataInitializer.InitializeData([
+                DataInitializer.DataToLoad.Catalog,
+                DataInitializer.DataToLoad.Rifts,
+                DataInitializer.DataToLoad.CatalogDictionary,
+                DataInitializer.DataToLoad.Characters,
+                DataInitializer.DataToLoad.CustomizationCategories
+            ]);
+
             Dictionary<string, object> parsedCosmeticsDb = [];
 
             LogsWindowViewModel.Instance.AddLog("Starting parsing process..", Logger.LogTags.Info, Logger.ELogExtraTag.Cosmetics);
@@ -49,6 +55,8 @@ public class Cosmetics
         // MT_outfit_022_CS already exists under different ID
         string[] outfitsToIgnore = ["K24_outfit_01", "Laurie_outfit_006", "TR_outfit_011", "MT_outfit_022_CS"];
 
+        var CatalogData = DataInitializer.CatalogData;
+        var CatalogDictionary = DataInitializer.CatalogDictionary;
         foreach (string filePath in filePaths)
         {
             string packagePath = StringUtils.StripExtractedAssetsDir(filePath);
@@ -174,10 +182,16 @@ public class Cosmetics
         "Default_Badge",
         "Default_Banner"
     ];
-    private static Dictionary<string, object> ParseCustomizationItems(Dictionary<string, object> parsedCosmeticsDb, CancellationToken token)
+    private static Dictionary<string, object> ParseCustomizationItems(
+        Dictionary<string, object> parsedCosmeticsDb,
+        CancellationToken token)
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("CustomizationItemDB.json");
-        
+
+        var CatalogData = DataInitializer.CatalogData;
+        var CatalogDictionary = DataInitializer.CatalogDictionary;
+        var CustomizationCategories = DataInitializer.CustomizationCategories;
+        var CharacterData = DataInitializer.CharacterData;
         foreach (string filePath in filePaths)
         {
             string packagePath = StringUtils.StripExtractedAssetsDir(filePath);
@@ -204,6 +218,7 @@ public class Cosmetics
                 DateTime releaseDate = new();
                 string? eventId = null;
                 DateTime? limitedTimeEndDate = null;
+
                 if (CatalogDictionary.TryGetValue(cosmeticIdLower, out int matchingIndex))
                 {
                     prices = CosmeticUtils.GrabCustomizationItemPrices(CatalogData[matchingIndex]["defaultCost"]);
@@ -215,8 +230,21 @@ public class Cosmetics
 
                 int characterIndex = item.Value["AssociatedCharacter"];
 
-                string category = item.Value["Category"];
-                string type = StringUtils.DoubleDotsSplit(category);
+                string categoryRaw = item.Value["Category"];
+                string type = StringUtils.DoubleDotsSplit(categoryRaw);
+
+                string category = type;
+                if (characterIndex != -1 && CharacterData.TryGetValue(characterIndex.ToString(), out var character) && character?.CustomizationCategories?.Length > 0)
+                {
+                    foreach (var customizationCategory in character.CustomizationCategories)
+                    {
+                        if (CustomizationCategories.TryGetValue(customizationCategory, out var categoryType) && categoryType == type)
+                        {
+                            category = customizationCategory;
+                            break;
+                        }
+                    }
+                }
 
                 List<LocalizationEntry> collectionName = CosmeticUtils.GetCollectionName(item);
 
@@ -314,6 +342,7 @@ public class Cosmetics
                     EventId = eventId,
                     Role = role,
                     Type = type,
+                    Category = category,
                     Character = characterIndex,
                     Rarity = rarity,
                     Prefix = prefix,
@@ -336,6 +365,7 @@ public class Cosmetics
     {
         Dictionary<string, string> riftCosmeticsList = [];
 
+        var RiftData = DataInitializer.RiftData;
         if (RiftData != null)
         {
             foreach (var rift in RiftData)

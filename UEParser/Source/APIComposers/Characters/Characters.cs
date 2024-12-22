@@ -119,6 +119,7 @@ public class Characters
                     Hints = hints,
                     IconFilePath = iconFilePathFixed,
                     BackgroundImagePath = backgroundImagePathFixed,
+                    CustomizationCategories = item.Value["CustomizationCategories"].ToObject<string[]>(),
                     Id = characterId
                 };
 
