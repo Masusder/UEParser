@@ -58,6 +58,11 @@ public class Outfit
     public required string Type { get; set; }
 
     /// <summary>
+    /// Extends the <see cref="Type"/> property to include additional categorization.
+    /// </summary>
+    public required string Category { get; set; }
+
+    /// <summary>
     /// Associated character index.
     /// '-1' means no character is associated.
     /// (both server and client sided)

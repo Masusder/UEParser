@@ -151,6 +151,7 @@ public class Cosmetics
                         IconFilePathList = iconPath,
                         EventId = eventId,
                         Type = "outfit",
+                        Category = "outfit",
                         Character = characterIndex,
                         Unbreakable = isLinked,
                         Purchasable = purchasable,
@@ -411,10 +412,18 @@ public class Cosmetics
             if (item.Value is Outfit outfit)
             {
                 string matchingPieceId = outfit.OutfitItems[0].ToString();
+                string[]? outfitPieces = outfit.OutfitItems.ToObject<string[]>();
 
                 if (parsedCosmeticsDb[matchingPieceId] is CustomzatiomItem matchingPiece)
                 {
-                    matchingPiece.Unbreakable = outfit.Unbreakable;
+                    for (int i = 0; i < outfitPieces?.Length; i++)
+                    {
+                        if (parsedCosmeticsDb.TryGetValue(outfitPieces[i], out var pieceObj) && pieceObj is CustomzatiomItem piece)
+                        {
+                            piece.Unbreakable = outfit.Unbreakable;
+                        }
+                    }
+
                     outfit.Prefix = matchingPiece.Prefix;
                     outfit.Role = matchingPiece.Role;
                 }
