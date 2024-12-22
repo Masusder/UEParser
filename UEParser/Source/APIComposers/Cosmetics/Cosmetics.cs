@@ -408,6 +408,7 @@ public class Cosmetics
 
                 if (parsedCosmeticsDb[matchingPieceId] is CustomzatiomItem matchingPiece)
                 {
+                    matchingPiece.Unbreakable = cosmetic.Unbreakable;
                     cosmetic.Prefix = matchingPiece.Prefix;
                 }
 

@@ -237,6 +237,11 @@ public class CustomzatiomItem
     public required int Character { get; set; }
 
     /// <summary>
+    /// Indicates whether cosmetic is a linked set.
+    /// </summary>
+    public bool Unbreakable { get; set; }
+
+    /// <summary>
     /// Indicates whether cosmetic is available for purchase.
     /// (server-sided)
     /// </summary>
