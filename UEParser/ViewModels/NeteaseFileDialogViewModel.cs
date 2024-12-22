@@ -7,6 +7,7 @@ using ReactiveUI;
 using UEParser.Models.Netease;
 using UEParser.Utils;
 using UEParser.Services;
+using System.Reactive.Linq;
 
 namespace UEParser.ViewModels;
 
@@ -155,12 +156,19 @@ public class NeteaseFileDialogViewModel : ReactiveObject
     }
     #endregion
 
+    private bool _isDownloading;
+    public bool IsDownloading
+    {
+        get => _isDownloading;
+        set => this.RaiseAndSetIfChanged(ref _isDownloading, value);
+    }
+
     public NeteaseFileDialogViewModel()
     {
         Version = "";
         VersionDisplayed = "Version: ";
         TotalSize = "Size: 0 B";
-        DownloadContentCommand = ReactiveCommand.Create(DownloadContent);
+        DownloadContentCommand = ReactiveCommand.Create(DownloadContent, this.WhenAnyValue(x => x.IsDownloading).Select(isDownloading => !isDownloading));
     }
 
     #region Commands
@@ -168,7 +176,10 @@ public class NeteaseFileDialogViewModel : ReactiveObject
 
     private void DownloadContent()
     {
+        if (IsDownloading) return;
         CloseAction?.Invoke(true);
+
+        IsDownloading = true;
 
         try
         {
@@ -186,6 +197,10 @@ public class NeteaseFileDialogViewModel : ReactiveObject
         { 
             LogsWindowViewModel.Instance.AddLog(ex.ToString(), Logger.LogTags.Error);
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+        }
+        finally
+        {
+            IsDownloading = false;
         }
     }
     #endregion

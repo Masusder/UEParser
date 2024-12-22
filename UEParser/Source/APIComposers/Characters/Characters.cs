@@ -8,6 +8,7 @@ using UEParser.Models;
 using UEParser.Utils;
 using UEParser.ViewModels;
 using UEParser.Parser;
+using UEParser.Models.Shared;
 
 namespace UEParser.APIComposers;
 
@@ -58,6 +59,7 @@ public class Characters
 
                 string roleInput = item.Value["Role"];
                 string roleOutput = StringUtils.StringSplitVe(roleInput);
+                Role role = new(roleOutput);
 
                 string genderInput = item.Value["Gender"];
                 string genderOutput = StringUtils.StringSplitVe(genderInput);
@@ -109,7 +111,7 @@ public class Characters
                 Character model = new()
                 {
                     Name = displayName,
-                    Role = roleOutput,
+                    Role = role,
                     Gender = genderOutput,
                     ParentItem = item.Value["DefaultItem"],
                     DLC = item.Value["ChapterDlcId"],

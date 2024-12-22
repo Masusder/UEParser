@@ -11,6 +11,7 @@ using UEParser.Parser;
 using UEParser.Utils;
 using UEParser.ViewModels;
 using UEParser.Services;
+using UEParser.Models.Shared;
 
 namespace UEParser.APIComposers;
 
@@ -155,6 +156,7 @@ public class Cosmetics
                         Purchasable = purchasable,
                         ReleaseDate = releaseDate,
                         LimitedTimeEndDate = limitedTimeEndDate,
+                        Role = new Role("None"),
                         Rarity = rarity,
                         OutfitItems = cosmeticPieces,
                         InclusionVersion = inclusionVersion,
@@ -233,19 +235,6 @@ public class Cosmetics
                 string categoryRaw = item.Value["Category"];
                 string type = StringUtils.DoubleDotsSplit(categoryRaw);
 
-                string category = type;
-                if (characterIndex != -1 && CharacterData.TryGetValue(characterIndex.ToString(), out var character) && character?.CustomizationCategories?.Length > 0)
-                {
-                    foreach (var customizationCategory in character.CustomizationCategories)
-                    {
-                        if (CustomizationCategories.TryGetValue(customizationCategory, out var categoryType) && categoryType == type)
-                        {
-                            category = customizationCategory;
-                            break;
-                        }
-                    }
-                }
-
                 List<LocalizationEntry> collectionName = CosmeticUtils.GetCollectionName(item);
 
                 string gameIconPath = item.Value["UIData"]["IconFilePathList"][0];
@@ -270,8 +259,25 @@ public class Cosmetics
                     secondaryIcon = StringUtils.AddRootDirectory(secondaryIcon, "/images/");
                 }
 
-                string roleString = item.Value["AssociatedRole"];
-                string role = StringUtils.StringSplitVe(roleString);
+                string roleRaw = item.Value["AssociatedRole"];
+                string roleString = StringUtils.StringSplitVe(roleRaw);
+                Role role = new(roleString);
+
+                string category = type;
+                if (characterIndex != -1 && CharacterData.TryGetValue(characterIndex.ToString(), out var character))
+                {
+                    role = character.Role;
+                    if (character?.CustomizationCategories?.Length > 0) {
+                        foreach (var customizationCategory in character.CustomizationCategories)
+                        {
+                            if (CustomizationCategories.TryGetValue(customizationCategory, out var categoryType) && categoryType == type)
+                            {
+                                category = customizationCategory;
+                                break;
+                            }
+                        }
+                    }
+                }
 
                 string inclusionVersionRaw = item.Value["InclusionVersion"];
                 string inclusionVersion = CosmeticUtils.TrimInclusionVersion(inclusionVersionRaw);
@@ -402,24 +408,25 @@ public class Cosmetics
 
         foreach (var item in parsedCosmeticsDb)
         {
-            if (item.Value is Outfit cosmetic)
+            if (item.Value is Outfit outfit)
             {
-                string matchingPieceId = cosmetic.OutfitItems[0].ToString();
+                string matchingPieceId = outfit.OutfitItems[0].ToString();
 
                 if (parsedCosmeticsDb[matchingPieceId] is CustomzatiomItem matchingPiece)
                 {
-                    matchingPiece.Unbreakable = cosmetic.Unbreakable;
-                    cosmetic.Prefix = matchingPiece.Prefix;
+                    matchingPiece.Unbreakable = outfit.Unbreakable;
+                    outfit.Prefix = matchingPiece.Prefix;
+                    outfit.Role = matchingPiece.Role;
                 }
 
                 if (riftCosmeticsList.TryGetValue(matchingPieceId, out string? value))
                 {
                     string tomeId = value;
-                    cosmetic.TomeId = tomeId;
+                    outfit.TomeId = tomeId;
                 }
                 else if (riftCosmeticsList.TryGetValue(item.Key, out string? tomeId))
                 {
-                    cosmetic.TomeId = tomeId;
+                    outfit.TomeId = tomeId;
                 }
             }
             else if (riftCosmeticsList.TryGetValue(item.Key, out string? tomeId))

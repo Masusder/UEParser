@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UEParser.Models;
 using UEParser.Utils;
+using UEParser.Models.Shared;
 
 namespace UEParser.APIComposers;
 
@@ -22,7 +23,8 @@ public class CharacterUtils
             if (hintCharacterIndex != characterIndex) continue;
 
             string roleRaw = item.Value["playerTeam"];
-            string role = StringUtils.StringSplitVe(roleRaw);
+            string roleString = StringUtils.StringSplitVe(roleRaw);
+            Role role = new(roleString);
 
             string iconPath = item.Value["IconPath"];
             string iconPathFixed = StringUtils.AddRootDirectory(iconPath, "/images/");

@@ -1,4 +1,7 @@
-﻿namespace UEParser.Models;
+﻿using Newtonsoft.Json;
+using UEParser.Models.Shared;
+
+namespace UEParser.Models;
 
 public class Character
 {
@@ -11,7 +14,8 @@ public class Character
     /// Character role
     /// Killer or Survivor
     /// </summary>
-    public required string Role { get; set; }
+    [JsonConverter(typeof(Role.RoleJsonConverter))]
+    public required Role Role { get; set; }
 
     /// <summary>
     /// Character gender
@@ -74,7 +78,8 @@ public class Hint
     /// <summary>
     /// Role associated with the hint (e.g., Survivor, Killer).
     /// </summary>
-    public required string Role { get; set; }
+    [JsonConverter(typeof(Role.RoleJsonConverter))]
+    public required Role Role { get; set; }
 
     /// <summary>
     /// Title of the hint.

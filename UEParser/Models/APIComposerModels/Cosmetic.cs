@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using UEParser.Models.Shared;
 
 namespace UEParser.Models;
 
@@ -87,6 +88,13 @@ public class Outfit
     /// (server-sided)
     /// </summary>
     public DateTime? LimitedTimeEndDate { get; set; }
+
+    /// <summary>
+    /// Indicates on which role cosmetic can be used.
+    /// If role equals to None it should be ignored.
+    /// </summary>
+    [JsonConverter(typeof(Role.RoleJsonConverter))]
+    public required Role Role { get; set; }
 
     /// <summary>
     /// Rarity of the cosmetic.
@@ -213,11 +221,10 @@ public class CustomzatiomItem
 
     /// <summary>
     /// Indicates on which role cosmetic can be used.
-    /// It should be noted only certain cosmetic types such as Charms
-    /// use this value.
-    /// If role equals to None it should be ignore.
+    /// If role equals to None it should be ignored.
     /// </summary>
-    public required string Role { get; set; }
+    [JsonConverter(typeof(Role.RoleJsonConverter))]
+    public required Role Role { get; set; }
 
     /// <summary>
     /// Represents the type of the cosmetic item.
