@@ -50,6 +50,8 @@ public class Journals
 
                 string tomeId = item.Name;
 
+                if (tomeId == "Halloween2024") continue; // Halloween journals were overridden with Winter event data
+
                 Dictionary<string, List<LocalizationEntry>> localizationModel = [];
 
                 List<Vignette> vignettes = [];
