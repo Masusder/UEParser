@@ -112,33 +112,8 @@ public class PerkUtils
                 try
                 {
                     // TODO: Revisit this regularly - it should technically be fixed on devs side every so often
-                    if (langKey == "pl" && perkId == "S39P01") // Wrong index, {2}, should be {1}
-                    {
-                        string fixedDescription = description.Replace("{2}", "{1}");
-                        string formattedDescription = string.Format(fixedDescription, [.. formattedTunables]);
-                        item.Value.Description = formattedDescription;
-                    }
-                    else if (perkId == "ZanshinTactics")
-                    {
-                        string fixedDescription = description.Replace("{2}", "");
-                        string formattedDescription = string.Format(fixedDescription, [.. formattedTunables]);
-                        item.Value.Description = formattedDescription;
-                    }
-                    else if (perkId == "K37P02")
-                    {
-                        string fixedDescription = description.Replace("{3}", "");
-                        string formattedDescription = string.Format(fixedDescription, [.. formattedTunables]);
-                    }
-                    else if (perkId == "S41P01")
-                    {
-                        string fixedDescription = description.Replace("{3}", "").Replace("{2}", "");
-                        string formattedDescription = string.Format(fixedDescription, [.. formattedTunables]);
-                    }
-                    else
-                    {
-                        string formattedDescription = string.Format(description, [.. formattedTunables]);
-                        item.Value.Description = formattedDescription;
-                    }
+                    string formattedDescription = string.Format(description, [.. formattedTunables]);
+                    item.Value.Description = formattedDescription;
                 }
                 catch (Exception ex)
                 {
