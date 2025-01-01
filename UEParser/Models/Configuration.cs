@@ -364,6 +364,11 @@ public class KrakenApiConfig
             { "8.3.2_qa", "Q7togl29cDK8NzohvLOYZyfUwn9sDnFz2JzzAzM8lJk=" },
             { "8.3.2_stage", "PBcq6dBi5lwreqEPQFtO0uhg3zJ5Sy/mKzojoKOtURI=" },
             { "8.4.0_ptb", "ovwdqi85Q9L+yanB1XAZiTNiORsaqJnDLQ4lWKcxfB0=" },
+            { "8.4.2_cert", "DHflqPmg0tMBu4FckLIngrr/GEWYx+adg3zxfhqp8Gw=" },
+            { "8.4.2_live", "mXjKhzKCvD4iATTphztQuC9Am34WIWLAPp3FiEnxRwk=" },
+            { "8.4.2_ptb", "w7xcQdzlXiX44EV3rHaJZxhA5oMX3K/pXftq1lcHuok=" },
+            { "8.4.2_qa", "oNyhfSHL+rXqweRw6DLiwu7IAVmSRDutCgqOm6TwHuw=" },
+            { "8.4.2_stage", "YVoQ6fqzQmzbu/3uyyhONpUEuaH1e9yxs14mmURhchg=" },
             // End of V3 encryption algorithm                                   
             // Start of test builds? Couldn't figure decryption
             { "9999.17.0", "pGJJqK8oYVFKVSZwynOFAGAYniIZd/ycyFBZc8L7HJk=" },
@@ -383,6 +388,7 @@ public class KrakenApiConfig
 }
 
 // Netease config
+// DEPRECATED: Netease is closing
 public class NeteaseConfig
 {
     public string ExtractedVersion { get; set; }

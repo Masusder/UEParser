@@ -319,18 +319,3 @@ public class TemporaryDiscount
     /// </summary>
     public DateTime StartDate { get; set; }
 }
-
-
-// Currencies should be separated from the cosmetics BUT
-// due to the fact Rift treats currency bundles as cosmetics
-// I add them to cosmetics to make my life simpler
-// They can be easily ignored by checking type, which is "Currency"
-public class Currency
-{
-    public required string CosmeticId { get; set; }
-    public required string CosmeticName { get; set; }
-    public required string? Description { get; set; }
-    public required string IconFilePathList { get; set; }
-    public required string Type { get; set; }
-    public required string? TomeId { get; set; }
-}

@@ -38,7 +38,6 @@ public class Cosmetics
             parsedCosmeticsDb = ParseOutfits(parsedCosmeticsDb, token);
             parsedCosmeticsDb = ParseCustomizationItems(parsedCosmeticsDb, token);
             parsedCosmeticsDb = AssignAdditionalProperties(parsedCosmeticsDb);
-            parsedCosmeticsDb = AppendStaticCurrencies(parsedCosmeticsDb);
 
             LogsWindowViewModel.Instance.AddLog($"Parsed total of {parsedCosmeticsDb.Count} items.", Logger.LogTags.Info, Logger.ELogExtraTag.Cosmetics);
 
@@ -448,52 +447,6 @@ public class Cosmetics
         return parsedCosmeticsDb;
     }
 
-    // Currencies should be separated from cosmetics
-    // but this makes it easier to populate Rifts data
-    private static Dictionary<string, object> AppendStaticCurrencies(Dictionary<string, object> parsedCosmeticsDb)
-    {
-        void AddCurrencyWithLocalization(string id, string nameKey, string iconFilePath)
-        {
-            Currency currency = new()
-            {
-                Type = "Currency",
-                CosmeticId = id,
-                CosmeticName = "",
-                Description = "",
-                IconFilePathList = iconFilePath,
-                TomeId = null
-            };
-            parsedCosmeticsDb.Add(id, currency);
-
-            Dictionary<string, List<LocalizationEntry>> localizationModel = new()
-            {
-                ["CosmeticName"] =
-                [
-                    new()
-                    {
-                        Key = nameKey,
-                        SourceString = id
-                    }
-                ]
-            };
-
-            LocalizationData.TryAdd(id, localizationModel);
-        }
-
-        // Add the currencies using the helper method with localization
-        AddCurrencyWithLocalization("cellsPack_25", "AuricCells", "/images/Currency/AuricCells_Icon.png");
-        AddCurrencyWithLocalization("cellsPack_50", "AuricCells", "/images/Currency/AuricCells_Icon.png");
-        AddCurrencyWithLocalization("cellsPack_75", "AuricCells", "/images/Currency/AuricCells_Icon.png");
-        AddCurrencyWithLocalization("HalloweenEventCurrency", "CURRENCY_HalloweenEventCurrency_NAME", "/images/Currency/HalloweenEventCurrency_Icon.png");
-        AddCurrencyWithLocalization("BonusBloodpoints", "4424FA7046950159B97A5395900A95B9", "/images/Currency/BloodpointsIcon.png");
-        AddCurrencyWithLocalization("WinterEventCurrency", "CURRENCY_WinterEventCurrency_NAME", "/images/Currency/WinterEventCurrency_Icon.png");
-        AddCurrencyWithLocalization("SpringEventCurrency", "CURRENCY_SpringEventCurrency_NAME", "/images/Currency/SpringEventCurrency_Icon.png");
-        AddCurrencyWithLocalization("AnniversaryEventCurrency", "CURRENCY_AnniversaryEventCurrency_NAME", "/images/Currency/AnniversaryEventCurrency_Icon.png");
-        AddCurrencyWithLocalization("Shards", "Shards", "/images/Currency/Shards_Icon.png");
-
-        return parsedCosmeticsDb;
-    }
-
     private static void ParseLocalizationAndSave(Dictionary<string, object> parsedCosmeticsDb, CancellationToken token)
     {
         LogsWindowViewModel.Instance.AddLog($"Starting localization process..", Logger.LogTags.Info, Logger.ELogExtraTag.Cosmetics);
@@ -514,8 +467,6 @@ public class Cosmetics
             Dictionary<string, object> localizedCosmeticsDb = JsonConvert.DeserializeObject<Dictionary<string, object>>(objectString) ?? [];
 
             Helpers.LocalizeDb(localizedCosmeticsDb, LocalizationData, languageKeys, langKey);
-
-            CosmeticUtils.AddAmountToCurrencyPacks(localizedCosmeticsDb);
 
             string outputPath = Path.Combine(GlobalVariables.PathToParsedData, GlobalVariables.VersionWithBranch, langKey, "Cosmetics.json");
 

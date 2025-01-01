@@ -251,34 +251,4 @@ public class CosmeticUtils
             return firstDescription ?? secondDescription ?? throw new Exception("Not found cosmetic description.");
         }
     }
-
-    public static void AddAmountToCurrencyPacks(Dictionary<string, object> localizedCosmeticsDb)
-    {
-        foreach (var item in localizedCosmeticsDb)
-        {
-            string rowId = item.Key;
-            string[] currencyPacks = ["cellsPack_25", "cellsPack_50", "cellsPack_75"];
-            if (currencyPacks.Contains(rowId))
-            {
-                dynamic value = item.Value;
-
-                string name = value.CosmeticName;
-
-                switch (rowId)
-                {
-                    case "cellsPack_25":
-                        value.CosmeticName = "25 " + name;
-                        break;
-                    case "cellsPack_50":
-                        value.CosmeticName = "50 " + name;
-                        break;
-                    case "cellsPack_75":
-                        value.CosmeticName = "75 " + name;
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-    }
 }
