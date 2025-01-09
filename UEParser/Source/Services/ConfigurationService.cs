@@ -47,5 +47,13 @@ public class ConfigurationService
         });
 
         await File.WriteAllTextAsync(ConfigFilePath, json);
+
+        UpdateGlobalVariables();
+    }
+
+    private static void UpdateGlobalVariables()
+    {
+        GlobalVariables.VersionWithBranch = Helpers.ConstructVersionHeaderWithBranch();
+        GlobalVariables.CompareVersionWithBranch = Helpers.ConstructVersionHeaderWithBranch(true);
     }
 }

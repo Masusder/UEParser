@@ -169,6 +169,7 @@ public class KrakenApiConfig
             //{ "experimentalFeatures", "/experimentalFeatures/experimentalFeatures.json" },
             //{ "onboarding", "/onboarding/onboarding.json" },
             //{ "recommendations", "recommendations.json" }
+            //{ "dlcList", "dlcList.json" }
         };
         ApiEndpoints = new()
         {

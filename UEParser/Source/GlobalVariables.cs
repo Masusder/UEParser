@@ -38,8 +38,8 @@ public static class GlobalVariables
     #endregion
 
     #region Other
-    public static readonly string VersionWithBranch = Helpers.ConstructVersionHeaderWithBranch(); // Ex. "8.1.0_ptb"
-    public static readonly string CompareVersionWithBranch = Helpers.ConstructVersionHeaderWithBranch(true);
+    public static string VersionWithBranch = Helpers.ConstructVersionHeaderWithBranch(); // Ex. "8.1.0_ptb"
+    public static string CompareVersionWithBranch = Helpers.ConstructVersionHeaderWithBranch(true);
     public const string DbdinfoBaseUrl = "https://dbd-info.com/";
     public const string PlatformType = "naxx2jp"; // Can also be "ena" but this is useless as its content is always behind "naxx2jp"
     public static readonly string DefaultGameIni = Path.Combine(RootDir, "Dependencies", "ExtractedAssets", "DeadByDaylight", "Config", "DefaultGame.ini");

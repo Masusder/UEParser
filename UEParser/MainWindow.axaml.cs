@@ -9,6 +9,8 @@ using UEParser.Services;
 using UEParser.Network.Kraken;
 using UEParser.ViewModels;
 using UEParser.Views;
+using UEParser.Parser;
+using UEParser.Models;
 
 namespace UEParser;
 
@@ -42,29 +44,45 @@ public partial class MainWindow : AppWindow
 
     private async void MainWindow_Loaded(object? sender, EventArgs e)
     {
-        var (hasVersionChanged, buildVersion, isVersionConfigured) = Initialize.CheckBuildVersion();
-
         var config = ConfigurationService.Config;
         bool updateAPIDuringInitialization = config.Global.UpdateAPIDuringInitialization;
 
-        string? currentGameVersion = Initialize.SearchGameVersion();
+        await AssetsManager.UpdateGameIni();
+
+        var (currentGameVersion, branch) = Initialize.SearchGameVersion();
         bool isGameVersionNew = Initialize.IsGameVersionNew(currentGameVersion, config.Core.VersionData.LatestVersionHeader);
 
         if (!string.IsNullOrEmpty(currentGameVersion) && isGameVersionNew)
         {
-            var gameVersionConfirmationView = new GameVersionConfirmationView(currentGameVersion);
+            var gameVersionConfirmationView = new GameVersionConfirmationView(currentGameVersion + "_" + branch);
             var result = await gameVersionConfirmationView.ShowDialog<bool>(this);
 
             if (result)
             {
                 string? configuredLatestVersionHeader = config.Core.VersionData.LatestVersionHeader;
+                Branch configuredLatestBranch = config.Core.VersionData.Branch;
+
                 config.Core.VersionData.CompareVersionHeader = configuredLatestVersionHeader;
                 config.Core.VersionData.LatestVersionHeader = currentGameVersion;
 
+                config.Core.VersionData.CompareBranch = configuredLatestBranch;
+                config.Core.VersionData.Branch = Enum.Parse<Branch>(branch);
+
+                if(string.IsNullOrEmpty(configuredLatestVersionHeader))
+                {
+                    configuredLatestVersionHeader = "---";
+                }
+                else
+                {
+                    configuredLatestVersionHeader = configuredLatestVersionHeader + "_" + configuredLatestBranch.ToString();
+                }
+
                 await ConfigurationService.SaveConfiguration();
-                LogsWindowViewModel.Instance.AddLog($"Version has been successfully set to {currentGameVersion}, and comparison version to {configuredLatestVersionHeader}.", Logger.LogTags.Info);
+                LogsWindowViewModel.Instance.AddLog($"Version has been successfully set to {currentGameVersion + "_" + branch}, and comparison version to {configuredLatestVersionHeader}", Logger.LogTags.Info);
             }
         }
+
+        var (hasVersionChanged, buildVersion, isVersionConfigured) = Initialize.CheckBuildVersion();
 
         if (updateAPIDuringInitialization && !hasVersionChanged)
         {

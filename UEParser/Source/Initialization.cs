@@ -28,6 +28,9 @@ public partial class Initialize
             {
                 LogsWindowViewModel.Instance.AddLog("Mappings aren't present in local files. Downloading mappings from archive..", Logger.LogTags.Warning);
                 await Mappings.DownloadMappings();
+
+                // We need to make sure latest mapping is loaded
+                AssetsManager.ForceReloadProvider();
             }
 
             LogsWindowViewModel.Instance.AddLog("Exporting game assets.", Logger.LogTags.Info);
@@ -172,13 +175,13 @@ public partial class Initialize
 
     [GeneratedRegex(@"ProjectVersion\s*=\s*([^\r\n]*)")]
     private static partial Regex ProjectVersionRegex();
-    public static string? SearchGameVersion()
+    public static (string? Version, string Branch) SearchGameVersion()
     {
         if (!File.Exists(GlobalVariables.DefaultGameIni))
         {
             LogsWindowViewModel.Instance.AddLog("Not found default game ini file.", Logger.LogTags.Error);
             LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
-            return null;
+            return (null, "live");
         }
 
         string fileContent = File.ReadAllText(GlobalVariables.DefaultGameIni);
@@ -189,20 +192,30 @@ public partial class Initialize
         {
             string gameVersion = match.Groups[1].Value.Trim();
 
-            if (StringUtils.IsValidVersion(gameVersion))
+            if (string.IsNullOrEmpty(gameVersion))
             {
-                return gameVersion;
+                LogsWindowViewModel.Instance.AddLog("Game version is empty.", Logger.LogTags.Warning);
+                return (null, "live");
+            }
+
+            var parts = gameVersion.Split('-');
+            string version = parts[0];
+            string branch = parts.Length > 1 ? parts[1] : "live";
+
+            if (StringUtils.IsValidVersion(version))
+            {
+                return (version, branch);
             }
             else
             {
                 LogsWindowViewModel.Instance.AddLog("Invalid game version format.", Logger.LogTags.Warning);
-                return null;
+                return (null, "live");
             }
         }
         else
         {
             LogsWindowViewModel.Instance.AddLog("Failed to find project game version.", Logger.LogTags.Warning);
-            return null;
+            return (null, "live");
         }
     }
 

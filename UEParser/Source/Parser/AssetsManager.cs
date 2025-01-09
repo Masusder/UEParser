@@ -53,6 +53,17 @@ public class AssetsManager
         }
     }
 
+    public static void ForceReloadProvider()
+    {
+        lock (LockObject)
+        {
+            _provider = null;
+        }
+
+        // Call the provider again to reinitialize
+        _ = Provider;
+    }
+
     public static void InitializeCUE4Parse()
     {
         if (_provider != null)
@@ -69,6 +80,8 @@ public class AssetsManager
                 return;
             }
 
+            LogsWindowViewModel.Instance.AddLog("[CUE4Parse] Initializing files provider..", Logger.LogTags.Info);
+
             var config = ConfigurationService.Config;
 
             string pathToGameDirectory = config.Core.PathToGameDirectory;
@@ -81,7 +94,11 @@ public class AssetsManager
 
                 var mappingsPath = config.Core.MappingsPath;
 
-                if (!File.Exists(mappingsPath)) throw new Exception("Not found build mappings. You need to provide path to them in settings.");
+                if (!File.Exists(mappingsPath))
+                {
+                    LogsWindowViewModel.Instance.AddLog("[CUE4Parse] Not found build mappings. You need to provide path to them manually in settings.", Logger.LogTags.Info);
+                    return;
+                }
 
                 Directory.CreateDirectory(oodleDirectory);
 
@@ -107,6 +124,8 @@ public class AssetsManager
                 _provider.SubmitKey(new FGuid(), new FAesKey(config.Core.AesKey)); // decrypt basic info (1 guid - 1 key)
 
                 _provider.LoadLocalization(ELanguage.English);
+
+                LogsWindowViewModel.Instance.AddLog("[CUE4Parse] Initialized successfully.", Logger.LogTags.Info);
             }
             else
             {
@@ -784,6 +803,55 @@ public class AssetsManager
             DeleteUnusedFiles();
             FilesRegister.SaveFileInfoDictionary();
         }, token);
+    }
+
+    // We need to update game config for initialization check
+    public static async Task UpdateGameIni()
+    {
+        await Task.Run(() =>
+        {
+            try
+            {
+                var files = Provider.Files.Values.ToList();
+
+                var file = files.FirstOrDefault(f => f.Path == "DeadByDaylight/Config/DefaultGame.ini");
+
+                if (file == null) return;
+
+                string pathWithoutExtension = file.PathWithoutExtension;
+
+                string extension = file.Extension;
+
+                string pathWithExtension = file.Path;
+                long size = file.Size;
+
+                string exportPath = Path.Combine(OutputRootDirectory, pathWithoutExtension);
+
+                switch (extension)
+                {
+                    case "ini":
+                        {
+                            if (Provider.TrySaveAsset(pathWithExtension, out byte[] data))
+                            {
+                                using var stream = new MemoryStream(data) { Position = 0 };
+                                using var reader = new StreamReader(stream);
+                                var memoryData = reader.ReadToEnd();
+
+                                FileWriter.SaveMemoryStreamFile(exportPath, memoryData, extension);
+                            }
+                            break;
+                        }
+                    default:
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogsWindowViewModel.Instance.AddLog($"Failed to update .ini: {ex}", Logger.LogTags.Error);
+                LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+            }
+
+        });
     }
 
     private static bool UpdateFileInfoIfNeeded(string packagePath, string extension, long size)
