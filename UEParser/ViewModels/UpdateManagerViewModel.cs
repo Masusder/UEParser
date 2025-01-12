@@ -241,12 +241,11 @@ public class UpdateManagerViewModel : ReactiveObject
                     return [.. missingPathsSet];
                 }
 
-                // TODO: something is off and needs to be fixed
-                static List<string> GetCorrectlyCasedPaths(List<string> objectKeys, List<string> paths)
+                async Task<List<string>> GetCorrectlyCasedPaths(List<string> objectKeys, List<string> localPaths)
                 {
                     var normalizedObjectKeys = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-                    foreach (var key in paths.Where(k => !string.IsNullOrWhiteSpace(k)))
+                    foreach (var key in localPaths.Where(k => !string.IsNullOrWhiteSpace(k)))
                     {
                         var lowerCaseKey = key.ToLowerInvariant();
                         if (!normalizedObjectKeys.ContainsKey(lowerCaseKey))
@@ -265,7 +264,22 @@ public class UpdateManagerViewModel : ReactiveObject
                             // only then we will know asset needs to be moved to path with correct case
                             if (!path.Equals(correctCasePath, StringComparison.Ordinal))
                             {
-                                correctlyCasedPaths.Add(correctCasePath);
+                                if (!objectKeys.Contains(correctCasePath))
+                                {
+                                    correctlyCasedPaths.Add(correctCasePath);
+
+                                    // Copy the object to the new path with the correct case
+                                    var copyResponse = await s3Service.CopyObjectAsync(bucketName, path, bucketName, correctCasePath);
+                                    if (copyResponse.HttpStatusCode == System.Net.HttpStatusCode.OK)
+                                    {
+                                        // Delete the original object after it's copied
+                                        await s3Service.DeleteObjectAsync(bucketName, path);
+                                    }
+                                    else
+                                    {
+                                        LogsWindowViewModel.Instance.AddLog($"Failed to copy asset to correct case: {path}", Logger.LogTags.Error);
+                                    }
+                                }
                             }
                         }
                     }
@@ -282,9 +296,9 @@ public class UpdateManagerViewModel : ReactiveObject
                         case "missing":
                             message = $"Detected missing asset: {path}";
                             break;
-                        case "wrongCase":
-                            message = $"Asset uses wrong case in its path: {path}";
-                            break;
+                        //case "wrongCase":
+                        //    message = $"Asset uses wrong case in its path: {path}";
+                        //    break;
                         default:
                             break;
                     }
@@ -293,7 +307,7 @@ public class UpdateManagerViewModel : ReactiveObject
                 }
 
                 var missingAssets = FindMissingPaths(objectKeys, paths);
-                var correctlyCasedPaths = GetCorrectlyCasedPaths(objectKeys, paths);
+                var correctlyCasedPaths = await GetCorrectlyCasedPaths(objectKeys, paths);
 
                 int missingAssetsAmount = missingAssets.Count;
                 int correctlyCasedPathsAmount = correctlyCasedPaths.Count;
@@ -315,10 +329,10 @@ public class UpdateManagerViewModel : ReactiveObject
                 if (correctlyCasedPathsAmount > 0)
                 {
                     LogsWindowViewModel.Instance.AddLog($"Found total of {correctlyCasedPathsAmount} assets with incorrect case.", Logger.LogTags.Warning);
-                    foreach (var path in correctlyCasedPaths)
-                    {
-                        LogPaths(path, "wrongCase");
-                    }
+                    //foreach (var path in correctlyCasedPaths)
+                    //{
+                    //    LogPaths(path, "wrongCase");
+                    //}
                 }
                 else
                 {

@@ -53,7 +53,9 @@ public class Cosmetics
         // Laurie_outfit_006 already exists under different ID
         // TR_outfit_011 isn't present in catalog
         // MT_outfit_022_CS already exists under different ID
-        string[] outfitsToIgnore = ["K24_outfit_01", "Laurie_outfit_006", "TR_outfit_011", "MT_outfit_022_CS"];
+        string[] outfitsToIgnore = ["K24_outfit_01", "Laurie_outfit_006", "TR_outfit_011", "MT_outfit_022_CS",
+            "K35_outfit_008" // TODO: Broken on PTB
+        ];
 
         var CatalogData = DataInitializer.CatalogData;
         var CatalogDictionary = DataInitializer.CatalogDictionary;
@@ -211,6 +213,10 @@ public class Cosmetics
 
                 string cosmeticId = item.Name;
 
+                // TODO: Broken on PTB
+                string[] ignorePTBCosmetics = ["K35_Head008", "K35_Body008", "K35_W008"];
+                if (ignorePTBCosmetics.Contains(cosmeticId)) continue;
+
                 if (CustomizationItemsToIgnore.Contains(cosmeticId)) continue;
 
                 string cosmeticIdLower = cosmeticId.ToLower();
@@ -267,7 +273,8 @@ public class Cosmetics
                 if (characterIndex != -1 && CharacterData.TryGetValue(characterIndex.ToString(), out var character))
                 {
                     role = character.Role;
-                    if (character?.CustomizationCategories?.Length > 0) {
+                    if (character?.CustomizationCategories?.Length > 0)
+                    {
                         foreach (var customizationCategory in character.CustomizationCategories)
                         {
                             if (CustomizationCategories.TryGetValue(customizationCategory, out var categoryType) && categoryType == type)

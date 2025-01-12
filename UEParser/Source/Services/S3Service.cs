@@ -89,6 +89,72 @@ public class S3Service
         }
     }
 
+    public async Task<CopyObjectResponse> CopyObjectAsync(string sourceBucket, string sourceKey, string destinationBucket, string destinationKey)
+    {
+        try
+        {
+            var copyRequest = new CopyObjectRequest
+            {
+                SourceBucket = sourceBucket,
+                SourceKey = sourceKey,
+                DestinationBucket = destinationBucket,
+                DestinationKey = destinationKey
+            };
+
+            var copyResponse = await _s3Client.CopyObjectAsync(copyRequest);
+
+            if (copyResponse.HttpStatusCode == System.Net.HttpStatusCode.OK)
+            {
+                LogsWindowViewModel.Instance.AddLog($"Successfully copied object from {sourceKey} to {destinationKey}", Logger.LogTags.Info);
+            }
+
+            return copyResponse;
+        }
+        catch (AmazonS3Exception e)
+        {
+            LogsWindowViewModel.Instance.AddLog($"AWS S3 Error encountered during copy operation: {e.Message}", Logger.LogTags.Error);
+            throw;
+        }
+        catch (Exception e)
+        {
+            LogsWindowViewModel.Instance.AddLog($"Error during copy operation: {e.Message}", Logger.LogTags.Error);
+            throw;
+        }
+    }
+
+    public async Task DeleteObjectAsync(string bucketName, string objectKey)
+    {
+        try
+        {
+            var deleteRequest = new DeleteObjectRequest
+            {
+                BucketName = bucketName,
+                Key = objectKey
+            };
+
+            var deleteResponse = await _s3Client.DeleteObjectAsync(deleteRequest);
+
+            if (deleteResponse.HttpStatusCode == System.Net.HttpStatusCode.NoContent || 
+                deleteResponse.HttpStatusCode == System.Net.HttpStatusCode.OK)
+            {
+                LogsWindowViewModel.Instance.AddLog($"Successfully deleted object: {objectKey}", Logger.LogTags.Info);
+            }
+            else
+            {
+                LogsWindowViewModel.Instance.AddLog($"Failed to delete object: {objectKey}. HTTP Status: {deleteResponse.HttpStatusCode}", Logger.LogTags.Error);
+            }
+        }
+        catch (AmazonS3Exception e)
+        {
+            LogsWindowViewModel.Instance.AddLog($"AWS S3 Error encountered on server: {e.Message}", Logger.LogTags.Error);
+        }
+        catch (Exception e)
+        {
+            LogsWindowViewModel.Instance.AddLog($"Error: {e.Message}", Logger.LogTags.Error);
+        }
+    }
+
+
     public async Task UploadFileWithProgressAsync(string bucketName, string key, string filePath)
     {
         try

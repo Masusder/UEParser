@@ -41,9 +41,14 @@ public partial class Helpers
         {
             foreach (var property in jObject.Properties())
             {
-                if (property.Name.EndsWith("Path"))
+                if (property.Value.Type == JTokenType.String)
                 {
-                    paths.Add(property.Value.ToString().TrimStart('/'));
+                    string path = property.Value.ToString().TrimStart('/');
+
+                    if (path.EndsWith(".png", StringComparison.OrdinalIgnoreCase) || path.EndsWith(".glb", StringComparison.OrdinalIgnoreCase))
+                    {
+                        paths.Add(path);
+                    }
                 }
 
                 if (property.Value.Type == JTokenType.Object)
