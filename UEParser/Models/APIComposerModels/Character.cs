@@ -28,6 +28,11 @@ public class Character
     public required string ParentItem { get; set; }
 
     /// <summary>
+    /// Default items for the character.
+    /// </summary>
+    public required string[] DefaultItems { get; set; }
+
+    /// <summary>
     /// Associated DLC to the character
     /// </summary>
     public required string DLC { get; set; }

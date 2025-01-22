@@ -65,4 +65,23 @@ public class CharacterUtils
 
         return [.. hints];
     }
+
+    public static string[] MapDefaultItems(dynamic item)
+    {
+        List<string> defaultItems = [];
+        var customizationDescription = item.Value["CustomizationDescription"];
+        if (customizationDescription != null)
+        {
+            foreach (var customization in customizationDescription)
+            {
+                string? defaultItemId = customization["DefaultItemId"]?["RowValue"]?.ToString();
+                if (!string.IsNullOrEmpty(defaultItemId))
+                {
+                    defaultItems.Add(defaultItemId);
+                }
+            }
+        }
+
+        return [..defaultItems];
+    }
 }

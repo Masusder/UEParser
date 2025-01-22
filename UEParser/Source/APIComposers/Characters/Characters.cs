@@ -79,6 +79,8 @@ public class Characters
                 string backStory = item.Value["Backstory"]["Key"];
                 string biography = item.Value["Biography"]["Key"];
 
+                var defaultItems = CharacterUtils.MapDefaultItems(item);
+
                 Dictionary<string, List<LocalizationEntry>> localizationModel = new()
                 {
                     ["Name"] = [
@@ -114,6 +116,7 @@ public class Characters
                     Role = role,
                     Gender = genderOutput,
                     ParentItem = item.Value["DefaultItem"],
+                    DefaultItems = defaultItems,
                     DLC = item.Value["ChapterDlcId"],
                     Difficulty = difficultyOutput,
                     BackStory = backStory,
