@@ -845,10 +845,10 @@ public class AssetsManager
                         break;
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                LogsWindowViewModel.Instance.AddLog($"Failed to update .ini: {ex}", Logger.LogTags.Error);
-                LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
+                //LogsWindowViewModel.Instance.AddLog($"Failed to update .ini: {ex}", Logger.LogTags.Error);
+                //LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.Error);
             }
 
         });
