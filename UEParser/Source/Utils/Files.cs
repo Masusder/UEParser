@@ -25,6 +25,22 @@ public class FileUtils
         return deserializedData ?? throw new Exception("Loaded data is null.");
     }
 
+    public static T ReadApiResponseFromFile<T>(string fileName)
+    {
+        if (string.IsNullOrWhiteSpace(fileName))
+            throw new ArgumentException("File name cannot be null or empty.", nameof(fileName));
+
+        string baseDirectory = Path.Combine(GlobalVariables.PathToKraken, GlobalVariables.VersionWithBranch, "API");
+        string fullPath = Path.Combine(baseDirectory, fileName);
+
+        if (!File.Exists(fullPath))
+            throw new FileNotFoundException($"The file '{fileName}' does not exist in the directory '{baseDirectory}'.");
+
+        string jsonData = File.ReadAllText(fullPath);
+        return JsonConvert.DeserializeObject<T>(jsonData)
+               ?? throw new InvalidOperationException("Failed to deserialize the JSON file.");
+    }
+
     public static bool IsFileLocked(string filePath)
     {
         try

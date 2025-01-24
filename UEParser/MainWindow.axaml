@@ -61,12 +61,12 @@
           <TextBlock Text="Website Update" VerticalAlignment="Center"/>
         </StackPanel>
       </ui:NavigationViewItem>
-      <ui:NavigationViewItem Cursor="Hand" Tag="Netease">
+      <!--<ui:NavigationViewItem Cursor="Hand" Tag="Netease">
         <StackPanel Orientation="Horizontal">
           <i:Icon Value="fa-solid fa-mobile" Width="32" Height="32" FontSize="16" Margin="-12,0,10,0"/>
           <TextBlock Text="Netease" VerticalAlignment="Center"/>
         </StackPanel>
-      </ui:NavigationViewItem>
+      </ui:NavigationViewItem>-->
     </ui:NavigationView.MenuItems>
     <Grid>
       <Grid.RowDefinitions>

@@ -176,12 +176,12 @@ public class KrakenApiConfig
             { "contentVersion", "/utils/contentVersion/version" },
             { "loginWithSteamTokenBody", "/auth/provider/steam/loginWithTokenBody" },
             { "getPlayerFullProfileState", "/players/me/states/FullProfile/binary" },
+            { "playerName", "/playername" },
             { "inventory", "/inventories" },
             { "dbdCharacterDataGetAll", "/dbd-character-data/get-all" },
             { "storyStatus", "/archives/stories/get/story-status" },
             { "config", "/config" },
             { "currencies", "/wallet/currencies" },
-            { "getSpecialPacks", "/extensions/store/getSpecialPacks" },
             { "news", "/extensions/news" },
             { "getCatalogItems", "/extensions/store/getCatalogItems?types[]=pack&types[]=currencyPack&types[]=character&types[]=shrine&types[]=item&types[]=outfit&types[]=statuette&types[]=entitlement&types[]=promoPack&types[]=premiumItemPack&types[]=nonRenewableSubscription&types[]=specialPack" }
         };

@@ -48,6 +48,7 @@ public partial class MainWindow : AppWindow
         bool updateAPIDuringInitialization = config.Global.UpdateAPIDuringInitialization;
 
         await AssetsManager.UpdateGameIni();
+        await S3AccessKeys.CheckKeys();
 
         var (currentGameVersion, branch) = Initialize.SearchGameVersion();
         bool isGameVersionNew = Initialize.IsGameVersionNew(currentGameVersion, config.Core.VersionData.LatestVersionHeader);

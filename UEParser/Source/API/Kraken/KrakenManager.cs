@@ -41,12 +41,19 @@ public class KrakenManager
             { "storyStatus", "Stories Status" },
             { "config", "Config" },
             { "currencies", "Currencies" },
-            { "getSpecialPacks", "Special Packs" },
+            { "playerName", "Player's Name" },
             { "news", "News" },
             { "getCatalogItems", "Segmented Catalog" }
         };
 
         await KrakenAPI.BulkGetKrakenEndpoints(krakenEndpoints);
+
+        KrakenDiscord.StructurePlayerInventory();
+    }
+
+    public static void PrepareStructuredDataDiscord()
+    {
+
     }
 
     public static async Task UpdateKrakenApi()

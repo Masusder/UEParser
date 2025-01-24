@@ -217,7 +217,14 @@ public partial class KrakenAPI
     {
         foreach (var endpoint in endpoints)
         {
-            await GetKrakenEndpoint(endpoint.Key, endpoint.Value);
+            try
+            {
+                await GetKrakenEndpoint(endpoint.Key, endpoint.Value);
+            }
+            catch
+            {
+                LogsWindowViewModel.Instance.AddLog($"Failed to fetch {endpoint.Key}", Logger.LogTags.Error);
+            }
         }
     }
 
