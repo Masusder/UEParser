@@ -160,11 +160,12 @@ public class KrakenManager
             await KrakenCDN.FetchArchivesCdnContent(KrakenCDN.CDNOutputDirName.Rifts, latestVersion);
 
             LogsWindowViewModel.Instance.AddLog("Creating game characters helper table from retrieved API.", Logger.LogTags.Info);
-            Helpers.CreateCharacterTable();
 
             config.Core.ApiConfig.LatestVersion = latestVersion;
 
             await ConfigurationService.SaveConfiguration();
+
+            Helpers.CreateCharacterTable();
 
             LogsWindowViewModel.Instance.AddLog("Successfully retrieved Kraken API.", Logger.LogTags.Success);
         }
