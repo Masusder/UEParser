@@ -183,7 +183,8 @@ public class KrakenApiConfig
             { "config", "/config" },
             { "currencies", "/wallet/currencies" },
             { "news", "/extensions/news" },
-            { "getCatalogItems", "/extensions/store/getCatalogItems?types[]=pack&types[]=currencyPack&types[]=character&types[]=shrine&types[]=item&types[]=outfit&types[]=statuette&types[]=entitlement&types[]=promoPack&types[]=premiumItemPack&types[]=nonRenewableSubscription&types[]=specialPack" }
+            { "getCatalogItems", "/extensions/store/getCatalogItems?types[]=pack&types[]=currencyPack&types[]=character&types[]=shrine&types[]=item&types[]=outfit&types[]=statuette&types[]=entitlement&types[]=promoPack&types[]=premiumItemPack&types[]=nonRenewableSubscription&types[]=specialPack" },
+            { "entitlements", "/owned-products/get-update-entitlements" }
         };
         // Gotta Catch ’Em All
         S3AccessKeys = new()

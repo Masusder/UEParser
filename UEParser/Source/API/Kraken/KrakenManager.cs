@@ -35,7 +35,7 @@ public class KrakenManager
         await KrakenAPI.GetPlayerFullProfileState();
         await KrakenAPI.GetCharacterData();
 
-        Dictionary<string, string> krakenEndpoints = new()
+        Dictionary<string, string> getKrakenEndpoints = new()
         {
             { "inventory", "Player's Inventory"},
             { "storyStatus", "Stories Status" },
@@ -43,10 +43,16 @@ public class KrakenManager
             { "currencies", "Currencies" },
             { "playerName", "Player's Name" },
             { "news", "News" },
-            { "getCatalogItems", "Segmented Catalog" }
+            { "getCatalogItems", "Segmented Catalog" },
         };
 
-        await KrakenAPI.BulkGetKrakenEndpoints(krakenEndpoints);
+        Dictionary<string, string> postKrakenEndpoints = new()
+        {
+            { "entitlements", "DLC Entitlements" }
+        };
+
+        await KrakenAPI.BulkGetKrakenEndpoints(getKrakenEndpoints, false);
+        await KrakenAPI.BulkGetKrakenEndpoints(postKrakenEndpoints, true);
 
         KrakenDiscord.StructurePlayerInventory();
     }

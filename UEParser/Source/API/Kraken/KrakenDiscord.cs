@@ -15,6 +15,7 @@ public class KrakenDiscord
         var inventoryData = FileUtils.ReadApiResponseFromFile<PlayerInventoryDataRoot>("inventory.json");
         var charactersData = FileUtils.ReadApiResponseFromFile<DbdCharacterDataRoot>("charactersData.json");
         var playerNameData = FileUtils.ReadApiResponseFromFile<PlayerName>("playername.json");
+        var entitlementsData = FileUtils.ReadApiResponseFromFile<Entitlements>("entitlements.json");
 
         if (inventoryData == null || charactersData == null || playerNameData == null)
         {
@@ -31,7 +32,8 @@ public class KrakenDiscord
             PlayerName = playerNameData,
             SplinteredState = new SplinteredState
             {
-                DbdCharacterData = wrappedCharacterData
+                DbdCharacterData = wrappedCharacterData,
+                Entitlements = entitlementsData
             }
         };
 
@@ -122,6 +124,14 @@ public class SplinteredState
 {
     [JsonProperty("dbd_character_data")]
     public List<DbdCharacterItemSchema>? DbdCharacterData { get; set; }
+    [JsonProperty("dbd-entitlements")]
+    public Entitlements? Entitlements { get; set; }
+}
+
+public class Entitlements
+{
+    [JsonProperty("entitlements")]
+    public required List<string> EntitlementList { get; set; }
 }
 
 public class DbdCharacterDataRoot

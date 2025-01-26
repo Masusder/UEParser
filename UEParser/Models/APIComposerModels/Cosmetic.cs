@@ -121,6 +121,11 @@ public class Outfit
     public string? TomeId { get; set; }
 
     /// <summary>
+    /// Dlc associated with the cosmetic.
+    /// </summary>
+    public required string DlcId { get; set; }
+
+    /// <summary>
     /// List of cosmetic pieces outfit consist of.
     /// </summary>
     public required JArray OutfitItems { get; set; }
@@ -288,6 +293,11 @@ public class CustomzatiomItem
     /// (server-sided)
     /// </summary>
     public string? TomeId { get; set; }
+
+    /// <summary>
+    /// Dlc associated with the cosmetic.
+    /// </summary>
+    public required string DlcId { get; set; }
 
     /// <summary>
     /// List of available currencies cosmetic can be bought with.

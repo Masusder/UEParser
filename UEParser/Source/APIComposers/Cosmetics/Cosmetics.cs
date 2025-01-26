@@ -113,6 +113,8 @@ public class Cosmetics
 
                     string customizedAudioStateCollection = item.Value["CustomizedAudioStateCollection"];
 
+                    string dlcId = item.Value["Availability"]["DLCId"];
+
                     Dictionary<string, List<LocalizationEntry>> localizationModel = new()
                     {
                         ["CosmeticName"] =
@@ -159,6 +161,7 @@ public class Cosmetics
                         ReleaseDate = releaseDate,
                         LimitedTimeEndDate = limitedTimeEndDate,
                         Role = new Role("None"),
+                        DlcId = dlcId,
                         Rarity = rarity,
                         OutfitItems = cosmeticPieces,
                         InclusionVersion = inclusionVersion,
@@ -312,6 +315,8 @@ public class Cosmetics
                 bool isInStore = item.Value["IsInStore"];
                 bool isEntitledByDefault = item.Value["IsEntitledByDefault"];
 
+                string dlcId = item.Value["Availability"]["DLCId"];
+
                 Dictionary<string, List<LocalizationEntry>> localizationModel = new()
                 {
                     ["CosmeticName"] =
@@ -354,6 +359,7 @@ public class Cosmetics
                     InclusionVersion = inclusionVersion,
                     EventId = eventId,
                     Role = role,
+                    DlcId = dlcId,
                     Type = type,
                     Category = category,
                     Character = characterIndex,

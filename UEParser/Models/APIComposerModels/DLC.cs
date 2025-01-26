@@ -40,24 +40,14 @@ public class DLC
     public required string EpicId { get; set; }
 
     /// <summary>
-    /// The unique identifier for the DLC on the DMM platform.
-    /// </summary>
-    public required string DMMId { get; set; }
-
-    /// <summary>
     /// The unique identifier for the DLC on the PlayStation 4 platform.
     /// </summary>
     public required string PS4Id { get; set; }
 
     /// <summary>
-    /// The unique identifier for the DLC on the Xbox One platform.
+    /// The unique identifier for the DLC on the Xbox One, Xbox Series X platforms and for Game Development Kit.
     /// </summary>
-    public required string Xbox1Id { get; set; }
-
-    /// <summary>
-    /// The unique identifier for the DLC on the Xbox Series X platform.
-    /// </summary>
-    public required string XboxSeriesXId { get; set; }
+    public required string XB1_XSX_GDK { get; set; }
 
     /// <summary>
     /// The unique identifier for the DLC on the Nintendo Switch platform.

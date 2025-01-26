@@ -213,13 +213,20 @@ public partial class KrakenAPI
         }
     }
 
-    public static async Task BulkGetKrakenEndpoints(Dictionary<string, string> endpoints)
+    public static async Task BulkGetKrakenEndpoints(Dictionary<string, string> endpoints, bool isPost)
     {
         foreach (var endpoint in endpoints)
         {
             try
             {
-                await GetKrakenEndpoint(endpoint.Key, endpoint.Value);
+                if (isPost)
+                {
+                    await PostKrakenEndpoint(endpoint.Key, endpoint.Value);
+                }
+                else
+                {
+                    await GetKrakenEndpoint(endpoint.Key, endpoint.Value);
+                }
             }
             catch
             {
@@ -238,6 +245,32 @@ public partial class KrakenAPI
             LogsWindowViewModel.Instance.AddLog($"Fetching and saving {endpointPrettyName}..", Logger.LogTags.Info);
 
             NetAPI.ApiResponse response = await NetAPI.FetchUrl(url);
+
+            if (response.Success)
+            {
+                FileWriter.SaveApiResponseToFile(response.Data, endpoint + ".json");
+            }
+            else
+            {
+                throw new Exception($"API request failed - {response.ErrorMessage}");
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Failed to fetch {endpointPrettyName}: {ex.Message}", ex);
+        }
+    }
+
+    // Empty POST requests
+    public static async Task PostKrakenEndpoint(string endpoint, string endpointPrettyName)
+    {
+        string url = ConstructApiUrl(endpoint);
+
+        try
+        {
+            LogsWindowViewModel.Instance.AddLog($"Fetching and saving {endpointPrettyName}..", Logger.LogTags.Info);
+
+            NetAPI.ApiResponse response = await NetAPI.PostRequest(url, null, new {});
 
             if (response.Success)
             {
