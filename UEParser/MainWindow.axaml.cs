@@ -51,7 +51,7 @@ public partial class MainWindow : AppWindow
         await S3AccessKeys.CheckKeys();
 
         var (currentGameVersion, branch) = Initialize.SearchGameVersion();
-        bool isGameVersionNew = Initialize.IsGameVersionNew(currentGameVersion, config.Core.VersionData.LatestVersionHeader);
+        bool isGameVersionNew = Initialize.IsGameVersionNew(currentGameVersion, config.Core.VersionData.LatestVersionHeader, branch, config.Core.VersionData.Branch);
 
         if (!string.IsNullOrEmpty(currentGameVersion) && isGameVersionNew)
         {

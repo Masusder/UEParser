@@ -49,13 +49,10 @@ public class Cosmetics
     {
         string[] filePaths = Helpers.FindFilePathsInExtractedAssetsCaseInsensitive("OutfitDB.json");
 
-        // K24_outfit_01 shouldn't exist and follows invalid format
         // Laurie_outfit_006 already exists under different ID
         // TR_outfit_011 isn't present in catalog
         // MT_outfit_022_CS already exists under different ID
-        string[] outfitsToIgnore = ["K24_outfit_01", "Laurie_outfit_006", "TR_outfit_011", "MT_outfit_022_CS",
-            "K35_outfit_008" // TODO: Broken on PTB
-        ];
+        string[] outfitsToIgnore = ["Laurie_outfit_006", "TR_outfit_011", "MT_outfit_022_CS"];
 
         var CatalogData = DataInitializer.CatalogData;
         var CatalogDictionary = DataInitializer.CatalogDictionary;
@@ -215,10 +212,6 @@ public class Cosmetics
                 token.ThrowIfCancellationRequested();
 
                 string cosmeticId = item.Name;
-
-                // TODO: Broken on PTB
-                string[] ignorePTBCosmetics = ["K35_Head008", "K35_Body008", "K35_W008"];
-                if (ignorePTBCosmetics.Contains(cosmeticId)) continue;
 
                 if (CustomizationItemsToIgnore.Contains(cosmeticId)) continue;
 

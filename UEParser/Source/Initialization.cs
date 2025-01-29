@@ -6,6 +6,7 @@ using UEParser.ViewModels;
 using UEParser.Network.Kraken;
 using UEParser.Utils;
 using System.Text.RegularExpressions;
+using UEParser.Models;
 
 namespace UEParser;
 
@@ -219,11 +220,11 @@ public partial class Initialize
         }
     }
 
-    public static bool IsGameVersionNew(string? gameVersion, string? configuredGameVersion)
+    public static bool IsGameVersionNew(string? gameVersion, string? configuredGameVersion, string? branch, Branch configuredBranch)
     {
         if (string.IsNullOrEmpty(gameVersion)) return false;
 
-        if (gameVersion == configuredGameVersion) return false;
+        if (gameVersion == configuredGameVersion && branch == configuredBranch.ToString()) return false;
 
         return true;
     }

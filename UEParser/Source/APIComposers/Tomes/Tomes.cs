@@ -276,9 +276,21 @@ public class Tomes
 
                 CosmeticsData.TryGetValue(rewardId, out dynamic? cosmeticValue);
 
-                if (cosmeticValue == null) throw new Exception("Not found rewardId in cosmetics data.");
-
-                iconPath = cosmeticValue["IconFilePathList"];
+                if (cosmeticValue != null)
+                {
+                    iconPath = cosmeticValue["IconFilePathList"];
+                }
+                else
+                {
+                    if (Currencies.CurrencyList.TryGetValue(rewardId, out var currencyValue))
+                    {
+                        iconPath = currencyValue.IconPath;
+                    }
+                    else
+                    {
+                        throw new Exception("Not found rewardId in both cosmetics and currencies data.");
+                    }
+                }
             }
         }
 
