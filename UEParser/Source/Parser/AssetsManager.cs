@@ -872,41 +872,57 @@ public class AssetsManager
     private static void DeleteUnusedFiles()
     {
         LogsWindowViewModel.Instance.AddLog("Deletion process of unused assets started.", Logger.LogTags.Info);
-        // Load fileInfoDictionary from FilesRegister class
-        Dictionary<string, FilesRegister.FileInfo> fileInfoDictionary = FilesRegister.MountFileRegisterDictionary();
 
+        Dictionary<string, FilesRegister.FileInfo> fileInfoDictionary = FilesRegister.MountFileRegisterDictionary();
         if (!Directory.Exists(OutputRootDirectory))
         {
             LogsWindowViewModel.Instance.AddLog("Output directory does not exist.", Logger.LogTags.Error);
             return;
         }
 
-        string[] allFiles = Directory.GetFiles(OutputRootDirectory, "*", SearchOption.AllDirectories);
+        HashSet<string> knownFiles = new(fileInfoDictionary.Keys.Select(k => k.ToLowerInvariant()));
 
+        IEnumerable<string> allFiles = Directory.EnumerateFiles(OutputRootDirectory, "*", SearchOption.AllDirectories);
         List<string> listOfDeletedFiles = [];
+        List<string> deletedLogs = [];
+
         foreach (string file in allFiles)
         {
             string relativePath = StringUtils.GetRelativePathWithoutExtension(file, OutputRootDirectory);
+            string lowerRelativePath = relativePath.ToLowerInvariant();
 
-            // Check if the relativePath includes "Data" or is in Wwise dir, as I only want to clean up datatables and audio
             if (!relativePath.Contains("Data", StringComparison.OrdinalIgnoreCase) &&
                 !relativePath.Contains(PackageWwiseDirectory, StringComparison.OrdinalIgnoreCase))
             {
                 continue;
             }
 
-            // Convert relativePath to lowercase for case-insensitive comparison
-            string lowerRelativePath = relativePath.ToLowerInvariant();
-
-            if (!fileInfoDictionary.Keys.Any(key => key.Equals(lowerRelativePath, StringComparison.InvariantCultureIgnoreCase)))
+            if (!knownFiles.Contains(lowerRelativePath))
             {
-                listOfDeletedFiles.Add(relativePath);
-                File.Delete(file);
-                LogsWindowViewModel.Instance.AddLog($"Deleted file: {file}", Logger.LogTags.Info);
+                listOfDeletedFiles.Add(file);
             }
+        }
+
+        Parallel.ForEach(listOfDeletedFiles, file =>
+        {
+            try
+            {
+                File.Delete(file);
+                lock (deletedLogs) deletedLogs.Add($"Deleted file: {file}");
+            }
+            catch (Exception ex)
+            {
+                LogsWindowViewModel.Instance.AddLog($"Failed to delete {file}: {ex.Message}", Logger.LogTags.Error);
+            }
+        });
+
+        foreach (string log in deletedLogs)
+        {
+            LogsWindowViewModel.Instance.AddLog(log, Logger.LogTags.Info);
         }
 
         LogsWindowViewModel.Instance.AddLog($"Deleted total of: {listOfDeletedFiles.Count} files", Logger.LogTags.Info);
         LogsWindowViewModel.Instance.AddLog("Deletion process completed.", Logger.LogTags.Info);
     }
+
 }
