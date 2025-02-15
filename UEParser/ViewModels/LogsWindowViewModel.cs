@@ -35,7 +35,9 @@ public partial class LogsWindowViewModel : ReactiveObject
         RunningWithCancellation,
         Cancellation,
         Error,
-        Warning
+        Warning,
+        ProviderInitialization,
+        ProviderFinished
     }
 
     public ELogState LogState
@@ -73,6 +75,8 @@ public partial class LogsWindowViewModel : ReactiveObject
                     ELogState.Error => "Red",
                     ELogState.Neutral => "#323232",
                     ELogState.Warning => "#ffcc00",
+                    ELogState.ProviderInitialization => "#58855c",
+                    ELogState.ProviderFinished => "#adebb3",
                     _ => "#323232",
                 })
                 .ToProperty(this, x => x.StateColor);
@@ -87,6 +91,8 @@ public partial class LogsWindowViewModel : ReactiveObject
                     ELogState.Error => "Error Occured!",
                     ELogState.Neutral => "Waiting.. do something",
                     ELogState.Warning => "Warning!",
+                    ELogState.ProviderInitialization => "CUE4Parse Initialization..",
+                    ELogState.ProviderFinished => "CUE4Parse Initialization Finished",
                     _ => "Waiting.. do something",
                 })
                 .ToProperty(this, x => x.StateText);
@@ -101,6 +107,8 @@ public partial class LogsWindowViewModel : ReactiveObject
                     ELogState.Error => "White",
                     ELogState.Neutral => "White",
                     ELogState.Warning => "Black",
+                    ELogState.ProviderInitialization => "Black",
+                    ELogState.ProviderFinished => "Black",
                     _ => "White",
                 })
                 .ToProperty(this, x => x.StateTextColor);
@@ -115,6 +123,8 @@ public partial class LogsWindowViewModel : ReactiveObject
                 ELogState.Error => "fa-solid fa-circle-exclamation",
                 ELogState.Neutral => "fa-solid fa-square-pen",
                 ELogState.Warning => "fa-solid fa-triangle-exclamation",
+                ELogState.ProviderInitialization => "fa-solid fa-microchip",
+                ELogState.ProviderFinished => "fa-solid fa-microchip",
                 _ => "fa-solid fa-square-pen"
             })
             .ToProperty(this, x => x.StateIcon);
@@ -125,6 +135,7 @@ public partial class LogsWindowViewModel : ReactiveObject
                 ELogState.Running => true,
                 ELogState.RunningWithCancellation => true,
                 ELogState.Cancellation => true,
+                ELogState.ProviderInitialization => true,
                 _ => false
             })
             .ToProperty(this, x => x.IsLoading);

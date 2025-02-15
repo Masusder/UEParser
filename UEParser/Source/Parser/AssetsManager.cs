@@ -80,7 +80,7 @@ public class AssetsManager
                 return;
             }
 
-            LogsWindowViewModel.Instance.AddLog("[CUE4Parse] Initializing files provider..", Logger.LogTags.Info);
+            LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.ProviderInitialization);
 
             var config = ConfigurationService.Config;
 
@@ -96,7 +96,7 @@ public class AssetsManager
 
                 if (!File.Exists(mappingsPath))
                 {
-                    LogsWindowViewModel.Instance.AddLog("[CUE4Parse] Not found build mappings. You need to provide path to them manually in settings.", Logger.LogTags.Info);
+                    LogsWindowViewModel.Instance.AddLog("[CUE4Parse] Not found build mappings. You need to provide path to them manually in settings.", Logger.LogTags.Warning);
                     return;
                 }
 
@@ -125,7 +125,7 @@ public class AssetsManager
 
                 _provider.LoadLocalization(ELanguage.English);
 
-                LogsWindowViewModel.Instance.AddLog("[CUE4Parse] Initialized successfully.", Logger.LogTags.Info);
+                LogsWindowViewModel.Instance.ChangeLogState(LogsWindowViewModel.ELogState.ProviderFinished);
             }
             else
             {
